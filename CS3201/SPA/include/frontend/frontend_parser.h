@@ -4,4 +4,3 @@ class frontend_parser {
     frontend_parser();
     ~frontend_parser();
 };
-
