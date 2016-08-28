@@ -1,0 +1,107 @@
+# Build results
+# =============
+[Bb]in/
+[Bb]uild/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Ll]og/
+[Oo]bj/
+[Rr]elease/
+[Rr]eleases/
+bld/
+x64/
+x86/
+
+# Extensions
+# ==========
+.builds
+*_i.c
+*_i.h
+*_p.c
+*.ilk
+*.log
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.pidb
+*.rsp
+*.sbr
+*.scc
+*.svclog
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.vspscc
+*.vssscc
+
+# OSX / iOS
+# =========
+._*
+.AppleDouble
+.DocumentRevisions-V100
+.fseventsd
+.LSOverride
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+*.DS_Store
+[Tt]humbs.db
+Icon?
+
+# Others
+# ======
+~$*
+*~
+*.bak
+*.csv
+*.dat
+*.gz
+*.pid
+*.swp
+*.tmp
+
+# User-specific files
+# ===================
+*.sln.docstates
+*.suo
+*.user
+*.userosscache
+
+# User-specific files (MonoDevelop)
+# =================================
+*.userprefs
+
+# Visual Studio 2015 cache/options directory
+# ==========================================
+.vs/
+
+# Visual C++ cache files
+# ======================
+ipch/
+*.aps
+*.cachefile
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.VC.opendb
+
+# Visual Studio cache files
+# =========================
+# files ending in .cache can be ignored but keep track of directories ending in .cache
+*.[Cc]ache
+!*.[Cc]ache/
+
+# Visual Studio profiler
+# ======================
+*.psess
+*.vsp
+*.vspx
+*.sap
