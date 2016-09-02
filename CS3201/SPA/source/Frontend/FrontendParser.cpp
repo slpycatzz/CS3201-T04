@@ -29,8 +29,8 @@ void FrontendParser::parseProgram(std::string filePath) {
 
     PKB::SetASTRoot(callProgramRecognizer());
 
-    //TODO: Recursive call check
-    //TODO: Invalid procedure call check (procedure does not exist)
+    // TODO(YH): Recursive call check
+    // TODO(YH): Invalid procedure call check (procedure does not exist)
 }
 
 std::vector<std::string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream) {
@@ -38,7 +38,7 @@ std::vector<std::string> FrontendParser::preprocessProgramLines(std::ifstream& f
     std::vector<std::string> programLines;
 
     while (std::getline(fileStream, currentLine)) {
-        std::size_t position; 
+        std::size_t position;
 
         /* If there are any comments in the program line, remove it. */
         position = currentLine.find(SYMBOL_COMMENT);
@@ -57,7 +57,7 @@ std::vector<std::string> FrontendParser::preprocessProgramLines(std::ifstream& f
         /* Append leading and trailing whitespace to char symbols. */
         for (unsigned int i = 0; i < currentLine.size(); i++) {
             char currentChar = currentLine.at(i);
-            
+
             switch (currentChar) {
                 default:
                     continue;
@@ -132,7 +132,7 @@ TreeNode* FrontendParser::callProgramRecognizer() {
 
 TreeNode* FrontendParser::callProcedureRecognizer() {
     expect(SYMBOL_PROCEDURE);
-    
+
     /* Validate if procedure name follows naming convention. */
     if (!Utils::IsValidNamingConvention(peekTokens())) {
         throw ProgramSyntaxErrorException();
@@ -155,7 +155,7 @@ TreeNode* FrontendParser::callStmtListRecognizer() {
     while (peekTokens() != std::string(1, CHAR_SYMBOL_CLOSECURLYBRACKET)) {
         stmtListNode->addChild(callStmtRecognizer());
     }
-    
+
     expect(CHAR_SYMBOL_CLOSECURLYBRACKET);
 
     /* Validate if statement list is empty. */
@@ -258,7 +258,7 @@ TreeNode*  FrontendParser::callExpressionRecognizer() {
         } else {
             break;
         }
-        
+
         node->addChild(expressionNode);
         node->addChild(callTermRecognizer());
 
@@ -289,7 +289,7 @@ TreeNode* FrontendParser::callFactorRecognizer() {
     if (accept(CHAR_SYMBOL_OPENBRACKET)) {
         factorNode = callExpressionRecognizer();
         expect(CHAR_SYMBOL_CLOSEBRACKET);
-   
+
     /* Variable. */
     } else if (Utils::IsValidNamingConvention(peekTokens())) {
         factorNode = PKB::CreateASTNode(VARIABLE, getToken());
@@ -297,7 +297,7 @@ TreeNode* FrontendParser::callFactorRecognizer() {
     /* Constant. */
     } else if (Utils::IsNonNegativeNumeric(peekTokens())) {
         factorNode = PKB::CreateASTNode(CONSTANT, getToken());
-    
+
     } else {
         throw ProgramSyntaxErrorException();
     }

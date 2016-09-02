@@ -6,6 +6,4 @@ class QueryEvaluator {
     ~QueryEvaluator();
 
  private:
-    
 };
-

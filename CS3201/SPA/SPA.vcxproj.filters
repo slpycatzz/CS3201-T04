@@ -39,6 +39,15 @@
     <ClInclude Include="include\PKB\PKB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\QueryProcessor\QueryPreprocessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QueryProcessor\QueryEvaluator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QueryProcessor\QueryProjector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\frontend\FrontendParser.cpp">
@@ -60,6 +69,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\PKB\PKB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\QueryPreprocessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\QueryEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\QueryProjector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

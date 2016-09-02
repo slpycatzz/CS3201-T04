@@ -6,6 +6,4 @@ class QueryProjector {
     ~QueryProjector();
 
  private:
-
 };
-

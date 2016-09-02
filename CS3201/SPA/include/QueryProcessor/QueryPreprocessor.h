@@ -6,6 +6,4 @@ class QueryPreprocessor {
     ~QueryPreprocessor();
 
  private:
-    
 };
-
