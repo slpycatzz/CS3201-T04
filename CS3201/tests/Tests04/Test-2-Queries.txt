@@ -1,0 +1,185 @@
+1 - pattern 1
+assign a;
+Select a pattern a("i",_)
+2, 5
+5000
+
+2 - pattern 2
+assign a;
+Select a pattern a(_,_"x"_)
+4, 7, 10
+5000
+
+3 - pattern 3
+assign a;
+Select a pattern a(_,"1")
+5, 7, 9
+5000
+
+4 - modifies 1
+assign a;
+Select a such that Modifies(a,"x")
+1, 4, 7
+5000
+
+5 - modifies 2
+stmt s;
+Select s such that Modifies(s,"x")
+1, 3, 4, 6, 7
+5000
+
+6 - modifies 3
+while w;
+Select w such that Modifies(w,"x")
+3, 6
+5000
+
+7 - uses 1
+stmt s;
+Select s such that Uses(s,"x")
+3, 4, 6, 7, 10
+5000
+
+8 - uses 2
+assign a;
+Select a such that Uses(a,"x")
+4, 7, 10
+5000
+
+9 - uses 3
+variable v;
+Select v such that Uses(6,v)
+x, z
+5000
+
+10 - parent 1
+stmt s;
+Select s such that Parent(s,9)
+8
+5000
+
+11 - parent 2
+stmt s;
+Select s such that Parent(6,s)
+7, 8
+5000
+
+12 - parent 3
+stmt s, s1;
+Select s such that Parent(s,s1)
+3, 6, 8
+5000
+
+13 - parent* 1
+stmt s;
+Select s such that Parent*(s,9)
+6, 8
+5000
+
+14 - parent* 2
+stmt s; while w;
+Select s such that Parent*(w,s)
+4, 5, 7, 8, 9
+5000
+
+15 - parent* 3
+assign a; while w;
+Select a such that Parent*(w,a)
+4, 5, 7, 9
+5000
+
+16 - follows 1
+stmt s;
+Select s such that Follows(s,4)
+none
+5000
+
+17 - follows 2
+while w;
+Select w such that Follows(7,w)
+8
+5000
+
+18 - follows 3
+stmt s; assign a;
+Select a such that Follows(s,a)
+2, 5, 10, 11
+5000
+
+19 - follows* 1
+stmt s; while w;
+Select w such that Follows*(s,w)
+3, 6, 8
+5000
+
+20 - follows* 2
+stmt s; while w;
+Select s such that Follows*(w,s)
+10, 11
+5000
+
+21 - follows* 3
+stmt s; while w;
+Select s such that Follows*(s,w)
+1, 2, 7
+5000
+
+22 - combination 1
+assign a;
+Select a pattern a(_,_"x"_) such that Modifies(a,"x")
+4, 7
+5000
+
+23 - combination 2
+assign a;
+Select a such that Uses(a,"z") pattern a(_,_"i"_)
+10
+5000
+
+24 - combination 3
+stmt s; assign a; variable v;
+Select v such that Uses(s,v) pattern a(v,_)
+i, x, y, z
+5000
+
+25 - combination 4
+assign a; stmt s;
+Select a pattern a("x",_) such that Parent(s,a)
+4, 7
+5000
+
+26 - combination 5
+assign a; while w;
+Select w pattern a(_,_"1"_) such that Parent(w,a)
+3, 6, 8
+5000
+
+27 - combination 6
+assign a; while w;
+Select a pattern a(_,_"1"_) such that Parent*(w,a)
+5, 7, 9
+5000
+
+28 - combination 7
+assign a; while w;
+Select w pattern a(_,_"x"_) such that Parent*(w,a)
+3, 6
+5000
+
+29 - combination 8
+assign a; stmt s;
+Select a pattern a("x",_) such that Follows(a,s)
+1, 4, 7
+5000
+
+30 - combination 9
+assign a, a1;
+Select a pattern a("z",_) such that Follows*(a1,a)
+10
+5000
+
+31 - combination 10
+assign a; while w;
+Select a pattern a("x",_) such that Follows*(a,w)
+1, 7
+5000
