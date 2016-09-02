@@ -10,6 +10,8 @@ const char SYMBOL_STMTLIST[]  = "stmtlist";
 const char SYMBOL_ASSIGN[]    = "assign";
 const char SYMBOL_WHILE[]     = "while";
 const char SYMBOL_IF[]        = "if";
+const char SYMBOL_IF_THEN[]   = "then";
+const char SYMBOL_IF_ELSE[]   = "else";
 const char SYMBOL_CALL[]      = "call";
 const char SYMBOL_VARIABLE[]  = "variable";
 const char SYMBOL_CONSTANT[]  = "constant";
@@ -36,8 +38,8 @@ enum Symbol {
 
 class Constants {
  public:
-     static std::string getPreprocessFormat(const char symbol);
-     static std::string getPreprocessFormat(std::string symbol);
-     static std::string symbolToString(Symbol symbol);
-     static Symbol stringToSymbol(std::string str);
+     static std::string GetPreprocessFormat(const char symbol);
+     static std::string GetPreprocessFormat(std::string symbol);
+     static std::string SymbolToString(Symbol symbol);
+     static Symbol StringToSymbol(std::string str);
 };

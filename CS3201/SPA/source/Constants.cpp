@@ -4,19 +4,19 @@
 
 const char PREPROCESS_FORMAT[] = " _ ";             /* Underscore denotes the position to replace. */
 
-std::string Constants::getPreprocessFormat(const char symbol) {
+std::string Constants::GetPreprocessFormat(const char symbol) {
     std::string format = PREPROCESS_FORMAT;
 
     return format.replace(1, 1, std::string(1, symbol));
 }
 
-std::string Constants::getPreprocessFormat(std::string symbol) {
+std::string Constants::GetPreprocessFormat(std::string symbol) {
     std::string format = PREPROCESS_FORMAT;
 
     return format.replace(1, 1, symbol);
 }
 
-std::string Constants::symbolToString(Symbol symbol) {
+std::string Constants::SymbolToString(Symbol symbol) {
     switch (symbol) {
         default:
         case INVALID:   return SYMBOL_INVALID;
@@ -35,43 +35,20 @@ std::string Constants::symbolToString(Symbol symbol) {
     }
 }
 
-Symbol Constants::stringToSymbol(std::string str) {
-    if (str.compare(SYMBOL_PROGRAM) == 0) {
-        return PROGRAM;
+Symbol Constants::StringToSymbol(std::string str) {
+    if (str == SYMBOL_PROGRAM)   return PROGRAM;
+    if (str == SYMBOL_PROCEDURE) return PROCEDURE;
+    if (str == SYMBOL_STMTLIST)  return STMTLIST;
+    if (str == SYMBOL_ASSIGN)    return ASSIGN;
+    if (str == SYMBOL_WHILE)     return WHILE;
+    if (str == SYMBOL_IF)        return IF;
+    if (str == SYMBOL_CALL)      return CALL;
+    if (str == SYMBOL_VARIABLE)  return VARIABLE;
+    if (str == SYMBOL_CONSTANT)  return CONSTANT;
 
-    } else if (str.compare(SYMBOL_PROCEDURE) == 0) {
-        return PROCEDURE;
-
-    } else if (str.compare(SYMBOL_STMTLIST) == 0) {
-        return STMTLIST;
-
-    } else if (str.compare(SYMBOL_ASSIGN) == 0) {
-        return ASSIGN;
-
-    } else if (str.compare(SYMBOL_WHILE) == 0) {
-        return WHILE;
-
-    } else if (str.compare(SYMBOL_IF) == 0) {
-        return IF;
-
-    } else if (str.compare(SYMBOL_CALL) == 0) {
-        return CALL;
-
-    } else if (str.compare(SYMBOL_VARIABLE) == 0) {
-        return VARIABLE;
-
-    } else if (str.compare(SYMBOL_CONSTANT) == 0) {
-        return CONSTANT;
-
-    } else if (str.compare(std::string(1, CHAR_SYMBOL_PLUS)) == 0) {
-        return PLUS;
-
-    } else if (str.compare(std::string(1, CHAR_SYMBOL_MINUS)) == 0) {
-        return MINUS;
-
-    } else if (str.compare(std::string(1, CHAR_SYMBOL_MULTIPLY)) == 0) {
-        return MULTIPLY;
-    }
+    if (str == std::string(1, CHAR_SYMBOL_PLUS))     return PLUS;
+    if (str == std::string(1, CHAR_SYMBOL_MINUS))    return MINUS;
+    if (str == std::string(1, CHAR_SYMBOL_MULTIPLY)) return MULTIPLY;
 
     return INVALID;
 }

@@ -17,7 +17,6 @@ class TreeNode {
     void setValue(std::string value);
     std::string getValue();
     std::vector<TreeNode*> getChildren();
-    
     int getNumberOfChildren();
     void addChild(TreeNode *child);
 

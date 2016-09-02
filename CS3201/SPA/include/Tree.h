@@ -12,8 +12,10 @@ class Tree {
     TreeNode* createNode(Symbol symbol, std::string value);
     TreeNode* createNode(Symbol symbol, int lineNumber);
     TreeNode* createNode(Symbol symbol, int lineNumber, std::string value);
+    void printTree();
 
  private:
-     TreeNode *root_;
+    TreeNode *root_;
+    void printTreeNode(TreeNode* node, unsigned int indent);
 };
 

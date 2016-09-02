@@ -19,10 +19,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\frontend\frontend_parser.h" />
+    <ClInclude Include="include\Constants.h" />
+    <ClInclude Include="include\Exceptions.h" />
+    <ClInclude Include="include\frontend\FrontendParser.h" />
+    <ClInclude Include="include\PKB\AST.h" />
+    <ClInclude Include="include\PKB\PKB.h" />
+    <ClInclude Include="include\Tree.h" />
+    <ClInclude Include="include\TreeNode.h" />
+    <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\frontend\frontend_parser.cpp" />
+    <ClCompile Include="source\Constants.cpp" />
+    <ClCompile Include="source\frontend\FrontendParser.cpp" />
+    <ClCompile Include="source\PKB\AST.cpp" />
+    <ClCompile Include="source\PKB\PKB.cpp" />
+    <ClCompile Include="source\Tree.cpp" />
+    <ClCompile Include="source\TreeNode.cpp" />
+    <ClCompile Include="source\Utils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{10D30226-FBE5-4C0E-84D7-61CC065DEE24}</ProjectGuid>

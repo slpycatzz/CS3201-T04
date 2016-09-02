@@ -1,20 +1,23 @@
 #include <string>
 
-#include "Constants.h"
 #include "TreeNode.h"
 
 TreeNode::TreeNode(Symbol symbol) {
     this->symbol_ = symbol;
+    this->lineNumber_ = -1;
+    this->value_ = "";
 }
 
 TreeNode::TreeNode(Symbol symbol, std::string value) {
     this->symbol_ = symbol;
+    this->lineNumber_ = -1;
     this->value_ = value;
 }
 
 TreeNode::TreeNode(Symbol symbol, int lineNumber) {
     this->symbol_ = symbol;
     this->lineNumber_ = lineNumber;
+    this->value_ = "";
 }
 
 TreeNode::TreeNode(Symbol symbol, int lineNumber, std::string value) {
