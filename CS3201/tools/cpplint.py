@@ -530,7 +530,7 @@ _root = None
 
 # The allowed line length of files.
 # This is set by --linelength flag.
-_line_length = 80
+_line_length = 150#80
 
 # The allowed extensions for file names
 # This is set by --extensions flag.
@@ -1790,6 +1790,10 @@ def CheckForHeaderGuard(filename, clean_lines, error):
   endif = ''
   endif_linenum = 0
   for linenum, line in enumerate(raw_lines):
+    # If first line have C99 header guard, skip all checks.
+    if line == '#pragma once':
+        return
+        
     linesplit = line.split()
     if len(linesplit) >= 2:
       # find the first occurrence of #ifndef and #define, save arg
@@ -2796,18 +2800,18 @@ def CheckForNonStandardConstructs(filename, clean_lines, linenum,
         Match(r'(const\s+)?%s(\s*<[^>]*>)?(\s+const)?\s*(?:<\w+>\s*)?&'
               % re.escape(base_classname), constructor_args[0].strip()))
 
-    if (not is_marked_explicit and
-        onearg_constructor and
-        not initializer_list_constructor and
-        not copy_constructor):
-      if defaulted_args:
-        error(filename, linenum, 'runtime/explicit', 5,
-              'Constructors callable with one argument '
-              'should be marked explicit.')
-      else:
-        error(filename, linenum, 'runtime/explicit', 5,
-              'Single-parameter constructors should be marked explicit.')
-    elif is_marked_explicit and not onearg_constructor:
+    #if (not is_marked_explicit and
+    #    onearg_constructor and
+    #    not initializer_list_constructor and
+    #    not copy_constructor):
+    #  if defaulted_args:
+    #    error(filename, linenum, 'runtime/explicit', 5,
+    #          'Constructors callable with one argument '
+    #          'should be marked explicit.')
+    #  else:
+    #    error(filename, linenum, 'runtime/explicit', 5,
+    #          'Single-parameter constructors should be marked explicit.')
+    if is_marked_explicit and not onearg_constructor:
       if noarg_constructor:
         error(filename, linenum, 'runtime/explicit', 5,
               'Zero-parameter constructors should not be marked explicit.')
@@ -5813,7 +5817,7 @@ def ProcessFileData(filename, file_extension, lines, error,
 
   ResetNolintSuppressions()
 
-  CheckForCopyright(filename, lines, error)
+  #CheckForCopyright(filename, lines, error)
   ProcessGlobalSuppresions(lines)
   RemoveMultiLineComments(filename, lines, error)
   clean_lines = CleansedLines(lines)
