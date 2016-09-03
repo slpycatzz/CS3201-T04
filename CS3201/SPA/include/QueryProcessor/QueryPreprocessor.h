@@ -12,6 +12,10 @@ class QueryPreprocessor {
     void preprocess(std::string filePath);
     void preprocessFile(std::ifstream& fileStream);
 
+    bool processDeclaration(std::string declaration);
+
+    bool processQuery(std::string query);
+
  private:
      std::vector<std::vector<std::string>> queries;
 
