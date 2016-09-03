@@ -13,7 +13,6 @@ class FrontendParser {
 
  private:
     std::vector<std::string> preprocessProgramLines(std::ifstream& fileStream);
-    void splitProgramLinesIntoTokens(std::vector<std::string> programLines);
 
     TreeNode* callProgramRecognizer();
     TreeNode* callProcedureRecognizer();

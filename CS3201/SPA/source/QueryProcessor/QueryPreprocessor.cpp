@@ -4,16 +4,10 @@
 
 #include "Exceptions.h"
 #include "QueryProcessor/QueryPreprocessor.h"
-#include "Utils.h"
 #include "QueryProcessor/RelationTable.h"
+#include "Utils.h"
 
-std::vector<std::string> _declareVar;
-std::vector<std::string> _declareVarType;
-std::vector<std::string> _selectVar;
-RelationTable r;
-
-QueryPreprocessor::QueryPreprocessor() {
-}
+QueryPreprocessor::QueryPreprocessor() {}
 
 QueryPreprocessor::~QueryPreprocessor() {}
 
@@ -40,10 +34,8 @@ void QueryPreprocessor::preprocessFile(std::ifstream& fileStream) {
        Fourth line: Expected Result
        Fifth line:  Time limit
     */
-    /* Comment(YH): Do not restrict yourself to my implementation. You can create a Query class if you want to. */
     while (std::getline(fileStream, currentLine)) {
-        currentLine = Utils::TrimLeadingSpaces(currentLine);
-        currentLine = Utils::TrimTrailingSpaces(currentLine);
+        currentLine = Utils::TrimSpaces(currentLine);
 
         /* Ignore empty lines. */
         if (currentLine.empty()) {
@@ -58,8 +50,10 @@ void QueryPreprocessor::preprocessFile(std::ifstream& fileStream) {
 
             /* Query data - declaration stmt. */
             case 1:
+
             /* Query data - query stmt. */
             case 2:
+
             /* Query data - expected output of query. */
             case 3:
                 query.push_back(currentLine);
@@ -77,28 +71,29 @@ void QueryPreprocessor::preprocessFile(std::ifstream& fileStream) {
 
     fileStream.close();
 }
+
 // priority todo: 1. split tokens correctly and test 2. implement incomplete methods
 bool QueryPreprocessor::processDeclaration(std::string declaration) {
     // w todo: multiple declarations - assign a;assign b;
-    std::vector<std::string> declarationList = split(declaration, ' ');
+    std::vector<std::string> declarationList = Utils::Split(declaration, ' ');
 
     // w todo: isValidVarType not tested
     if (declarationList.size() != 2 || !isValidVarType(declarationList[0])) {
         return false;
     }
 
-    std::vector<std::string> synonyms = split(declarationList[1], ',');
+    std::vector<std::string> synonyms = Utils::Split(declarationList[1], ',');
 
     if (synonyms.size() < 1) {
         return false;
     }
 
-    for (int i = 0; i < synonyms.size(); i++) {
+    for (unsigned int i = 0; i < synonyms.size(); i++) {
         if (!isValidVarName(synonyms[i])) {
             return false;
         } else {
-            _declareVar.push_back(synonyms[i]);
-            _declareVarType.push_back(declarationList[0]);
+            declareVar.push_back(synonyms[i]);
+            declareVarType.push_back(declarationList[0]);
             // insertVariable(synonyms.at(i), declarationList.at(0));
         }
     }
@@ -107,7 +102,7 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
 }
 
 bool QueryPreprocessor::processQuery(std::string query) {
-    std::vector<std::string> queryList = split(query, ' ');
+    std::vector<std::string> queryList = Utils::Split(query, ' ');
 
     // First token should be Select [arg]
     if (queryList[0].compare("select") != 0 || queryList.size() != 2) {
@@ -116,20 +111,20 @@ bool QueryPreprocessor::processQuery(std::string query) {
 
     queryList[0] = queryList[0].substr(1, queryList[0].size() - 1);
 
-    std::vector<std::string> selectList = split(queryList[0], ',');
+    std::vector<std::string> selectList = Utils::Split(queryList[0], ',');
     std::vector<std::string> var(selectList.size()), varType(selectList.size());
 
-    for (int i = 0; i < selectList.size(); i++) {
-        queryList = split(queryList[1], ' ');
+    for (unsigned int i = 0; i < selectList.size(); i++) {
+        queryList = Utils::Split(queryList[1], ' ');
 
-        if (queryList.at[0].compare("boolean") != 0) {
+        if (queryList.at(0).compare("boolean") != 0) {
             // todo: create boolean var type for querytree
             // insertSelect("", "boolean");
-            _selectVar.push_back("boolean");
+            selectVar.push_back("boolean");
         } else if (isVarExist(queryList[0])) {
             // todo: insert var into querytree
             // insertSelect(queryList[0], getVarType(queryList[0]));
-            _selectVar.push_back(queryList[0]);
+            selectVar.push_back(queryList[0]);
         } else {
             return false;
         }
@@ -147,14 +142,14 @@ bool QueryPreprocessor::processQuery(std::string query) {
             break;
         }
 
-        queryList = split(queryList.at(1), ' ');
+        queryList = Utils::Split(queryList.at(1), ' ');
 
         if (queryList.size() != 2) {
             return false;
         }
 
         if (queryList.at(0).compare("such that") == 0) {
-            queryList = split(queryList.at(1), ' ');
+            queryList = Utils::Split(queryList.at(1), ' ');
 
             isSuccess = parseSuchThat(queryList.at(1));
             prevClause = "such that";
@@ -174,16 +169,16 @@ bool QueryPreprocessor::processQuery(std::string query) {
     return true;
 }
 
-bool parseSuchThat(std::string suchThat) {
-    std::vector<std::string> suchThatList = split(suchThat, '(');
+bool QueryPreprocessor::parseSuchThat(std::string suchThat) {
+    std::vector<std::string> suchThatList = Utils::Split(suchThat, '(');
 
     // use RelationTable to process and verify Uses, Modifies rel is correct etc...
 
     return true;
 }
 
-bool parseSuchThatRelation(std::string relType, std::vector<std::string>& varList, std::vector<std::string>& varTypes) {
-    for (int i = 0; i < varList.size(); i++) {
+bool QueryPreprocessor::parseSuchThatRelation(std::string relType, std::vector<std::string> &varList, std::vector<std::string> &varTypes) {
+    for (unsigned int i = 0; i < varList.size(); i++) {
         if (isVarExist(varList[i])) {
             if (!r.isArgValid(relType, getVarType(varList[i]), "")) {
                 return false;
@@ -204,43 +199,31 @@ bool parseSuchThatRelation(std::string relType, std::vector<std::string>& varLis
         return true;
 }
 
-bool parsePattern(std::string pattern) {
+bool QueryPreprocessor::parsePattern(std::string pattern) {
     return false;
 }
 
-bool isVarExist(std::string var) {
+bool QueryPreprocessor::isVarExist(std::string var) {
     if (var.compare("BOOLEAN")) {
         return true;
     }
 
-    for (int i = 0; i < _declareVar.size; i++) {
-        if (_declareVar[i].compare(var) == 0)
+    for (unsigned int i = 0; i < declareVar.size(); i++) {
+        if (declareVar[i].compare(var) == 0)
             return true;
     }
     return false;
 }
 
-bool isValidVarName(std::string varName) {
+bool QueryPreprocessor::isValidVarName(std::string varName) {
     return true;
 }
 
-bool isValidVarType(std::string varName) {
+bool QueryPreprocessor::isValidVarType(std::string varName) {
     return true;
 }
 
 // todo: return symbol enum type
-std::string getVarType(std::string var) {
-}
-
-// split first pair of strings
-std::vector<std::string> split(std::string str, char c) {
-    std::vector<std::string> result;
-    return result;
-}
-
-std::string trim(std::string s) {
-    // w TODO: remove extra whitespaces, remove newline, tabs
-    s = Utils::TrimLeadingSpaces(s);
-    s = Utils::TrimTrailingSpaces(s);
-    return s;
+std::string QueryPreprocessor::getVarType(std::string var) {
+    return "";
 }

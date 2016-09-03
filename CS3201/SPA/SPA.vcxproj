@@ -24,9 +24,12 @@
     <ClInclude Include="include\frontend\FrontendParser.h" />
     <ClInclude Include="include\PKB\AST.h" />
     <ClInclude Include="include\PKB\PKB.h" />
+    <ClInclude Include="include\QueryProcessor\Clause.h" />
     <ClInclude Include="include\QueryProcessor\QueryEvaluator.h" />
     <ClInclude Include="include\QueryProcessor\QueryPreprocessor.h" />
     <ClInclude Include="include\QueryProcessor\QueryProjector.h" />
+    <ClInclude Include="include\QueryProcessor\QueryTree.h" />
+    <ClInclude Include="include\QueryProcessor\RelationTable.h" />
     <ClInclude Include="include\Tree.h" />
     <ClInclude Include="include\TreeNode.h" />
     <ClInclude Include="include\Utils.h" />
@@ -39,6 +42,8 @@
     <ClCompile Include="source\QueryProcessor\QueryEvaluator.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryPreprocessor.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryProjector.cpp" />
+    <ClCompile Include="source\QueryProcessor\QueryTree.cpp" />
+    <ClCompile Include="source\QueryProcessor\RelationTable.cpp" />
     <ClCompile Include="source\Tree.cpp" />
     <ClCompile Include="source\TreeNode.cpp" />
     <ClCompile Include="source\Utils.cpp" />

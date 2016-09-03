@@ -25,7 +25,12 @@ void FrontendParser::parseProgram(std::string filePath) {
         throw FileNotFoundException();
     }
 
-    splitProgramLinesIntoTokens(preprocessProgramLines(fileStream));
+    std::vector<std::string> programLines = preprocessProgramLines(fileStream);
+
+    /* Split program lines into tokens. */
+    for (unsigned int i = 0; i < programLines.size(); i++) {
+        Utils::SplitAndIgnoreEmpty(programLines[i], ' ', this->tokens_);
+    }
 
     PKB::SetASTRoot(callProgramRecognizer());
 
@@ -46,8 +51,7 @@ std::vector<std::string> FrontendParser::preprocessProgramLines(std::ifstream& f
             currentLine = currentLine.substr(0, position);
         }
 
-        currentLine = Utils::TrimLeadingSpaces(currentLine);
-        currentLine = Utils::TrimTrailingSpaces(currentLine);
+        currentLine = Utils::TrimSpaces(currentLine);
 
         /* Ignore empty lines. */
         if (currentLine.empty()) {
@@ -108,18 +112,6 @@ std::vector<std::string> FrontendParser::preprocessProgramLines(std::ifstream& f
     fileStream.close();
 
     return programLines;
-}
-
-void FrontendParser::splitProgramLinesIntoTokens(std::vector<std::string> programLines) {
-    for (unsigned int i = 0; i < programLines.size(); i++) {
-        std::string str;
-        std::istringstream stringStream;
-
-        stringStream.str(programLines[i]);
-        while (stringStream >> str) {
-            this->tokens_.push_back(str);
-        }
-    }
 }
 
 TreeNode* FrontendParser::callProgramRecognizer() {

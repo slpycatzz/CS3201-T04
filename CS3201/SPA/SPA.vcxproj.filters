@@ -48,6 +48,15 @@
     <ClInclude Include="include\QueryProcessor\QueryProjector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\QueryProcessor\Clause.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QueryProcessor\QueryTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QueryProcessor\RelationTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\frontend\FrontendParser.cpp">
@@ -78,6 +87,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\QueryProcessor\QueryProjector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\RelationTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\QueryTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

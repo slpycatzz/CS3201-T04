@@ -1,14 +1,15 @@
-#include "RelationTable.h"
 #include <string>
 
-RelationTable::RelationTable() {
+#include "QueryProcessor/RelationTable.h"
+
+RelationTable::RelationTable() {}
+
+RelationTable::~RelationTable() {}
+
+bool RelationTable::isRelationValid(std::string relation) {
+    return true;
 }
 
-RelationTable::~RelationTable() {
-}
-
-bool isRelationValid(std::string rel, std::string arg1, std::string arg2) {
-}
-
-bool isArgValid(std::string rel, std::string arg1, std::string arg2) {
+bool RelationTable::isArgValid(std::string relation, std::string arg1, std::string arg2) {
+    return true;
 }

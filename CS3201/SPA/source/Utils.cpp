@@ -1,6 +1,50 @@
+#include <sstream>
 #include <string>
+#include <vector>
 
 #include "Utils.h"
+
+std::vector<std::string> Utils::Split(std::string str, char delimiter) {
+    std::string temp;
+    std::vector<std::string> result;
+    std::istringstream stringStream;
+
+    stringStream.str(str);
+    while (getline(stringStream, temp, delimiter)) {
+        result.push_back(temp);
+    }
+
+    return result;
+}
+
+void Utils::Split(std::string str, char delimiter, std::vector<std::string> &target) {
+    std::string temp;
+    std::istringstream stringStream;
+
+    stringStream.str(str);
+    while (getline(stringStream, temp, delimiter)) {
+        target.push_back(temp);
+    }
+}
+
+void Utils::SplitAndIgnoreEmpty(std::string str, char delimiter, std::vector<std::string> & target) {
+    std::string temp;
+    std::istringstream stringStream;
+
+    stringStream.str(str);
+    while (getline(stringStream, temp, delimiter)) {
+        if (!temp.empty()) {
+            target.push_back(temp);
+        }
+    }
+}
+
+std::string Utils::TrimSpaces(std::string str) {
+    str = Utils::TrimLeadingSpaces(str);
+    str = Utils::TrimTrailingSpaces(str);
+
+    return str;
+}
 
 std::string Utils::TrimLeadingSpaces(std::string str) {
     int position = str.find_first_not_of(" \t");
