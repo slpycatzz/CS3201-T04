@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "QueryProcessor/RelationTable.h"
 
@@ -18,17 +19,24 @@ class QueryPreprocessor {
      bool processDeclaration(std::string declaration);
      bool processQuery(std::string query);
 
+     bool parseSelect(std::vector<std::string> queryList);
+
      bool parseSuchThat(std::string suchThat);
      bool parseSuchThatRelation(std::string relType, std::vector<std::string> &varList, std::vector<std::string> &varTypes);
      bool parsePattern(std::string pattern);
+
      bool isVarExist(std::string var);
      bool isValidVarName(std::string varName);
      bool isValidVarType(std::string varName);
+
      std::string getVarType(std::string var);
+     std::vector<std::string> split(std::string str, char delimiter);
 
      std::vector<std::vector<std::string>> queries;
      std::vector<std::string> declareVar;
      std::vector<std::string> declareVarType;
      std::vector<std::string> selectVar;
+     std::unordered_map<std::string, std::string> relMap;
+     std::unordered_map<std::string, std::string> entMap;
      RelationTable r;
 };
