@@ -1,5 +1,5 @@
 # CS3201/2 Static Program Analyzer
-<img src="https://pixelducky.visualstudio.com/_apis/public/build/definitions/ad5520df-7de2-4e1b-a5af-1f7f898dc7d0/1/badge"><br><br>
+`master`<img src="https://pixelducky.visualstudio.com/_apis/public/build/definitions/ad5520df-7de2-4e1b-a5af-1f7f898dc7d0/1/badge"><br><br>
 A simple Static Program Analyzer (SPA) tool that automatically answers queries about programs.
 
 # Tools
