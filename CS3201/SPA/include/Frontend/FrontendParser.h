@@ -14,6 +14,7 @@ class FrontendParser {
  private:
     std::vector<std::string> preprocessProgramLines(std::ifstream& fileStream);
     void splitProgramLinesIntoTokens(std::vector<std::string> programLines);
+
     TreeNode* callProgramRecognizer();
     TreeNode* callProcedureRecognizer();
     TreeNode* callStmtListRecognizer();
@@ -25,10 +26,12 @@ class FrontendParser {
     TreeNode* callExpressionRecognizer();
     TreeNode* callTermRecognizer();
     TreeNode* callFactorRecognizer();
+    
     void expect(std::string token);
     void expect(char token);
     bool accept(std::string token);
     bool accept(char token);
+    
     std::string peekTokens();
     std::string peekForwardTokens(unsigned int index);
     std::string getToken();

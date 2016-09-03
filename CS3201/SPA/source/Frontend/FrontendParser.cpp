@@ -38,7 +38,7 @@ std::vector<std::string> FrontendParser::preprocessProgramLines(std::ifstream& f
     std::vector<std::string> programLines;
 
     while (std::getline(fileStream, currentLine)) {
-        std::size_t position;
+        int position;
 
         /* If there are any comments in the program line, remove it. */
         position = currentLine.find(SYMBOL_COMMENT);
@@ -104,6 +104,8 @@ std::vector<std::string> FrontendParser::preprocessProgramLines(std::ifstream& f
 
         programLines.push_back(currentLine);
     }
+
+    fileStream.close();
 
     return programLines;
 }
