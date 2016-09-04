@@ -6,6 +6,7 @@
 class Utils {
  public:
     static std::vector<std::string> Split(std::string str, char delimiter);
+    static std::vector<std::string> SplitAndIgnoreEmpty(std::string str, char delimiter);
     static void Split(std::string str, char delimiter, std::vector<std::string> &target);
     static void SplitAndIgnoreEmpty(std::string str, char delimiter, std::vector<std::string> &target);
     static std::string TrimSpaces(std::string str);

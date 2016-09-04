@@ -31,6 +31,7 @@ class QueryPreprocessor {
 
      std::string getVarType(std::string var);
      std::vector<std::string> split(std::string str, char delimiter);
+     std::string trim(std::string s);
 
      std::vector<std::vector<std::string>> queries;
      std::vector<std::string> declareVar;

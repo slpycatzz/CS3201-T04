@@ -17,6 +17,21 @@ std::vector<std::string> Utils::Split(std::string str, char delimiter) {
     return result;
 }
 
+std::vector<std::string> Utils::SplitAndIgnoreEmpty(std::string str, char delimiter) {
+    std::string temp;
+    std::vector<std::string> result;
+    std::istringstream stringStream;
+
+    stringStream.str(str);
+    while (getline(stringStream, temp, delimiter)) {
+        if (!temp.empty()) {
+            result.push_back(temp);
+        }
+    }
+
+    return result;
+}
+
 void Utils::Split(std::string str, char delimiter, std::vector<std::string> &target) {
     std::string temp;
     std::istringstream stringStream;
@@ -89,5 +104,5 @@ bool Utils::IsNonNegativeNumeric(std::string str) {
 }
 
 bool Utils::StartsWithAlphabet(std::string str) {
-    return isalpha(str[0]);
+    return (isalpha(str[0])) ? true : false;
 }
