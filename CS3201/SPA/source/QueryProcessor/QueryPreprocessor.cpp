@@ -104,6 +104,7 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
         }
 
         for (unsigned int i = 0; i < synonyms.size(); i++) {
+            // strip unnecessary whitespaces
             synonyms[i] = std::regex_replace(synonyms[i], std::regex("\\s+"), "");
             if (!isValidVarName(synonyms[i])) {
                 return false;
@@ -129,6 +130,7 @@ bool QueryPreprocessor::processQuery(std::string query) {
     }
 
     parseSelect(queryList);
+    queryList = getNextToken(queryList);
 
     if (queryList.size() == 2) {
         return true;
@@ -137,24 +139,17 @@ bool QueryPreprocessor::processQuery(std::string query) {
     bool isSuccess = false;
     std::string prevClause;
 
-    // wm todo: in progress...
     while (true) {
+        // wm todo: check if EOL reached or no items left works
         if ((queryList[1].size() > 0 && queryList[1][0] == NULL) || queryList[1].size() == 0) {
             break;
         }
 
-        queryList = split(queryList.at(1), ' ');
-
-        if (queryList.size() != 2) {
-            return false;
-        }
-
-        if (queryList.at(0).compare("such that") == 0) {
-            queryList = split(queryList.at(1), ' ');
-
-            isSuccess = parseSuchThat(queryList.at(1));
+        if (queryList[0].compare("such") == 0 && queryList[1].compare("that")) {
+            isSuccess = parseSuchThat(queryList);
             prevClause = "such that";
-        } else if (queryList.at(0).compare("pattern") == 0) {
+
+        } else if (queryList[0].compare("pattern") == 0) {
             isSuccess = parsePattern(queryList.at(1));
             prevClause = "pattern";
 
@@ -164,29 +159,38 @@ bool QueryPreprocessor::processQuery(std::string query) {
 
         if (isSuccess == false) {
             return false;
+        } else {
+            queryList = getNextToken(queryList);
         }
     }
 
     return true;
 }
 
-// wm todo: incomplete, last stopped here
 bool QueryPreprocessor::parseSelect(std::vector<std::string> queryList) {
-    std::vector<std::string> selectList = split(queryList[1], ',');
-    std::vector<std::string> var(selectList.size()), varType(selectList.size());
+    std::vector<std::string> selectList;
+    std::vector<std::string> var, varType;
 
+    std::vector<std::string> temp = getNextToken(queryList);
+    int numberOfVarsInSelect = (queryList.size() - temp.size());
+    std::string selectVars = "";
+
+    for (unsigned int i = 1; i < numberOfVarsInSelect; i++) {
+        selectVars += queryList[i];
+    }
+
+    selectList = split(selectVars, ',');
+
+    // wm todo: move this loop into another function
     for (unsigned int i = 0; i < selectList.size(); i++) {
-        // possible clause-arg: s,a1  , a2,a3 | boolean
-        queryList = split(queryList[1], ' ');
-
-        if (queryList.at(0).compare("boolean") != 0) {
-            // todo: create boolean var type for querytree
+        if (selectList[0].compare("boolean") != 0) {
+            // wm todo: create boolean var type for querytree
             // insertSelect("", "boolean");
             selectVar.push_back("boolean");
-        } else if (isVarExist(queryList[0])) {
-            // todo: insert var into querytree
+        } else if (isVarExist(selectList[0])) {
+            // wm todo: insert var into querytree
             // insertSelect(queryList[0], getVarType(queryList[0]));
-            selectVar.push_back(queryList[0]);
+            selectVar.push_back(selectList[0]);
         } else {
             return false;
         }
@@ -195,21 +199,34 @@ bool QueryPreprocessor::parseSelect(std::vector<std::string> queryList) {
     return true;
 }
 
-bool QueryPreprocessor::parseSuchThat(std::string suchThat) {
-    std::vector<std::string> suchThatList = split(suchThat, '(');
-
+bool QueryPreprocessor::parseSuchThat(std::vector<std::string> suchThat) {
     // use RelationTable to process and verify Uses, Modifies rel is correct etc...
+    std::vector<std::string> suchThatList;
 
-    return true;
+    std::vector<std::string> temp = getNextToken(suchThat);
+    int numberOfItemsInSuchThat = (suchThat.size() - temp.size());
+    std::string suchThatStr = "";
+
+    for (unsigned int i = 2; i < numberOfItemsInSuchThat; i++) {
+        suchThatStr += suchThat[i];
+    }
+
+    std::string relation = suchThatStr.substr(0, suchThatStr.find_first_of('('));
+    std::string argStr = suchThatStr.substr(suchThatStr.find_first_of('(')+1, suchThatStr.find_first_of(')'));
+    std::vector<std::string> argList = split(argStr, ',');
+
+    bool isSuccess = parseSuchThatRelation(relation, argList);
+
+    return isSuccess;
 }
 
-bool QueryPreprocessor::parseSuchThatRelation(std::string relType, std::vector<std::string>& varList, std::vector<std::string>& varTypes) {
+bool QueryPreprocessor::parseSuchThatRelation(std::string relType, std::vector<std::string>& varList) {
     for (unsigned int i = 0; i < varList.size(); i++) {
         if (isVarExist(varList[i])) {
             if (!r.isArgValid(relType, getVarType(varList[i]), "")) {
                 return false;
             } else {
-                varTypes.at(i) = getVarType(varList.at(i));
+                // wm todo: assign accepted s.t. relations into querytree
                 /*}
                 else if (isConstantVar(varList[i])) {
                 }
@@ -226,7 +243,7 @@ bool QueryPreprocessor::parseSuchThatRelation(std::string relType, std::vector<s
 }
 
 bool QueryPreprocessor::parsePattern(std::string pattern) {
-    return false;
+    return true;
 }
 
 bool QueryPreprocessor::isVarExist(std::string var) {
@@ -258,6 +275,13 @@ bool QueryPreprocessor::isValidVarType(std::string varName) {
         return false;
     }
     return true;
+}
+
+// find next token in the list and return list from next token onwards
+std::vector<std::string> QueryPreprocessor::getNextToken(std::vector<std::string> queryList) {
+    std::vector<std::string> resultList;
+
+    return resultList;
 }
 
 // todo: return symbol enum type

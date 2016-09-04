@@ -21,13 +21,15 @@ class QueryPreprocessor {
 
      bool parseSelect(std::vector<std::string> queryList);
 
-     bool parseSuchThat(std::string suchThat);
-     bool parseSuchThatRelation(std::string relType, std::vector<std::string> &varList, std::vector<std::string> &varTypes);
+     bool parseSuchThat(std::vector<std::string> suchThat);
+     bool parseSuchThatRelation(std::string relType, std::vector<std::string> &varList);
      bool parsePattern(std::string pattern);
 
      bool isVarExist(std::string var);
      bool isValidVarName(std::string varName);
      bool isValidVarType(std::string varName);
+
+     std::vector<std::string> getNextToken(std::vector<std::string> queryList);
 
      std::string getVarType(std::string var);
      std::vector<std::string> split(std::string str, char delimiter);
