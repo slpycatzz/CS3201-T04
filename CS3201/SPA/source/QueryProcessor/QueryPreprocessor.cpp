@@ -8,6 +8,7 @@
 #include "QueryProcessor/QueryPreprocessor.h"
 #include "QueryProcessor/RelationTable.h"
 #include "Utils.h"
+#include "Constants.h"
 
 QueryPreprocessor::QueryPreprocessor() {
     relMap = {
@@ -84,9 +85,9 @@ void QueryPreprocessor::preprocessFile(std::ifstream& fileStream) {
 }
 
 bool QueryPreprocessor::processDeclaration(std::string declaration) {
-    std::vector<std::string> declarationList = split(declaration, ';');
+    std::vector<std::string> declarationList = Utils::Split(declaration, CHAR_SYMBOL_SEMICOLON);
     for (unsigned int line_num = 0; line_num < declarationList.size(); line_num++) {
-        std::vector<std::string> declarationType = split(declarationList[line_num], ' ');
+        std::vector<std::string> declarationType = Utils::Split(declarationList[line_num], ' ');
 
         if (!isValidVarType(declarationType[0])) {
             // std::cout << "invalid declaration type!";
@@ -96,7 +97,7 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
         s = declarationList[line_num];
         s = s.substr(s.find_first_of(" \t") + 1);
 
-        std::vector<std::string> synonyms = split(s, ',');
+        std::vector<std::string> synonyms = Utils::Split(s, CHAR_SYMBOL_COMMA);
 
         if (synonyms.size() < 1) {
             // std::cout<< "invalid declaration!\n usage: assign [varName];";
@@ -121,7 +122,7 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
 }
 
 bool QueryPreprocessor::processQuery(std::string query) {
-    std::vector<std::string> queryList = split(query, ' ');
+    std::vector<std::string> queryList = Utils::Split(query, ' ');
 
     // Select [arg] such that ... pattern...
     if (queryList[0].compare("select") == 0) {
@@ -150,7 +151,7 @@ bool QueryPreprocessor::processQuery(std::string query) {
             prevClause = "such that";
 
         } else if (queryList[0].compare("pattern") == 0) {
-            isSuccess = parsePattern(queryList.at(1));
+            isSuccess = parsePattern(queryList);
             prevClause = "pattern";
 
         } else {
@@ -179,7 +180,7 @@ bool QueryPreprocessor::parseSelect(std::vector<std::string> queryList) {
         selectVars += queryList[i];
     }
 
-    selectList = split(selectVars, ',');
+    selectList = Utils::Split(selectVars, CHAR_SYMBOL_COMMA);
 
     // wm todo: move this loop into another function
     for (unsigned int i = 0; i < selectList.size(); i++) {
@@ -211,9 +212,10 @@ bool QueryPreprocessor::parseSuchThat(std::vector<std::string> suchThat) {
         suchThatStr += suchThat[i];
     }
 
-    std::string relation = suchThatStr.substr(0, suchThatStr.find_first_of('('));
-    std::string argStr = suchThatStr.substr(suchThatStr.find_first_of('(')+1, suchThatStr.find_first_of(')'));
-    std::vector<std::string> argList = split(argStr, ',');
+    std::string relation = suchThatStr.substr(0, suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET));
+    std::string argStr = suchThatStr.substr(
+        suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET)+1, suchThatStr.find_first_of(CHAR_SYMBOL_CLOSEBRACKET));
+    std::vector<std::string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
 
     bool isSuccess = parseSuchThatRelation(relation, argList);
 
@@ -242,8 +244,53 @@ bool QueryPreprocessor::parseSuchThatRelation(std::string relType, std::vector<s
     return true;
 }
 
-bool QueryPreprocessor::parsePattern(std::string pattern) {
+// wm todo: consider combining with parse s.t.Relation
+bool QueryPreprocessor::parsePatternRelation(std::string relType, std::vector<std::string>& varList) {
+    for (unsigned int i = 0; i < varList.size(); i++) {
+        if (isVarExist(varList[i])) {
+            if (!r.isArgValid(relType, getVarType(varList[i]), "")) {
+                return false;
+            } else {
+                // wm todo: assign accepted s.t. relations into querytree
+                /*}
+                else if (isConstantVar(varList[i])) {
+                }
+                else if (isConstantInteger(varList[i])) {
+                }
+                else if (varList.at(i).compare("_") == 0) {
+                */
+            }
+        } else {
+            return false;
+        }
+    }
     return true;
+}
+
+bool QueryPreprocessor::parsePattern(std::vector<std::string> pattern) {
+    std::vector<std::string> patternList;
+
+    std::vector<std::string> temp = getNextToken(pattern);
+    int numberOfItemsInPattern = (pattern.size() - temp.size());
+    std::string patternStr = "";
+
+    for (unsigned int i = 1; i < numberOfItemsInPattern; i++) {
+        patternStr += pattern[i];
+    }
+
+    std::string var = patternStr.substr(0, patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET));
+    if (!isVarExist(var)) {
+        // std::cout << "invalid var: " + var;
+        return false;
+    }
+
+    std::string argStr = patternStr.substr(
+        patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET) + 1, patternStr.find_first_of(CHAR_SYMBOL_CLOSEBRACKET));
+    std::vector<std::string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
+
+    bool isSuccess = parsePatternRelation(var, argList);
+
+    return isSuccess;
 }
 
 bool QueryPreprocessor::isVarExist(std::string var) {
@@ -287,26 +334,4 @@ std::vector<std::string> QueryPreprocessor::getNextToken(std::vector<std::string
 // todo: return symbol enum type
 std::string QueryPreprocessor::getVarType(std::string var) {
     return "";
-}
-
-std::vector<std::string> QueryPreprocessor::split(std::string str, char delimiter) {
-    std::vector<std::string> result;
-    const char *cur = str.c_str();
-    int i = 1;
-
-    while (*cur != 0) {
-        const char *begin = cur;
-
-        while (*cur != delimiter && *cur) {
-            cur++;
-        }
-        result.push_back(trim(std::string(begin, cur)));
-        cur++;
-    }
-    return result;
-}
-
-std::string QueryPreprocessor::trim(std::string s) {
-    // w TODO: remove extra whitespaces, remove newline, tabs
-    return s;
 }
