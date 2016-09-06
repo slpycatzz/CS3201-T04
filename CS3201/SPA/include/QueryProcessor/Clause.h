@@ -3,10 +3,10 @@
 
 class Clause {
  public:
+     Clause();
+     ~Clause();
     static std::vector<Clause*> getClauses();
 
  private:
-    Clause();
-    ~Clause();
     static Clause *clause;
 };

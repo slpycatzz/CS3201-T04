@@ -5,29 +5,17 @@
 #include "Utils.h"
 
 std::vector<std::string> Utils::Split(std::string str, char delimiter) {
-    std::string temp;
     std::vector<std::string> result;
-    std::istringstream stringStream;
-
-    stringStream.str(str);
-    while (getline(stringStream, temp, delimiter)) {
-        result.push_back(temp);
-    }
+    
+    Utils::Split(str, delimiter, result);
 
     return result;
 }
 
 std::vector<std::string> Utils::SplitAndIgnoreEmpty(std::string str, char delimiter) {
-    std::string temp;
     std::vector<std::string> result;
-    std::istringstream stringStream;
 
-    stringStream.str(str);
-    while (getline(stringStream, temp, delimiter)) {
-        if (!temp.empty()) {
-            result.push_back(temp);
-        }
-    }
+    Utils::SplitAndIgnoreEmpty(str, delimiter, result);
 
     return result;
 }
