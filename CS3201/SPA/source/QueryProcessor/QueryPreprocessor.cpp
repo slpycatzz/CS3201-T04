@@ -173,7 +173,7 @@ bool QueryPreprocessor::parseSelect(std::vector<std::string> queryList) {
     std::vector<std::string> var, varType;
 
     std::vector<std::string> temp = getNextToken(queryList);
-    int numberOfVarsInSelect = (queryList.size() - temp.size());
+    unsigned int numberOfVarsInSelect = (queryList.size() - temp.size());
     std::string selectVars = "";
 
     for (unsigned int i = 1; i < numberOfVarsInSelect; i++) {
@@ -205,7 +205,7 @@ bool QueryPreprocessor::parseSuchThat(std::vector<std::string> suchThat) {
     std::vector<std::string> suchThatList;
 
     std::vector<std::string> temp = getNextToken(suchThat);
-    int numberOfItemsInSuchThat = (suchThat.size() - temp.size());
+    unsigned int numberOfItemsInSuchThat = (suchThat.size() - temp.size());
     std::string suchThatStr = "";
 
     for (unsigned int i = 2; i < numberOfItemsInSuchThat; i++) {
@@ -271,7 +271,7 @@ bool QueryPreprocessor::parsePattern(std::vector<std::string> pattern) {
     std::vector<std::string> patternList;
 
     std::vector<std::string> temp = getNextToken(pattern);
-    int numberOfItemsInPattern = (pattern.size() - temp.size());
+    unsigned int numberOfItemsInPattern = (pattern.size() - temp.size());
     std::string patternStr = "";
 
     for (unsigned int i = 1; i < numberOfItemsInPattern; i++) {
