@@ -13,11 +13,26 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Frontend">
+      <UniqueIdentifier>{cbe7a9a9-c034-496f-9a38-74d24bf9a8cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\QueryProcessor">
+      <UniqueIdentifier>{b0f6bbcc-04af-43b6-8619-6ecb27afc260}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PKB">
+      <UniqueIdentifier>{d381b614-7c47-4c6a-add1-5d0dc1ce2aff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Frontend">
+      <UniqueIdentifier>{bcc98965-9d5a-4013-a1bb-3d0db264329e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\QueryProcessor">
+      <UniqueIdentifier>{d0796086-2c3c-4c96-93e8-92938db9bfe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PKB">
+      <UniqueIdentifier>{5bbb0e40-5b4a-4bc0-a859-d661a870ce09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\frontend\FrontendParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -33,35 +48,35 @@
     <ClInclude Include="include\Tree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\frontend\FrontendParser.h">
+      <Filter>Header Files\Frontend</Filter>
+    </ClInclude>
     <ClInclude Include="include\PKB\AST.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\PKB</Filter>
     </ClInclude>
     <ClInclude Include="include\PKB\PKB.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\QueryProcessor\QueryPreprocessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\QueryProcessor\QueryEvaluator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\QueryProcessor\QueryProjector.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\PKB</Filter>
     </ClInclude>
     <ClInclude Include="include\QueryProcessor\Clause.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\QueryProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QueryProcessor\QueryEvaluator.h">
+      <Filter>Header Files\QueryProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QueryProcessor\QueryPreprocessor.h">
+      <Filter>Header Files\QueryProcessor</Filter>
     </ClInclude>
     <ClInclude Include="include\QueryProcessor\QueryTree.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\QueryProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QueryProcessor\QueryProjector.h">
+      <Filter>Header Files\QueryProcessor</Filter>
     </ClInclude>
     <ClInclude Include="include\QueryProcessor\RelationTable.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\QueryProcessor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\frontend\FrontendParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -74,26 +89,32 @@
     <ClCompile Include="source\Tree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\PKB\AST.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\PKB\PKB.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
-    <ClCompile Include="source\QueryProcessor\QueryPreprocessor.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="source\frontend\FrontendParser.cpp">
+      <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PKB\AST.cpp">
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
     <ClCompile Include="source\QueryProcessor\QueryEvaluator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\QueryPreprocessor.cpp">
+      <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
     <ClCompile Include="source\QueryProcessor\QueryProjector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\QueryProcessor\RelationTable.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
     <ClCompile Include="source\QueryProcessor\QueryTree.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="Clause.cpp">
+      <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\RelationTable.cpp">
+      <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

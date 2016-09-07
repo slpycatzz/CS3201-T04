@@ -18,8 +18,14 @@ class QueryTree {
     std::vector<Clause> getClauses(std::string ClauseType);
     std::vector<std::string> getResults();
 
+    bool insertSuchThat(Symbol, std::vector<std::string>, int);
+    bool insertSelect(std::string, std::vector<std::string>);
+    bool insertSelect(std::string, std::string);
+
+    bool insertPattern(std::string, std::vector<std::string>, int);
+
  private:
-     bool insertSuchThat(Symbol, std::vector<std::string>, int);
-     bool insertSelect(std::string, std::vector<std::string>);
-     bool insertPattern(std::string, std::vector<std::string>, int);
+     std::unordered_map<std::string, Symbol> varMap;
+     std::vector<Clause> suchThatList;
+     std::vector<Clause> patternList;
 };
