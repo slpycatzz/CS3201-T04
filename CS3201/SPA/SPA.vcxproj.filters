@@ -39,9 +39,6 @@
     <ClInclude Include="include\Exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Constants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\TreeNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -74,6 +71,12 @@
     </ClInclude>
     <ClInclude Include="include\QueryProcessor\RelationTable.h">
       <Filter>Header Files\QueryProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PKB\Table.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Constants.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

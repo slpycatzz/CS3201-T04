@@ -28,8 +28,8 @@ void FrontendParser::parseProgram(std::string filePath) {
     std::vector<std::string> programLines = preprocessProgramLines(fileStream);
 
     /* Split program lines into tokens. */
-    for (unsigned int i = 0; i < programLines.size(); i++) {
-        Utils::SplitAndIgnoreEmpty(programLines[i], ' ', this->tokens_);
+    for (const auto &programLine : programLines) {
+        Utils::SplitAndIgnoreEmpty(programLine, ' ', this->tokens_);
     }
 
     PKB::SetASTRoot(callProgramRecognizer());

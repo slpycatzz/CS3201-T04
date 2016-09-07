@@ -4,6 +4,7 @@
 
 #include "Constants.h"
 #include "Tree.h"
+#include "TreeNode.h"
 
 Tree::Tree() {}
 
@@ -50,8 +51,8 @@ void Tree::printTreeNode(TreeNode* node, unsigned int indent) {
         }
 
         std::cout << Constants::SymbolToString(node->getSymbol()) << std::endl;
-        for (unsigned int i = 0; i < node->getChildren().size(); i++) {
-            printTreeNode(node->getChildren()[i], (indent + 4));
+        for (const auto &tempNode : node->getChildren()) {
+            printTreeNode(tempNode, (indent + 4));
         }
     }
 }
