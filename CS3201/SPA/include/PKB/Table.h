@@ -1,31 +1,42 @@
 #pragma once
-#include <unordered_map>
+
 #include <map>
 #include <vector>
-#include <string>
-#include <algorithm>
-#include <utility>
 
-template <typename K, typename V>
+template <class K, class V>
 class Table {
- private:
-  std::unordered_map<K, V> original_map;
-  std::multimap<V, K> reverse_map;
-
  public:
-  explicit Table<K, V>();
-
-  // TODO(pixelducky): fix this function
-  void Table<K, V>::Insert(K key, V value) {
-    original_map.emplace(key, value);
-    // this was giving Error C2664
-    /*for (auto &i : value) {
-      reverse_map.emplace(i, key);
-    }*/
+  inline Table<K, V>() {
+      typedef std::multimap<K, V>::iterator iterator;
   }
 
-  V Table<K, V>::GetValue(K key) {
-    return original_map[key];
+  inline ~Table<K, V>() {}
+
+  inline void insert(K key, V value) {
+      map.insert(std::pair<K, V>(key, value));
+      reversedMap.insert(std::pair<V, K>(value, key));
+  }
+
+  inline std::vector<V> getValues(K key) {
+      std::vector<K> result;
+
+      std::pair<iterator, iterator> range = map.equal_range(key);
+      for (iterator iter = range.first; iter != range.second; iter++) {
+          result.push_back(iter->second);
+      }
+
+      return result;
+  }
+
+  inline std::vector<K> getKeys(V value) {
+      std::vector<K> result;
+      
+      std::pair<iterator, iterator> range = reversedMap.equal_range(value);
+      for (iterator iter = range.first; iter != range.second; iter++) {
+          result.push_back(iter->second);
+      }
+
+      return result;
   }
 
   // TODO(pixelducky): update function
@@ -37,4 +48,8 @@ class Table {
     return keys
     return vector<K>();
   }*/
+
+ private:
+    std::multimap<K, V> map;
+    std::multimap<V, K> reversedMap;
 };
