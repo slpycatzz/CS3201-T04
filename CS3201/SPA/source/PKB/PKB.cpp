@@ -1,10 +1,14 @@
 #include <string>
+#include <vector>
 
 #include "Constants.h"
 #include "PKB/AST.h"
 #include "PKB/PKB.h"
 #include "TreeNode.h"
-#include "Table.h"
+#include "PKB/Table.h"
+
+using std::string;
+using std::vector;
 
 PKB::PKB() {}
 
@@ -22,7 +26,7 @@ TreeNode* PKB::CreateASTNode(Symbol symbol) {
     return AST::getInstance()->createNode(symbol);
 }
 
-TreeNode* PKB::CreateASTNode(Symbol symbol, std::string value) {
+TreeNode* PKB::CreateASTNode(Symbol symbol, string value) {
     return AST::getInstance()->createNode(symbol, value);
 }
 
@@ -30,7 +34,7 @@ TreeNode* PKB::CreateASTNode(Symbol symbol, int lineNumber) {
     return AST::getInstance()->createNode(symbol, lineNumber);
 }
 
-TreeNode* PKB::CreateASTNode(Symbol symbol, int lineNumber, std::string value) {
+TreeNode* PKB::CreateASTNode(Symbol symbol, int lineNumber, string value) {
     return AST::getInstance()->createNode(symbol, lineNumber, value);
 }
 
@@ -38,118 +42,148 @@ void PKB::PrintASTTree() {
     AST::getInstance()->printTree();
 }
 
-static void InsertVariable(std::string variable_names[]) {
-
-}S
-
-static bool IsVariableExist(std::string variable_name) {
-
+void PKB::InsertVariable(string variable_name) {
 }
 
-static void InsertProcedure(std::string procedure_names[]) {
+void PKB::InsertVariable(vector<string> variable_names) {
 }
 
-static void InsertProcedureLineNumber(std::string procedure_name, int line_numbers[]) {
-
+bool PKB::IsVariableExist(string variable_name) {
 }
 
-static bool IsProcedureExist(std::string procedure_name) {
-
+void PKB::InsertProcedure(vector<string> procedure_names) {
 }
 
-
-static void InsertUses(int line_number, std::string variable_names[]) {
-
+void PKB::InsertProcedureLineNumber(string procedure_name, int line_number) {
 }
 
-static void InsertUses(std::string procedure_name, std::string variable_names[]) {
-
+void PKB::InsertProcedureLineNumber(string procedure_name, vector<int> line_numbers) {
 }
 
-static std::string[] UsesVariable(int line_number) {
-
+bool PKB::IsProcedureExist(string procedure_name) {
+  return false;
 }
 
-static std::string[] UsesVariable(std::string procedure_name) {
-
+void PKB::InsertUses(int line_number, string variable_name) {
 }
 
-static std::string[] UsedByLineNumber(std::string variable_name) {
-
+void PKB::InsertUses(int line_number, vector<string> variable_names) {
 }
 
-static std::string[] UsedByProcedure(std::string variable_name) {
-
+void PKB::InsertUses(string procedure_name, string variable_name) {
 }
 
-static void InsertModifies(int line_number, std::string variable_names[]) {
-
+void PKB::InsertUses(string procedure_name, vector<string> variable_names) {
 }
 
-static void InsertModifies(std::string procedure_name, std::string variable_names[]) {
-
+vector<string> PKB::UsesVariable(int line_number) {
 }
 
-static std::string[] ModifiesVariable(int line_number) {
-
+vector<string> PKB::UsesVariable(string procedure_name) {
 }
 
-static std::string[] ModifiesVariable(std::string procedure_name) {
-
+vector<int> PKB::UsedByLineNumber(string variable_name) {
 }
 
-static std::string[] ModifiedByLineNumber(std::string variable_name) {
-
+vector<string> PKB::UsedByProcedure(string variable_name) {
 }
 
-static std::string[] ModifiedByProcedure(std::string variable_name) {
-
+void PKB::InsertModifies(int line_number, string variable_name) {
 }
 
-static void InsertCalls(std::string procedure_name1, std::string procedure_names[]) {
-
+void PKB::InsertModifies(int line_number, vector<string> variable_names) {
 }
 
-static void InsertCallsTransitive(std::string procedure_name1, std::string procedure_names[]) {
-
+void PKB::InsertModifies(string procedure_name, string variable_name) {
 }
 
-static boolean IsCalls(std::string procedure_name1, std::string procedure_name2) {
-
+void PKB::InsertModifies(string procedure_name, vector<string> variable_names) {
 }
 
-static boolean IsCallsTransitive(std::string procedure_name1, std::string procedure_name2) {
-
+vector<string> PKB::ModifiesVariable(int line_number) {
 }
 
-static void InsertParent(int line_number1, int line_number2) {
-
+vector<string> PKB::ModifiesVariable(string procedure_name) {
 }
 
-static void InsertParentTransitive(int line_number1, int line_number2) {
-
+vector<int> PKB::ModifiedByLineNumber(string variable_name) {
 }
 
-static boolean IsParent(int line_number1, int line_number2) {
-
+vector<string> PKB::ModifiedByProcedure(string variable_name) {
 }
 
-static boolean IsParentTransitive(int line_number1, int line_number2) {
-
+void PKB::InsertCalls(string procedure_name1, string procedure_name2) {
 }
 
-static void InsertFollows(int line_number1, int line_number2) {
-
+void PKB::InsertCalls(string procedure_name1, vector<string> procedure_names) {
 }
 
-static void InsertFollowsTransitive(int line_number1, int line_number2) {
-
+void PKB::InsertCallsTransitive(string procedure_name1, string procedure_name2) {
 }
 
-static boolean IsFollows(int line_number1, int line_number2) {
-
+void PKB::InsertCallsTransitive(string procedure_name1, vector<string> procedure_names) {
 }
 
-static boolean IsFollowsTransitive(int line_number1, int line_number2) {
+bool PKB::IsCalls(string procedure_name1, string procedure_name2) {
+  return false;
+}
 
+bool PKB::IsCallsTransitive(string procedure_name1, string procedure_name2) {
+  return false;
+}
+
+void PKB::InsertParent(int line_number1, int line_number2) {
+}
+
+void PKB::InsertParent(int line_number1, vector<int> line_numbers) {
+}
+
+void PKB::InsertParentTransitive(int line_number1, int line_number2) {
+}
+
+void PKB::InsertParentTransitive(int line_number1, vector<int> line_numbers) {
+}
+
+bool PKB::IsParent(int line_number1, int line_number2) {
+  return false;
+}
+
+bool PKB::IsParent(int line_number1, vector<int> line_numbers) {
+  return false;
+}
+
+bool PKB::IsParentTransitive(int line_number1, int line_number2) {
+  return false;
+}
+
+bool PKB::IsParentTransitive(int line_number1, vector<int> line_numbers) {
+  return false;
+}
+
+void PKB::InsertFollows(int line_number1, int line_number2) {
+}
+
+void PKB::InsertFollows(int line_number1, vector<int> line_numbers) {
+}
+
+void PKB::InsertFollowsTransitive(int line_number1, int line_number2) {
+}
+
+void PKB::InsertFollowsTransitive(int line_number1, vector<int> line_numbers) {
+}
+
+bool PKB::IsFollows(int line_number1, int line_number2) {
+  return false;
+}
+
+bool PKB::IsFollows(int line_number1, vector<int> line_numbers) {
+  return false;
+}
+
+bool PKB::IsFollowsTransitive(int line_number1, int line_number2) {
+  return false;
+}
+
+bool PKB::IsFollowsTransitive(int line_number1, vector<int> line_numbers) {
+  return false;
 }
