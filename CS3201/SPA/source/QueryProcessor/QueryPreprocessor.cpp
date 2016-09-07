@@ -189,9 +189,8 @@ bool QueryPreprocessor::parseSelect(std::vector<std::string> queryList) {
             // insertSelect("", "boolean");
             selectVar.push_back("boolean");
         } else if (isVarExist(selectList[0])) {
-            // wm todo: insert var into querytree
-            // insertSelect(queryList[0], getVarType(queryList[0]));
             selectVar.push_back(selectList[0]);
+            qt.insertSelect(getVarType(selectList[0]), selectList[0]);
         } else {
             return false;
         }
@@ -217,55 +216,44 @@ bool QueryPreprocessor::parseSuchThat(std::vector<std::string> suchThat) {
         suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET)+1, suchThatStr.find_first_of(CHAR_SYMBOL_CLOSEBRACKET));
     std::vector<std::string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
 
-    bool isSuccess = parseSuchThatRelation(relation, argList);
+    bool isSuccess = parseRelation(relation, argList);
 
     return isSuccess;
 }
 
-bool QueryPreprocessor::parseSuchThatRelation(std::string relType, std::vector<std::string>& varList) {
+bool QueryPreprocessor::parseRelation(std::string relType, std::vector<std::string>& varList) {
+    std::vector<std::string> varTypeList;
     for (unsigned int i = 0; i < varList.size(); i++) {
         if (isVarExist(varList[i])) {
+            // wm todo: r table not implemented yet, always return true, throw error not done
+            // isArgValid(relationType, argType, argNumber)
+            // argNumber e.g. 1st arg, 2nd arg...
             if (!r.isArgValid(relType, getVarType(varList[i]), "")) {
                 return false;
-            } else {
-                // wm todo: assign accepted s.t. relations into querytree
-                /*}
-                else if (isConstantVar(varList[i])) {
-                }
-                else if (isConstantInteger(varList[i])) {
-                }
-                else if (varList.at(i).compare("_") == 0) {
-                */
             }
+            varTypeList.push_back(getVarType(varList[i]));
+            // wm todo: implement this
+        } else if (isConstantVar(varList[i])) {      
+        // constant var, e.g. ("x","v"), pattern string belongs here
+            varTypeList.push_back("variable");
+        } else if (Utils::IsNonNegativeNumeric(varList[i])) {
+        // constant int, e.g. (1,2)
+            varTypeList.push_back("constant");
+        } else if (varList.at(i).compare("_") == 0) {    
+        // wildcard e.g. (_,_)
+            varTypeList.push_back("underscore");
         } else {
             return false;
+        }
+        // wm todo: implement this, relType should incl. pattern handling ... i.e. a(),w()...
+        if (r.isRelationValid(relType, varList, varTypeList)) {
+            // wm todo: push to qt
         }
     }
     return true;
 }
 
-// wm todo: consider combining with parse s.t.Relation
-bool QueryPreprocessor::parsePatternRelation(std::string relType, std::vector<std::string>& varList) {
-    for (unsigned int i = 0; i < varList.size(); i++) {
-        if (isVarExist(varList[i])) {
-            if (!r.isArgValid(relType, getVarType(varList[i]), "")) {
-                return false;
-            } else {
-                // wm todo: assign accepted s.t. relations into querytree
-                /*}
-                else if (isConstantVar(varList[i])) {
-                }
-                else if (isConstantInteger(varList[i])) {
-                }
-                else if (varList.at(i).compare("_") == 0) {
-                */
-            }
-        } else {
-            return false;
-        }
-    }
-    return true;
-}
+
 
 bool QueryPreprocessor::parsePattern(std::vector<std::string> pattern) {
     std::vector<std::string> patternList;
@@ -288,9 +276,22 @@ bool QueryPreprocessor::parsePattern(std::vector<std::string> pattern) {
         patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET) + 1, patternStr.find_first_of(CHAR_SYMBOL_CLOSEBRACKET));
     std::vector<std::string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
 
-    bool isSuccess = parsePatternRelation(var, argList);
+    // wm todo: rename to parse Relation
+    bool isSuccess = parseRelation(var, argList);
 
     return isSuccess;
+}
+
+bool QueryPreprocessor::isConstantVar(std::string var) {
+    bool isSurroundWithDblQuotes = (var[0] == '"') && (var[var.length() - 1] == '"');
+    bool isUnderscoreExist = (var[1] == '_');
+    bool isSecondUnderscoreExist = (var[var.length() - 2] == '_');
+
+    if (isUnderscoreExist || isSecondUnderscoreExist) {
+        return isSurroundWithDblQuotes && (isUnderscoreExist && isSecondUnderscoreExist);
+    }
+
+    return isSurroundWithDblQuotes;
 }
 
 bool QueryPreprocessor::isVarExist(std::string var) {

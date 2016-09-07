@@ -1,12 +1,16 @@
 #pragma once
 #include <vector>
-
+#include "Constants.h"
 class Clause {
  public:
      Clause();
      ~Clause();
-    static std::vector<Clause*> getClauses();
-
+     bool setClauseType();
+     bool setArg();
+     bool getClauseType();
+     bool getArg();
+     bool getArgCount();
  private:
-    static Clause *clause;
+     Symbol clauseType;
+     std::vector<std::string> argList;
 };
