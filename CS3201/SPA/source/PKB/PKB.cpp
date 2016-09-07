@@ -42,22 +42,19 @@ void PKB::PrintASTTree() {
     AST::getInstance()->printTree();
 }
 
-void PKB::InsertVariable(string variable_name) {
+void PKB::InsertVariable(string variable_name, int line_number) {
 }
 
-void PKB::InsertVariable(vector<string> variable_names) {
+void PKB::InsertVariable(string variable_name, vector<int> line_numbers) {
 }
 
 bool PKB::IsVariableExist(string variable_name) {
 }
 
-void PKB::InsertProcedure(vector<string> procedure_names) {
+void PKB::InsertProcedure(string procedure_name, int line_number) {
 }
 
-void PKB::InsertProcedureLineNumber(string procedure_name, int line_number) {
-}
-
-void PKB::InsertProcedureLineNumber(string procedure_name, vector<int> line_numbers) {
+void PKB::InsertProcedure(string procedure_name, vector<int> line_numbers) {
 }
 
 bool PKB::IsProcedureExist(string procedure_name) {

@@ -4,6 +4,7 @@
 #include <vector>
 #include "Constants.h"
 #include "TreeNode.h"
+#include "PKB/Table.h"
 
 using std::string;
 using std::vector;
@@ -20,12 +21,24 @@ class PKB {
     static TreeNode* CreateASTNode(Symbol symbol, int lineNumber, string value);
     static void PrintASTTree();
 
-    static void InsertVariable(string variable_name);
-    static void InsertVariable(vector<string> variable_names);
+    static Table<string, int> variable_table;
+    static Table<string, int> procedure_table;
+    static Table<int, string> uses_table;
+    static Table<string, string> procedure_uses_table;
+    static Table<int, string> modifies_table;
+    static Table<string, string> procedure_modifies_table;
+    static Table<string, string> calls_table;
+    static Table<string, string> calls_transitive_table;
+    static Table<int, int> parent_table;
+    static Table<int, int> parent_transitive_table;
+    static Table<int, int> follows_table;
+    static Table<int, int> follows_transitive_table;
+
+    static void InsertVariable(string variable_name, int line_number);
+    static void InsertVariable(string variable_name, vector<int> line_numbers);
     static bool IsVariableExist(string variable_name);
-    static void InsertProcedure(vector<string> procedure_names);
-    static void InsertProcedureLineNumber(string procedure_name, int line_number);
-    static void InsertProcedureLineNumber(string procedure_name, vector<int> line_numbers);
+    static void InsertProcedure(string procedure_name, int line_number);
+    static void InsertProcedure(string procedure_name, vector<int> line_numbers);
     static bool IsProcedureExist(string procedure_name);
     static void InsertUses(int line_number, string variable_name);
     static void InsertUses(int line_number, vector<string> variable_names);
