@@ -35,6 +35,7 @@
     <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Clause.cpp" />
     <ClCompile Include="source\Constants.cpp" />
     <ClCompile Include="source\frontend\FrontendParser.cpp" />
     <ClCompile Include="source\PKB\AST.cpp" />

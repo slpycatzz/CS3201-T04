@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "QueryProcessor/RelationTable.h"
+#include "QueryProcessor/QueryTree.h"
 
 const int QUERY_NUM_OF_LINES = 5;
 
@@ -22,13 +23,13 @@ class QueryPreprocessor {
      bool parseSelect(std::vector<std::string> queryList);
 
      bool parseSuchThat(std::vector<std::string> suchThat);
-     bool parseSuchThatRelation(std::string relType, std::vector<std::string> &varList);
-     bool parsePatternRelation(std::string relType, std::vector<std::string>& varList);
+     bool parseRelation(std::string relType, std::vector<std::string> &varList);
      bool parsePattern(std::vector<std::string> pattern);
 
      bool isVarExist(std::string var);
      bool isValidVarName(std::string varName);
      bool isValidVarType(std::string varName);
+     bool isConstantVar(std::string varName);
 
      std::vector<std::string> getNextToken(std::vector<std::string> queryList);
 
@@ -41,4 +42,5 @@ class QueryPreprocessor {
      std::unordered_map<std::string, std::string> relMap;
      std::unordered_map<std::string, std::string> entMap;
      RelationTable r;
+     QueryTree qt;
 };
