@@ -1,0 +1,12 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>AutoTester</name><parsing_time_taken>9.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="pattern 1">1</id><querystr><![CDATA[assign a; Select a pattern a("a",_)]]></querystr>
+<exception/>
+</query>
+</queries>
+</test_results>

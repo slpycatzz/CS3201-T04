@@ -1,0 +1,8 @@
+     
+procedure Init {
+  while a{
+  	x1 = 0 - 1; 
+  } 
+
+  x = 5;
+}

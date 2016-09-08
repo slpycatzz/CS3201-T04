@@ -86,10 +86,10 @@ class PKB {
     static unsigned int numberOfIf_;
     static unsigned int numberOfCall_;
 
-    static Table<unsigned int, std::string> constantTable_;                      /* Array of constant values. */
-    static Table<unsigned int, std::string> variableTable_;                      /* Array of variable names. */
-    static Table<unsigned int, std::string> procedureTable_;                     /* Array of procedure names. */
-    static Table<unsigned int, std::string> stmtTable_;                   /* Map<stmt number, stmt symbol> */
+    static Table<unsigned int, std::string> constantTable_;                     /* map<index, constantValue> */
+    static Table<unsigned int, std::string> variableTable_;                     /* map<index, variableName>  */
+    static Table<unsigned int, std::string> procedureTable_;                    /* map<index, procedureName> */
+    static Table<unsigned int, std::string> stmtTable_;                         /* map<stmtNumber, symbol>   */
 
     //static Table<int, string> uses_table;
     //static Table<string, string> procedure_uses_table;
