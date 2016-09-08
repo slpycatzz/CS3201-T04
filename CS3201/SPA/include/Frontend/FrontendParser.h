@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -38,4 +40,10 @@ class FrontendParser {
     unsigned int lineNumber_;
     unsigned int tokensIndex_;
     std::vector<std::string> tokens_;
+
+    /* Variables to store values to be pass to PKB. */
+    std::set<std::string> constants_;
+    std::set<std::string> variableNames_;
+    std::set<std::string> procedureNames_;
+    std::map<int, std::string> stmts_;
 };

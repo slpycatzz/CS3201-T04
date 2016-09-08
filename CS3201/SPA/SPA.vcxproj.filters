@@ -72,11 +72,14 @@
     <ClInclude Include="include\QueryProcessor\RelationTable.h">
       <Filter>Header Files\QueryProcessor</Filter>
     </ClInclude>
-    <ClInclude Include="include\PKB\Table.h">
-      <Filter>Header Files\PKB</Filter>
-    </ClInclude>
     <ClInclude Include="include\Constants.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PKB\MultimapTable.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PKB\VectorTable.h">
+      <Filter>Header Files\PKB</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

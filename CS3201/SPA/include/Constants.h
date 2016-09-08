@@ -57,6 +57,9 @@ const char CHAR_SYMBOL_CLOSEBRACKET      = ')';
 const char CHAR_SYMBOL_UNDERSCORE        = '_';
 const char CHAR_SYMBOL_COMMA             = ',';
 
+const char QUERY_INVALID[] = "invalid";
+const char QUERY_NONE[]    = "none";
+
 enum Symbol {
     INVALID, UNDEFINED,
     PROGRAM,

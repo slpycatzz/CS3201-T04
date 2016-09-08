@@ -20,6 +20,8 @@ FrontendParser::FrontendParser() {
 
 FrontendParser::~FrontendParser() {}
 
+#include <iostream>
+
 void FrontendParser::parseProgram(string filePath) {
     std::ifstream fileStream(filePath);
 
@@ -36,6 +38,12 @@ void FrontendParser::parseProgram(string filePath) {
     }
 
     PKB::SetASTRoot(callProgramRecognizer());
+
+    /* Tables generation. */
+    PKB::generateConstantTable(constants_);
+    PKB::generateVariableTable(variableNames_);
+    PKB::generateProcedureTable(procedureNames_);
+    PKB::generateStmtTable(stmts_);
 
     // TODO(YH): Recursive call check
     // TODO(YH): Invalid procedure call check (procedure does not exist)
@@ -137,6 +145,9 @@ TreeNode* FrontendParser::callProcedureRecognizer() {
 
     string procedureName = getToken();
 
+    /* For PKB procedure table construction. */
+    this->procedureNames_.insert(procedureName);
+
     /* Node construction. */
     TreeNode* procedureNode = PKB::CreateASTNode(PROCEDURE, procedureName);
     procedureNode->addChild(callStmtListRecognizer());
@@ -166,20 +177,32 @@ TreeNode* FrontendParser::callStmtListRecognizer() {
 TreeNode* FrontendParser::callStmtRecognizer() {
     TreeNode* stmtNode;
 
+    string stmt = "";
+    int lineNumber = lineNumber_;
+
     /* To catch special cases of assign statement where the variable name is same as certain symbols. */
     if (peekForwardTokens(1) == string(1, CHAR_SYMBOL_EQUAL)) {
+        stmt = SYMBOL_ASSIGN;
         stmtNode = callAssignRecognizer();
+
     } else if (accept(SYMBOL_WHILE)) {
+        stmt = SYMBOL_WHILE;
         stmtNode = callWhileRecognizer();
+
     } else if (accept(SYMBOL_IF)) {
-        throw ProgramSyntaxErrorException();
-        //stmtNode = callIfRecognizer();
+        stmt = SYMBOL_IF;
+        throw ProgramSyntaxErrorException(); // stmtNode = callIfRecognizer();
+
     } else if (accept(SYMBOL_CALL)) {
-        throw ProgramSyntaxErrorException();
-        //stmtNode = callCallRecognizer();
+        stmt = SYMBOL_CALL;
+        throw ProgramSyntaxErrorException(); // stmtNode = callCallRecognizer();
+
     } else {
         throw ProgramSyntaxErrorException();
     }
+
+    /* For PKB stmt table construction. */
+    this->stmts_.emplace(lineNumber, stmt);
 
     return stmtNode;
 }
@@ -232,6 +255,9 @@ TreeNode* FrontendParser::callAssignRecognizer() {
     }
 
     string controlVariableName = getToken();
+
+    /* For PKB variable table construction. */
+    this->variableNames_.insert(controlVariableName);
 
     assignNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
 
@@ -291,11 +317,21 @@ TreeNode* FrontendParser::callFactorRecognizer() {
 
     /* Variable. */
     } else if (Utils::IsValidNamingConvention(peekTokens())) {
-        factorNode = PKB::CreateASTNode(VARIABLE, getToken());
+        string variableName = getToken();
+
+        /* For PKB variable table construction. */
+        this->variableNames_.insert(variableName);
+
+        factorNode = PKB::CreateASTNode(VARIABLE, variableName);
 
     /* Constant. */
     } else if (Utils::IsNonNegativeNumeric(peekTokens())) {
-        factorNode = PKB::CreateASTNode(CONSTANT, getToken());
+        string constant = getToken();
+
+        /* For PKB constant table construction. */
+        this->constants_.insert(constant);
+
+        factorNode = PKB::CreateASTNode(CONSTANT, constant);
 
     } else {
         throw ProgramSyntaxErrorException();
