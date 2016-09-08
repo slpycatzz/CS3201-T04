@@ -44,8 +44,8 @@ void Tree::printTreeNode(TreeNode* node, unsigned int indent) {
     if (node != NULL) {
         std::cout << std::setw(indent) << ' ';
 
-        if (node->getLineNumber() != -1) {
-            std::cout << node->getLineNumber() << ". ";
+        if (node->getStmtNumber() != -1) {
+            std::cout << node->getStmtNumber() << ". ";
         }
 
         if (node->getValue() != "") {

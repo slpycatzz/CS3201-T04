@@ -5,24 +5,23 @@
 
 #include "Constants.h"
 #include "PKB/AST.h"
-#include "PKB/MultimapTable.h"
+#include "PKB/Table.h"
 #include "PKB/PKB.h"
-#include "PKB/VectorTable.h"
 #include "TreeNode.h"
 
 using std::string;
 using std::vector;
 
-int PKB::numberOfProcedure = 0;
-int PKB::numberOfAssign    = 0;
-int PKB::numberOfWhile     = 0;
-int PKB::numberOfIf        = 0;
-int PKB::numberOfCall      = 0;
+unsigned int PKB::numberOfProcedure_ = 0;
+unsigned int PKB::numberOfAssign_    = 0;
+unsigned int PKB::numberOfWhile_     = 0;
+unsigned int PKB::numberOfIf_        = 0;
+unsigned int PKB::numberOfCall_      = 0;
 
-VectorTable<string> PKB::constantTable;
-VectorTable<string> PKB::variableTable;
-VectorTable<string> PKB::procedureTable;
-MultimapTable<int, std::string> PKB::stmtTable;
+Table<unsigned int, string> PKB::constantTable_;
+Table<unsigned int, string> PKB::variableTable_;
+Table<unsigned int, string> PKB::procedureTable_;
+Table<unsigned int, string> PKB::stmtTable_;
 
 PKB::PKB() {}
 
@@ -46,12 +45,12 @@ TreeNode* PKB::CreateASTNode(Symbol symbol, string value) {
     return AST::getInstance()->createNode(symbol, value);
 }
 
-TreeNode* PKB::CreateASTNode(Symbol symbol, int lineNumber) {
-    return AST::getInstance()->createNode(symbol, lineNumber);
+TreeNode* PKB::CreateASTNode(Symbol symbol, unsigned int stmtNumber) {
+    return AST::getInstance()->createNode(symbol, stmtNumber);
 }
 
-TreeNode* PKB::CreateASTNode(Symbol symbol, int lineNumber, string value) {
-    return AST::getInstance()->createNode(symbol, lineNumber, value);
+TreeNode* PKB::CreateASTNode(Symbol symbol, unsigned int stmtNumber, string value) {
+    return AST::getInstance()->createNode(symbol, stmtNumber, value);
 }
 
 void PKB::PrintASTTree() {
@@ -62,74 +61,77 @@ void PKB::PrintASTTree() {
 /* START - Constant table functions */
 
 void PKB::generateConstantTable(std::set<string> constants) {
+    unsigned int i = 1;
     for (auto &constant : constants) {
-        constantTable.insert(constant);
+        constantTable_.insert(i++, constant);
     }
 }
 
 void PKB::printConstantTable() {
-    constantTable.printTable();
+    constantTable_.printTable();
 }
 
 /* END   - Constant table functions */
 /* START - Variable table functions */
 
 void PKB::generateVariableTable(std::set<string> variableNames) {
+    unsigned int i = 1;
     for (auto &variableName : variableNames) {
-        variableTable.insert(variableName);
+        variableTable_.insert(i++, variableName);
     }
 }
 
 void PKB::printVariableTable() {
-    variableTable.printTable();
+    variableTable_.printTable();
 }
 
 /* END   - Variable table functions */
 /* START - Procedure table functions */
 
 void PKB::generateProcedureTable(std::set<string> procedureNames) {
+    unsigned int i = 1;
     for (auto &procedureName : procedureNames) {
-        numberOfProcedure++;
-        procedureTable.insert(procedureName);
+        numberOfProcedure_++;
+        procedureTable_.insert(i++, procedureName);
     }
 }
 
 void PKB::printProcedureTable() {
-    procedureTable.printTable();
+    procedureTable_.printTable();
 }
 
 /* END   - Procedure table functions */
 /* START - Stmt table functions */
 
-void PKB::generateStmtTable(std::map<int, string> stmts) {
+void PKB::generateStmtTable(std::map<unsigned int, string> stmts) {
     for (auto &stmt : stmts) {
         switch (Constants::StringToSymbol(stmt.second)) {
             default:
                 break;
 
             case ASSIGN:
-                numberOfAssign++;
+                numberOfAssign_++;
                 break;
 
             case WHILE:
-                numberOfWhile++;
+                numberOfWhile_++;
                 break;
 
             case IF:
-                numberOfIf++;
+                numberOfIf_++;
                 break;
 
             case CALL:
-                numberOfCall++;
+                numberOfCall_++;
                 break;
         }
 
-        stmtTable.insert(stmt.first, stmt.second);
+        stmtTable_.insert(stmt.first, stmt.second);
     }
 }
 
 void PKB::printStmtTable() {
-    stmtTable.printTable();
+    stmtTable_.printTable();
 }
 
 /* END   - Stmt table functions */

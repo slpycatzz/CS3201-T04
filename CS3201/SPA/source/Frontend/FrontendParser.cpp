@@ -15,7 +15,7 @@ using std::vector;
 
 FrontendParser::FrontendParser() {
     this->tokensIndex_ = 0;
-    this->lineNumber_ = 1;
+    this->stmtNumber_ = 1;
 }
 
 FrontendParser::~FrontendParser() {}
@@ -178,7 +178,7 @@ TreeNode* FrontendParser::callStmtRecognizer() {
     TreeNode* stmtNode;
 
     string stmt = "";
-    int lineNumber = lineNumber_;
+    int stmtNumber = stmtNumber_;
 
     /* To catch special cases of assign statement where the variable name is same as certain symbols. */
     if (peekForwardTokens(1) == string(1, CHAR_SYMBOL_EQUAL)) {
@@ -202,13 +202,13 @@ TreeNode* FrontendParser::callStmtRecognizer() {
     }
 
     /* For PKB stmt table construction. */
-    this->stmts_.emplace(lineNumber, stmt);
+    this->stmts_.emplace(stmtNumber, stmt);
 
     return stmtNode;
 }
 
 TreeNode* FrontendParser::callWhileRecognizer() {
-    TreeNode* whileNode = PKB::CreateASTNode(WHILE, lineNumber_++);
+    TreeNode* whileNode = PKB::CreateASTNode(WHILE, stmtNumber_++);
 
     string controlVariableName = getToken();
 
@@ -219,7 +219,7 @@ TreeNode* FrontendParser::callWhileRecognizer() {
 }
 
 TreeNode* FrontendParser::callIfRecognizer() {
-    TreeNode* ifNode = PKB::CreateASTNode(IF, lineNumber_++);
+    TreeNode* ifNode = PKB::CreateASTNode(IF, stmtNumber_++);
 
     string controlVariableName = getToken();
 
@@ -239,7 +239,7 @@ TreeNode* FrontendParser::callIfRecognizer() {
 TreeNode* FrontendParser::callCallRecognizer() {
     string procedureName = getToken();
 
-    TreeNode* callNode = PKB::CreateASTNode(CALL, lineNumber_++, procedureName);
+    TreeNode* callNode = PKB::CreateASTNode(CALL, stmtNumber_++, procedureName);
 
     expect(CHAR_SYMBOL_SEMICOLON);
 
@@ -247,7 +247,7 @@ TreeNode* FrontendParser::callCallRecognizer() {
 }
 
 TreeNode* FrontendParser::callAssignRecognizer() {
-    TreeNode* assignNode = PKB::CreateASTNode(ASSIGN, lineNumber_++);
+    TreeNode* assignNode = PKB::CreateASTNode(ASSIGN, stmtNumber_++);
 
     /* Validate if variable name follows naming convention. */
     if (!Utils::IsValidNamingConvention(peekTokens())) {

@@ -8,25 +8,25 @@ using std::vector;
 
 TreeNode::TreeNode(Symbol symbol) {
     this->symbol_ = symbol;
-    this->lineNumber_ = -1;
+    this->stmtNumber_ = -1;
     this->value_ = "";
 }
 
 TreeNode::TreeNode(Symbol symbol, string value) {
     this->symbol_ = symbol;
-    this->lineNumber_ = -1;
+    this->stmtNumber_ = -1;
     this->value_ = value;
 }
 
-TreeNode::TreeNode(Symbol symbol, int lineNumber) {
+TreeNode::TreeNode(Symbol symbol, unsigned int stmtNumber) {
     this->symbol_ = symbol;
-    this->lineNumber_ = lineNumber;
+    this->stmtNumber_ = stmtNumber;
     this->value_ = "";
 }
 
-TreeNode::TreeNode(Symbol symbol, int lineNumber, string value) {
+TreeNode::TreeNode(Symbol symbol, unsigned int stmtNumber, string value) {
     this->symbol_ = symbol;
-    this->lineNumber_ = lineNumber;
+    this->stmtNumber_ = stmtNumber;
     this->value_ = value;
 }
 
@@ -36,8 +36,8 @@ Symbol TreeNode::getSymbol() {
     return symbol_;
 }
 
-int TreeNode::getLineNumber() {
-    return lineNumber_;
+unsigned int TreeNode::getStmtNumber() {
+    return stmtNumber_;
 }
 
 void TreeNode::setValue(string value) {
@@ -52,7 +52,7 @@ vector<TreeNode*> TreeNode::getChildren() {
     return children_;
 }
 
-int TreeNode::getNumberOfChildren() {
+unsigned int TreeNode::getNumberOfChildren() {
     return children_.size();
 }
 

@@ -37,7 +37,7 @@ class FrontendParser {
     std::string peekForwardTokens(unsigned int index);
     std::string getToken();
 
-    unsigned int lineNumber_;
+    unsigned int stmtNumber_;
     unsigned int tokensIndex_;
     std::vector<std::string> tokens_;
 
@@ -45,5 +45,5 @@ class FrontendParser {
     std::set<std::string> constants_;
     std::set<std::string> variableNames_;
     std::set<std::string> procedureNames_;
-    std::map<int, std::string> stmts_;
+    std::map<unsigned int, std::string> stmts_;
 };

@@ -23,9 +23,8 @@
     <ClInclude Include="include\Exceptions.h" />
     <ClInclude Include="include\frontend\FrontendParser.h" />
     <ClInclude Include="include\PKB\AST.h" />
+    <ClInclude Include="include\PKB\Table.h" />
     <ClInclude Include="include\PKB\PKB.h" />
-    <ClInclude Include="include\PKB\MultimapTable.h" />
-    <ClInclude Include="include\PKB\VectorTable.h" />
     <ClInclude Include="include\QueryProcessor\Clause.h" />
     <ClInclude Include="include\QueryProcessor\QueryEvaluator.h" />
     <ClInclude Include="include\QueryProcessor\QueryPreprocessor.h" />

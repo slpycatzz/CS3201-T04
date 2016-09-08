@@ -6,8 +6,7 @@
 #include <vector>
 
 #include "Constants.h"
-#include "PKB/MultimapTable.h"
-#include "PKB/VectorTable.h"
+#include "PKB/Table.h"
 #include "TreeNode.h"
 
 class PKB {
@@ -19,8 +18,8 @@ class PKB {
     static TreeNode* GetASTRoot();
     static TreeNode* CreateASTNode(Symbol symbol);
     static TreeNode* CreateASTNode(Symbol, std::string value);
-    static TreeNode* CreateASTNode(Symbol symbol, int lineNumber);
-    static TreeNode* CreateASTNode(Symbol symbol, int lineNumber, std::string value);
+    static TreeNode* CreateASTNode(Symbol symbol, unsigned int stmtNumber);
+    static TreeNode* CreateASTNode(Symbol symbol, unsigned int stmtNumber, std::string value);
     static void PrintASTTree();
 
     static void generateConstantTable(std::set<std::string> constants);
@@ -32,7 +31,7 @@ class PKB {
     static void generateProcedureTable(std::set<std::string> procedureNames);
     static void printProcedureTable();
 
-    static void generateStmtTable(std::map<int, std::string> stmts);
+    static void generateStmtTable(std::map<unsigned int, std::string> stmts);
     static void printStmtTable();
 
     //static void InsertVariable(string variable_name, int line_number);
@@ -81,16 +80,16 @@ class PKB {
     //static bool IsFollowsTransitive(int line_number1, vector<int> line_numbers);
 
  private:
-    static int numberOfProcedure;
-    static int numberOfAssign;
-    static int numberOfWhile;
-    static int numberOfIf;
-    static int numberOfCall;
+    static unsigned int numberOfProcedure_;
+    static unsigned int numberOfAssign_;
+    static unsigned int numberOfWhile_;
+    static unsigned int numberOfIf_;
+    static unsigned int numberOfCall_;
 
-    static VectorTable<std::string> constantTable;                      /* Array of constant values. */
-    static VectorTable<std::string> variableTable;                      /* Array of variable names. */
-    static VectorTable<std::string> procedureTable;                     /* Array of procedure names. */
-    static MultimapTable<int, std::string> stmtTable;                   /* Map<stmt number, stmt symbol> */
+    static Table<unsigned int, std::string> constantTable_;                      /* Array of constant values. */
+    static Table<unsigned int, std::string> variableTable_;                      /* Array of variable names. */
+    static Table<unsigned int, std::string> procedureTable_;                     /* Array of procedure names. */
+    static Table<unsigned int, std::string> stmtTable_;                   /* Map<stmt number, stmt symbol> */
 
     //static Table<int, string> uses_table;
     //static Table<string, string> procedure_uses_table;
