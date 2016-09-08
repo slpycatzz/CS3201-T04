@@ -6,6 +6,8 @@
 #include "Tree.h"
 #include "TreeNode.h"
 
+using std::string;
+
 Tree::Tree() {}
 
 Tree::~Tree() {}
@@ -22,7 +24,7 @@ TreeNode* Tree::createNode(Symbol symbol) {
     return new TreeNode(symbol);
 }
 
-TreeNode* Tree::createNode(Symbol symbol, std::string value) {
+TreeNode* Tree::createNode(Symbol symbol, string value) {
     return new TreeNode(symbol, value);
 }
 
@@ -30,7 +32,7 @@ TreeNode* Tree::createNode(Symbol symbol, int lineNumber) {
     return new TreeNode(symbol, lineNumber);
 }
 
-TreeNode* Tree::createNode(Symbol symbol, int lineNumber, std::string value) {
+TreeNode* Tree::createNode(Symbol symbol, int lineNumber, string value) {
     return new TreeNode(symbol, lineNumber, value);
 }
 

@@ -3,13 +3,16 @@
 
 #include "TreeNode.h"
 
+using std::string;
+using std::vector;
+
 TreeNode::TreeNode(Symbol symbol) {
     this->symbol_ = symbol;
     this->lineNumber_ = -1;
     this->value_ = "";
 }
 
-TreeNode::TreeNode(Symbol symbol, std::string value) {
+TreeNode::TreeNode(Symbol symbol, string value) {
     this->symbol_ = symbol;
     this->lineNumber_ = -1;
     this->value_ = value;
@@ -21,7 +24,7 @@ TreeNode::TreeNode(Symbol symbol, int lineNumber) {
     this->value_ = "";
 }
 
-TreeNode::TreeNode(Symbol symbol, int lineNumber, std::string value) {
+TreeNode::TreeNode(Symbol symbol, int lineNumber, string value) {
     this->symbol_ = symbol;
     this->lineNumber_ = lineNumber;
     this->value_ = value;
@@ -37,15 +40,15 @@ int TreeNode::getLineNumber() {
     return lineNumber_;
 }
 
-void TreeNode::setValue(std::string value) {
+void TreeNode::setValue(string value) {
     this->value_ = value;
 }
 
-std::string TreeNode::getValue() {
+string TreeNode::getValue() {
     return value_;
 }
 
-std::vector<TreeNode*> TreeNode::getChildren() {
+vector<TreeNode*> TreeNode::getChildren() {
     return children_;
 }
 

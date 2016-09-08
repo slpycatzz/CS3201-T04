@@ -4,24 +4,27 @@
 
 #include "Utils.h"
 
-std::vector<std::string> Utils::Split(std::string str, char delimiter) {
-    std::vector<std::string> result;
+using std::string;
+using std::vector;
+
+vector<string> Utils::Split(string str, char delimiter) {
+    vector<string> result;
     
     Utils::Split(str, delimiter, result);
 
     return result;
 }
 
-std::vector<std::string> Utils::SplitAndIgnoreEmpty(std::string str, char delimiter) {
-    std::vector<std::string> result;
+vector<string> Utils::SplitAndIgnoreEmpty(string str, char delimiter) {
+    vector<string> result;
 
     Utils::SplitAndIgnoreEmpty(str, delimiter, result);
 
     return result;
 }
 
-void Utils::Split(std::string str, char delimiter, std::vector<std::string> &target) {
-    std::string temp;
+void Utils::Split(string str, char delimiter, vector<string> &target) {
+    string temp;
     std::istringstream stringStream;
 
     stringStream.str(str);
@@ -30,8 +33,8 @@ void Utils::Split(std::string str, char delimiter, std::vector<std::string> &tar
     }
 }
 
-void Utils::SplitAndIgnoreEmpty(std::string str, char delimiter, std::vector<std::string> & target) {
-    std::string temp;
+void Utils::SplitAndIgnoreEmpty(string str, char delimiter, vector<string> & target) {
+    string temp;
     std::istringstream stringStream;
 
     stringStream.str(str);
@@ -42,36 +45,36 @@ void Utils::SplitAndIgnoreEmpty(std::string str, char delimiter, std::vector<std
     }
 }
 
-std::string Utils::TrimSpaces(std::string str) {
+string Utils::TrimSpaces(string str) {
     str = Utils::TrimLeadingSpaces(str);
     str = Utils::TrimTrailingSpaces(str);
 
     return str;
 }
 
-std::string Utils::TrimLeadingSpaces(std::string str) {
+string Utils::TrimLeadingSpaces(string str) {
     int position = str.find_first_not_of(" \t");
-    if (position == std::string::npos) {
+    if (position == string::npos) {
         return (str.find_last_of(" \t") == (str.size() - 1)) ? "" : str;
     }
 
     return str.substr(position);
 }
 
-std::string Utils::TrimTrailingSpaces(std::string str) {
+string Utils::TrimTrailingSpaces(string str) {
     int position = str.find_last_not_of(" \t");
-    if (position == std::string::npos) {
+    if (position == string::npos) {
         return (str.find_last_of(" \t") == (str.size() - 1)) ? "" : str;
     }
 
     return str.substr(0, position + 1);
 }
 
-bool Utils::IsValidNamingConvention(std::string str) {
+bool Utils::IsValidNamingConvention(string str) {
     return StartsWithAlphabet(str) && IsAlphanumeric(str);
 }
 
-bool Utils::IsAlphanumeric(std::string str) {
+bool Utils::IsAlphanumeric(string str) {
     for (unsigned int i = 0; i < str.length(); i++) {
         if (!isalnum(str[i])) {
             return false;
@@ -81,7 +84,7 @@ bool Utils::IsAlphanumeric(std::string str) {
     return true;
 }
 
-bool Utils::IsNonNegativeNumeric(std::string str) {
+bool Utils::IsNonNegativeNumeric(string str) {
     for (unsigned int i = 0; i < str.length(); i++) {
         if (!isdigit(str[i])) {
             return false;
@@ -91,6 +94,6 @@ bool Utils::IsNonNegativeNumeric(std::string str) {
     return true;
 }
 
-bool Utils::StartsWithAlphabet(std::string str) {
+bool Utils::StartsWithAlphabet(string str) {
     return (isalpha(str[0])) ? true : false;
 }

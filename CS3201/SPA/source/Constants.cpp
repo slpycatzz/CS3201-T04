@@ -2,21 +2,23 @@
 
 #include "Constants.h"
 
+using std::string;
+
 const char PREPROCESS_FORMAT[] = " _ ";             /* Underscore denotes the position to replace. */
 
-std::string Constants::GetPreprocessFormat(const char symbol) {
-    std::string format = PREPROCESS_FORMAT;
+string Constants::GetPreprocessFormat(const char symbol) {
+    string format = PREPROCESS_FORMAT;
 
-    return format.replace(1, 1, std::string(1, symbol));
+    return format.replace(1, 1, string(1, symbol));
 }
 
-std::string Constants::GetPreprocessFormat(std::string symbol) {
-    std::string format = PREPROCESS_FORMAT;
+string Constants::GetPreprocessFormat(string symbol) {
+    string format = PREPROCESS_FORMAT;
 
     return format.replace(1, 1, symbol);
 }
 
-std::string Constants::SymbolToString(Symbol symbol) {
+string Constants::SymbolToString(Symbol symbol) {
     switch (symbol) {
         default:
         case INVALID:      return SYMBOL_INVALID;
@@ -56,10 +58,10 @@ std::string Constants::SymbolToString(Symbol symbol) {
         case VALUE:        return SYMBOL_VALUE;
         case STMTNUMBER:   return SYMBOL_STMTNUMBER;
 
-        case PLUS:         return std::string(1, CHAR_SYMBOL_PLUS);
-        case MINUS:        return std::string(1, CHAR_SYMBOL_MINUS);
-        case MULTIPLY:     return std::string(1, CHAR_SYMBOL_MULTIPLY);
-        case UNDERSCORE:   return std::string(1, CHAR_SYMBOL_UNDERSCORE);
+        case PLUS:         return string(1, CHAR_SYMBOL_PLUS);
+        case MINUS:        return string(1, CHAR_SYMBOL_MINUS);
+        case MULTIPLY:     return string(1, CHAR_SYMBOL_MULTIPLY);
+        case UNDERSCORE:   return string(1, CHAR_SYMBOL_UNDERSCORE);
 
         /* Unused for symbol to string conversion. */
         case QUERY_RESULT:
@@ -68,7 +70,7 @@ std::string Constants::SymbolToString(Symbol symbol) {
     }
 }
 
-Symbol Constants::StringToSymbol(std::string str) {
+Symbol Constants::StringToSymbol(string str) {
     if (str == SYMBOL_PROGRAM)   return PROGRAM;
     if (str == SYMBOL_PROCEDURE) return PROCEDURE;
     if (str == SYMBOL_STMTLIST)  return STMTLIST;
@@ -105,10 +107,10 @@ Symbol Constants::StringToSymbol(std::string str) {
     if (str == SYMBOL_VALUE)      return VALUE;
     if (str == SYMBOL_STMTNUMBER) return STMTNUMBER;
 
-    if (str == std::string(1, CHAR_SYMBOL_PLUS))       return PLUS;
-    if (str == std::string(1, CHAR_SYMBOL_MINUS))      return MINUS;
-    if (str == std::string(1, CHAR_SYMBOL_MULTIPLY))   return MULTIPLY;
-    if (str == std::string(1, CHAR_SYMBOL_UNDERSCORE)) return UNDERSCORE;
+    if (str == string(1, CHAR_SYMBOL_PLUS))       return PLUS;
+    if (str == string(1, CHAR_SYMBOL_MINUS))      return MINUS;
+    if (str == string(1, CHAR_SYMBOL_MULTIPLY))   return MULTIPLY;
+    if (str == string(1, CHAR_SYMBOL_UNDERSCORE)) return UNDERSCORE;
 
     /* Support symbols that have no string conversion. */
     if (str.empty()) return UNDEFINED;

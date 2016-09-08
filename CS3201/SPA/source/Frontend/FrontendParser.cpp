@@ -10,6 +10,9 @@
 #include "TreeNode.h"
 #include "Utils.h"
 
+using std::string;
+using std::vector;
+
 FrontendParser::FrontendParser() {
     this->tokensIndex_ = 0;
     this->lineNumber_ = 1;
@@ -17,7 +20,7 @@ FrontendParser::FrontendParser() {
 
 FrontendParser::~FrontendParser() {}
 
-void FrontendParser::parseProgram(std::string filePath) {
+void FrontendParser::parseProgram(string filePath) {
     std::ifstream fileStream(filePath);
 
     /* Validate if file exists. */
@@ -25,7 +28,7 @@ void FrontendParser::parseProgram(std::string filePath) {
         throw FileNotFoundException();
     }
 
-    std::vector<std::string> programLines = preprocessProgramLines(fileStream);
+    vector<string> programLines = preprocessProgramLines(fileStream);
 
     /* Split program lines into tokens. */
     for (const auto &programLine : programLines) {
@@ -38,16 +41,16 @@ void FrontendParser::parseProgram(std::string filePath) {
     // TODO(YH): Invalid procedure call check (procedure does not exist)
 }
 
-std::vector<std::string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream) {
-    std::string currentLine;
-    std::vector<std::string> programLines;
+vector<string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream) {
+    string currentLine;
+    vector<string> programLines;
 
     while (std::getline(fileStream, currentLine)) {
         int position;
 
         /* If there are any comments in the program line, remove it. */
         position = currentLine.find(SYMBOL_COMMENT);
-        if (position != std::string::npos) {
+        if (position != string::npos) {
             currentLine = currentLine.substr(0, position);
         }
 
@@ -132,7 +135,7 @@ TreeNode* FrontendParser::callProcedureRecognizer() {
         throw ProgramSyntaxErrorException();
     }
 
-    std::string procedureName = getToken();
+    string procedureName = getToken();
 
     /* Node construction. */
     TreeNode* procedureNode = PKB::CreateASTNode(PROCEDURE, procedureName);
@@ -146,7 +149,7 @@ TreeNode* FrontendParser::callStmtListRecognizer() {
 
     /* Node construction. */
     TreeNode* stmtListNode = PKB::CreateASTNode(STMTLIST);
-    while (peekTokens() != std::string(1, CHAR_SYMBOL_CLOSECURLYBRACKET)) {
+    while (peekTokens() != string(1, CHAR_SYMBOL_CLOSECURLYBRACKET)) {
         stmtListNode->addChild(callStmtRecognizer());
     }
 
@@ -164,14 +167,16 @@ TreeNode* FrontendParser::callStmtRecognizer() {
     TreeNode* stmtNode;
 
     /* To catch special cases of assign statement where the variable name is same as certain symbols. */
-    if (peekForwardTokens(1) == std::string(1, CHAR_SYMBOL_EQUAL)) {
+    if (peekForwardTokens(1) == string(1, CHAR_SYMBOL_EQUAL)) {
         stmtNode = callAssignRecognizer();
     } else if (accept(SYMBOL_WHILE)) {
         stmtNode = callWhileRecognizer();
     } else if (accept(SYMBOL_IF)) {
-        stmtNode = callIfRecognizer();
+        throw ProgramSyntaxErrorException();
+        //stmtNode = callIfRecognizer();
     } else if (accept(SYMBOL_CALL)) {
-        stmtNode = callCallRecognizer();
+        throw ProgramSyntaxErrorException();
+        //stmtNode = callCallRecognizer();
     } else {
         throw ProgramSyntaxErrorException();
     }
@@ -182,7 +187,7 @@ TreeNode* FrontendParser::callStmtRecognizer() {
 TreeNode* FrontendParser::callWhileRecognizer() {
     TreeNode* whileNode = PKB::CreateASTNode(WHILE, lineNumber_++);
 
-    std::string controlVariableName = getToken();
+    string controlVariableName = getToken();
 
     whileNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
     whileNode->addChild(callStmtListRecognizer());
@@ -193,7 +198,7 @@ TreeNode* FrontendParser::callWhileRecognizer() {
 TreeNode* FrontendParser::callIfRecognizer() {
     TreeNode* ifNode = PKB::CreateASTNode(IF, lineNumber_++);
 
-    std::string controlVariableName = getToken();
+    string controlVariableName = getToken();
 
     ifNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
 
@@ -209,7 +214,7 @@ TreeNode* FrontendParser::callIfRecognizer() {
 }
 
 TreeNode* FrontendParser::callCallRecognizer() {
-    std::string procedureName = getToken();
+    string procedureName = getToken();
 
     TreeNode* callNode = PKB::CreateASTNode(CALL, lineNumber_++, procedureName);
 
@@ -226,7 +231,7 @@ TreeNode* FrontendParser::callAssignRecognizer() {
         throw ProgramSyntaxErrorException();
     }
 
-    std::string controlVariableName = getToken();
+    string controlVariableName = getToken();
 
     assignNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
 
@@ -299,7 +304,7 @@ TreeNode* FrontendParser::callFactorRecognizer() {
     return factorNode;
 }
 
-void FrontendParser::expect(std::string token) {
+void FrontendParser::expect(string token) {
     if (!accept(token)) {
         throw ProgramSyntaxErrorException();
     }
@@ -311,7 +316,7 @@ void FrontendParser::expect(char token) {
     }
 }
 
-bool FrontendParser::accept(std::string token) {
+bool FrontendParser::accept(string token) {
     if (peekTokens() == token) {
         getToken();
         return true;
@@ -321,7 +326,7 @@ bool FrontendParser::accept(std::string token) {
 }
 
 bool FrontendParser::accept(char token) {
-    if (peekTokens() == std::string(1, token)) {
+    if (peekTokens() == string(1, token)) {
         getToken();
         return true;
     }
@@ -329,16 +334,16 @@ bool FrontendParser::accept(char token) {
     return false;
 }
 
-std::string FrontendParser::peekTokens() {
+string FrontendParser::peekTokens() {
     return peekForwardTokens(0);
 }
 
-std::string FrontendParser::peekForwardTokens(unsigned int index) {
+string FrontendParser::peekForwardTokens(unsigned int index) {
     unsigned int forwardIndex = this->tokensIndex_ + index;
 
     return (forwardIndex >= this->tokens_.size()) ? "" : this->tokens_[forwardIndex];
 }
 
-std::string FrontendParser::getToken() {
+string FrontendParser::getToken() {
     return this->tokens_[this->tokensIndex_++];
 }
