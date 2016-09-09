@@ -7,6 +7,7 @@
 
 #include "Constants.h"
 #include "PKB/Table.h"
+#include "PKB/TransitiveTable.h"
 #include "TreeNode.h"
 
 class PKB {
@@ -37,11 +38,7 @@ class PKB {
     static void GenerateParentTable(std::map<unsigned int, std::set<unsigned int>> parent);
     static void PrintParentTable();
 
-    //static void InsertVariable(string variable_name, int line_number);
-    //static void InsertVariable(string variable_name, vector<int> line_numbers);
     //static bool IsVariableExist(string variable_name);
-    //static void InsertProcedure(string procedure_name, int line_number);
-    //static void InsertProcedure(string procedure_name, vector<int> line_numbers);
     //static bool IsProcedureExist(string procedure_name);
     //static void InsertUses(int line_number, string variable_name);
     //static void InsertUses(int line_number, vector<string> variable_names);
@@ -65,10 +62,7 @@ class PKB {
     //static void InsertCallsTransitive(string procedure_name1, vector<string> procedure_names);
     //static bool IsCalls(string procedure_name1, string procedure_name2);
     //static bool IsCallsTransitive(string procedure_name1, string procedure_name2);
-    //static void InsertParent(int line_number1, int line_number2);
-    //static void InsertParent(int line_number1, vector<int> line_numbers);
-    //static void InsertParentTransitive(int line_number1, int line_number2);
-    //static void InsertParentTransitive(int line_number1, vector<int> line_numbers);
+
     //static bool IsParent(int line_number1, int line_number2);
     //static bool IsParent(int line_number1, vector<int> line_numbers);
     //static bool IsParentTransitive(int line_number1, int line_number2);
@@ -89,19 +83,19 @@ class PKB {
     static unsigned int numberOfIf_;
     static unsigned int numberOfCall_;
 
-    static Table<unsigned int, std::string> constantTable_;                     /* map<index, constantValue> */
-    static Table<unsigned int, std::string> variableTable_;                     /* map<index, variableName>  */
-    static Table<unsigned int, std::string> procedureTable_;                    /* map<index, procedureName> */
-    static Table<unsigned int, std::string> stmtTable_;                         /* map<stmtNumber, symbol>   */
+    static Table<unsigned int, std::string> constantTable_;                         /* map<index, constantValue> */
+    static Table<unsigned int, std::string> variableTable_;                         /* map<index, variableName>  */
+    static Table<unsigned int, std::string> procedureTable_;                        /* map<index, procedureName> */
+    static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbol>   */
 
-    static Table<unsigned int, std::string> modifiesTable_;                     /* map<stmtNumber, set(variableName)>    */
-    static Table<unsigned int, std::string> modifiesProcedureTable_;            /* map<procedureName, set(variableName)> */
+    static Table<unsigned int, std::string> modifiesTable_;                         /* map<stmtNumber, set(variableName)>    */
+    static Table<unsigned int, std::string> modifiesProcedureTable_;                /* map<procedureName, set(variableName)> */
 
-    static Table<unsigned int, std::string> usesTable_;                         /* map<stmtNumber, set(variableName)>    */
-    static Table<unsigned int, std::string> usesProcedureTable_;                /* map<procedureName, set(variableName)> */
+    static Table<unsigned int, std::string> usesTable_;                             /* map<stmtNumber, set(variableName)>    */
+    static Table<unsigned int, std::string> usesProcedureTable_;                    /* map<procedureName, set(variableName)> */
 
-    static Table<unsigned int, unsigned int> parentTable_;                      /* map<stmtNumber, set(stmtNumber)> */
-    static Table<unsigned int, unsigned int> parentTransitiveTable_;            /* map<stmtNumber, set(stmtNumber)> */
+    static Table<unsigned int, unsigned int> parentTable_;                          /* map<stmtNumber, set(stmtNumber)> */
+    static TransitiveTable<unsigned int, unsigned int> parentTransitiveTable_;      /* map<stmtNumber, set(stmtNumber)> */
 
     //static Table<string, string> calls_table;
     //static Table<string, string> calls_transitive_table;

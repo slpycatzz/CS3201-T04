@@ -7,6 +7,7 @@
 #include "PKB/AST.h"
 #include "PKB/PKB.h"
 #include "PKB/Table.h"
+#include "PKB/TransitiveTable.h"
 #include "TreeNode.h"
 
 using std::map;
@@ -32,7 +33,7 @@ Table<unsigned int, string> PKB::usesTable_;
 Table<unsigned int, string> PKB::usesProcedureTable_;
 
 Table<unsigned int, unsigned int> PKB::parentTable_;
-Table<unsigned int, unsigned int> PKB::parentTransitiveTable_;
+TransitiveTable<unsigned int, unsigned int> PKB::parentTransitiveTable_;
 
 PKB::PKB() {}
 
@@ -152,6 +153,9 @@ void PKB::GenerateParentTable(map<unsigned int, set<unsigned int>> parent) {
     for (auto &pair : parent) {
         parentTable_.insert(pair.first, pair.second);
     }
+
+    parentTransitiveTable_.generateKeyToValueTransitiveMap(parentTable_);
+    parentTransitiveTable_.generateValueToKeyTransitiveMap(parentTable_);
 }
 
 void PKB::PrintParentTable() {
@@ -272,15 +276,6 @@ void PKB::PrintParentTable() {
 //}
 
 
-//void PKB::InsertParentTransitive(int line_number1, int line_number2) {
-//  PKB::parent_transitive_table.insert(line_number1, line_number2);
-//}
-//
-//void PKB::InsertParentTransitive(int line_number1, vector<int> line_numbers) {
-//  for (auto line_number2 : line_numbers) {
-//    PKB::InsertParentTransitive(line_number1, line_number2);
-//  }
-//}
 //// TODO(pixelducky): update this impl
 //bool PKB::IsParent(int line_number1, int line_number2) {
 //  return false;

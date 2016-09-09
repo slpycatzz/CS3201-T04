@@ -3,6 +3,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <utility>
 
 template<typename K, typename V>
 class Table {
@@ -14,9 +15,9 @@ class Table {
         keyToValueMap[key].insert(value);
         valueToKeyMap[value].insert(key);
     }
-    
+
     inline void insert(K key, std::set<V> values) {
-        keyToValueMap.insert(std::pair<K, std::set<V>>(key, values));
+        keyToValueMap.insert(std::make_pair(key, values));
 
         for (auto &value : values) {
             valueToKeyMap[value].insert(key);
@@ -24,35 +25,51 @@ class Table {
     }
 
     inline void insert(std::set<K> keys, V value) {
-        valueToKeyMap.insert(std::pair<V, std::set<K>>(value, keys));
+        valueToKeyMap.insert(std::make_pair(value, keys));
 
         for (auto &key : keys) {
             keyToValueMap[key].insert(value);
         }
     }
 
-    inline bool hasKeyValue(K key, V value) {
-        std::set<V> values = keyToValueMap[key];
+    inline std::set<V> getValues(K key) {
+        /* If does not exist, return empty set. */
+        if (!hasKey(key)) {
+            return std::set<V>();
+        }
 
-        return (find(values.begin(), values.end(), value) != values.end());
+        return keyToValueMap[key];
     }
 
     inline std::set<K> getKeys(V value) {
         /* If does not exist, return empty set. */
-        if (valueToKeyMap.find(value) == valueToKeyMap.end()) {
+        if (!hasValue(value)) {
             return std::set<K>();
         }
 
         return valueToKeyMap[value];
     }
 
-    inline std::set<V> getValues(K key) {
-        /* If does not exist, return empty set. */
-        if (keyToValueMap.find(key) == keyToValueMap.end()) {
-            return std::set<V>();
-        }
+    inline std::map<K, std::set<V>> getKeyToValueMap() {
+        return keyToValueMap;
+    }
 
-        return keyToValueMap[key];
+    inline std::map<V, std::set<K>> getValueToKeyMap() {
+        return valueToKeyMap;
+    }
+
+    inline bool hasKey(K key) {
+        return (keyToValueMap.find(key) != keyToValueMap.end());
+    }
+
+    inline bool hasValue(V value) {
+        return (valueToKeyMap.find(value) != valueToKeyMap.end());
+    }
+
+    inline bool hasKeyValue(K key, V value) {
+        std::set<V> values = keyToValueMap[key];
+
+        return (find(values.begin(), values.end(), value) != values.end());
     }
 
     inline void printTable() {

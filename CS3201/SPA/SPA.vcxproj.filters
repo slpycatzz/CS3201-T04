@@ -78,6 +78,9 @@
     <ClInclude Include="include\PKB\Table.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
+    <ClInclude Include="include\PKB\TransitiveTable.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Utils.cpp">
