@@ -17,8 +17,6 @@ using std::set;
 using std::string;
 using std::vector;
 
-#include <iostream>
-
 FrontendParser::FrontendParser() {
     stmtNumber_ = 1;
     tokensIndex_ = 0;
@@ -53,12 +51,15 @@ void FrontendParser::parseProgram(string filePath) {
 
     /* Generate data for design abstraction table generation. */
     setModifies();
+    setUses();
     setParent();
     setFollows();
 
     /* Design abstraction tables generation. */
     PKB::GenerateModifiesTable(modifies_);
     PKB::GenerateModifiesProcedureTable(modifiesProcedure_);
+    PKB::GenerateUsesTable(uses_);
+    PKB::GenerateUsesProcedureTable(usesProcedure_);
     PKB::GenerateParentTable(parent_);
     PKB::GenerateFollowsTable(follows_);
 
@@ -239,6 +240,9 @@ TreeNode* FrontendParser::callWhileRecognizer() {
     /* For PKB variable table generation. */
     variableNames_.push_back(controlVariableName);
 
+    /* For PKB uses table generation. */
+    uses_[stmtNumber_ - 1].insert(controlVariableName);
+
     whileNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
     whileNode->addChild(callStmtListRecognizer());
 
@@ -252,6 +256,9 @@ TreeNode* FrontendParser::callIfRecognizer() {
 
     /* For PKB variable table generation. */
     variableNames_.push_back(controlVariableName);
+
+    /* For PKB uses table generation. */
+    uses_[stmtNumber_ - 1].insert(controlVariableName);
 
     ifNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
 
@@ -356,6 +363,9 @@ TreeNode* FrontendParser::callFactorRecognizer() {
         /* For PKB variable table generation. */
         variableNames_.push_back(variableName);
 
+        /* For PKB uses table generation. */
+        uses_[stmtNumber_ - 1].insert(variableName);
+
         factorNode = PKB::CreateASTNode(VARIABLE, variableName);
 
     /* Constant. */
@@ -442,7 +452,40 @@ void FrontendParser::setModifies() {
         }
     }
 
-    modifies_.insert(modifiesContainers.begin(), modifiesContainers.end());
+    for (auto &pair : modifiesContainers) {
+        set<string> variableNames = pair.second;
+        modifies_[pair.first].insert(variableNames.begin(), variableNames.end());
+    }
+}
+
+void FrontendParser::setUses() {
+    map<unsigned int, set<string>> usesContainers;
+
+    for (const auto &pair : uses_) {
+        unsigned int stmtNumber = pair.first;
+        set<string> variableNames = pair.second;
+
+        if (stmtsLevels_.at(stmtNumber - 1) != 1) {
+            unsigned int parentStmtNumber = getParentOfStmtNumber(stmtNumber);
+
+            while (parentStmtNumber > 0) {
+                usesContainers[parentStmtNumber].insert(variableNames.begin(), variableNames.end());
+                parentStmtNumber = getParentOfStmtNumber(parentStmtNumber);
+            }
+        }
+
+        for (int i = proceduresFirstStmt_.size() - 1; i >= 0; i--) {
+            if (proceduresFirstStmt_[i] < stmtNumber) {
+                usesProcedure_[procedureNames_[i]].insert(variableNames.begin(), variableNames.end());
+                break;
+            }
+        }
+    }
+
+    for (auto &pair : usesContainers) {
+        set<string> variableNames = pair.second;
+        uses_[pair.first].insert(variableNames.begin(), variableNames.end());
+    }
 }
 
 void FrontendParser::setParent() {

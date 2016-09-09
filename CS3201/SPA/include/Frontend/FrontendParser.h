@@ -38,6 +38,7 @@ class FrontendParser {
     std::string getToken();
 
     void setModifies();
+    void setUses();
     void setParent();
     void setFollows();
 
@@ -65,7 +66,8 @@ class FrontendParser {
     /* For PKB design abstraction table generation. */
     std::map<unsigned int, std::set<std::string>> modifies_;
     std::map<std::string, std::set<std::string>> modifiesProcedure_;
-    std::map<unsigned int, std::string> uses_;
+    std::map<unsigned int, std::set<std::string>> uses_;
+    std::map<std::string, std::set<std::string>> usesProcedure_;
     std::map<unsigned int, std::set<unsigned int>> parent_;
     std::map<unsigned int, unsigned int> follows_;
 };

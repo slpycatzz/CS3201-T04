@@ -40,6 +40,11 @@ class PKB {
     static void PrintModifiesTable();
     static void PrintModifiesProcedureTable();
 
+    static void GenerateUsesTable(std::map<unsigned int, std::set<std::string>> uses);
+    static void GenerateUsesProcedureTable(std::map<std::string, std::set<std::string>> usesProcedure);
+    static void PrintUsesTable();
+    static void PrintUsesProcedureTable();
+
     static void GenerateParentTable(std::map<unsigned int, std::set<unsigned int>> parent);
     static void PrintParentTable();
     static void PrintParentTransitiveTable();
@@ -50,10 +55,8 @@ class PKB {
 
     //static bool IsVariableExist(string variable_name);
     //static bool IsProcedureExist(string procedure_name);
-    //static void InsertUses(int line_number, string variable_name);
-    //static void InsertUses(int line_number, vector<string> variable_names);
-    //static void InsertUses(string procedure_name, string variable_name);
-    //static void InsertUses(string procedure_name, vector<string> variable_names);
+
+
     //static vector<string> UsesVariable(int line_number);
     //static vector<string> UsesVariable(string procedure_name);
     //static vector<int> UsedByLineNumber(string variable_name);
