@@ -34,6 +34,9 @@ class PKB {
     static void GenerateStmtTable(std::map<unsigned int, std::string> stmts);
     static void PrintStmtTable();
 
+    static void GenerateParentTable(std::map<unsigned int, std::set<unsigned int>> parent);
+    static void PrintParentTable();
+
     //static void InsertVariable(string variable_name, int line_number);
     //static void InsertVariable(string variable_name, vector<int> line_numbers);
     //static bool IsVariableExist(string variable_name);
@@ -91,17 +94,17 @@ class PKB {
     static Table<unsigned int, std::string> procedureTable_;                    /* map<index, procedureName> */
     static Table<unsigned int, std::string> stmtTable_;                         /* map<stmtNumber, symbol>   */
 
-    static Table<unsigned int, std::string> modifiesTable_;
-    static Table<unsigned int, std::string> modifiesProcedureTable_;
+    static Table<unsigned int, std::string> modifiesTable_;                     /* map<stmtNumber, set(variableName)>    */
+    static Table<unsigned int, std::string> modifiesProcedureTable_;            /* map<procedureName, set(variableName)> */
 
-    //static Table<int, string> uses_table;
-    //static Table<string, string> procedure_uses_table;
-    //static Table<int, string> modifies_table;
-    //static Table<string, string> procedure_modifies_table;
+    static Table<unsigned int, std::string> usesTable_;                         /* map<stmtNumber, set(variableName)>    */
+    static Table<unsigned int, std::string> usesProcedureTable_;                /* map<procedureName, set(variableName)> */
+
+    static Table<unsigned int, unsigned int> parentTable_;                      /* map<stmtNumber, set(stmtNumber)> */
+    static Table<unsigned int, unsigned int> parentTransitiveTable_;            /* map<stmtNumber, set(stmtNumber)> */
+
     //static Table<string, string> calls_table;
     //static Table<string, string> calls_transitive_table;
-    //static Table<int, int> parent_table;
-    //static Table<int, int> parent_transitive_table;
     //static Table<int, int> follows_table;
     //static Table<int, int> follows_transitive_table;
 };

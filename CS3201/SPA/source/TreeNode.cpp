@@ -7,27 +7,27 @@ using std::string;
 using std::vector;
 
 TreeNode::TreeNode(Symbol symbol) {
-    this->symbol_ = symbol;
-    this->stmtNumber_ = -1;
-    this->value_ = "";
+    symbol_ = symbol;
+    stmtNumber_ = -1;
+    value_ = "";
 }
 
 TreeNode::TreeNode(Symbol symbol, string value) {
-    this->symbol_ = symbol;
-    this->stmtNumber_ = -1;
-    this->value_ = value;
+    symbol_ = symbol;
+    stmtNumber_ = -1;
+    value_ = value;
 }
 
 TreeNode::TreeNode(Symbol symbol, unsigned int stmtNumber) {
-    this->symbol_ = symbol;
-    this->stmtNumber_ = stmtNumber;
-    this->value_ = "";
+    symbol_ = symbol;
+    stmtNumber_ = stmtNumber;
+    value_ = "";
 }
 
 TreeNode::TreeNode(Symbol symbol, unsigned int stmtNumber, string value) {
-    this->symbol_ = symbol;
-    this->stmtNumber_ = stmtNumber;
-    this->value_ = value;
+    symbol_ = symbol;
+    stmtNumber_ = stmtNumber;
+    value_ = value;
 }
 
 TreeNode::~TreeNode() {}
@@ -41,7 +41,7 @@ unsigned int TreeNode::getStmtNumber() {
 }
 
 void TreeNode::setValue(string value) {
-    this->value_ = value;
+    value_ = value;
 }
 
 string TreeNode::getValue() {

@@ -9,6 +9,8 @@
 #include "PKB/Table.h"
 #include "TreeNode.h"
 
+using std::map;
+using std::set;
 using std::string;
 using std::vector;
 
@@ -22,6 +24,15 @@ Table<unsigned int, string> PKB::constantTable_;
 Table<unsigned int, string> PKB::variableTable_;
 Table<unsigned int, string> PKB::procedureTable_;
 Table<unsigned int, string> PKB::stmtTable_;
+
+Table<unsigned int, string> PKB::modifiesTable_;
+Table<unsigned int, string> PKB::modifiesProcedureTable_;
+
+Table<unsigned int, string> PKB::usesTable_;
+Table<unsigned int, string> PKB::usesProcedureTable_;
+
+Table<unsigned int, unsigned int> PKB::parentTable_;
+Table<unsigned int, unsigned int> PKB::parentTransitiveTable_;
 
 PKB::PKB() {}
 
@@ -60,7 +71,7 @@ void PKB::PrintASTTree() {
 /* END   - AST functions */
 /* START - Constant table functions */
 
-void PKB::GenerateConstantTable(std::set<string> constants) {
+void PKB::GenerateConstantTable(set<string> constants) {
     unsigned int i = 1;
     for (auto &constant : constants) {
         constantTable_.insert(i++, constant);
@@ -74,7 +85,7 @@ void PKB::PrintConstantTable() {
 /* END   - Constant table functions */
 /* START - Variable table functions */
 
-void PKB::GenerateVariableTable(std::set<string> variableNames) {
+void PKB::GenerateVariableTable(set<string> variableNames) {
     unsigned int i = 1;
     for (auto &variableName : variableNames) {
         variableTable_.insert(i++, variableName);
@@ -88,7 +99,7 @@ void PKB::PrintVariableTable() {
 /* END   - Variable table functions */
 /* START - Procedure table functions */
 
-void PKB::GenerateProcedureTable(std::set<string> procedureNames) {
+void PKB::GenerateProcedureTable(set<string> procedureNames) {
     unsigned int i = 1;
     for (auto &procedureName : procedureNames) {
         numberOfProcedure_++;
@@ -103,7 +114,7 @@ void PKB::PrintProcedureTable() {
 /* END   - Procedure table functions */
 /* START - Stmt table functions */
 
-void PKB::GenerateStmtTable(std::map<unsigned int, string> stmts) {
+void PKB::GenerateStmtTable(map<unsigned int, string> stmts) {
     for (auto &stmt : stmts) {
         switch (Constants::StringToSymbol(stmt.second)) {
             default:
@@ -135,31 +146,26 @@ void PKB::PrintStmtTable() {
 }
 
 /* END   - Stmt table functions */
+/* START - Parent table functions */
 
-//
-//void PKB::InsertVariable(string variable_name, int line_number) {
-//    variableTable.insert(variable_name, line_number);
-//}
+void PKB::GenerateParentTable(map<unsigned int, set<unsigned int>> parent) {
+    for (auto &pair : parent) {
+        parentTable_.insert(pair.first, pair.second);
+    }
+}
 
-//void PKB::InsertVariable(string variable_name, vector<int> line_numbers) {
-//  for (auto line_number : line_numbers) {
-//    PKB::InsertVariable(variable_name, line_number);
-//  }
-//}
+void PKB::PrintParentTable() {
+    parentTable_.printTable();
+}
+
+/* END   - Parent table functions */
+
 //// TODO(pixelducky): update this impl
 //bool PKB::IsVariableExist(string variable_name) {
 //    return true;
 //}
-//
-//void PKB::InsertProcedure(string procedure_name, int line_number) {
-//  PKB::procedure_table.insert(procedure_name, line_number);
-//}
-//
-//void PKB::InsertProcedure(string procedure_name, vector<int> line_numbers) {
-//  for (auto line_number : line_numbers) {
-//    PKB::InsertProcedure(procedure_name, line_number);
-//  }
-//}
+
+
 //// TODO(pixelducky): update this impl
 //bool PKB::IsProcedureExist(string procedure_name) {
 //  return false;
@@ -264,17 +270,8 @@ void PKB::PrintStmtTable() {
 //bool PKB::IsCallsTransitive(string procedure_name1, string procedure_name2) {
 //  return false;
 //}
-//
-//void PKB::InsertParent(int line_number1, int line_number2) {
-//  PKB::parent_table.insert(line_number1, line_number2);
-//}
-//
-//void PKB::InsertParent(int line_number1, vector<int> line_numbers) {
-//  for (auto line_number2 : line_numbers) {
-//    PKB::InsertParent(line_number1, line_number2);
-//  }
-//}
-//
+
+
 //void PKB::InsertParentTransitive(int line_number1, int line_number2) {
 //  PKB::parent_transitive_table.insert(line_number1, line_number2);
 //}

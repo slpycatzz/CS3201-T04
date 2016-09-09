@@ -12,10 +12,14 @@ class TreeNode {
     TreeNode(Symbol symbol, unsigned int stmtNumber);
     TreeNode(Symbol symbol, unsigned int stmtNumber, std::string value);
     ~TreeNode();
+
     Symbol getSymbol();
+
     unsigned int getStmtNumber();
+
     void setValue(std::string value);
     std::string getValue();
+
     std::vector<TreeNode*> getChildren();
     unsigned int getNumberOfChildren();
     void addChild(TreeNode *child);

@@ -14,6 +14,22 @@ class Table {
         keyToValueMap[key].insert(value);
         valueToKeyMap[value].insert(key);
     }
+    
+    inline void insert(K key, std::set<V> values) {
+        keyToValueMap.insert(std::pair<K, std::set<V>>(key, values));
+
+        for (auto &value : values) {
+            valueToKeyMap[value].insert(key);
+        }
+    }
+
+    inline void insert(std::set<K> keys, V value) {
+        valueToKeyMap.insert(std::pair<V, std::set<K>>(value, keys));
+
+        for (auto &key : keys) {
+            keyToValueMap[key].insert(value);
+        }
+    }
 
     inline bool hasKeyValue(K key, V value) {
         std::set<V> values = keyToValueMap[key];

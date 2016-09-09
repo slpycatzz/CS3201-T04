@@ -13,7 +13,7 @@ Tree::Tree() {}
 Tree::~Tree() {}
 
 void Tree::setRoot(TreeNode *root) {
-    this->root_ = root;
+    root_ = root;
 }
 
 TreeNode* Tree::getRoot() {
