@@ -1,15 +1,15 @@
 #include <string>
 #include <vector>
 
-#include "CppUnitTest.h"
 #include "stdafx.h"
+#include "targetver.h"
 
-#include "../../../SPA/include/Constants.h"
-#include "../../../SPA/include/QueryProcessor/QueryPreprocessor.h"
-#include "../../../SPA/include/QueryProcessor/RelationTable.h"
-#include "../../../SPA/include/Utils.h"
+#include "Constants.h"
+#include "QueryProcessor/QueryPreprocessor.h"
+#include "QueryProcessor/RelationTable.h"
+#include "Utils.h"
 
-// using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTest {
     TEST_CLASS(QueryPreprocessorTest) {
@@ -29,7 +29,7 @@ namespace UnitTest {
             for (unsigned int i = 0; i < varList.size(); i++) {
                 actual += varList[i] + " ";
             }
-            Microsoft::VisualStudio::CppUnitTestFramework::Assert::AreEqual(expected, actual);
+            Assert::AreEqual(expected, actual);
         }
         TEST_METHOD(QueryParserSuchThatTestMethod) {
             std::string expected, actual;
@@ -50,7 +50,7 @@ namespace UnitTest {
                 }
             }
             // actual = qp.testMethodOut();
-            Microsoft::VisualStudio::CppUnitTestFramework::Assert::AreEqual(expected, actual);
+            Assert::AreEqual(expected, actual);
         }
     };
 }   // namespace UnitTest
