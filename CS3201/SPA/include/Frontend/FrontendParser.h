@@ -37,11 +37,13 @@ class FrontendParser {
     std::string peekForwardTokens(unsigned int index);
     std::string getToken();
 
+    void setModifies();
     void setParent();
-    int getParentOfStmtNumber(unsigned int stmtNumber);
-
     void setFollows();
+
+    int getParentOfStmtNumber(unsigned int stmtNumber);
     int getFollowOfStmtNumber(unsigned int stmtNumber);
+
 
     /* Parser helper variables. */
     unsigned int stmtNumber_;
@@ -55,13 +57,14 @@ class FrontendParser {
     std::vector<unsigned int> thenLastStmt_;
 
     /* For PKB generic table generation. */
-    std::set<std::string> constants_;
-    std::set<std::string> variableNames_;
-    std::set<std::string> procedureNames_;
+    std::vector<std::string> constants_;
+    std::vector<std::string> variableNames_;
+    std::vector<std::string> procedureNames_;
     std::map<unsigned int, std::string> stmts_;
 
     /* For PKB design abstraction table generation. */
-    std::map<unsigned int, std::string> modifies_;
+    std::map<unsigned int, std::set<std::string>> modifies_;
+    std::map<std::string, std::set<std::string>> modifiesProcedure_;
     std::map<unsigned int, std::string> uses_;
     std::map<unsigned int, std::set<unsigned int>> parent_;
     std::map<unsigned int, unsigned int> follows_;

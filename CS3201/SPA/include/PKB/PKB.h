@@ -23,17 +23,22 @@ class PKB {
     static TreeNode* CreateASTNode(Symbol symbol, unsigned int stmtNumber, std::string value);
     static void PrintASTTree();
 
-    static void GenerateConstantTable(std::set<std::string> constants);
+    static void GenerateConstantTable(std::vector<std::string> constants);
     static void PrintConstantTable();
 
-    static void GenerateVariableTable(std::set<std::string> variableNames);
+    static void GenerateVariableTable(std::vector<std::string> variableNames);
     static void PrintVariableTable();
 
-    static void GenerateProcedureTable(std::set<std::string> procedureNames);
+    static void GenerateProcedureTable(std::vector<std::string> procedureNames);
     static void PrintProcedureTable();
 
     static void GenerateStmtTable(std::map<unsigned int, std::string> stmts);
     static void PrintStmtTable();
+
+    static void GenerateModifiesTable(std::map<unsigned int, std::set<std::string>> modifies);
+    static void GenerateModifiesProcedureTable(std::map<std::string, std::set<std::string>> modifiesProcedure);
+    static void PrintModifiesTable();
+    static void PrintModifiesProcedureTable();
 
     static void GenerateParentTable(std::map<unsigned int, std::set<unsigned int>> parent);
     static void PrintParentTable();
@@ -53,10 +58,7 @@ class PKB {
     //static vector<string> UsesVariable(string procedure_name);
     //static vector<int> UsedByLineNumber(string variable_name);
     //static vector<string> UsedByProcedure(string variable_name);
-    //static void InsertModifies(int line_number, string variable_name);
-    //static void InsertModifies(int line_number, vector<string> variable_names);
-    //static void InsertModifies(string procedure_name, string variable_name);
-    //static void InsertModifies(string procedure_name, vector<string> variable_names);
+
     //static vector<string> ModifiesVariable(int line_number);
     //static vector<string> ModifiesVariable(string procedure_name);
     //static vector<int> ModifiedByLineNumber(string variable_name);
@@ -85,10 +87,10 @@ class PKB {
     static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbol>   */
 
     static Table<unsigned int, std::string> modifiesTable_;                         /* map<stmtNumber, set(variableName)>    */
-    static Table<unsigned int, std::string> modifiesProcedureTable_;                /* map<procedureName, set(variableName)> */
+    static Table<std::string, std::string> modifiesProcedureTable_;                 /* map<procedureName, set(variableName)> */
 
     static Table<unsigned int, std::string> usesTable_;                             /* map<stmtNumber, set(variableName)>    */
-    static Table<unsigned int, std::string> usesProcedureTable_;                    /* map<procedureName, set(variableName)> */
+    static Table<std::string, std::string> usesProcedureTable_;                     /* map<procedureName, set(variableName)> */
 
     static Table<unsigned int, unsigned int> parentTable_;                          /* map<stmtNumber, set(stmtNumber)> */
     static TransitiveTable<unsigned int, unsigned int> parentTransitiveTable_;      /* map<stmtNumber, set(stmtNumber)> */

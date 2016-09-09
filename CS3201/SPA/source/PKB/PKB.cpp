@@ -27,10 +27,10 @@ Table<unsigned int, string> PKB::procedureTable_;
 Table<unsigned int, string> PKB::stmtTable_;
 
 Table<unsigned int, string> PKB::modifiesTable_;
-Table<unsigned int, string> PKB::modifiesProcedureTable_;
+Table<string, string> PKB::modifiesProcedureTable_;
 
 Table<unsigned int, string> PKB::usesTable_;
-Table<unsigned int, string> PKB::usesProcedureTable_;
+Table<string, string> PKB::usesProcedureTable_;
 
 Table<unsigned int, unsigned int> PKB::parentTable_;
 TransitiveTable<unsigned int, unsigned int> PKB::parentTransitiveTable_;
@@ -75,10 +75,12 @@ void PKB::PrintASTTree() {
 /* END   - AST functions */
 /* START - Constant table functions */
 
-void PKB::GenerateConstantTable(set<string> constants) {
+void PKB::GenerateConstantTable(vector<string> constants) {
     unsigned int i = 1;
     for (auto &constant : constants) {
-        constantTable_.insert(i++, constant);
+        if (!constantTable_.hasValue(constant)) {
+            constantTable_.insert(i++, constant);
+        }
     }
 }
 
@@ -89,10 +91,12 @@ void PKB::PrintConstantTable() {
 /* END   - Constant table functions */
 /* START - Variable table functions */
 
-void PKB::GenerateVariableTable(set<string> variableNames) {
+void PKB::GenerateVariableTable(vector<string> variableNames) {
     unsigned int i = 1;
     for (auto &variableName : variableNames) {
-        variableTable_.insert(i++, variableName);
+        if (!variableTable_.hasValue(variableName)) {
+            variableTable_.insert(i++, variableName);
+        }
     }
 }
 
@@ -103,7 +107,7 @@ void PKB::PrintVariableTable() {
 /* END   - Variable table functions */
 /* START - Procedure table functions */
 
-void PKB::GenerateProcedureTable(set<string> procedureNames) {
+void PKB::GenerateProcedureTable(vector<string> procedureNames) {
     unsigned int i = 1;
     for (auto &procedureName : procedureNames) {
         numberOfProcedure_++;
@@ -150,6 +154,29 @@ void PKB::PrintStmtTable() {
 }
 
 /* END   - Stmt table functions */
+/* START - Modifies table functions */
+
+void PKB::GenerateModifiesTable(map<unsigned int, set<string>> modifies) {
+    for (auto &pair : modifies) {
+        modifiesTable_.insert(pair.first, pair.second);
+    }
+}
+
+void PKB::GenerateModifiesProcedureTable(map<string, set<string>> modifiesProcedure) {
+    for (auto &pair : modifiesProcedure) {
+        modifiesProcedureTable_.insert(pair.first, pair.second);
+    }
+}
+
+void PKB::PrintModifiesTable() {
+    modifiesTable_.printTable();
+}
+
+void PKB::PrintModifiesProcedureTable() {
+    modifiesProcedureTable_.printTable();
+}
+
+/* END   - Modifies table functions */
 /* START - Parent table functions */
 
 void PKB::GenerateParentTable(map<unsigned int, set<unsigned int>> parent) {
@@ -237,26 +264,8 @@ void PKB::PrintFollowsTransitiveTable() {
 //vector<string> PKB::UsedByProcedure(string variable_name) {
 //  return PKB::procedure_uses_table.getKeys(variable_name);
 //}
-//
-//void PKB::InsertModifies(int line_number, string variable_name) {
-//  PKB::modifies_table.insert(line_number, variable_name);
-//}
-//
-//void PKB::InsertModifies(int line_number, vector<string> variable_names) {
-//  for (auto variable_name : variable_names) {
-//    PKB::InsertModifies(line_number, variable_name);
-//  }
-//}
-//
-//void PKB::InsertModifies(string procedure_name, string variable_name) {
-//  PKB::procedure_modifies_table.insert(procedure_name, variable_name);
-//}
-//
-//void PKB::InsertModifies(string procedure_name, vector<string> variable_names) {
-//  for (auto variable_name : variable_names) {
-//    PKB::InsertModifies(procedure_name, variable_name);
-//  }
-//}
+
+
 //
 //vector<string> PKB::ModifiesVariable(int line_number) {
 //  return PKB::modifies_table.getValues(line_number);
