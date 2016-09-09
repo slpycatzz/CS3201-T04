@@ -1,11 +1,11 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
-#include "QueryProcessor/RelationTable.h"
 #include "QueryProcessor/QueryTree.h"
+#include "QueryProcessor/RelationTable.h"
 
 const int QUERY_NUM_OF_LINES = 5;
 
@@ -14,8 +14,9 @@ class QueryPreprocessor {
     QueryPreprocessor();
     ~QueryPreprocessor();
     void preprocess(std::string filePath);
+    QueryTree getQueryTree();
 
- private:
+// private:
      void preprocessFile(std::ifstream& fileStream);
      bool processDeclaration(std::string declaration);
      bool processQuery(std::string query);
@@ -43,4 +44,7 @@ class QueryPreprocessor {
      std::unordered_map<std::string, std::string> entMap;
      RelationTable r;
      QueryTree qt;
+
+     std::string out;
+     std::string testMethodOut();
 };
