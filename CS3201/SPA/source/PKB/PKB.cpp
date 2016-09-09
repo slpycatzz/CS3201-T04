@@ -5,8 +5,8 @@
 
 #include "Constants.h"
 #include "PKB/AST.h"
-#include "PKB/Table.h"
 #include "PKB/PKB.h"
+#include "PKB/Table.h"
 #include "TreeNode.h"
 
 using std::string;
@@ -60,35 +60,35 @@ void PKB::PrintASTTree() {
 /* END   - AST functions */
 /* START - Constant table functions */
 
-void PKB::generateConstantTable(std::set<string> constants) {
+void PKB::GenerateConstantTable(std::set<string> constants) {
     unsigned int i = 1;
     for (auto &constant : constants) {
         constantTable_.insert(i++, constant);
     }
 }
 
-void PKB::printConstantTable() {
+void PKB::PrintConstantTable() {
     constantTable_.printTable();
 }
 
 /* END   - Constant table functions */
 /* START - Variable table functions */
 
-void PKB::generateVariableTable(std::set<string> variableNames) {
+void PKB::GenerateVariableTable(std::set<string> variableNames) {
     unsigned int i = 1;
     for (auto &variableName : variableNames) {
         variableTable_.insert(i++, variableName);
     }
 }
 
-void PKB::printVariableTable() {
+void PKB::PrintVariableTable() {
     variableTable_.printTable();
 }
 
 /* END   - Variable table functions */
 /* START - Procedure table functions */
 
-void PKB::generateProcedureTable(std::set<string> procedureNames) {
+void PKB::GenerateProcedureTable(std::set<string> procedureNames) {
     unsigned int i = 1;
     for (auto &procedureName : procedureNames) {
         numberOfProcedure_++;
@@ -96,14 +96,14 @@ void PKB::generateProcedureTable(std::set<string> procedureNames) {
     }
 }
 
-void PKB::printProcedureTable() {
+void PKB::PrintProcedureTable() {
     procedureTable_.printTable();
 }
 
 /* END   - Procedure table functions */
 /* START - Stmt table functions */
 
-void PKB::generateStmtTable(std::map<unsigned int, string> stmts) {
+void PKB::GenerateStmtTable(std::map<unsigned int, string> stmts) {
     for (auto &stmt : stmts) {
         switch (Constants::StringToSymbol(stmt.second)) {
             default:
@@ -130,7 +130,7 @@ void PKB::generateStmtTable(std::map<unsigned int, string> stmts) {
     }
 }
 
-void PKB::printStmtTable() {
+void PKB::PrintStmtTable() {
     stmtTable_.printTable();
 }
 

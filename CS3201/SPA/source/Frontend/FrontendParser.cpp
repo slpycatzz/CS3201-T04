@@ -20,8 +20,6 @@ FrontendParser::FrontendParser() {
 
 FrontendParser::~FrontendParser() {}
 
-#include <iostream>
-
 void FrontendParser::parseProgram(string filePath) {
     std::ifstream fileStream(filePath);
 
@@ -39,11 +37,13 @@ void FrontendParser::parseProgram(string filePath) {
 
     PKB::SetASTRoot(callProgramRecognizer());
 
-    /* Tables generation. */
-    PKB::generateConstantTable(constants_);
-    PKB::generateVariableTable(variableNames_);
-    PKB::generateProcedureTable(procedureNames_);
-    PKB::generateStmtTable(stmts_);
+    /* Generic tables generation. */
+    PKB::GenerateConstantTable(constants_);
+    PKB::GenerateVariableTable(variableNames_);
+    PKB::GenerateProcedureTable(procedureNames_);
+    PKB::GenerateStmtTable(stmts_);
+
+
 
     // TODO(YH): Recursive call check
     // TODO(YH): Invalid procedure call check (procedure does not exist)
@@ -126,7 +126,7 @@ vector<string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream)
 }
 
 TreeNode* FrontendParser::callProgramRecognizer() {
-    /* Node construction. */
+    /* Node generation. */
     TreeNode* programNode = PKB::CreateASTNode(PROGRAM);
     while (this->tokensIndex_ < this->tokens_.size()) {
         programNode->addChild(callProcedureRecognizer());
@@ -145,10 +145,10 @@ TreeNode* FrontendParser::callProcedureRecognizer() {
 
     string procedureName = getToken();
 
-    /* For PKB procedure table construction. */
+    /* For PKB procedure table generation. */
     this->procedureNames_.insert(procedureName);
 
-    /* Node construction. */
+    /* TreeNode generation. */
     TreeNode* procedureNode = PKB::CreateASTNode(PROCEDURE, procedureName);
     procedureNode->addChild(callStmtListRecognizer());
 
@@ -158,7 +158,7 @@ TreeNode* FrontendParser::callProcedureRecognizer() {
 TreeNode* FrontendParser::callStmtListRecognizer() {
     expect(CHAR_SYMBOL_OPENCURLYBRACKET);
 
-    /* Node construction. */
+    /* TreeNode generation. */
     TreeNode* stmtListNode = PKB::CreateASTNode(STMTLIST);
     while (peekTokens() != string(1, CHAR_SYMBOL_CLOSECURLYBRACKET)) {
         stmtListNode->addChild(callStmtRecognizer());
@@ -201,7 +201,7 @@ TreeNode* FrontendParser::callStmtRecognizer() {
         throw ProgramSyntaxErrorException();
     }
 
-    /* For PKB stmt table construction. */
+    /* For PKB stmt table generation. */
     this->stmts_.emplace(stmtNumber, stmt);
 
     return stmtNode;
@@ -256,7 +256,7 @@ TreeNode* FrontendParser::callAssignRecognizer() {
 
     string controlVariableName = getToken();
 
-    /* For PKB variable table construction. */
+    /* For PKB variable table generation. */
     this->variableNames_.insert(controlVariableName);
 
     assignNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
@@ -319,7 +319,7 @@ TreeNode* FrontendParser::callFactorRecognizer() {
     } else if (Utils::IsValidNamingConvention(peekTokens())) {
         string variableName = getToken();
 
-        /* For PKB variable table construction. */
+        /* For PKB variable table generation. */
         this->variableNames_.insert(variableName);
 
         factorNode = PKB::CreateASTNode(VARIABLE, variableName);
@@ -328,7 +328,7 @@ TreeNode* FrontendParser::callFactorRecognizer() {
     } else if (Utils::IsNonNegativeNumeric(peekTokens())) {
         string constant = getToken();
 
-        /* For PKB constant table construction. */
+        /* For PKB constant table generation. */
         this->constants_.insert(constant);
 
         factorNode = PKB::CreateASTNode(CONSTANT, constant);

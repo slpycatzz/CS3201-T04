@@ -22,17 +22,17 @@ class PKB {
     static TreeNode* CreateASTNode(Symbol symbol, unsigned int stmtNumber, std::string value);
     static void PrintASTTree();
 
-    static void generateConstantTable(std::set<std::string> constants);
-    static void printConstantTable();
+    static void GenerateConstantTable(std::set<std::string> constants);
+    static void PrintConstantTable();
 
-    static void generateVariableTable(std::set<std::string> variableNames);
-    static void printVariableTable();
+    static void GenerateVariableTable(std::set<std::string> variableNames);
+    static void PrintVariableTable();
 
-    static void generateProcedureTable(std::set<std::string> procedureNames);
-    static void printProcedureTable();
+    static void GenerateProcedureTable(std::set<std::string> procedureNames);
+    static void PrintProcedureTable();
 
-    static void generateStmtTable(std::map<unsigned int, std::string> stmts);
-    static void printStmtTable();
+    static void GenerateStmtTable(std::map<unsigned int, std::string> stmts);
+    static void PrintStmtTable();
 
     //static void InsertVariable(string variable_name, int line_number);
     //static void InsertVariable(string variable_name, vector<int> line_numbers);
@@ -90,6 +90,9 @@ class PKB {
     static Table<unsigned int, std::string> variableTable_;                     /* map<index, variableName>  */
     static Table<unsigned int, std::string> procedureTable_;                    /* map<index, procedureName> */
     static Table<unsigned int, std::string> stmtTable_;                         /* map<stmtNumber, symbol>   */
+
+    static Table<unsigned int, std::string> modifiesTable_;
+    static Table<unsigned int, std::string> modifiesProcedureTable_;
 
     //static Table<int, string> uses_table;
     //static Table<string, string> procedure_uses_table;
