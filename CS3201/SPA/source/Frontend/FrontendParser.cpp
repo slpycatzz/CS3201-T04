@@ -47,9 +47,11 @@ void FrontendParser::parseProgram(string filePath) {
 
     /* Generate data for design abstraction table generation. */
     setParent();
+    setFollows();
 
     /* Design abstraction tables generation. */
     PKB::GenerateParentTable(parent_);
+    PKB::GenerateFollowsTable(follows_);
 
     // TODO(YH): Recursive call check
     // TODO(YH): Invalid procedure call check (procedure does not exist)
@@ -154,6 +156,8 @@ TreeNode* FrontendParser::callProcedureRecognizer() {
     /* For PKB procedure table generation. */
     procedureNames_.insert(procedureName);
 
+    proceduresFirstStmt_.push_back(stmtNumber_);
+
     /* TreeNode generation. */
     TreeNode* procedureNode = PKB::CreateASTNode(PROCEDURE, procedureName);
     procedureNode->addChild(callStmtListRecognizer());
@@ -239,6 +243,8 @@ TreeNode* FrontendParser::callIfRecognizer() {
     expect(SYMBOL_IF_THEN);
 
     ifNode->addChild(callStmtListRecognizer());
+
+    thenLastStmt_.push_back(stmtNumber_ - 1);
 
     expect(SYMBOL_IF_ELSE);
 
@@ -405,8 +411,17 @@ void FrontendParser::setParent() {
     }
 }
 
+void FrontendParser::setFollows() {
+    for (unsigned int i = 0; i < stmtsLevels_.size(); i++) {
+        unsigned int stmtNumber = getFollowOfStmtNumber(i + 1);
+
+        if (stmtNumber > 0) {
+            follows_[stmtNumber] = (i + 1);
+        }
+    }
+}
+
 int FrontendParser::getParentOfStmtNumber(unsigned int stmtNumber) {
-    /* This should never happen. */
     if (stmtNumber == 0) {
         return -1;
     }
@@ -418,7 +433,7 @@ int FrontendParser::getParentOfStmtNumber(unsigned int stmtNumber) {
         return 0;
     }
 
-    /* Search for the nearest (stmtLevel - 1) value, that will be the parent. */
+    /* Search for the nearest (stmtLevel - 1) value; that, will be the parent. */
     unsigned int i = stmtNumber - 1;
     while (i > 0, i--) {
         if (stmtsLevels_.at(i) == (stmtLevel - 1)) {
@@ -426,5 +441,45 @@ int FrontendParser::getParentOfStmtNumber(unsigned int stmtNumber) {
         }
     }
 
-    return 0;
+    return -1;
+}
+
+int FrontendParser::getFollowOfStmtNumber(unsigned int stmtNumber) {
+    if (stmtNumber == 0) {
+        return -1;
+    }
+
+    /* Nothing is before the first statement of a procedure. */
+    if (Utils::VectorContains(proceduresFirstStmt_, stmtNumber)) {
+        return 0;
+    }
+
+    unsigned int stmtLevel = stmtsLevels_.at(stmtNumber - 1);
+
+    /* Get stmtNumber's procedure's first statement position. */
+    unsigned int j;
+    for (int i = proceduresFirstStmt_.size() - 1; i >= 0; i--) {
+        if (proceduresFirstStmt_[i] < stmtNumber) {
+            j = proceduresFirstStmt_[i];
+            break;
+        }
+    }
+
+    unsigned int k = stmtNumber - 1;
+    while (k > j, k--) {
+        if (stmtsLevels_.at(k) == (stmtLevel - 1)) {
+            return 0;
+        }
+
+        /* Catch if statement being in same level but different statement list. */
+        if (Utils::VectorContains(thenLastStmt_, (k + 1))) {
+            return 0;
+        }
+
+        if (stmtsLevels_.at(k) == stmtLevel) {
+            return (k + 1);
+        }
+    }
+
+    return -1;
 }

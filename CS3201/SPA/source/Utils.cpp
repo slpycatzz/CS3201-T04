@@ -33,7 +33,7 @@ void Utils::Split(string str, char delimiter, vector<string> &target) {
     }
 }
 
-void Utils::SplitAndIgnoreEmpty(string str, char delimiter, vector<string> & target) {
+void Utils::SplitAndIgnoreEmpty(string str, char delimiter, vector<string> &target) {
     string temp;
     std::istringstream stringStream;
 
@@ -96,4 +96,8 @@ bool Utils::IsNonNegativeNumeric(string str) {
 
 bool Utils::StartsWithAlphabet(string str) {
     return (isalpha(str[0])) ? true : false;
+}
+
+bool Utils::VectorContains(vector<unsigned int> vec, unsigned int i) {
+    return (std::find(vec.begin(), vec.end(), i) != vec.end());
 }

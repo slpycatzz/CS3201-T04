@@ -38,8 +38,10 @@ class FrontendParser {
     std::string getToken();
 
     void setParent();
-
     int getParentOfStmtNumber(unsigned int stmtNumber);
+
+    void setFollows();
+    int getFollowOfStmtNumber(unsigned int stmtNumber);
 
     /* Parser helper variables. */
     unsigned int stmtNumber_;
@@ -49,6 +51,8 @@ class FrontendParser {
     /* PKB tables helper variables. */
     unsigned int currentTreeLevel_;
     std::vector<unsigned int> stmtsLevels_;
+    std::vector<unsigned int> proceduresFirstStmt_;
+    std::vector<unsigned int> thenLastStmt_;
 
     /* For PKB generic table generation. */
     std::set<std::string> constants_;
@@ -60,4 +64,5 @@ class FrontendParser {
     std::map<unsigned int, std::string> modifies_;
     std::map<unsigned int, std::string> uses_;
     std::map<unsigned int, std::set<unsigned int>> parent_;
+    std::map<unsigned int, unsigned int> follows_;
 };

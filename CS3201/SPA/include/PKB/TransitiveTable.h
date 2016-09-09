@@ -67,7 +67,7 @@ class TransitiveTable {
         }
     }
 
-    inline void printTransitiveTable() {
+    inline void printTable() {
         for (const auto &pair : keyToValueTransitiveMap) {
             std::cout << pair.first << " -> { ";
 

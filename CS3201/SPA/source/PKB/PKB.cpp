@@ -35,6 +35,9 @@ Table<unsigned int, string> PKB::usesProcedureTable_;
 Table<unsigned int, unsigned int> PKB::parentTable_;
 TransitiveTable<unsigned int, unsigned int> PKB::parentTransitiveTable_;
 
+Table<unsigned int, unsigned int> PKB::followsTable_;
+TransitiveTable<unsigned int, unsigned int> PKB::followsTransitiveTable_;
+
 PKB::PKB() {}
 
 PKB::~PKB() {}
@@ -162,7 +165,31 @@ void PKB::PrintParentTable() {
     parentTable_.printTable();
 }
 
+void PKB::PrintParentTransitiveTable() {
+    parentTransitiveTable_.printTable();
+}
+
 /* END   - Parent table functions */
+/* START - Follows table functions */
+
+void PKB::GenerateFollowsTable(map<unsigned int, unsigned int> follows) {
+    for (auto &pair : follows) {
+        followsTable_.insert(pair.first, pair.second);
+    }
+
+    followsTransitiveTable_.generateKeyToValueTransitiveMap(followsTable_);
+    followsTransitiveTable_.generateValueToKeyTransitiveMap(followsTable_);
+}
+
+void PKB::PrintFollowsTable() {
+    followsTable_.printTable();
+}
+
+void PKB::PrintFollowsTransitiveTable() {
+    followsTransitiveTable_.printTable();
+}
+
+/* END   - Follows table functions */
 
 //// TODO(pixelducky): update this impl
 //bool PKB::IsVariableExist(string variable_name) {
@@ -246,34 +273,6 @@ void PKB::PrintParentTable() {
 //vector<string> PKB::ModifiedByProcedure(string variable_name) {
 //  return PKB::procedure_modifies_table.getKeys(variable_name);
 //}
-//
-//void PKB::InsertCalls(string procedure_name1, string procedure_name2) {
-//  PKB::calls_table.insert(procedure_name1, procedure_name2);
-//}
-//
-//void PKB::InsertCalls(string procedure_name1, vector<string> procedure_names) {
-//  for (auto procedure_name2 : procedure_names) {
-//    PKB::InsertCalls(procedure_name1, procedure_name2);
-//  }
-//}
-//
-//void PKB::InsertCallsTransitive(string procedure_name1, string procedure_name2) {
-//  PKB::calls_transitive_table.insert(procedure_name1, procedure_name2);
-//}
-//
-//void PKB::InsertCallsTransitive(string procedure_name1, vector<string> procedure_names) {
-//  for (auto procedure_name2 : procedure_names) {
-//    PKB::InsertCallsTransitive(procedure_name1, procedure_name2);
-//  }
-//}
-//// TODO(pixelducky): update this impl
-//bool PKB::IsCalls(string procedure_name1, string procedure_name2) {
-//  return false;
-//}
-//// TODO(pixelducky): update this impl
-//bool PKB::IsCallsTransitive(string procedure_name1, string procedure_name2) {
-//  return false;
-//}
 
 
 //// TODO(pixelducky): update this impl
@@ -292,26 +291,8 @@ void PKB::PrintParentTable() {
 //bool PKB::IsParentTransitive(int line_number1, vector<int> line_numbers) {
 //  return false;
 //}
-//
-//void PKB::InsertFollows(int line_number1, int line_number2) {
-//  PKB::follows_table.insert(line_number1, line_number2);
-//}
-//
-//void PKB::InsertFollows(int line_number1, vector<int> line_numbers) {
-//  for (auto line_number2 : line_numbers) {
-//    PKB::InsertFollows(line_number1, line_number2);
-//  }
-//}
-//
-//void PKB::InsertFollowsTransitive(int line_number1, int line_number2) {
-//  PKB::follows_transitive_table.insert(line_number1, line_number2);
-//}
-//
-//void PKB::InsertFollowsTransitive(int line_number1, vector<int> line_numbers) {
-//  for (auto line_number2 : line_numbers) {
-//    PKB::InsertFollowsTransitive(line_number1, line_number2);
-//  }
-//}
+
+
 //// TODO(pixelducky): update this impl
 //bool PKB::IsFollows(int line_number1, int line_number2) {
 //  return false;

@@ -37,6 +37,11 @@ class PKB {
 
     static void GenerateParentTable(std::map<unsigned int, std::set<unsigned int>> parent);
     static void PrintParentTable();
+    static void PrintParentTransitiveTable();
+
+    static void GenerateFollowsTable(std::map<unsigned int, unsigned int> follows);
+    static void PrintFollowsTable();
+    static void PrintFollowsTransitiveTable();
 
     //static bool IsVariableExist(string variable_name);
     //static bool IsProcedureExist(string procedure_name);
@@ -56,21 +61,12 @@ class PKB {
     //static vector<string> ModifiesVariable(string procedure_name);
     //static vector<int> ModifiedByLineNumber(string variable_name);
     //static vector<string> ModifiedByProcedure(string variable_name);
-    //static void InsertCalls(string procedure_name1, string procedure_name2);
-    //static void InsertCalls(string procedure_name1, vector<string> procedure_names);
-    //static void InsertCallsTransitive(string procedure_name1, string procedure_name2);
-    //static void InsertCallsTransitive(string procedure_name1, vector<string> procedure_names);
-    //static bool IsCalls(string procedure_name1, string procedure_name2);
-    //static bool IsCallsTransitive(string procedure_name1, string procedure_name2);
 
     //static bool IsParent(int line_number1, int line_number2);
     //static bool IsParent(int line_number1, vector<int> line_numbers);
     //static bool IsParentTransitive(int line_number1, int line_number2);
     //static bool IsParentTransitive(int line_number1, vector<int> line_numbers);
-    //static void InsertFollows(int line_number1, int line_number2);
-    //static void InsertFollows(int line_number1, vector<int> line_numbers);
-    //static void InsertFollowsTransitive(int line_number1, int line_number2);
-    //static void InsertFollowsTransitive(int line_number1, vector<int> line_numbers);
+
     //static bool IsFollows(int line_number1, int line_number2);
     //static bool IsFollows(int line_number1, vector<int> line_numbers);
     //static bool IsFollowsTransitive(int line_number1, int line_number2);
@@ -97,8 +93,6 @@ class PKB {
     static Table<unsigned int, unsigned int> parentTable_;                          /* map<stmtNumber, set(stmtNumber)> */
     static TransitiveTable<unsigned int, unsigned int> parentTransitiveTable_;      /* map<stmtNumber, set(stmtNumber)> */
 
-    //static Table<string, string> calls_table;
-    //static Table<string, string> calls_transitive_table;
-    //static Table<int, int> follows_table;
-    //static Table<int, int> follows_transitive_table;
+    static Table<unsigned int, unsigned int> followsTable_;                         /* map<stmtNumber, set(stmtNumber)> */
+    static TransitiveTable<unsigned int, unsigned int> followsTransitiveTable_;     /* map<stmtNumber, set(stmtNumber)> */
 };
