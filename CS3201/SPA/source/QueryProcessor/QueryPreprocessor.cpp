@@ -4,11 +4,11 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Constants.h"
 #include "Exceptions.h"
 #include "QueryProcessor/QueryPreprocessor.h"
 #include "QueryProcessor/RelationTable.h"
 #include "Utils.h"
-#include "Constants.h"
 
 QueryPreprocessor::QueryPreprocessor() {
     relMap = {
@@ -87,6 +87,7 @@ void QueryPreprocessor::preprocessFile(std::ifstream& fileStream) {
 bool QueryPreprocessor::processDeclaration(std::string declaration) {
     std::vector<std::string> declarationList = Utils::Split(declaration, CHAR_SYMBOL_SEMICOLON);
     for (unsigned int line_num = 0; line_num < declarationList.size(); line_num++) {
+        declarationList[line_num] = Utils::TrimLeadingSpaces(declarationList[line_num]);
         std::vector<std::string> declarationType = Utils::Split(declarationList[line_num], ' ');
 
         if (!isValidVarType(declarationType[0])) {
@@ -110,46 +111,43 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
             if (!isValidVarName(synonyms[i])) {
                 return false;
             } else {
-                // wm todo: 1. assign to correct varType container 2. assign to queryTree
-
+                // note(to self): currently no need to insert to qt, only Select vars are required
                 declareVar.push_back(synonyms[i]);
-                declareVarType.push_back(declarationType[0]);
-                // insertVariable(synonyms.at(i), declarationList.at(0));
+                declareVarType.push_back(declarationType[line_num]);
             }
         }
     }
     return true;
-}
+}  // wm TODO: this is tested
 
+// wm TODO: case insensitive str_cmp...>.<, throw err...
 bool QueryPreprocessor::processQuery(std::string query) {
     std::vector<std::string> queryList = Utils::Split(query, ' ');
 
     // Select [arg] such that ... pattern...
-    if (queryList[0].compare("select") == 0) {
+    if (queryList[0].compare("select") != 0) {
         // std::cout << "no select found";
         return false;
     }
-
     parseSelect(queryList);
+
     queryList = getNextToken(queryList);
 
-    if (queryList.size() == 2) {
+    if (queryList.size() == 0) {
         return true;
     }
 
     bool isSuccess = false;
     std::string prevClause;
 
-    while (true) {
+    while (queryList.size() > 0) {
         // wm todo: check if EOL reached or no items left works
         if ((queryList[1].size() > 0 && queryList[1][0] == NULL) || queryList[1].size() == 0) {
             break;
         }
-
-        if (queryList[0].compare("such") == 0 && queryList[1].compare("that")) {
+        if (queryList[0].compare("such") == 0 && queryList[1].compare("that") == 0) {
             isSuccess = parseSuchThat(queryList);
             prevClause = "such that";
-
         } else if (queryList[0].compare("pattern") == 0) {
             isSuccess = parsePattern(queryList);
             prevClause = "pattern";
@@ -173,31 +171,33 @@ bool QueryPreprocessor::parseSelect(std::vector<std::string> queryList) {
     std::vector<std::string> var, varType;
 
     std::vector<std::string> temp = getNextToken(queryList);
+
     unsigned int numberOfVarsInSelect = (queryList.size() - temp.size());
     std::string selectVars = "";
 
     for (unsigned int i = 1; i < numberOfVarsInSelect; i++) {
         selectVars += queryList[i];
     }
-
     selectList = Utils::Split(selectVars, CHAR_SYMBOL_COMMA);
 
     // wm todo: move this loop into another function
     for (unsigned int i = 0; i < selectList.size(); i++) {
-        if (selectList[0].compare("boolean") != 0) {
+        if (selectList[0].compare("boolean") == 0) {
             // wm todo: create boolean var type for querytree
             // insertSelect("", "boolean");
             selectVar.push_back("boolean");
-        } else if (isVarExist(selectList[0])) {
-            selectVar.push_back(selectList[0]);
-            qt.insertSelect(getVarType(selectList[0]), selectList[0]);
+            qt.insertSelect(selectList[0], getVarType(selectList[0]));
+        } else if (isVarExist(selectList[i])) {
+            selectVar.push_back(selectList[i]);
+            qt.insertSelect(selectList[i], getVarType(selectList[i]));
         } else {
+            // wm todo: return err msg
             return false;
         }
     }
 
     return true;
-}
+}  // wm TODO: this is tested
 
 bool QueryPreprocessor::parseSuchThat(std::vector<std::string> suchThat) {
     // use RelationTable to process and verify Uses, Modifies rel is correct etc...
@@ -213,7 +213,10 @@ bool QueryPreprocessor::parseSuchThat(std::vector<std::string> suchThat) {
 
     std::string relation = suchThatStr.substr(0, suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET));
     std::string argStr = suchThatStr.substr(
-        suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET)+1, suchThatStr.find_first_of(CHAR_SYMBOL_CLOSEBRACKET));
+        suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET)+1,
+        suchThatStr.find_first_of(CHAR_SYMBOL_CLOSEBRACKET)
+        - suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET) - 1);
+
     std::vector<std::string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
 
     bool isSuccess = parseRelation(relation, argList);
@@ -233,25 +236,26 @@ bool QueryPreprocessor::parseRelation(std::string relType, std::vector<std::stri
             }
             varTypeList.push_back(getVarType(varList[i]));
             // wm todo: implement this
-        } else if (isConstantVar(varList[i])) {      
+        } else if (isConstantVar(varList[i])) {
         // constant var, e.g. ("x","v"), pattern string belongs here
             varTypeList.push_back("variable");
         } else if (Utils::IsNonNegativeNumeric(varList[i])) {
         // constant int, e.g. (1,2)
             varTypeList.push_back("constant");
-        } else if (varList.at(i).compare("_") == 0) {    
+        } else if (varList.at(i).compare("_") == 0) {
         // wildcard e.g. (_,_)
             varTypeList.push_back("underscore");
         } else {
             return false;
         }
-        // wm todo: implement this, relType should incl. pattern handling ... i.e. a(),w()...
-        if (r.isRelationValid(relType, varList, varTypeList)) {
-            // wm todo: push to qt
-        }
+    }
+
+    // wm todo: implement this, relType should incl. pattern handling ... i.e. a(),w()...
+    if (r.isRelationValid(relType, varList, varTypeList)) {
+        qt.insertSuchThat(relType, varList);
     }
     return true;
-}
+}  // wm TODO: this is tested except _, constant etc...
 
 
 
@@ -295,10 +299,9 @@ bool QueryPreprocessor::isConstantVar(std::string var) {
 }
 
 bool QueryPreprocessor::isVarExist(std::string var) {
-    if (var.compare("BOOLEAN")) {
+    if (var.compare("boolean") == 0) {
         return true;
     }
-
     for (unsigned int i = 0; i < declareVar.size(); i++) {
         if (declareVar[i].compare(var) == 0)
             return true;
@@ -327,12 +330,34 @@ bool QueryPreprocessor::isValidVarType(std::string varName) {
 
 // find next token in the list and return list from next token onwards
 std::vector<std::string> QueryPreprocessor::getNextToken(std::vector<std::string> queryList) {
-    std::vector<std::string> resultList;
+    unsigned int end = 0;
+    std::vector<std::string> result;
 
-    return resultList;
+    for (unsigned int i = 0; i < queryList.size(); i++) {
+        if (queryList[i].compare("such") == 0 || queryList[i].compare("pattern") == 0) {
+            end = i;
+            break;
+        }
+    }
+    if (end == 0) {
+        queryList.clear();
+    } else {
+        queryList.erase(queryList.begin(), queryList.begin() + end);
+    }
+    return queryList;
 }
 
 // todo: return symbol enum type
 std::string QueryPreprocessor::getVarType(std::string var) {
     return "";
 }
+
+QueryTree QueryPreprocessor::getQueryTree() {
+    return qt;
+}
+
+// for debugging using unit test, to be removed after testing is complete
+std::string QueryPreprocessor::testMethodOut() {
+    return out;
+}
+
