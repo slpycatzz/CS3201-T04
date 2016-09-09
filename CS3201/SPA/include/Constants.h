@@ -3,7 +3,7 @@
 #include <string>
 
 const char SYMBOL_INVALID[]   = "Invalid";
-const char SYMBOL_COMMENT[]   = "\\";
+const char SYMBOL_COMMENT[]   = "\\\\";
 const char SYMBOL_PROGRAM[]   = "program";
 const char SYMBOL_PROCEDURE[] = "procedure";
 const char SYMBOL_STMTLIST[]  = "stmtlist";
