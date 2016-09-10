@@ -42,6 +42,12 @@ bool QueryTree::insertSuchThat(std::string clauseName, std::vector<std::string> 
 }
 // Varname(a,w1...), ClauseArgList, ClauseArgCount
 bool QueryTree::insertPattern(std::string varName, std::vector<std::string> argList) {
+    Clause clause;
+    clause.setClauseType(varName);
+    clause.setArg(argList);
+
+    patternList.push_back(clause);
+
     return false;
 }
 
@@ -57,22 +63,22 @@ std::vector<Clause> QueryTree::getSuchThat() {
     return suchThatList;
 }
 std::vector<Clause> QueryTree::getPattern() {
-    std::vector<Clause> result;
-    return result;
+    return patternList;
 }
 
 std::vector<Clause> QueryTree::getClauses(std::string clauseType) {
     std::vector<Clause> result;
-    std::vector<std::string> typeList = Utils::SplitAndIgnoreEmpty(clauseType, ' ');
-    for (std::string type : typeList) {
-        if (type.compare("pattern")) {
-            std::vector<Clause> patternClauses = getPattern();
-            result.insert(result.end(), patternClauses.begin(), patternClauses.end());
-        } 
-        else {
+	std::vector<std::string> typeList = Utils::SplitAndIgnoreEmpty(clauseType, ' ');
+	for (std::string type : typeList) {
+		if (type.compare("pattern")) {
+			std::vector<Clause> patternClauses = getPattern();
+			result.insert(result.end(), patternClauses.begin(), patternClauses.end());
+		}
+		else {
             std::vector<Clause> suchThatClauses = getSuchThat();
             result.insert(result.end(), suchThatClauses.begin(), suchThatClauses.end());
-        }
+    }
     }
     return result;
 }
+
