@@ -89,6 +89,12 @@ class PKB {
     static void PrintFollowsTable();
     static void PrintFollowsTransitiveTable();
 
+    static unsigned int GetNumberOfProcedure();
+    static unsigned int GetNumberOfAssign();
+    static unsigned int GetNumberOfWhile();
+    static unsigned int GetNumberOfIf();
+    static unsigned int GetNumberOfCall();
+
  private:
     static unsigned int numberOfProcedure_;
     static unsigned int numberOfAssign_;
@@ -100,6 +106,7 @@ class PKB {
     static Table<unsigned int, std::string> variableTable_;                         /* map<index, variableName>  */
     static Table<unsigned int, std::string> procedureTable_;                        /* map<index, procedureName> */
     static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbol>   */
+    static Table<unsigned int, TreeNode*> assignTable_;                             /* map<stmtNumber, AST pointer> */
 
     static Table<unsigned int, std::string> modifiesTable_;                         /* map<stmtNumber, set(variableName)>    */
     static Table<std::string, std::string> modifiesProcedureTable_;                 /* map<procedureName, set(variableName)> */

@@ -381,3 +381,26 @@ void PKB::PrintFollowsTransitiveTable() {
 }
 
 /* END   - Follows table functions */
+/* START - Other functions */
+
+unsigned int PKB::GetNumberOfProcedure() {
+    return numberOfProcedure_;
+}
+
+unsigned int PKB::GetNumberOfAssign() {
+    return numberOfAssign_;
+}
+
+unsigned int PKB::GetNumberOfWhile() {
+    return numberOfWhile_;
+}
+
+unsigned int PKB::GetNumberOfIf() {
+    return numberOfIf_;
+}
+
+unsigned int PKB::GetNumberOfCall() {
+    return numberOfCall_;
+}
+
+/* START - Other functions */
