@@ -5,20 +5,26 @@ QueryEvaluator::QueryEvaluator() {}
 
 QueryEvaluator::~QueryEvaluator() {}
 
-bool QueryEvaluator::evaluateClause(PKB pkb, Clause clause) {
+bool QueryEvaluator::evaluateClause(const PKB &pkb, const Clause &clause)
+{
 	return false;
 }
 
-ResultList QueryEvaluator::selectClauseResults(PKB pkb, Clause clause) {
-	ResultList resultList;
-	return resultList;
+TupleCandidateList
+QueryEvaluator::selectClauseResults(const PKB &pkb, const Clause &clause,
+									TupleCandidateList candidates)
+{
+	TupleCandidateList filteredList;
+	return filteredList;
 }
 
-bool QueryEvaluator::evaluateQuery(PKB pkb, QueryTree query) {
+bool QueryEvaluator::evaluateQuery(const PKB &pkb, const QueryTree &query)
+{
 	return false;
 }
 
-ResultList QueryEvaluator::selectQueryResults(PKB pkb, QueryTree query) {
+ResultList QueryEvaluator::selectQueryResults(const PKB &pkb, const QueryTree &query)
+{
 	ResultList resultList;
 	return resultList;
 }

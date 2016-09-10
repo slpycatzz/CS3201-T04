@@ -4,6 +4,7 @@
 
 #include "Constants.h"
 #include "QueryProcessor/QueryTree.h"
+#include "Utils.h"
 
 QueryTree::QueryTree() {}
 
@@ -62,11 +63,17 @@ std::vector<Clause> QueryTree::getPattern() {
 
 std::vector<Clause> QueryTree::getClauses(std::string clauseType) {
     std::vector<Clause> result;
-    if (clauseType.compare("pattern")) {
-        result = getPattern();
-    } else {
-        result = getSuchThat();
-    }
+	std::vector<std::string> typeList = Utils::SplitAndIgnoreEmpty(clauseType, ' ');
+	for (std::string type : typeList) {
+		if (type.compare("pattern")) {
+			std::vector<Clause> patternClauses = getPattern();
+			result.insert(result.end(), patternClauses.begin(), patternClauses.end());
+		}
+		else {
+			std::vector<Clause> suchThatClauses = getSuchThat();
+			result.insert(result.end(), suchThatClauses.begin(), suchThatClauses.end())
+		}
+	}
     return result;
 }
 
