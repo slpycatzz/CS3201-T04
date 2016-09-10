@@ -63,17 +63,16 @@ std::vector<Clause> QueryTree::getPattern() {
 
 std::vector<Clause> QueryTree::getClauses(std::string clauseType) {
     std::vector<Clause> result;
-	std::vector<std::string> typeList = Utils::SplitAndIgnoreEmpty(clauseType, ' ');
-	for (std::string type : typeList) {
-		if (type.compare("pattern")) {
-			std::vector<Clause> patternClauses = getPattern();
-			result.insert(result.end(), patternClauses.begin(), patternClauses.end());
-		}
-		else {
-			std::vector<Clause> suchThatClauses = getSuchThat();
-			result.insert(result.end(), suchThatClauses.begin(), suchThatClauses.end())
-		}
-	}
+    std::vector<std::string> typeList = Utils::SplitAndIgnoreEmpty(clauseType, ' ');
+    for (std::string type : typeList) {
+        if (type.compare("pattern")) {
+            std::vector<Clause> patternClauses = getPattern();
+            result.insert(result.end(), patternClauses.begin(), patternClauses.end());
+        } 
+        else {
+            std::vector<Clause> suchThatClauses = getSuchThat();
+            result.insert(result.end(), suchThatClauses.begin(), suchThatClauses.end());
+        }
+    }
     return result;
 }
-
