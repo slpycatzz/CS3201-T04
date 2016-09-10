@@ -112,8 +112,7 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
                 return false;
             } else {
                 // note(to self): currently no need to insert to qt, only Select vars are required
-                declareVar.push_back(synonyms[i]);
-                declareVarType.push_back(declarationType[line_num]);
+                varMap[synonyms[i]] = declarationType[line_num];
             }
         }
     }
@@ -184,11 +183,8 @@ bool QueryPreprocessor::parseSelect(std::vector<std::string> queryList) {
     for (unsigned int i = 0; i < selectList.size(); i++) {
         if (selectList[0].compare("boolean") == 0) {
             // wm todo: create boolean var type for querytree
-            // insertSelect("", "boolean");
-            selectVar.push_back("boolean");
-            qt.insertSelect(selectList[0], getVarType(selectList[0]));
+            qt.insertSelect("boolean", "boolean");
         } else if (isVarExist(selectList[i])) {
-            selectVar.push_back(selectList[i]);
             qt.insertSelect(selectList[i], getVarType(selectList[i]));
         } else {
             // wm todo: return err msg
@@ -219,40 +215,54 @@ bool QueryPreprocessor::parseSuchThat(std::vector<std::string> suchThat) {
 
     std::vector<std::string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
 
-    bool isSuccess = parseRelation(relation, argList);
+    bool isSuccess = parseRelation("such that", relation, argList);
 
     return isSuccess;
 }
 
-bool QueryPreprocessor::parseRelation(std::string relType, std::vector<std::string>& varList) {
+bool QueryPreprocessor::parseRelation(std::string clauseType, std::string relType, std::vector<std::string>& varList) {
     std::vector<std::string> varTypeList;
+    if (clauseType == "pattern") {
+        relType = getVarType(relType);
+        if (relType.compare("assign") == 0) {
+            relType = "patternAssign";
+        }
+        else {
+            relType = "pattern";
+        }
+    }
     for (unsigned int i = 0; i < varList.size(); i++) {
         if (isVarExist(varList[i])) {
             // wm todo: r table not implemented yet, always return true, throw error not done
             // isArgValid(relationType, argType, argNumber)
             // argNumber e.g. 1st arg, 2nd arg...
-            if (!r.isArgValid(relType, getVarType(varList[i]), "")) {
+            if (!r.isArgValid(relType, getVarType(varList[i]), i)) {
                 return false;
             }
             varTypeList.push_back(getVarType(varList[i]));
-            // wm todo: implement this
         } else if (isConstantVar(varList[i])) {
-        // constant var, e.g. ("x","v"), pattern string belongs here
+        // constant var, e.g. ("x","v",_, _"a"_), pattern string belongs here
+            // wm todo: add pattern string type
+            if (!r.isArgValid(relType, "variable", i)) {
+                return false;
+            }
             varTypeList.push_back("variable");
         } else if (Utils::IsNonNegativeNumeric(varList[i])) {
         // constant int, e.g. (1,2)
+            if (!r.isArgValid(relType, "constant", i)) {
+                return false;
+            }
             varTypeList.push_back("constant");
-        } else if (varList.at(i).compare("_") == 0) {
-        // wildcard e.g. (_,_)
-            varTypeList.push_back("underscore");
         } else {
             return false;
         }
     }
 
     // wm todo: implement this, relType should incl. pattern handling ... i.e. a(),w()...
-    if (r.isRelationValid(relType, varList, varTypeList)) {
+    if (clauseType == "such that") {
         qt.insertSuchThat(relType, varList);
+    } else if (clauseType == "pattern") {
+        qt.insertPattern(relType, varList);
     }
     return true;
 }  // wm TODO: this is tested except _, constant etc...
@@ -261,7 +271,6 @@ bool QueryPreprocessor::parseRelation(std::string relType, std::vector<std::stri
 
 bool QueryPreprocessor::parsePattern(std::vector<std::string> pattern) {
     std::vector<std::string> patternList;
-
     std::vector<std::string> temp = getNextToken(pattern);
     unsigned int numberOfItemsInPattern = (pattern.size() - temp.size());
     std::string patternStr = "";
@@ -271,30 +280,39 @@ bool QueryPreprocessor::parsePattern(std::vector<std::string> pattern) {
     }
 
     std::string var = patternStr.substr(0, patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET));
+
     if (!isVarExist(var)) {
         // std::cout << "invalid var: " + var;
         return false;
     }
 
     std::string argStr = patternStr.substr(
-        patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET) + 1, patternStr.find_first_of(CHAR_SYMBOL_CLOSEBRACKET));
+        patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET) + 1,
+        patternStr.find_first_of(CHAR_SYMBOL_CLOSEBRACKET)
+        - patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET) - 1);
     std::vector<std::string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
 
-    // wm todo: rename to parse Relation
-    bool isSuccess = parseRelation(var, argList);
+    bool isSuccess = parseRelation("pattern", var, argList);
 
     return isSuccess;
 }
 
 bool QueryPreprocessor::isConstantVar(std::string var) {
     bool isSurroundWithDblQuotes = (var[0] == '"') && (var[var.length() - 1] == '"');
-    bool isUnderscoreExist = (var[1] == '_');
-    bool isSecondUnderscoreExist = (var[var.length() - 2] == '_');
+    bool isUnderscoreExist = (var[0] == '_');
+    bool isSecondUnderscoreExist = (var[var.length() - 1] == '_');
+    bool isSurroundWithInnerDblQuotes;
 
-    if (isUnderscoreExist || isSecondUnderscoreExist) {
-        return isSurroundWithDblQuotes && (isUnderscoreExist && isSecondUnderscoreExist);
+    if (var.length() == 1) {
+        return isUnderscoreExist;
+    }
+    if (var.length() >= 5) {
+        isSurroundWithInnerDblQuotes = (var[1] == '"') && (var[var.length() - 2] == '"');
+        bool isDblWildcard = isSurroundWithInnerDblQuotes && (isUnderscoreExist && isSecondUnderscoreExist);
+        return isDblWildcard;
     }
 
+    // wm todo: isValid pattern expr: "+5", "5-4x"
     return isSurroundWithDblQuotes;
 }
 
@@ -302,9 +320,8 @@ bool QueryPreprocessor::isVarExist(std::string var) {
     if (var.compare("boolean") == 0) {
         return true;
     }
-    for (unsigned int i = 0; i < declareVar.size(); i++) {
-        if (declareVar[i].compare(var) == 0)
-            return true;
+    if (varMap.find(var) != varMap.end()) {
+        return true;
     }
     return false;
 }
@@ -349,7 +366,8 @@ std::vector<std::string> QueryPreprocessor::getNextToken(std::vector<std::string
 
 // todo: return symbol enum type
 std::string QueryPreprocessor::getVarType(std::string var) {
-    return "";
+    std::string varType = varMap.find(var)->second;
+    return varType;
 }
 
 QueryTree QueryPreprocessor::getQueryTree() {
