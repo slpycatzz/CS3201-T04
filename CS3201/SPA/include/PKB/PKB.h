@@ -24,58 +24,70 @@ class PKB {
     static void PrintASTTree();
 
     static void GenerateConstantTable(std::vector<std::string> constants);
+    static bool hasConstant(std::string constantValue);
+    static std::string getConstantValue(unsigned int index);
+    static unsigned int getConstantIndex(std::string constantValue);
     static void PrintConstantTable();
 
     static void GenerateVariableTable(std::vector<std::string> variableNames);
+    static bool hasVariable(std::string variableName);
+    static std::string getVariableName(unsigned int index);
+    static unsigned int getVariableIndex(std::string variableName);
     static void PrintVariableTable();
 
     static void GenerateProcedureTable(std::vector<std::string> procedureNames);
+    static bool hasProcedure(std::string procedureName);
+    static std::string getProcedureName(unsigned int index);
+    static unsigned int getProcedureIndex(std::string procedureName);
     static void PrintProcedureTable();
 
     static void GenerateStmtTable(std::map<unsigned int, std::string> stmts);
+    static std::string getStmtSymbol(unsigned int stmtNumber);
+    static std::set<unsigned int> getSymbolStmtNumbers(std::string symbol);
     static void PrintStmtTable();
 
     static void GenerateModifiesTable(std::map<unsigned int, std::set<std::string>> modifies);
     static void GenerateModifiesProcedureTable(std::map<std::string, std::set<std::string>> modifiesProcedure);
+    static bool IsModifies(unsigned int stmtNumber, std::string variableName);
+    static bool IsModifiesProcedure(std::string procedureName, std::string variableName);
+    static std::set<std::string> GetModifiedVariables(unsigned int stmtNumber);
+    static std::set<unsigned int> GetStmtNumberModifying(std::string variableName);
+    static std::set<std::string> GetProcedureModifiedVariables(std::string procedureName);
+    static std::set<std::string> GetProceduresNameModifying(std::string variableName);
     static void PrintModifiesTable();
     static void PrintModifiesProcedureTable();
 
     static void GenerateUsesTable(std::map<unsigned int, std::set<std::string>> uses);
     static void GenerateUsesProcedureTable(std::map<std::string, std::set<std::string>> usesProcedure);
+    static bool IsUses(unsigned int stmtNumber, std::string variableName);
+    static bool IsUsesProcedure(std::string procedureName, std::string variableName);
+    static std::set<std::string> GetUsedVariables(unsigned int stmtNumber);
+    static std::set<unsigned int> GetStmtNumberUsing(std::string variableName);
+    static std::set<std::string> GetProcedureUsedVariables(std::string procedureName);
+    static std::set<std::string> GetProceduresNameUsing(std::string variableName);
+
     static void PrintUsesTable();
     static void PrintUsesProcedureTable();
 
     static void GenerateParentTable(std::map<unsigned int, std::set<unsigned int>> parent);
+    static bool IsParent(unsigned int parent, unsigned int child);
+    static bool IsParentTransitive(unsigned int parent, unsigned int child);
+    static unsigned int GetParent(unsigned int child);
+    static std::set<unsigned int> GetChildren(unsigned int parent);
+    static std::set<unsigned int> GetParentsTransitive(unsigned child);
+    static std::set<unsigned int> GetChildrenTransitive(unsigned int parent);
     static void PrintParentTable();
     static void PrintParentTransitiveTable();
 
     static void GenerateFollowsTable(std::map<unsigned int, unsigned int> follows);
+    static bool IsFollows(unsigned int follows, unsigned int following);
+    static bool IsFollowsTransitive(unsigned int follows, unsigned int following);
+    static unsigned int GetFollows(unsigned int following);
+    static unsigned int GetFollowing(unsigned int follows);
+    static std::set<unsigned int> GetFollowsTransitive(unsigned following);
+    static std::set<unsigned int> GetFollowingTransitive(unsigned follows);
     static void PrintFollowsTable();
     static void PrintFollowsTransitiveTable();
-
-    //static bool IsVariableExist(string variable_name);
-    //static bool IsProcedureExist(string procedure_name);
-
-
-    //static vector<string> UsesVariable(int line_number);
-    //static vector<string> UsesVariable(string procedure_name);
-    //static vector<int> UsedByLineNumber(string variable_name);
-    //static vector<string> UsedByProcedure(string variable_name);
-
-    //static vector<string> ModifiesVariable(int line_number);
-    //static vector<string> ModifiesVariable(string procedure_name);
-    //static vector<int> ModifiedByLineNumber(string variable_name);
-    //static vector<string> ModifiedByProcedure(string variable_name);
-
-    //static bool IsParent(int line_number1, int line_number2);
-    //static bool IsParent(int line_number1, vector<int> line_numbers);
-    //static bool IsParentTransitive(int line_number1, int line_number2);
-    //static bool IsParentTransitive(int line_number1, vector<int> line_numbers);
-
-    //static bool IsFollows(int line_number1, int line_number2);
-    //static bool IsFollows(int line_number1, vector<int> line_numbers);
-    //static bool IsFollowsTransitive(int line_number1, int line_number2);
-    //static bool IsFollowsTransitive(int line_number1, vector<int> line_numbers);
 
  private:
     static unsigned int numberOfProcedure_;

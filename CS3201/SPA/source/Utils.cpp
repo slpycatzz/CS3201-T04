@@ -6,7 +6,7 @@
 
 using std::string;
 using std::vector;
-using std::stringstream;
+using std::istringstream;
 
 vector<string> Utils::Split(string str, char delimiter) {
     vector<string> result;
@@ -26,7 +26,7 @@ vector<string> Utils::SplitAndIgnoreEmpty(string str, char delimiter) {
 
 void Utils::Split(string str, char delimiter, vector<string> &target) {
     string temp;
-    std::istringstream stringStream;
+    istringstream stringStream;
 
     stringStream.str(str);
     while (getline(stringStream, temp, delimiter)) {
@@ -36,7 +36,7 @@ void Utils::Split(string str, char delimiter, vector<string> &target) {
 
 void Utils::SplitAndIgnoreEmpty(string str, char delimiter, vector<string> &target) {
     string temp;
-    std::istringstream stringStream;
+    istringstream stringStream;
 
     stringStream.str(str);
     while (getline(stringStream, temp, delimiter)) {

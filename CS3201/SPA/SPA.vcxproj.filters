@@ -116,10 +116,10 @@
     <ClCompile Include="source\QueryProcessor\QueryTree.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="Clause.cpp">
+    <ClCompile Include="source\QueryProcessor\RelationTable.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="source\QueryProcessor\RelationTable.cpp">
+    <ClCompile Include="source\QueryProcessor\Clause.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
   </ItemGroup>

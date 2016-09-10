@@ -32,13 +32,13 @@ class Table {
         }
     }
 
-    inline std::set<V> getValues(K key) {
+    inline K getKey(V value) {
         /* If does not exist, return empty set. */
-        if (!hasKey(key)) {
-            return std::set<V>();
+        if (!hasValue(value)) {
+            return NULL;
         }
 
-        return keyToValueMap[key];
+        return *(valueToKeyMap[value].begin());
     }
 
     inline std::set<K> getKeys(V value) {
@@ -48,6 +48,24 @@ class Table {
         }
 
         return valueToKeyMap[value];
+    }
+
+    inline V getValue(K key) {
+        /* If does not exist, return empty set. */
+        if (!hasKey(key)) {
+            return NULL;
+        }
+
+        return *(keyToValueMap[key].begin());
+    }
+
+    inline std::set<V> getValues(K key) {
+        /* If does not exist, return empty set. */
+        if (!hasKey(key)) {
+            return std::set<V>();
+        }
+
+        return keyToValueMap[key];
     }
 
     inline std::map<K, std::set<V>> getKeyToValueMap() {
@@ -66,10 +84,16 @@ class Table {
         return (valueToKeyMap.find(value) != valueToKeyMap.end());
     }
 
-    inline bool hasKeyValue(K key, V value) {
+    inline bool hasKeyToValue(K key, V value) {
         std::set<V> values = keyToValueMap[key];
 
         return (find(values.begin(), values.end(), value) != values.end());
+    }
+
+    inline bool hasValueToKey(K key, V value) {
+        std::set<K> keys = valueToKeyMap[value];
+
+        return (find(keys.begin(), keys.end(), key) != keys.end());
     }
 
     inline void printTable() {
@@ -78,6 +102,18 @@ class Table {
 
             for (const auto &value : pair.second) {
                 std::cout << value << " ";
+            }
+
+            std::cout << "}" << std::endl;
+        }
+
+        std::cout << "=====================" << std::endl;
+
+        for (const auto &pair : valueToKeyMap) {
+            std::cout << pair.first << " -> { ";
+
+            for (const auto &key : pair.second) {
+                std::cout << key << " ";
             }
 
             std::cout << "}" << std::endl;

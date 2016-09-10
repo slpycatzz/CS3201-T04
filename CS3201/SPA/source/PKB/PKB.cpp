@@ -84,6 +84,18 @@ void PKB::GenerateConstantTable(vector<string> constants) {
     }
 }
 
+bool PKB::hasConstant(string constantValue) {
+    return constantTable_.hasValue(constantValue);
+}
+
+string PKB::getConstantValue(unsigned int index) {
+    return constantTable_.getValue(index);
+}
+
+unsigned int PKB::getConstantIndex(string constantValue) {
+    return constantTable_.getKey(constantValue);
+}
+
 void PKB::PrintConstantTable() {
     constantTable_.printTable();
 }
@@ -100,6 +112,18 @@ void PKB::GenerateVariableTable(vector<string> variableNames) {
     }
 }
 
+bool PKB::hasVariable(string variableName) {
+    return variableTable_.hasValue(variableName);
+}
+
+string PKB::getVariableName(unsigned int index) {
+    return variableTable_.getValue(index);
+}
+
+unsigned int PKB::getVariableIndex(string variableName) {
+    return variableTable_.getKey(variableName);
+}
+
 void PKB::PrintVariableTable() {
     variableTable_.printTable();
 }
@@ -113,6 +137,18 @@ void PKB::GenerateProcedureTable(vector<string> procedureNames) {
         numberOfProcedure_++;
         procedureTable_.insert(i++, procedureName);
     }
+}
+
+bool PKB::hasProcedure(string procedureName) {
+    return procedureTable_.hasValue(procedureName);
+}
+
+string PKB::getProcedureName(unsigned int index) {
+    return procedureTable_.getValue(index);
+}
+
+unsigned int PKB::getProcedureIndex(string procedureName) {
+    return procedureTable_.getKey(procedureName);
 }
 
 void PKB::PrintProcedureTable() {
@@ -149,6 +185,14 @@ void PKB::GenerateStmtTable(map<unsigned int, string> stmts) {
     }
 }
 
+string PKB::getStmtSymbol(unsigned int stmtNumber) {
+    return stmtTable_.getValue(stmtNumber);
+}
+
+set<unsigned int> PKB::getSymbolStmtNumbers(string symbol) {
+    return stmtTable_.getKeys(symbol);
+}
+
 void PKB::PrintStmtTable() {
     stmtTable_.printTable();
 }
@@ -166,6 +210,30 @@ void PKB::GenerateModifiesProcedureTable(map<string, set<string>> modifiesProced
     for (auto &pair : modifiesProcedure) {
         modifiesProcedureTable_.insert(pair.first, pair.second);
     }
+}
+
+bool PKB::IsModifies(unsigned int stmtNumber, string variableName) {
+    return modifiesTable_.hasKeyToValue(stmtNumber, variableName);
+}
+
+bool PKB::IsModifiesProcedure(std::string procedureName, string variableName) {
+    return modifiesProcedureTable_.hasKeyToValue(procedureName, variableName);
+}
+
+set<string> PKB::GetModifiedVariables(unsigned int stmtNumber) {
+    return modifiesTable_.getValues(stmtNumber);
+}
+
+set<unsigned int> PKB::GetStmtNumberModifying(string variableName) {
+    return modifiesTable_.getKeys(variableName);
+}
+
+set<string> PKB::GetProcedureModifiedVariables(string procedureName) {
+    return modifiesProcedureTable_.getValues(procedureName);
+}
+
+set<string> PKB::GetProceduresNameModifying(string variableName) {
+    return modifiesProcedureTable_.getKeys(variableName);
 }
 
 void PKB::PrintModifiesTable() {
@@ -192,6 +260,30 @@ void PKB::GenerateUsesProcedureTable(map<string, set<string>> usesProcedure) {
     }
 }
 
+bool PKB::IsUses(unsigned int stmtNumber, string variableName) {
+    return usesTable_.hasKeyToValue(stmtNumber, variableName);
+}
+
+bool PKB::IsUsesProcedure(std::string procedureName, std::string variableName) {
+    return usesProcedureTable_.hasKeyToValue(procedureName, variableName);
+}
+
+set<string> PKB::GetUsedVariables(unsigned int stmtNumber) {
+    return usesTable_.getValues(stmtNumber);
+}
+
+set<unsigned int> PKB::GetStmtNumberUsing(string variableName) {
+    return usesTable_.getKeys(variableName);
+}
+
+set<string> PKB::GetProcedureUsedVariables(string procedureName) {
+    return usesProcedureTable_.getValues(procedureName);
+}
+
+set<string> PKB::GetProceduresNameUsing(string variableName) {
+    return usesProcedureTable_.getKeys(variableName);
+}
+
 void PKB::PrintUsesTable() {
     usesTable_.printTable();
 }
@@ -210,6 +302,30 @@ void PKB::GenerateParentTable(map<unsigned int, set<unsigned int>> parent) {
 
     parentTransitiveTable_.generateKeyToValueTransitiveMap(parentTable_);
     parentTransitiveTable_.generateValueToKeyTransitiveMap(parentTable_);
+}
+
+bool PKB::IsParent(unsigned int parent, unsigned int child) {
+    return parentTable_.hasKeyToValue(parent, child);
+}
+
+bool PKB::IsParentTransitive(unsigned int parent, unsigned int child) {
+    return parentTable_.hasKeyToValue(parent, child);
+}
+
+unsigned int PKB::GetParent(unsigned int child) {
+    return parentTable_.getKey(child);
+}
+
+set<unsigned int> PKB::GetChildren(unsigned int parent) {
+    return parentTable_.getValues(parent);
+}
+
+set<unsigned int> PKB::GetParentsTransitive(unsigned child) {
+    return parentTransitiveTable_.getKeys(child);
+}
+
+set<unsigned int> PKB::GetChildrenTransitive(unsigned int parent) {
+    return parentTransitiveTable_.getValues(parent);
 }
 
 void PKB::PrintParentTable() {
@@ -232,6 +348,30 @@ void PKB::GenerateFollowsTable(map<unsigned int, unsigned int> follows) {
     followsTransitiveTable_.generateValueToKeyTransitiveMap(followsTable_);
 }
 
+bool PKB::IsFollows(unsigned int follows, unsigned int following) {
+    return followsTable_.hasKeyToValue(follows, following);
+}
+
+bool PKB::IsFollowsTransitive(unsigned int follows, unsigned int following) {
+    return followsTransitiveTable_.hasKeyToValue(follows, following);
+}
+
+unsigned int PKB::GetFollows(unsigned int following) {
+    return followsTable_.getKey(following);
+}
+
+unsigned int PKB::GetFollowing(unsigned int follows) {
+    return followsTable_.getValue(follows);
+}
+
+set<unsigned int> PKB::GetFollowsTransitive(unsigned following) {
+    return followsTransitiveTable_.getKeys(following);
+}
+
+set<unsigned int> PKB::GetFollowingTransitive(unsigned follows) {
+    return followsTransitiveTable_.getValues(follows);
+}
+
 void PKB::PrintFollowsTable() {
     followsTable_.printTable();
 }
@@ -241,86 +381,3 @@ void PKB::PrintFollowsTransitiveTable() {
 }
 
 /* END   - Follows table functions */
-
-//// TODO(pixelducky): update this impl
-//bool PKB::IsVariableExist(string variable_name) {
-//    return true;
-//}
-
-
-//// TODO(pixelducky): update this impl
-//bool PKB::IsProcedureExist(string procedure_name) {
-//  return false;
-//}
-//
-
-
-//vector<string> PKB::UsesVariable(int line_number) {
-//  return PKB::uses_table.getValues(line_number);
-//}
-//
-//vector<string> PKB::UsesVariable(string procedure_name) {
-//  return PKB::procedure_uses_table.getValues(procedure_name);
-//}
-//
-//vector<int> PKB::UsedByLineNumber(string variable_name) {
-//  return PKB::uses_table.getKeys(variable_name);
-//}
-//
-//vector<string> PKB::UsedByProcedure(string variable_name) {
-//  return PKB::procedure_uses_table.getKeys(variable_name);
-//}
-
-
-//
-//vector<string> PKB::ModifiesVariable(int line_number) {
-//  return PKB::modifies_table.getValues(line_number);
-//}
-//
-//vector<string> PKB::ModifiesVariable(string procedure_name) {
-//  return PKB::procedure_modifies_table.getValues(procedure_name);
-//}
-//
-//vector<int> PKB::ModifiedByLineNumber(string variable_name) {
-//  return PKB::modifies_table.getKeys(variable_name);
-//}
-//
-//vector<string> PKB::ModifiedByProcedure(string variable_name) {
-//  return PKB::procedure_modifies_table.getKeys(variable_name);
-//}
-
-
-//// TODO(pixelducky): update this impl
-//bool PKB::IsParent(int line_number1, int line_number2) {
-//  return false;
-//}
-//// TODO(pixelducky): update this impl
-//bool PKB::IsParent(int line_number1, vector<int> line_numbers) {
-//  return false;
-//}
-//// TODO(pixelducky): update this impl
-//bool PKB::IsParentTransitive(int line_number1, int line_number2) {
-//  return false;
-//}
-//// TODO(pixelducky): update this impl
-//bool PKB::IsParentTransitive(int line_number1, vector<int> line_numbers) {
-//  return false;
-//}
-
-
-//// TODO(pixelducky): update this impl
-//bool PKB::IsFollows(int line_number1, int line_number2) {
-//  return false;
-//}
-//// TODO(pixelducky): update this impl
-//bool PKB::IsFollows(int line_number1, vector<int> line_numbers) {
-//  return false;
-//}
-//// TODO(pixelducky): update this impl
-//bool PKB::IsFollowsTransitive(int line_number1, int line_number2) {
-//  return false;
-//}
-//// TODO(pixelducky): update this impl
-//bool PKB::IsFollowsTransitive(int line_number1, vector<int> line_numbers) {
-//  return false;
-//}

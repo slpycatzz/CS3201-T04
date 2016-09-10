@@ -67,6 +67,44 @@ class TransitiveTable {
         }
     }
 
+    inline std::set<K> getKeys(V value) {
+        /* If does not exist, return empty set. */
+        if (!hasValue(value)) {
+            return std::set<K>();
+        }
+
+        return valueToKeyTransitiveMap[value];
+    }
+
+    inline std::set<V> getValues(K key) {
+        /* If does not exist, return empty set. */
+        if (!hasKey(key)) {
+            return std::set<V>();
+        }
+
+        return keyToValueTransitiveMap[key];
+    }
+
+    inline bool hasKey(K key) {
+        return (keyToValueTransitiveMap.find(key) != keyToValueTransitiveMap.end());
+    }
+
+    inline bool hasValue(V value) {
+        return (valueToKeyTransitiveMap.find(value) != valueToKeyTransitiveMap.end());
+    }
+
+    inline bool hasKeyToValue(K key, V value) {
+        std::set<V> values = keyToValueTransitiveMap[key];
+
+        return (find(values.begin(), values.end(), value) != values.end());
+    }
+
+    inline bool hasValueToKey(K key, V value) {
+        std::set<K> keys = valueToKeyTransitiveMap[value];
+
+        return (find(keys.begin(), keys.end(), key) != keys.end());
+    }
+
     inline void printTable() {
         for (const auto &pair : keyToValueTransitiveMap) {
             std::cout << pair.first << " -> { ";

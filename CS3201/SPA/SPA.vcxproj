@@ -37,11 +37,11 @@
     <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Clause.cpp" />
     <ClCompile Include="source\Constants.cpp" />
     <ClCompile Include="source\frontend\FrontendParser.cpp" />
     <ClCompile Include="source\PKB\AST.cpp" />
     <ClCompile Include="source\PKB\PKB.cpp" />
+    <ClCompile Include="source\QueryProcessor\Clause.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryEvaluator.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryPreprocessor.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryProjector.cpp" />
