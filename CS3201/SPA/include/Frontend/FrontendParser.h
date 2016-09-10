@@ -62,6 +62,7 @@ class FrontendParser {
     std::vector<std::string> variableNames_;
     std::vector<std::string> procedureNames_;
     std::map<unsigned int, std::string> stmts_;
+    std::map<unsigned int, TreeNode*> assigns_;
 
     /* For PKB design abstraction table generation. */
     std::map<unsigned int, std::set<std::string>> modifies_;

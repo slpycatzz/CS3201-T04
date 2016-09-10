@@ -1,5 +1,3 @@
-#include <iomanip>
-#include <iostream>
 #include <string>
 
 #include "Constants.h"
@@ -37,24 +35,5 @@ TreeNode* Tree::createNode(Symbol symbol, int lineNumber, string value) {
 }
 
 void Tree::printTree() {
-    printTreeNode(root_, 0);
-}
-
-void Tree::printTreeNode(TreeNode* node, unsigned int indent) {
-    if (node != NULL) {
-        std::cout << std::setw(indent) << ' ';
-
-        if (node->getStmtNumber() != -1) {
-            std::cout << node->getStmtNumber() << ". ";
-        }
-
-        if (node->getValue() != "") {
-            std::cout << node->getValue() << ':';
-        }
-
-        std::cout << Constants::SymbolToString(node->getSymbol()) << std::endl;
-        for (const auto &tempNode : node->getChildren()) {
-            printTreeNode(tempNode, (indent + 4));
-        }
-    }
+    root_->printTreeNode(0);
 }

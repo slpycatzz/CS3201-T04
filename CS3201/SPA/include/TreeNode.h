@@ -24,6 +24,8 @@ class TreeNode {
     unsigned int getNumberOfChildren();
     void addChild(TreeNode *child);
 
+    void printTreeNode(unsigned int indent);
+
  private:
     Symbol symbol_;
     unsigned int stmtNumber_;

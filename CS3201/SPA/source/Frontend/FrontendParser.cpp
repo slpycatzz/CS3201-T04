@@ -48,6 +48,7 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateVariableTable(variableNames_);
     PKB::GenerateProcedureTable(procedureNames_);
     PKB::GenerateStmtTable(stmts_);
+    PKB::GenerateAssignTable(assigns_);
 
     /* Generate data for design abstraction table generation. */
     setModifies();
@@ -300,6 +301,10 @@ TreeNode* FrontendParser::callAssignRecognizer() {
     modifies_[stmtNumber_].insert(controlVariableName);
 
     TreeNode* assignNode = PKB::CreateASTNode(ASSIGN, stmtNumber_++);
+    
+    /* For PKB assign table generation. */
+    assigns_.insert(std::make_pair(stmtNumber_ - 1, assignNode));
+
     assignNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
 
     expect(CHAR_SYMBOL_EQUAL);

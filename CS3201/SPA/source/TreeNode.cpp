@@ -1,3 +1,5 @@
+#include <iomanip>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -58,4 +60,21 @@ unsigned int TreeNode::getNumberOfChildren() {
 
 void TreeNode::addChild(TreeNode *child) {
     children_.push_back(child);
+}
+
+void TreeNode::printTreeNode(unsigned int indent) {
+    std::cout << std::setw(indent) << ' ';
+
+    if (stmtNumber_ != -1) {
+        std::cout << stmtNumber_ << ". ";
+    }
+
+    if (value_ != "") {
+        std::cout << value_ << ':';
+    }
+
+    std::cout << Constants::SymbolToString(symbol_) << std::endl;
+    for (const auto &tempNode : children_) {
+        tempNode->printTreeNode(indent + 4);
+    }
 }

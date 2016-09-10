@@ -25,6 +25,7 @@ Table<unsigned int, string> PKB::constantTable_;
 Table<unsigned int, string> PKB::variableTable_;
 Table<unsigned int, string> PKB::procedureTable_;
 Table<unsigned int, string> PKB::stmtTable_;
+Table<unsigned int, TreeNode*> PKB::assignTable_;
 
 Table<unsigned int, string> PKB::modifiesTable_;
 Table<string, string> PKB::modifiesProcedureTable_;
@@ -198,6 +199,23 @@ void PKB::PrintStmtTable() {
 }
 
 /* END   - Stmt table functions */
+/* START - Assign table functions */
+
+void PKB::GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns) {
+    for (auto &assign : assigns) {
+        assignTable_.insert(assign.first, assign.second);
+    }
+}
+
+TreeNode* PKB::getAssignTreeNode(unsigned int stmtNumber) {
+    return assignTable_.getValue(stmtNumber);
+}
+
+set<TreeNode*> PKB::getAllAssignTreeNodes() {
+    return assignTable_.getValues();
+}
+
+/* END   - Assign table functions */
 /* START - Modifies table functions */
 
 void PKB::GenerateModifiesTable(map<unsigned int, set<string>> modifies) {

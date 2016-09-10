@@ -46,6 +46,10 @@ class PKB {
     static std::set<unsigned int> getSymbolStmtNumbers(std::string symbol);
     static void PrintStmtTable();
 
+    static void GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns);
+    static TreeNode* getAssignTreeNode(unsigned int stmtNumber);
+    static std::set<TreeNode*> getAllAssignTreeNodes();
+
     static void GenerateModifiesTable(std::map<unsigned int, std::set<std::string>> modifies);
     static void GenerateModifiesProcedureTable(std::map<std::string, std::set<std::string>> modifiesProcedure);
     static bool IsModifies(unsigned int stmtNumber, std::string variableName);
