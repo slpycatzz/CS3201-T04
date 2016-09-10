@@ -89,7 +89,6 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
     for (unsigned int line_num = 0; line_num < declarationList.size(); line_num++) {
         declarationList[line_num] = Utils::TrimLeadingSpaces(declarationList[line_num]);
         std::vector<std::string> declarationType = Utils::Split(declarationList[line_num], ' ');
-
         if (!isValidVarType(declarationType[0])) {
             // std::cout << "invalid declaration type!";
             return false;
@@ -97,7 +96,7 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
         std::string s;
         s = declarationList[line_num];
         s = s.substr(s.find_first_of(" \t") + 1);
-
+        
         std::vector<std::string> synonyms = Utils::Split(s, CHAR_SYMBOL_COMMA);
 
         if (synonyms.size() < 1) {
@@ -108,11 +107,12 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
         for (unsigned int i = 0; i < synonyms.size(); i++) {
             // strip unnecessary whitespaces
             synonyms[i] = std::regex_replace(synonyms[i], std::regex("\\s+"), "");
+
             if (!isValidVarName(synonyms[i])) {
                 return false;
             } else {
                 // note(to self): currently no need to insert to qt, only Select vars are required
-                varMap[synonyms[i]] = declarationType[line_num];
+                varMap[synonyms[i]] = declarationType[0];
             }
         }
     }
@@ -222,12 +222,13 @@ bool QueryPreprocessor::parseSuchThat(std::vector<std::string> suchThat) {
 
 bool QueryPreprocessor::parseRelation(std::string clauseType, std::string relType, std::vector<std::string>& varList) {
     std::vector<std::string> varTypeList;
+    std::string relTypeArg = "";
     if (clauseType == "pattern") {
+        relTypeArg = relType;
         relType = getVarType(relType);
         if (relType.compare("assign") == 0) {
             relType = "patternAssign";
-        }
-        else {
+        } else {
             relType = "pattern";
         }
     }
@@ -262,7 +263,7 @@ bool QueryPreprocessor::parseRelation(std::string clauseType, std::string relTyp
     if (clauseType == "such that") {
         qt.insertSuchThat(relType, varList);
     } else if (clauseType == "pattern") {
-        qt.insertPattern(relType, varList);
+        qt.insertPattern(relTypeArg, varList);
     }
     return true;
 }  // wm TODO: this is tested except _, constant etc...

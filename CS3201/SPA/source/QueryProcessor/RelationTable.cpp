@@ -11,8 +11,6 @@ RelationTable::~RelationTable() {}
 
 bool RelationTable::isArgValid(std::string relation, std::string arg, int i) {
     std::vector<std::string> argList;
-    // wm todo: not tested yet
-    return true;
 
     switch (i) {
     case 0:
