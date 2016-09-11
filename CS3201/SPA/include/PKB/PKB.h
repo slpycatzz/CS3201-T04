@@ -27,23 +27,27 @@ class PKB {
     static bool HasConstant(std::string constantValue);
     static std::string GetConstantValue(unsigned int index);
     static unsigned int GetConstantIndex(std::string constantValue);
+    static std::set<std::string> GetAllConstantValues();
     static void PrintConstantTable();
 
     static void GenerateVariableTable(std::vector<std::string> variableNames);
     static bool HasVariable(std::string variableName);
     static std::string GetVariableName(unsigned int index);
     static unsigned int GetVariableIndex(std::string variableName);
+    static std::set<std::string> GetAllVariableNames();
     static void PrintVariableTable();
 
     static void GenerateProcedureTable(std::vector<std::string> procedureNames);
     static bool HasProcedure(std::string procedureName);
     static std::string GetProcedureName(unsigned int index);
     static unsigned int GetProcedureIndex(std::string procedureName);
+    static std::set<std::string> GetAllProcedures();
     static void PrintProcedureTable();
 
     static void GenerateStmtTable(std::map<unsigned int, std::string> stmts);
     static std::string GetStmtSymbol(unsigned int stmtNumber);
     static std::set<unsigned int> GetSymbolStmtNumbers(std::string symbol);
+    static std::set<unsigned int> GetSymbolStmtNumbers(Symbol symbol);
     static void PrintStmtTable();
 
     static void GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns);

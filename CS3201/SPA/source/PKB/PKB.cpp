@@ -97,6 +97,10 @@ unsigned int PKB::GetConstantIndex(string constantValue) {
     return constantTable_.getKey(constantValue);
 }
 
+set<string> PKB::GetAllConstantValues() {
+    return constantTable_.getValues();
+}
+
 void PKB::PrintConstantTable() {
     constantTable_.printTable();
 }
@@ -125,6 +129,10 @@ unsigned int PKB::GetVariableIndex(string variableName) {
     return variableTable_.getKey(variableName);
 }
 
+set<string> PKB::GetAllVariableNames() {
+    return variableTable_.getValues();
+}
+
 void PKB::PrintVariableTable() {
     variableTable_.printTable();
 }
@@ -150,6 +158,10 @@ string PKB::GetProcedureName(unsigned int index) {
 
 unsigned int PKB::GetProcedureIndex(string procedureName) {
     return procedureTable_.getKey(procedureName);
+}
+
+set<string> PKB::GetAllProcedures() {
+    return procedureTable_.getValues();
 }
 
 void PKB::PrintProcedureTable() {
@@ -192,6 +204,10 @@ string PKB::GetStmtSymbol(unsigned int stmtNumber) {
 
 set<unsigned int> PKB::GetSymbolStmtNumbers(string symbol) {
     return stmtTable_.getKeys(symbol);
+}
+
+set<unsigned int> PKB::GetSymbolStmtNumbers(Symbol symbol) {
+    return stmtTable_.getKeys(Constants::SymbolToString(symbol));
 }
 
 void PKB::PrintStmtTable() {
