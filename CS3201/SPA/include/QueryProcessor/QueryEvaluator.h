@@ -5,11 +5,11 @@
 typedef std::vector<std::string> ResultList;
 typedef std::string Candidate;
 typedef std::string Var;
-typedef int Cand;
-typedef std::unordered_map<Var, Cand> CandidateTuple;
-typedef std::vector<CandidateTuple> CandidateTupleList;
+typedef std::string Cand;
+typedef std::unordered_map<Var, Cand> CandidateMap;
+typedef std::vector<CandidateMap> CandidateMapList;
 //typedef std::vector<CandidateTuple> FlatCandidateList;
-typedef std::unordered_map<Var, CandidateTupleList> TotalCandidateList;
+typedef std::unordered_map<Var, CandidateMapList> TotalCandidateList;
 
 class QueryEvaluator {
  public:
@@ -18,33 +18,40 @@ class QueryEvaluator {
 
  private:
 	 // evaluate a single clause to see if it is true
-	 bool evaluateClause(PKB&, Clause&, CandidateTuple);
+	 bool evaluateClause(PKB&, Clause&, CandidateMap);
 	 
-	 bool evaluateUses(PKB&, Clause&, CandidateTuple);
-	 bool evaluateModifies(PKB&, Clause&, CandidateTuple);
-	 bool evaluateParent(PKB&, Clause&, CandidateTuple);
-	 bool evaluateParentStar(PKB&, Clause&, CandidateTuple);
-	 bool evaluateFollows(PKB&, Clause&, CandidateTuple);
-	 bool evaluateFollowsStar(PKB&, Clause&, CandidateTuple);
-	 bool evaluateNext(PKB&, Clause&, CandidateTuple);
-	 bool evaluateNextStar(PKB&, Clause&, CandidateTuple);
-	 bool evaluateAffects(PKB&, Clause&, CandidateTuple);
-	 bool evaluateAffectsStar(PKB&, Clause&, CandidateTuple);
-	 bool evaluateCalls(PKB&, Clause&, CandidateTuple);
-	 bool evaluateCallsStar(PKB&, Clause&, CandidateTuple);
+	 bool evaluateUses(PKB&, Clause&, CandidateMap);
+	 bool evaluateModifies(PKB&, Clause&, CandidateMap);
+	 bool evaluateParent(PKB&, Clause&, CandidateMap);
+	 bool evaluateParentStar(PKB&, Clause&, CandidateMap);
+	 bool evaluateFollows(PKB&, Clause&, CandidateMap);
+	 bool evaluateFollowsStar(PKB&, Clause&, CandidateMap);
+	 bool evaluateNext(PKB&, Clause&, CandidateMap);
+	 bool evaluateNextStar(PKB&, Clause&, CandidateMap);
+	 bool evaluateAffects(PKB&, Clause&, CandidateMap);
+	 bool evaluateAffectsStar(PKB&, Clause&, CandidateMap);
+	 bool evaluateCalls(PKB&, Clause&, CandidateMap);
+	 bool evaluateCallsStar(PKB&, Clause&, CandidateMap);
+
+	 // retrieve all possible candidates for a variable
+	 CandidateMapList getCandidates(PKB &pkb, std::pair<Var, Symbol> var);
+
+	 TotalCandidateList getTotalCandidateList(PKB & pkb, QueryTree & query);
 
 	 // evaluate a single query to see if it is true
 	 bool evaluateQuery(PKB&, QueryTree&);
 
 	 // use the clause to filter the tuple candidate list to its sublist
-	 TotalCandidateList selectClauseResults(PKB&, Clause&, TotalCandidateList&);
+	 bool selectClauseResults(PKB&, Clause&, TotalCandidateList&);
 
-	 void Filter(CandidateTupleList &candidateList,
+	 void insertMap(std::vector<std::string> list, Var var, CandidateMapList &result);
+
+	 bool Filter(CandidateMapList &candidateList,
 		 PKB & pkb, Clause & clause,
 		 TotalCandidateList & candidates);
 
-	 void MergeAndFilter(CandidateTupleList &candidateList0,
-		 CandidateTupleList &candidateList1,
+	 bool MergeAndFilter(CandidateMapList &candidateList0,
+		 CandidateMapList &candidateList1,
 		 PKB & pkb, Clause & clause,
 		 TotalCandidateList & candidates);
 	 
