@@ -49,11 +49,6 @@ void QueryPreprocessor::preprocessFile(std::ifstream& fileStream) {
     while (std::getline(fileStream, currentLine)) {
         currentLine = Utils::TrimSpaces(currentLine);
 
-        /* Ignore empty lines. */
-        if (currentLine.empty()) {
-            continue;
-        }
-
         switch (counter) {
             default:
             /* Comment line of query. */
@@ -68,7 +63,7 @@ void QueryPreprocessor::preprocessFile(std::ifstream& fileStream) {
 
             /* Query data - expected output of query. */
             case 3:
-                query.push_back(currentLine);
+                query.push_back(currentLine.empty() ? "" : currentLine);
                 break;
 
             /* Time limit line of query. Used it to delimit end of query. */
