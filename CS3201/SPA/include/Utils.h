@@ -14,6 +14,12 @@ class Utils {
     static std::string TrimSpaces(std::string str);
     static std::string TrimLeadingSpaces(std::string str);
     static std::string TrimTrailingSpaces(std::string str);
+
+	static std::string IntToString(unsigned i);
+	static unsigned StringToInt(std::string str);
+
+	static std::vector<std::string> IntToString(std::vector<unsigned> vi);
+	static std::vector<unsigned> StringToInt(std::vector<std::string> vs);
     
     static bool IsValidNamingConvention(std::string str);
     static bool IsAlphanumeric(std::string str);

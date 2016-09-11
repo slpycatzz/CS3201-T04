@@ -96,6 +96,36 @@ string Utils::TrimTrailingSpaces(string str) {
     return str.substr(0, position + 1);
 }
 
+std::string Utils::IntToString(unsigned i)
+{
+	std::stringstream ss;
+	ss << i;
+	return ss.str();
+}
+
+unsigned Utils::StringToInt(std::string str)
+{
+	return std::stoi(str);
+}
+
+std::vector<std::string> Utils::IntToString(std::vector<unsigned> vi)
+{
+	std::vector<std::string> result;
+	for (unsigned i : vi) {
+		result.push_back(IntToString(i));
+	}
+	return result;
+}
+
+std::vector<unsigned> Utils::StringToInt(std::vector<std::string> vs)
+{
+	std::vector<unsigned> result;
+	for (std::string str : vs) {
+		result.push_back(StringToInt(str));
+	}
+	return result;
+}
+
 bool Utils::IsValidNamingConvention(string str) {
     return StartsWithAlphabet(str) && IsAlphanumeric(str);
 }

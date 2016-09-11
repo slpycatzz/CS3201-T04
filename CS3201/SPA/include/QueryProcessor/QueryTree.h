@@ -14,6 +14,7 @@ class QueryTree {
     std::unordered_map<std::string, Symbol> QueryTree::getSelect();
     std::vector<Clause> QueryTree::getPattern();
     std::vector<Clause> QueryTree::getSuchThat();
+	std::unordered_map<std::string, Symbol> getVarMap();
 
     std::vector<Clause> getClauses(std::string ClauseType);
     std::vector<std::string> getResults();

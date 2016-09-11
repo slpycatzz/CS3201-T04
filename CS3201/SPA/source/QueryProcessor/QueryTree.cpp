@@ -77,8 +77,12 @@ std::vector<Clause> QueryTree::getClauses(std::string clauseType) {
 		else {
             std::vector<Clause> suchThatClauses = getSuchThat();
             result.insert(result.end(), suchThatClauses.begin(), suchThatClauses.end());
-    }
+		}
     }
     return result;
+}
+
+std::unordered_map<std::string, Symbol> QueryTree::getVarMap() {
+	return varMap;
 }
 
