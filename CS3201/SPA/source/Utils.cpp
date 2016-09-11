@@ -8,6 +8,31 @@ using std::string;
 using std::vector;
 using std::istringstream;
 
+template<class K, class V>
+std::vector<std::vector<V>> Utils::Flatten(std::unordered_map<K, V>, std::vector<K>) {
+	std::vector<std::vector<V>> result;
+	return result;
+}
+
+template<class T>
+std::vector<std::vector<T>> Utils::Zip(std::vector<T> list1, std::vector<T> list2) {
+	std::vector<std::vector<T>> result;
+	for (T item1 : list1) {
+		for (T item2 : list2) {
+			std::vector<T> item();
+			item.push_back(item1);
+			item.push_back(item2);
+			result.push_back<item>;
+		}
+	}
+}
+
+template<class K, class V>
+std::unordered_map<K, V> Utils::MergeMap(std::unordered_map<K, V> &map1, std::unordered_map<K, V> &map2) {
+	map1.insert(map2.begin(), map2.end());
+	return map1;
+}
+
 vector<string> Utils::Split(string str, char delimiter) {
     vector<string> result;
     

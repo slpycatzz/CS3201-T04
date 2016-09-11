@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 class Utils {
  public:
@@ -20,4 +21,8 @@ class Utils {
     static bool StartsWithAlphabet(std::string str);
 
     static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
+	
+	template<class K, class V> static std::vector<std::vector<V>> Flatten(std::unordered_map<K, V>, std::vector<K>);
+	template<class T> static std::vector<std::vector<T>> Zip(std::vector<T>, std::vector<T>);
+	template<class K, class V> static std::unordered_map<K,V> MergeMap(std::unordered_map<K,V>&, std::unordered_map<K,V>&);
 };
