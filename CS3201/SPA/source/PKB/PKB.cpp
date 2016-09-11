@@ -85,15 +85,15 @@ void PKB::GenerateConstantTable(vector<string> constants) {
     }
 }
 
-bool PKB::hasConstant(string constantValue) {
+bool PKB::HasConstant(string constantValue) {
     return constantTable_.hasValue(constantValue);
 }
 
-string PKB::getConstantValue(unsigned int index) {
+string PKB::GetConstantValue(unsigned int index) {
     return constantTable_.getValue(index);
 }
 
-unsigned int PKB::getConstantIndex(string constantValue) {
+unsigned int PKB::GetConstantIndex(string constantValue) {
     return constantTable_.getKey(constantValue);
 }
 
@@ -113,15 +113,15 @@ void PKB::GenerateVariableTable(vector<string> variableNames) {
     }
 }
 
-bool PKB::hasVariable(string variableName) {
+bool PKB::HasVariable(string variableName) {
     return variableTable_.hasValue(variableName);
 }
 
-string PKB::getVariableName(unsigned int index) {
+string PKB::GetVariableName(unsigned int index) {
     return variableTable_.getValue(index);
 }
 
-unsigned int PKB::getVariableIndex(string variableName) {
+unsigned int PKB::GetVariableIndex(string variableName) {
     return variableTable_.getKey(variableName);
 }
 
@@ -140,15 +140,15 @@ void PKB::GenerateProcedureTable(vector<string> procedureNames) {
     }
 }
 
-bool PKB::hasProcedure(string procedureName) {
+bool PKB::HasProcedure(string procedureName) {
     return procedureTable_.hasValue(procedureName);
 }
 
-string PKB::getProcedureName(unsigned int index) {
+string PKB::GetProcedureName(unsigned int index) {
     return procedureTable_.getValue(index);
 }
 
-unsigned int PKB::getProcedureIndex(string procedureName) {
+unsigned int PKB::GetProcedureIndex(string procedureName) {
     return procedureTable_.getKey(procedureName);
 }
 
@@ -186,11 +186,11 @@ void PKB::GenerateStmtTable(map<unsigned int, string> stmts) {
     }
 }
 
-string PKB::getStmtSymbol(unsigned int stmtNumber) {
+string PKB::GetStmtSymbol(unsigned int stmtNumber) {
     return stmtTable_.getValue(stmtNumber);
 }
 
-set<unsigned int> PKB::getSymbolStmtNumbers(string symbol) {
+set<unsigned int> PKB::GetSymbolStmtNumbers(string symbol) {
     return stmtTable_.getKeys(symbol);
 }
 
@@ -207,11 +207,11 @@ void PKB::GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns) {
     }
 }
 
-TreeNode* PKB::getAssignTreeNode(unsigned int stmtNumber) {
+TreeNode* PKB::GetAssignTreeNode(unsigned int stmtNumber) {
     return assignTable_.getValue(stmtNumber);
 }
 
-set<TreeNode*> PKB::getAllAssignTreeNodes() {
+set<TreeNode*> PKB::GetAllAssignTreeNodes() {
     return assignTable_.getValues();
 }
 

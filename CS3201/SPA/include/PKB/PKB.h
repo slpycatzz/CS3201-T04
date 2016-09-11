@@ -24,31 +24,31 @@ class PKB {
     static void PrintASTTree();
 
     static void GenerateConstantTable(std::vector<std::string> constants);
-    static bool hasConstant(std::string constantValue);
-    static std::string getConstantValue(unsigned int index);
-    static unsigned int getConstantIndex(std::string constantValue);
+    static bool HasConstant(std::string constantValue);
+    static std::string GetConstantValue(unsigned int index);
+    static unsigned int GetConstantIndex(std::string constantValue);
     static void PrintConstantTable();
 
     static void GenerateVariableTable(std::vector<std::string> variableNames);
-    static bool hasVariable(std::string variableName);
-    static std::string getVariableName(unsigned int index);
-    static unsigned int getVariableIndex(std::string variableName);
+    static bool HasVariable(std::string variableName);
+    static std::string GetVariableName(unsigned int index);
+    static unsigned int GetVariableIndex(std::string variableName);
     static void PrintVariableTable();
 
     static void GenerateProcedureTable(std::vector<std::string> procedureNames);
-    static bool hasProcedure(std::string procedureName);
-    static std::string getProcedureName(unsigned int index);
-    static unsigned int getProcedureIndex(std::string procedureName);
+    static bool HasProcedure(std::string procedureName);
+    static std::string GetProcedureName(unsigned int index);
+    static unsigned int GetProcedureIndex(std::string procedureName);
     static void PrintProcedureTable();
 
     static void GenerateStmtTable(std::map<unsigned int, std::string> stmts);
-    static std::string getStmtSymbol(unsigned int stmtNumber);
-    static std::set<unsigned int> getSymbolStmtNumbers(std::string symbol);
+    static std::string GetStmtSymbol(unsigned int stmtNumber);
+    static std::set<unsigned int> GetSymbolStmtNumbers(std::string symbol);
     static void PrintStmtTable();
 
     static void GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns);
-    static TreeNode* getAssignTreeNode(unsigned int stmtNumber);
-    static std::set<TreeNode*> getAllAssignTreeNodes();
+    static TreeNode* GetAssignTreeNode(unsigned int stmtNumber);
+    static std::set<TreeNode*> GetAllAssignTreeNodes();
 
     static void GenerateModifiesTable(std::map<unsigned int, std::set<std::string>> modifies);
     static void GenerateModifiesProcedureTable(std::map<std::string, std::set<std::string>> modifiesProcedure);
