@@ -10,7 +10,10 @@
 #include "QueryProcessor/RelationTable.h"
 #include "Utils.h"
 
+// wm todo: using std::string; etc...
+
 QueryPreprocessor::QueryPreprocessor() {
+    // wm todo: remove these if not used
     relMap = {
         { "follows", "f_symbol" }, { "follows*", "f_s_symbol" },
         { "parent", "p_symbol" }, { "parent*", "p_s_symbol" },
@@ -86,25 +89,25 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
         std::vector<std::string> declarationType = Utils::Split(declarationList[line_num], ' ');
         if (!isValidVarType(declarationType[0])) {
             // std::cout << "invalid declaration type!";
-            return false;
+            throw QuerySyntaxErrorException();
         }
         std::string s;
         s = declarationList[line_num];
         s = s.substr(s.find_first_of(" \t") + 1);
-        
+
         std::vector<std::string> synonyms = Utils::Split(s, CHAR_SYMBOL_COMMA);
 
         if (synonyms.size() < 1) {
+            throw QuerySyntaxErrorException();
             // std::cout<< "invalid declaration!\n usage: assign [varName];";
-            return false;
         }
 
         for (unsigned int i = 0; i < synonyms.size(); i++) {
-            // strip unnecessary whitespaces
+            /* to strip unnecessary whitespaces */
             synonyms[i] = std::regex_replace(synonyms[i], std::regex("\\s+"), "");
 
             if (!isValidVarName(synonyms[i])) {
-                return false;
+                throw QuerySyntaxErrorException();
             } else {
                 // note(to self): currently no need to insert to qt, only Select vars are required
                 varMap[synonyms[i]] = declarationType[0];
@@ -112,7 +115,7 @@ bool QueryPreprocessor::processDeclaration(std::string declaration) {
         }
     }
     return true;
-}  // wm TODO: this is tested
+}
 
 // wm TODO: case insensitive str_cmp...>.<, throw err...
 bool QueryPreprocessor::processQuery(std::string query) {
@@ -121,7 +124,7 @@ bool QueryPreprocessor::processQuery(std::string query) {
     // Select [arg] such that ... pattern...
     if (queryList[0].compare("select") != 0) {
         // std::cout << "no select found";
-        return false;
+        throw QuerySyntaxErrorException();
     }
     parseSelect(queryList);
 
@@ -182,13 +185,13 @@ bool QueryPreprocessor::parseSelect(std::vector<std::string> queryList) {
         } else if (isVarExist(selectList[i])) {
             qt.insertSelect(selectList[i], getVarType(selectList[i]));
         } else {
-            // wm todo: return err msg
-            return false;
+            // std::cout << "invalid variable entered!";
+            throw QuerySyntaxErrorException();
         }
     }
 
     return true;
-}  // wm TODO: this is tested
+}
 
 bool QueryPreprocessor::parseSuchThat(std::vector<std::string> suchThat) {
     // use RelationTable to process and verify Uses, Modifies rel is correct etc...
@@ -229,7 +232,6 @@ bool QueryPreprocessor::parseRelation(std::string clauseType, std::string relTyp
     }
     for (unsigned int i = 0; i < varList.size(); i++) {
         if (isVarExist(varList[i])) {
-            // wm todo: r table not implemented yet, always return true, throw error not done
             // isArgValid(relationType, argType, argNumber)
             // argNumber e.g. 1st arg, 2nd arg...
             if (!r.isArgValid(relType, getVarType(varList[i]), i)) {
@@ -250,20 +252,20 @@ bool QueryPreprocessor::parseRelation(std::string clauseType, std::string relTyp
             }
             varTypeList.push_back("constant");
         } else {
-            return false;
+            // std::cout << "invalid relation entered!";
+            throw QuerySyntaxErrorException();
         }
     }
 
-    // wm todo: implement this, relType should incl. pattern handling ... i.e. a(),w()...
     if (clauseType == "such that") {
         qt.insertSuchThat(relType, varList);
     } else if (clauseType == "pattern") {
-        qt.insertPattern(relTypeArg, varList);
+        // clauseType: "pattern", arg: arg1, arg2, arg3/patternType(a,ifstmt,while...)
+        varList.push_back(relTypeArg);
+        qt.insertPattern("pattern", varList);
     }
     return true;
-}  // wm TODO: this is tested except _, constant etc...
-
-
+}
 
 bool QueryPreprocessor::parsePattern(std::vector<std::string> pattern) {
     std::vector<std::string> patternList;
@@ -279,8 +281,8 @@ bool QueryPreprocessor::parsePattern(std::vector<std::string> pattern) {
 
     if (!isVarExist(var)) {
         // std::cout << "invalid var: " + var;
-        return false;
-    }
+        throw QuerySyntaxErrorException();
+     }
 
     std::string argStr = patternStr.substr(
         patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET) + 1,
