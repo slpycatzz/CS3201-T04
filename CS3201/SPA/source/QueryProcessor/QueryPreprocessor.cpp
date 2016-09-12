@@ -10,7 +10,8 @@
 #include "QueryProcessor/RelationTable.h"
 #include "Utils.h"
 
-// wm todo: using std::string; etc...
+using std::string;
+using std::vector;
 
 QueryPreprocessor::QueryPreprocessor() {
     // wm todo: remove these if not used
@@ -26,106 +27,62 @@ QueryPreprocessor::QueryPreprocessor() {
 
 QueryPreprocessor::~QueryPreprocessor() {}
 
-void QueryPreprocessor::preprocess(std::string filePath) {
-    std::ifstream fileStream(filePath);
+void QueryPreprocessor::preprocessQuery(string query) {
+    /* In the format, queries have size n, [first n - 1 will be declaration, n will be all the clauses] */
+    queries = Utils::Split(query, CHAR_SYMBOL_SEMICOLON);
 
-    /* Validate if file exists. */
-    if (!fileStream.is_open()) {
-        throw FileNotFoundException();
+    for (unsigned int i = 0; i < queries.size() - 1; i++) {
+        processDeclaration(queries[i]);
     }
 
-    preprocessFile(fileStream);
+    processQuery(queries[queries.size() - 1]);
 }
 
-void QueryPreprocessor::preprocessFile(std::ifstream& fileStream) {
-    int counter = 0;
-    std::string currentLine;
-    std::vector<std::string> query;
+bool QueryPreprocessor::processDeclaration(string declaration) {
+    declaration = Utils::TrimSpaces(declaration);
 
-    /* Assumes the query is in the following format:
-       First line:  Comment
-       Second line: Declaration
-       Third line:  Query
-       Fourth line: Expected Result
-       Fifth line:  Time limit
-    */
-    while (std::getline(fileStream, currentLine)) {
-        currentLine = Utils::TrimSpaces(currentLine);
+    string declarationType = declaration.substr(0, declaration.find_first_of(" \t"));
+    string variablesStr = declaration.substr(declaration.find_first_of(" \t"));
+    
+    declarationType = Utils::TrimSpaces(declarationType);
+    variablesStr = Utils::TrimSpaces(variablesStr);
 
-        switch (counter) {
-            default:
-            /* Comment line of query. */
-            case 0:
-                break;
-
-            /* Query data - declaration stmt. */
-            case 1:
-
-            /* Query data - query stmt. */
-            case 2:
-
-            /* Query data - expected output of query. */
-            case 3:
-                query.push_back(currentLine.empty() ? "" : currentLine);
-                break;
-
-            /* Time limit line of query. Used it to delimit end of query. */
-            case 4:
-                queries.push_back(query);
-                query.clear();
-                break;
-        }
-
-        counter = (counter + 1) % QUERY_NUM_OF_LINES;
+    /* Validate if variable type exists. */
+    if (!isValidVarType(declarationType)) {
+        throw QuerySyntaxErrorException();
     }
 
-    fileStream.close();
-}
+    vector<string> variableNames = Utils::Split(variablesStr, CHAR_SYMBOL_COMMA);
 
-bool QueryPreprocessor::processDeclaration(std::string declaration) {
-    std::vector<std::string> declarationList = Utils::Split(declaration, CHAR_SYMBOL_SEMICOLON);
-    for (unsigned int line_num = 0; line_num < declarationList.size(); line_num++) {
-        declarationList[line_num] = Utils::TrimLeadingSpaces(declarationList[line_num]);
-        std::vector<std::string> declarationType = Utils::Split(declarationList[line_num], ' ');
-        if (!isValidVarType(declarationType[0])) {
-            // std::cout << "invalid declaration type!";
-            throw QuerySyntaxErrorException();
-        }
-        std::string s;
-        s = declarationList[line_num];
-        s = s.substr(s.find_first_of(" \t") + 1);
-
-        std::vector<std::string> synonyms = Utils::Split(s, CHAR_SYMBOL_COMMA);
-
-        if (synonyms.size() < 1) {
-            throw QuerySyntaxErrorException();
-            // std::cout<< "invalid declaration!\n usage: assign [varName];";
-        }
-
-        for (unsigned int i = 0; i < synonyms.size(); i++) {
-            /* to strip unnecessary whitespaces */
-            synonyms[i] = std::regex_replace(synonyms[i], std::regex("\\s+"), "");
-
-            if (!isValidVarName(synonyms[i])) {
-                throw QuerySyntaxErrorException();
-            } else {
-                // note(to self): currently no need to insert to qt, only Select vars are required
-                varMap[synonyms[i]] = declarationType[0];
-            }
-        }
+    if (variableNames.size() == 0) {
+        throw QuerySyntaxErrorException();
     }
+
+    for (unsigned int i = 0; i < variableNames.size(); i++) {
+        variableNames[i] = Utils::TrimSpaces(variableNames[i]);
+
+        /* Validate if variable name follows naming convention. */
+        if (!Utils::IsValidNamingConvention(variableNames[i])) {
+            throw QuerySyntaxErrorException();
+        }
+
+        // note(to self): currently no need to insert to qt, only Select vars are required
+        varMap[variableNames[i]] = declarationType;
+    }
+
     return true;
 }
 
 // wm TODO: case insensitive str_cmp...>.<, throw err...
-bool QueryPreprocessor::processQuery(std::string query) {
-    std::vector<std::string> queryList = Utils::Split(query, ' ');
+bool QueryPreprocessor::processQuery(string query) {
+    vector<string> queryList = Utils::Split(query, ' ');
 
     // Select [arg] such that ... pattern...
-    if (queryList[0].compare("select") != 0) {
+    if (queryList[0] != SYMBOL_SELECT) {
         // std::cout << "no select found";
         throw QuerySyntaxErrorException();
     }
+
     parseSelect(queryList);
 
     queryList = getNextToken(queryList);
@@ -135,7 +92,7 @@ bool QueryPreprocessor::processQuery(std::string query) {
     }
 
     bool isSuccess = false;
-    std::string prevClause;
+    string prevClause;
 
     while (queryList.size() > 0) {
         // wm todo: check if EOL reached or no items left works
@@ -163,14 +120,14 @@ bool QueryPreprocessor::processQuery(std::string query) {
     return true;
 }
 
-bool QueryPreprocessor::parseSelect(std::vector<std::string> queryList) {
-    std::vector<std::string> selectList;
-    std::vector<std::string> var, varType;
+bool QueryPreprocessor::parseSelect(vector<string> queryList) {
+    vector<string> selectList;
+    vector<string> var, varType;
 
-    std::vector<std::string> temp = getNextToken(queryList);
+    vector<string> temp = getNextToken(queryList);
 
     unsigned int numberOfVarsInSelect = (queryList.size() - temp.size());
-    std::string selectVars = "";
+    string selectVars = "";
 
     for (unsigned int i = 1; i < numberOfVarsInSelect; i++) {
         selectVars += queryList[i];
@@ -193,34 +150,34 @@ bool QueryPreprocessor::parseSelect(std::vector<std::string> queryList) {
     return true;
 }
 
-bool QueryPreprocessor::parseSuchThat(std::vector<std::string> suchThat) {
+bool QueryPreprocessor::parseSuchThat(vector<string> suchThat) {
     // use RelationTable to process and verify Uses, Modifies rel is correct etc...
-    std::vector<std::string> suchThatList;
+    vector<string> suchThatList;
 
-    std::vector<std::string> temp = getNextToken(suchThat);
+    vector<string> temp = getNextToken(suchThat);
     unsigned int numberOfItemsInSuchThat = (suchThat.size() - temp.size());
-    std::string suchThatStr = "";
+    string suchThatStr = "";
 
     for (unsigned int i = 2; i < numberOfItemsInSuchThat; i++) {
         suchThatStr += suchThat[i];
     }
 
-    std::string relation = suchThatStr.substr(0, suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET));
-    std::string argStr = suchThatStr.substr(
+    string relation = suchThatStr.substr(0, suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET));
+    string argStr = suchThatStr.substr(
         suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET)+1,
         suchThatStr.find_first_of(CHAR_SYMBOL_CLOSEBRACKET)
         - suchThatStr.find_first_of(CHAR_SYMBOL_OPENBRACKET) - 1);
 
-    std::vector<std::string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
+    vector<string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
 
     bool isSuccess = parseRelation("such that", relation, argList);
 
     return isSuccess;
 }
 
-bool QueryPreprocessor::parseRelation(std::string clauseType, std::string relType, std::vector<std::string>& varList) {
-    std::vector<std::string> varTypeList;
-    std::string relTypeArg = "";
+bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<string>& varList) {
+    vector<string> varTypeList;
+    string relTypeArg = "";
     if (clauseType == "pattern") {
         relTypeArg = relType;
         relType = getVarType(relType);
@@ -267,35 +224,35 @@ bool QueryPreprocessor::parseRelation(std::string clauseType, std::string relTyp
     return true;
 }
 
-bool QueryPreprocessor::parsePattern(std::vector<std::string> pattern) {
-    std::vector<std::string> patternList;
-    std::vector<std::string> temp = getNextToken(pattern);
+bool QueryPreprocessor::parsePattern(vector<string> pattern) {
+    vector<string> patternList;
+    vector<string> temp = getNextToken(pattern);
     unsigned int numberOfItemsInPattern = (pattern.size() - temp.size());
-    std::string patternStr = "";
+    string patternStr = "";
 
     for (unsigned int i = 1; i < numberOfItemsInPattern; i++) {
         patternStr += pattern[i];
     }
 
-    std::string var = patternStr.substr(0, patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET));
+    string var = patternStr.substr(0, patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET));
 
     if (!isVarExist(var)) {
         // std::cout << "invalid var: " + var;
         throw QuerySyntaxErrorException();
      }
 
-    std::string argStr = patternStr.substr(
+    string argStr = patternStr.substr(
         patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET) + 1,
         patternStr.find_first_of(CHAR_SYMBOL_CLOSEBRACKET)
         - patternStr.find_first_of(CHAR_SYMBOL_OPENBRACKET) - 1);
-    std::vector<std::string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
+    vector<string> argList = Utils::Split(argStr, CHAR_SYMBOL_COMMA);
 
     bool isSuccess = parseRelation("pattern", var, argList);
 
     return isSuccess;
 }
 
-bool QueryPreprocessor::isConstantVar(std::string var) {
+bool QueryPreprocessor::isConstantVar(string var) {
     bool isSurroundWithDblQuotes = (var[0] == '"') && (var[var.length() - 1] == '"');
     bool isUnderscoreExist = (var[0] == '_');
     bool isSecondUnderscoreExist = (var[var.length() - 1] == '_');
@@ -314,7 +271,7 @@ bool QueryPreprocessor::isConstantVar(std::string var) {
     return isSurroundWithDblQuotes;
 }
 
-bool QueryPreprocessor::isVarExist(std::string var) {
+bool QueryPreprocessor::isVarExist(string var) {
     if (var.compare("boolean") == 0) {
         return true;
     }
@@ -324,7 +281,7 @@ bool QueryPreprocessor::isVarExist(std::string var) {
     return false;
 }
 
-bool QueryPreprocessor::isValidVarName(std::string varName) {
+bool QueryPreprocessor::isValidVarName(string varName) {
     if (varName.length() == 0) {
         return false;
     }
@@ -332,7 +289,7 @@ bool QueryPreprocessor::isValidVarName(std::string varName) {
     return std::regex_match(varName, regex_pattern);
 }
 
-bool QueryPreprocessor::isValidVarType(std::string varName) {
+bool QueryPreprocessor::isValidVarType(string varName) {
     if (varName.length() == 0) {
         return false;
     }
@@ -344,9 +301,9 @@ bool QueryPreprocessor::isValidVarType(std::string varName) {
 }
 
 // find next token in the list and return list from next token onwards
-std::vector<std::string> QueryPreprocessor::getNextToken(std::vector<std::string> queryList) {
+vector<string> QueryPreprocessor::getNextToken(vector<string> queryList) {
     unsigned int end = 0;
-    std::vector<std::string> result;
+    vector<string> result;
 
     for (unsigned int i = 0; i < queryList.size(); i++) {
         if (queryList[i].compare("such") == 0 || queryList[i].compare("pattern") == 0) {
@@ -363,8 +320,8 @@ std::vector<std::string> QueryPreprocessor::getNextToken(std::vector<std::string
 }
 
 // todo: return symbol enum type
-std::string QueryPreprocessor::getVarType(std::string var) {
-    std::string varType = varMap.find(var)->second;
+string QueryPreprocessor::getVarType(string var) {
+    string varType = varMap.find(var)->second;
     return varType;
 }
 
@@ -373,7 +330,7 @@ QueryTree QueryPreprocessor::getQueryTree() {
 }
 
 // for debugging using unit test, to be removed after testing is complete
-std::string QueryPreprocessor::testMethodOut() {
+string QueryPreprocessor::testMethodOut() {
     return out;
 }
 

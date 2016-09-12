@@ -39,10 +39,21 @@ void TestWrapper::parse(std::string filePath) {
  * Function for evaluating a list of SIMPLE queries.
  */
 void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
-    QueryPreprocessor queryPreprocessor;
+    QueryPreprocessor queryPreprocessor = QueryPreprocessor();
 
-    queryPreprocessor.preprocess(query);
+    try {
+        queryPreprocessor.preprocessQuery(query);
 
-    // store the answers to the query in the results list (it is initially empty)
-    // each result must be a string.
+        // Evaluator here.
+
+        /* Projector here. Store answer into results. */
+
+        /* Check if AutoTester sent stop signal. */
+        if (AbstractWrapper::GlobalStop) {
+            return;
+        }
+    } catch (std::exception& ex) {
+        std::cout << ex.what() << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }

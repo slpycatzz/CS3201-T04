@@ -13,11 +13,11 @@ class QueryPreprocessor {
  public:
     QueryPreprocessor();
     ~QueryPreprocessor();
-    void preprocess(std::string filePath);
+
+    void preprocessQuery(std::string query);
     QueryTree getQueryTree();
 
 // private:
-     void preprocessFile(std::ifstream& fileStream);
      bool processDeclaration(std::string declaration);
      bool processQuery(std::string query);
 
@@ -36,7 +36,7 @@ class QueryPreprocessor {
 
      std::string getVarType(std::string var);
 
-     std::vector<std::vector<std::string>> queries;
+     std::vector<std::string> queries;
      std::unordered_map<std::string, std::string> varMap;
      std::unordered_map<std::string, std::string> relMap;
      std::unordered_map<std::string, std::string> entMap;
