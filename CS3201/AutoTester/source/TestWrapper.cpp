@@ -2,6 +2,7 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <vector>
 
 #include "Exceptions.h"
 #include "Frontend/FrontendParser.h"
@@ -40,6 +41,11 @@ void TestWrapper::parse(std::string filePath) {
  * Function for evaluating a list of SIMPLE queries.
  */
 void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
+    /* Check if AutoTester sent stop signal. */
+    if (AbstractWrapper::GlobalStop) {
+        return;
+    }
+
     QueryPreprocessor queryPreprocessor = QueryPreprocessor();
     QueryProjector queryProjector = QueryProjector();
 
@@ -47,17 +53,11 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
         queryPreprocessor.preprocessQuery(query);
 
         // Evaluator here.
-        std::vector<std::string> queryResult { "" }; // store query result here
+        std::vector<std::string> queryResult { "" };  // store query result here
 
         /* Projector here. Store answer into results. */
         results = queryProjector.formatOutput(queryResult);
-
-        /* Check if AutoTester sent stop signal. */
-        if (AbstractWrapper::GlobalStop) {
-            return;
-        }
     } catch (std::exception& ex) {
-        std::cout << ex.what() << std::endl;
-        exit(EXIT_FAILURE);
+        return;
     }
 }
