@@ -60,8 +60,8 @@ unordered_map<K, V> Utils::MergeMap(unordered_map<K, V> &map1, unordered_map<K, 
     return map1;
 }
 
-template<class T>
-bool Utils::VectorContains(vector<T> vec, T value) {
+//template<class T>
+bool Utils::VectorContains(vector<unsigned int> vec, unsigned int value) {
     return (std::find(vec.begin(), vec.end(), value) != vec.end());
 }
 

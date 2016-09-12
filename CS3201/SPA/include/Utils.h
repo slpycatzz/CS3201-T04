@@ -15,8 +15,8 @@ class Utils {
     template<class K, class V>
     static std::unordered_map<K, V> MergeMap(std::unordered_map<K, V> &map1, std::unordered_map<K, V> &map2);
 
-    template<class T>
-    static bool VectorContains(std::vector<T> vec, T i);
+    //template<class T>
+    static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
 
     static std::string VectorToString(std::vector<std::string> &vec);
     static std::vector<std::string> VectorToString(std::vector<std::vector<std::string>> &vec);
