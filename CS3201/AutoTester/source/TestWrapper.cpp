@@ -6,6 +6,7 @@
 #include "Exceptions.h"
 #include "Frontend/FrontendParser.h"
 #include "QueryProcessor/QueryPreprocessor.h"
+#include "QueryProcessor/QueryProjector.h"
 #include "TestWrapper.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
@@ -40,13 +41,16 @@ void TestWrapper::parse(std::string filePath) {
  */
 void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
     QueryPreprocessor queryPreprocessor = QueryPreprocessor();
+    QueryProjector queryProjector = QueryProjector();
 
     try {
         queryPreprocessor.preprocessQuery(query);
 
         // Evaluator here.
+        std::vector<std::string> queryResult { "" }; // store query result here
 
         /* Projector here. Store answer into results. */
+        results = queryProjector.formatOutput(queryResult);
 
         /* Check if AutoTester sent stop signal. */
         if (AbstractWrapper::GlobalStop) {
