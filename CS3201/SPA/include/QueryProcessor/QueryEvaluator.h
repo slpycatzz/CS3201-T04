@@ -18,20 +18,20 @@ class QueryEvaluator {
 
  private:
 	 // evaluate a single clause to see if it is true
-	 bool evaluateClause(PKB&, Clause&, CandidateMap);
+	 bool evaluateClause(PKB &pkb, Clause &clause, CandidateMap &candMap);
 	 
-	 bool evaluateUses(PKB&, Clause&, CandidateMap);
-	 bool evaluateModifies(PKB&, Clause&, CandidateMap);
-	 bool evaluateParent(PKB&, Clause&, CandidateMap);
-	 bool evaluateParentStar(PKB&, Clause&, CandidateMap);
-	 bool evaluateFollows(PKB&, Clause&, CandidateMap);
-	 bool evaluateFollowsStar(PKB&, Clause&, CandidateMap);
-	 bool evaluateNext(PKB&, Clause&, CandidateMap);
-	 bool evaluateNextStar(PKB&, Clause&, CandidateMap);
-	 bool evaluateAffects(PKB&, Clause&, CandidateMap);
-	 bool evaluateAffectsStar(PKB&, Clause&, CandidateMap);
-	 bool evaluateCalls(PKB&, Clause&, CandidateMap);
-	 bool evaluateCallsStar(PKB&, Clause&, CandidateMap);
+	 bool evaluateUses(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateModifies(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateParent(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateParentStar(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateFollows(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateFollowsStar(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateNext(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateNextStar(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateAffects(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateAffectsStar(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateCalls(PKB &pkb, Clause &clause, CandidateMap &candMap);
+	 bool evaluateCallsStar(PKB &pkb, Clause &clause, CandidateMap &candMap);
 
 	 // retrieve all possible candidates for a variable
 	 CandidateMapList getCandidates(PKB &pkb, std::pair<Var, Symbol> var);
@@ -39,10 +39,10 @@ class QueryEvaluator {
 	 TotalCandidateMap getTotalCandidateList(PKB & pkb, QueryTree & query);
 
 	 // evaluate a single query to see if it is true
-	 bool evaluateQuery(PKB&, QueryTree&);
+	 bool evaluateQuery(PKB &pkb, QueryTree &query);
 
 	 // use the clause to filter the tuple candidate list to its sublist
-	 bool selectClauseResults(PKB&, Clause&, TotalCandidateMap&);
+	 bool selectClauseResults(PKB &pkb, Clause &clause, TotalCandidateMap &totalCandMap);
 
 	 void insertMap(std::vector<std::string> list, Var var, CandidateMapList &result);
 
@@ -58,7 +58,7 @@ class QueryEvaluator {
 	 // return the result list as a list of strings after evaluating the query
 	 ResultList selectQueryResults(PKB&, QueryTree&);
 
-	 ResultList getResultsFromTotalCandidateList(TotalCandidateMap &cands, std::unordered_map<std::string, Symbol> selectList);
+	 ResultList getResultsFromTotalCandidateList(TotalCandidateMap &cands, std::unordered_map<std::string, Symbol> &selectList);
 
 	 bool isBoolSelect(std::unordered_map<std::string, Symbol>& selectList);
 	 
