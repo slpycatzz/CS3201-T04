@@ -14,7 +14,7 @@ const char SYMBOL_IF_THEN[]   = "then";
 const char SYMBOL_IF_ELSE[]   = "else";
 const char SYMBOL_CALL[]      = "call";
 
-const char SYMBOL_SELECT[]    = "select";
+const char SYMBOL_SELECT[]    = "Select";
 const char SYMBOL_SUCH[]      = "such";
 const char SYMBOL_THAT[]      = "that";
 const char SYMBOL_SUCH_THAT[] = "such that";
@@ -59,9 +59,6 @@ const char CHAR_SYMBOL_OPENBRACKET       = '(';
 const char CHAR_SYMBOL_CLOSEBRACKET      = ')';
 const char CHAR_SYMBOL_UNDERSCORE        = '_';
 const char CHAR_SYMBOL_COMMA             = ',';
-
-const char QUERY_INVALID[] = "invalid";
-const char QUERY_NONE[]    = "none";
 
 enum Symbol {
     INVALID, UNDEFINED,
