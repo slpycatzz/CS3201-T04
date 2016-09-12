@@ -97,8 +97,13 @@ unsigned int PKB::GetConstantIndex(string constantValue) {
     return constantTable_.getKey(constantValue);
 }
 
-set<string> PKB::GetAllConstantValues() {
-    return constantTable_.getValues();
+vector<string> PKB::GetAllConstantValues() {
+    set<string> result = constantTable_.getValues();
+
+    vector<string> vec(result.size());
+    std::copy(result.begin(), result.end(), vec.begin());
+    
+    return vec;
 }
 
 void PKB::PrintConstantTable() {
@@ -129,8 +134,13 @@ unsigned int PKB::GetVariableIndex(string variableName) {
     return variableTable_.getKey(variableName);
 }
 
-set<string> PKB::GetAllVariableNames() {
-    return variableTable_.getValues();
+vector<string> PKB::GetAllVariableNames() {
+    set<string> result = variableTable_.getValues();
+
+    vector<string> vec(result.size());
+    std::copy(result.begin(), result.end(), vec.begin());
+
+    return vec;
 }
 
 void PKB::PrintVariableTable() {
@@ -160,8 +170,13 @@ unsigned int PKB::GetProcedureIndex(string procedureName) {
     return procedureTable_.getKey(procedureName);
 }
 
-set<string> PKB::GetAllProcedures() {
-    return procedureTable_.getValues();
+vector<string> PKB::GetAllProcedures() {
+    set<string> result = procedureTable_.getValues();
+
+    vector<string> vec(result.size());
+    std::copy(result.begin(), result.end(), vec.begin());
+
+    return vec;
 }
 
 void PKB::PrintProcedureTable() {
@@ -202,12 +217,17 @@ string PKB::GetStmtSymbol(unsigned int stmtNumber) {
     return stmtTable_.getValue(stmtNumber);
 }
 
-set<unsigned int> PKB::GetSymbolStmtNumbers(string symbol) {
-    return stmtTable_.getKeys(symbol);
+vector<unsigned int> PKB::GetSymbolStmtNumbers(string symbol) {
+    set<unsigned int> result = stmtTable_.getKeys(symbol);
+
+    vector<unsigned int> vec(result.size());
+    std::copy(result.begin(), result.end(), vec.begin());
+
+    return vec;
 }
 
-set<unsigned int> PKB::GetSymbolStmtNumbers(Symbol symbol) {
-    return stmtTable_.getKeys(Constants::SymbolToString(symbol));
+vector<unsigned int> PKB::GetSymbolStmtNumbers(Symbol symbol) {
+    return GetSymbolStmtNumbers(Constants::SymbolToString(symbol));
 }
 
 void PKB::PrintStmtTable() {
