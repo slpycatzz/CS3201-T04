@@ -28,7 +28,16 @@ class Utils {
 
     static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
 	
-	template<class K, class V> static std::vector<std::vector<V>> Flatten(std::unordered_map<K, V>, std::vector<K>);
-	template<class T> static std::vector<std::vector<T>> Zip(std::vector<T>, std::vector<T>);
-	template<class K, class V> static std::unordered_map<K,V> MergeMap(std::unordered_map<K,V>&, std::unordered_map<K,V>&);
+	template<class K, class V>
+	static std::vector<std::vector<V>> Flatten(std::unordered_map<K, std::vector<V>>&, std::vector<K>&, unsigned, unsigned);
+	
+	template<class T>
+	static std::vector<std::vector<T>> Zip(std::vector<T>, std::vector<T>);
+	
+	template<class K, class V>
+	static std::unordered_map<K,V> MergeMap(std::unordered_map<K,V>&, std::unordered_map<K,V>&);
+
+	static std::string VectorToString(std::vector<std::string> &vs);
+
+	static std::vector<std::string> VectorToString(std::vector<std::vector<std::string>> &vv);
 };

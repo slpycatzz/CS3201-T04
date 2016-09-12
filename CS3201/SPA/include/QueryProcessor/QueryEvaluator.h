@@ -5,11 +5,11 @@
 typedef std::vector<std::string> ResultList;
 typedef std::string Candidate;
 typedef std::string Var;
-typedef std::string Cand;
-typedef std::unordered_map<Var, Cand> CandidateMap;
+typedef int Cand;
+typedef std::unordered_map<Var, Candidate> CandidateMap;
 typedef std::vector<CandidateMap> CandidateMapList;
 //typedef std::vector<CandidateTuple> FlatCandidateList;
-typedef std::unordered_map<Var, CandidateMapList> TotalCandidateList;
+typedef std::unordered_map<Var, CandidateMapList> TotalCandidateMap;
 
 class QueryEvaluator {
  public:
@@ -36,26 +36,30 @@ class QueryEvaluator {
 	 // retrieve all possible candidates for a variable
 	 CandidateMapList getCandidates(PKB &pkb, std::pair<Var, Symbol> var);
 
-	 TotalCandidateList getTotalCandidateList(PKB & pkb, QueryTree & query);
+	 TotalCandidateMap getTotalCandidateList(PKB & pkb, QueryTree & query);
 
 	 // evaluate a single query to see if it is true
 	 bool evaluateQuery(PKB&, QueryTree&);
 
 	 // use the clause to filter the tuple candidate list to its sublist
-	 bool selectClauseResults(PKB&, Clause&, TotalCandidateList&);
+	 bool selectClauseResults(PKB&, Clause&, TotalCandidateMap&);
 
 	 void insertMap(std::vector<std::string> list, Var var, CandidateMapList &result);
 
 	 bool Filter(CandidateMapList &candidateList,
 		 PKB & pkb, Clause & clause,
-		 TotalCandidateList & candidates);
+		 TotalCandidateMap & candidates);
 
 	 bool MergeAndFilter(CandidateMapList &candidateList0,
 		 CandidateMapList &candidateList1,
 		 PKB & pkb, Clause & clause,
-		 TotalCandidateList & candidates);
+		 TotalCandidateMap & candidates);
 	 
 	 // return the result list as a list of strings after evaluating the query
 	 ResultList selectQueryResults(PKB&, QueryTree&);
+
+	 ResultList getResultsFromTotalCandidateList(TotalCandidateMap &cands, std::unordered_map<std::string, Symbol> selectList);
+
+	 bool isBoolSelect(std::unordered_map<std::string, Symbol>& selectList);
 	 
 };

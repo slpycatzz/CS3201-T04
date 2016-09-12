@@ -27,14 +27,14 @@ CandidateMapList QueryEvaluator::getCandidates(PKB &pkb, std::pair<Var, Symbol> 
 	return result;
 }
 
-TotalCandidateList QueryEvaluator::getTotalCandidateList(PKB &pkb, QueryTree &query) {
-	TotalCandidateList totalCandidateList;
+TotalCandidateMap QueryEvaluator::getTotalCandidateList(PKB &pkb, QueryTree &query) {
+	TotalCandidateMap totalCandLst;
 	std::unordered_map<std::string, Symbol> varMap = query.getVarMap();
 	for (auto kv : varMap) {
-		CandidateMapList candidateMapList(getCandidates(pkb, kv));
-		totalCandidateList.insert(kv.first, candidateMapList);
+		CandidateMapList candMapLst(getCandidates(pkb, kv));
+		totalCandLst.insert_or_assign(kv.first, candMapLst);
 	}
-	return totalCandidateList;
+	return totalCandLst;
 }
 
 void QueryEvaluator::insertMap(std::vector<std::string> list, Var var, CandidateMapList &result)
@@ -46,26 +46,26 @@ void QueryEvaluator::insertMap(std::vector<std::string> list, Var var, Candidate
 }
 
 bool QueryEvaluator::selectClauseResults(PKB &pkb, Clause &clause,
-	TotalCandidateList &candidates)
+	TotalCandidateMap &cands)
 {
 	bool hasCandidates;
 	std::vector<Var> args(clause.getArg());
 	if (args.size == 1) {
 		Var var = args[0];
-		CandidateMapList candidateList = candidates[var];
-		hasCandidates = Filter(candidateList, pkb, clause, candidates);
+		CandidateMapList candidateList = cands[var];
+		hasCandidates = Filter(candidateList, pkb, clause, cands);
 	}
 	else if (args.size == 2) {
 		Var var0 = args[0], var1 = args[1];
-		CandidateMapList candidateList0 = candidates[var0];
-		CandidateMapList candidateList1 = candidates[var1];
-		hasCandidates = MergeAndFilter(candidateList0, candidateList1, pkb, clause, candidates);
+		CandidateMapList candLst0 = cands[var0];
+		CandidateMapList candLst1 = cands[var1];
+		hasCandidates = MergeAndFilter(candLst0, candLst1, pkb, clause, cands);
 	}
 	return hasCandidates;
 }
 
 bool QueryEvaluator::Filter(CandidateMapList &candidateList,
-	PKB & pkb, Clause & clause, TotalCandidateList & candidates)
+	PKB & pkb, Clause &clause, TotalCandidateMap &cands)
 {
 	CandidateMapList filteredList;
 	for (CandidateMap tup : candidateList) {
@@ -74,29 +74,29 @@ bool QueryEvaluator::Filter(CandidateMapList &candidateList,
 		}
 	}
 	if (filteredList.empty()) return false;
-	for (auto kv : candidates) {
+	for (auto kv : cands) {
 		if (kv.second == candidateList) {
-			candidates.insert_or_assign(kv.first, filteredList);
+			cands.insert_or_assign(kv.first, filteredList);
 		}
 	}
 	return true;
 }
 
-bool QueryEvaluator::MergeAndFilter(CandidateMapList &candidateList0,
-	CandidateMapList &candidateList1, PKB & pkb, Clause & clause,
-	TotalCandidateList & candidates)
+bool QueryEvaluator::MergeAndFilter(CandidateMapList &candLst0,
+	CandidateMapList &candLst1, PKB & pkb, Clause & clause,
+	TotalCandidateMap &cands)
 {
 	CandidateMapList filteredList;
-	if (&candidateList0 == &candidateList1) {
-		for (CandidateMap tup : candidateList0) {
+	if (&candLst0 == &candLst1) {
+		for (CandidateMap tup : candLst0) {
 			if (evaluateClause(pkb, clause, tup)) {
 				filteredList.push_back(tup);
 			}
 		}
 	}
 	else {
-		for (CandidateMap tup0 : candidateList0) {
-			for (CandidateMap tup1 : candidateList1) {
+		for (CandidateMap tup0 : candLst0) {
+			for (CandidateMap tup1 : candLst1) {
 				CandidateMap tup = Utils::MergeMap(tup0, tup1);
 				if (evaluateClause(pkb, clause, tup)) {
 					filteredList.push_back(tup);
@@ -105,9 +105,9 @@ bool QueryEvaluator::MergeAndFilter(CandidateMapList &candidateList0,
 		}
 	}
 	if (filteredList.empty()) return false;
-	for (auto kv : candidates) {
-		if (kv.second == candidateList0 || kv.second == candidateList1) {
-			candidates.insert_or_assign(kv.first, filteredList);
+	for (auto kv : cands) {
+		if (kv.second == candLst0 || kv.second == candLst1) {
+			cands.insert_or_assign(kv.first, filteredList);
 		}
 	}
 	return true;
@@ -120,17 +120,64 @@ bool QueryEvaluator::evaluateQuery(PKB &pkb, QueryTree &query)
 
 ResultList QueryEvaluator::selectQueryResults(PKB &pkb, QueryTree &query)
 {
-	ResultList resultList;
 	std::vector<Clause> clauseList = query.getClauses("suchThat pattern");
-	TotalCandidateList allCandidates(getTotalCandidateList(pkb, query));
+	TotalCandidateMap allCandidates(getTotalCandidateList(pkb, query));
 	std::unordered_map<std::string, Symbol> selectList = query.getSelect();
 	bool hasMoreCandidates;
 	for (Clause clause : clauseList) {
 		hasMoreCandidates = selectClauseResults(pkb, clause, allCandidates);
 		if (!hasMoreCandidates) break;
 	}
-	/* TODO - fill in code for result selection */
+	if (isBoolSelect(selectList)) {
+		ResultList resultList;
+		if (hasMoreCandidates) {
+			resultList.push_back(SYMBOL_TRUE);
+		}
+		else {
+			resultList.push_back(SYMBOL_FALSE);
+		}
+		return resultList;
+	}
+	else {
+		if (!hasMoreCandidates) {
+			return ResultList();
+		}
+		else {
+			ResultList resultList(getResultsFromTotalCandidateList(allCandidates, selectList));
+			return resultList;
+		}
+	}
+}
+
+ResultList QueryEvaluator::getResultsFromTotalCandidateList(TotalCandidateMap &cands,
+	std::unordered_map<std::string, Symbol> selectList)
+{
+	std::vector<std::string> varList;
+	std::unordered_map<std::string, std::vector<Candidate>> selectMap;
+	for (auto kv : selectList) {
+		varList.push_back(kv.first);
+		std::vector<Candidate> candList;
+		CandidateMapList* section = &cands[kv.first];
+		for (CandidateMap cm : *section) {
+			candList.push_back(cm[kv.first]);
+		}
+		selectMap[kv.first] = candList;
+	}
+	std::vector<std::vector<Candidate>>* resultVectors = &Utils::Flatten(selectMap, varList, 0, varList.size() - 1);
+	ResultList resultList;
+	for (std::vector<Candidate> candTup : *resultVectors) {
+		resultList.push_back(Utils::VectorToString(candTup));
+	}
 	return resultList;
+}
+
+bool QueryEvaluator::isBoolSelect(std::unordered_map<std::string, Symbol> &selectList) {
+	if (selectList.size == 1 && selectList.begin()->second == BOOLEAN) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 bool QueryEvaluator::evaluateClause(PKB &pkb, Clause &clause, CandidateMap tup)

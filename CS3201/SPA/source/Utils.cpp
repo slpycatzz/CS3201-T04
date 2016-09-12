@@ -3,14 +3,34 @@
 #include <vector>
 
 #include "Utils.h"
+#include "Constants.h"
 
 using std::string;
 using std::vector;
 using std::istringstream;
 
 template<class K, class V>
-std::vector<std::vector<V>> Utils::Flatten(std::unordered_map<K, V>, std::vector<K>) {
-	std::vector<std::vector<V>> result;
+std::vector<std::vector<V>> Utils::Flatten(std::unordered_map<K, std::vector<V>> &map,
+	std::vector<K> &selectList, unsigned start, unsigned end)
+{
+	using V_vector = std::vector<V>;
+	std::vector<V_vector> result;
+	if (start > end) {
+		result.push_back(std::vector<V>());
+	}
+	else {
+		K firstKey = selectList[start];
+		V_vector firstVList = map[firstKey];
+		std::vector<V_vector> recursiveList = Flatten(map, selectList, start + 1, end);
+		for (V value : firstVList) {
+			for (V_vector : recursiveList) {
+				V_vector vv;
+				vv = recursiveList;
+				vv.insert(vv.begin(), value);
+				result.push_back(vv);
+			}
+		}
+	}
 	return result;
 }
 
@@ -31,6 +51,24 @@ template<class K, class V>
 std::unordered_map<K, V> Utils::MergeMap(std::unordered_map<K, V> &map1, std::unordered_map<K, V> &map2) {
 	map1.insert(map2.begin(), map2.end());
 	return map1;
+}
+
+std::string Utils::VectorToString(std::vector<std::string> &vs) {
+	std::stringstream ss;
+	ss << "<";
+	std::vector<std::string>::iterator itr(vs.begin());
+	while (itr != --vs.end()) {
+		ss << *itr << CHAR_SYMBOL_COMMA;
+	}
+	ss << *itr << ">";
+}
+
+std::vector<std::string> Utils::VectorToString(std::vector<std::vector<std::string>> &vv) {
+	std::vector<std::string> result;
+	for (std::vector<std::string> item : vv) {
+		result.push_back(VectorToString(item));
+	}
+	return result;
 }
 
 vector<string> Utils::Split(string str, char delimiter) {
