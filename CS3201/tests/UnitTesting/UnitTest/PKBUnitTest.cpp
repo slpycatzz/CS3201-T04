@@ -138,8 +138,17 @@ namespace UnitTest {
         PKB::PrintASTTree();
 
       }
-      TEST_METHOD(ProcTableTest) {
-        Assert::AreEqual(true, false);
+      TEST_METHOD(ProcTable_set_and_get_procedures) {
+        //TODO(pixelducky): can be more exhaustive - check if proc names exist
+        vector<string> procedureNames;
+        
+        procedureNames.push_back(string("Panda"));
+        procedureNames.push_back(string("Cat"));
+        procedureNames.push_back(string("Giraffe"));
+        procedureNames.push_back(string("Tyson"));
+        
+        PKB::GenerateProcedureTable(procedureNames);
+        Assert::AreEqual(procedureNames.size(), PKB::GetNumberOfProcedure());
       }
       TEST_METHOD(StmtTableTest) {
         Assert::AreEqual(true, false);
