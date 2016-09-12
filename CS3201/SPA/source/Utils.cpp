@@ -1,88 +1,115 @@
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
-#include "Utils.h"
 #include "Constants.h"
+#include "Utils.h"
 
-using std::string;
-using std::vector;
 using std::istringstream;
+using std::string;
+using std::stringstream;
+using std::unordered_map;
+using std::vector;
 
 template<class K, class V>
-std::vector<std::vector<V>> Utils::Flatten(std::unordered_map<K, std::vector<V>> &map,
-	std::vector<K> &selectList, unsigned start, unsigned end)
-{
-	using V_vector = std::vector<V>;
-	std::vector<V_vector> result;
-	if (start > end) {
-		result.push_back(std::vector<V>());
-	}
-	else {
-		K firstKey = selectList[start];
-		V_vector firstVList = map[firstKey];
-		std::vector<V_vector> recursiveList = Flatten(map, selectList, start + 1, end);
-		for (V value : firstVList) {
-			for (V_vector : recursiveList) {
-				V_vector vv;
-				vv = recursiveList;
-				vv.insert(vv.begin(), value);
-				result.push_back(vv);
-			}
-		}
-	}
-	return result;
-}
+vector<vector<V>> Utils::Flatten(unordered_map<K, vector<V>> &map, vector<K> &list, unsigned int start, unsigned int end) {
+    using V_vector = vector<V>;
 
-template<class T>
-std::vector<std::vector<T>> Utils::Zip(std::vector<T> list1, std::vector<T> list2) {
-	std::vector<std::vector<T>> result;
-	for (T item1 : list1) {
-		for (T item2 : list2) {
-			std::vector<T> item();
-			item.push_back(item1);
-			item.push_back(item2);
-			result.push_back<item>;
-		}
-	}
-}
+    vector<V_vector> result;
+    if (start > end) {
+        return vector<V>();
+    }
 
-template<class K, class V>
-std::unordered_map<K, V> Utils::MergeMap(std::unordered_map<K, V> &map1, std::unordered_map<K, V> &map2) {
-	map1.insert(map2.begin(), map2.end());
-	return map1;
-}
+    V_vector firstVList = map[selectList[start]];
+    std::vector<V_vector> recursiveList = Flatten(map, selectList, start + 1, end);
 
-std::string Utils::VectorToString(std::vector<std::string> &vs) {
-	std::stringstream ss;
-	ss << "<";
-	std::vector<std::string>::iterator itr(vs.begin());
-	while (itr != --vs.end()) {
-		ss << *itr << CHAR_SYMBOL_COMMA;
-	}
-	ss << *itr << ">";
-}
+    for (V value : firstVList) {
+        for (V_vector : recursiveList) {
+            V_vector vec = recursiveList;
+            vec.insert(vec.begin(), value);
 
-std::vector<std::string> Utils::VectorToString(std::vector<std::vector<std::string>> &vv) {
-	std::vector<std::string> result;
-	for (std::vector<std::string> item : vv) {
-		result.push_back(VectorToString(item));
-	}
-	return result;
-}
-
-vector<string> Utils::Split(string str, char delimiter) {
-    vector<string> result;
-    
-    Utils::Split(str, delimiter, result);
+            result.push_back(vec);
+        }
+    }
 
     return result;
 }
 
-vector<string> Utils::SplitAndIgnoreEmpty(string str, char delimiter) {
-    vector<string> result;
+template<class T>
+vector<vector<T>> Utils::Zip(vector<T> list1, vector<T> list2) {
+    vector<vector<T>> result;
 
-    Utils::SplitAndIgnoreEmpty(str, delimiter, result);
+    for (T item1 : list1) {
+        for (T item2 : list2) {
+            vector<T> item;
+            item.push_back(item1);
+            item.push_back(item2);
+
+            result.push_back<item>;
+        }
+    }
+
+    return result;
+}
+
+template<class K, class V>
+unordered_map<K, V> Utils::MergeMap(unordered_map<K, V> &map1, unordered_map<K, V> &map2) {
+    map1.insert(map2.begin(), map2.end());
+
+    return map1;
+}
+
+template<class T>
+bool Utils::VectorContains(vector<T> vec, T value) {
+    return (std::find(vec.begin(), vec.end(), value) != vec.end());
+}
+
+string Utils::VectorToString(vector<string> &vec) {
+    stringstream ss;
+    ss << "<";
+
+    vector<string>::iterator itr(vec.begin());
+    while (itr != --vec.end()) {
+        ss << *itr << CHAR_SYMBOL_COMMA;
+    }
+
+    ss << *itr << ">";
+
+    return ss.str();
+}
+
+vector<string> Utils::VectorToString(vector<vector<string>> &vec) {
+    vector<string> result;
+    for (vector<string> item : vec) {
+        result.push_back(VectorToString(item));
+    }
+
+    return result;
+}
+
+std::string Utils::IntToString(unsigned int i) {
+    return std::to_string(i);
+}
+
+vector<string> Utils::IntToString(vector<unsigned int> vec) {
+    vector<string> result;
+    for (unsigned int i : vec) {
+        result.push_back(IntToString(i));
+    }
+
+    return result;
+}
+
+unsigned int Utils::StringToInt(string str) {
+    return std::stoi(str);
+}
+
+vector<unsigned int> Utils::StringToInt(vector<string> vec) {
+    vector<unsigned> result;
+    for (string str : vec) {
+        result.push_back(StringToInt(str));
+    }
 
     return result;
 }
@@ -97,6 +124,14 @@ void Utils::Split(string str, char delimiter, vector<string> &target) {
     }
 }
 
+vector<string> Utils::Split(string str, char delimiter) {
+    vector<string> result;
+
+    Utils::Split(str, delimiter, result);
+
+    return result;
+}
+
 void Utils::SplitAndIgnoreEmpty(string str, char delimiter, vector<string> &target) {
     string temp;
     istringstream stringStream;
@@ -107,6 +142,14 @@ void Utils::SplitAndIgnoreEmpty(string str, char delimiter, vector<string> &targ
             target.push_back(temp);
         }
     }
+}
+
+vector<string> Utils::SplitAndIgnoreEmpty(string str, char delimiter) {
+    vector<string> result;
+
+    Utils::SplitAndIgnoreEmpty(str, delimiter, result);
+
+    return result;
 }
 
 string Utils::TrimSpaces(string str) {
@@ -132,36 +175,6 @@ string Utils::TrimTrailingSpaces(string str) {
     }
 
     return str.substr(0, position + 1);
-}
-
-std::string Utils::IntToString(unsigned i)
-{
-	std::stringstream ss;
-	ss << i;
-	return ss.str();
-}
-
-unsigned Utils::StringToInt(std::string str)
-{
-	return std::stoi(str);
-}
-
-std::vector<std::string> Utils::IntToString(std::vector<unsigned> vi)
-{
-	std::vector<std::string> result;
-	for (unsigned i : vi) {
-		result.push_back(IntToString(i));
-	}
-	return result;
-}
-
-std::vector<unsigned> Utils::StringToInt(std::vector<std::string> vs)
-{
-	std::vector<unsigned> result;
-	for (std::string str : vs) {
-		result.push_back(StringToInt(str));
-	}
-	return result;
 }
 
 bool Utils::IsValidNamingConvention(string str) {
@@ -190,8 +203,4 @@ bool Utils::IsNonNegativeNumeric(string str) {
 
 bool Utils::StartsWithAlphabet(string str) {
     return (isalpha(str[0])) ? true : false;
-}
-
-bool Utils::VectorContains(vector<unsigned int> vec, unsigned int i) {
-    return (std::find(vec.begin(), vec.end(), i) != vec.end());
 }

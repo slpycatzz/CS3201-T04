@@ -6,38 +6,38 @@
 
 class Utils {
  public:
-    static std::vector<std::string> Split(std::string str, char delimiter);
-    static std::vector<std::string> SplitAndIgnoreEmpty(std::string str, char delimiter);
+    template<class K, class V>
+    static std::vector<std::vector<V>> Flatten(std::unordered_map<K, std::vector<V>> &map, std::vector<K> &list, unsigned int start, unsigned int end);
+
+    template<class T>
+    static std::vector<std::vector<T>> Zip(std::vector<T> list1, std::vector<T> list2);
+
+    template<class K, class V>
+    static std::unordered_map<K, V> MergeMap(std::unordered_map<K, V> &map1, std::unordered_map<K, V> &map2);
+
+    template<class T>
+    static bool VectorContains(std::vector<T> vec, T i);
+
+    static std::string VectorToString(std::vector<std::string> &vec);
+    static std::vector<std::string> VectorToString(std::vector<std::vector<std::string>> &vec);
+
+    static std::string IntToString(unsigned int i);
+    static std::vector<std::string> IntToString(std::vector<unsigned int> vec);
+
+    static unsigned StringToInt(std::string str);
+    static std::vector<unsigned int> StringToInt(std::vector<std::string> vec);
+
     static void Split(std::string str, char delimiter, std::vector<std::string> &target);
+    static std::vector<std::string> Split(std::string str, char delimiter);
     static void SplitAndIgnoreEmpty(std::string str, char delimiter, std::vector<std::string> &target);
-    
+    static std::vector<std::string> SplitAndIgnoreEmpty(std::string str, char delimiter);
+
     static std::string TrimSpaces(std::string str);
     static std::string TrimLeadingSpaces(std::string str);
     static std::string TrimTrailingSpaces(std::string str);
 
-	static std::string IntToString(unsigned i);
-	static unsigned StringToInt(std::string str);
-
-	static std::vector<std::string> IntToString(std::vector<unsigned> vi);
-	static std::vector<unsigned> StringToInt(std::vector<std::string> vs);
-    
     static bool IsValidNamingConvention(std::string str);
     static bool IsAlphanumeric(std::string str);
     static bool IsNonNegativeNumeric(std::string str);
     static bool StartsWithAlphabet(std::string str);
-
-    static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
-	
-	template<class K, class V>
-	static std::vector<std::vector<V>> Flatten(std::unordered_map<K, std::vector<V>>&, std::vector<K>&, unsigned, unsigned);
-	
-	template<class T>
-	static std::vector<std::vector<T>> Zip(std::vector<T>, std::vector<T>);
-	
-	template<class K, class V>
-	static std::unordered_map<K,V> MergeMap(std::unordered_map<K,V>&, std::unordered_map<K,V>&);
-
-	static std::string VectorToString(std::vector<std::string> &vs);
-
-	static std::vector<std::string> VectorToString(std::vector<std::vector<std::string>> &vv);
 };
