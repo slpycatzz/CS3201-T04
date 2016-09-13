@@ -269,7 +269,16 @@ bool QueryPreprocessor::isConstantVar(string var) {
     if (var.length() >= 5) {
         isSurroundWithInnerDblQuotes = (var[1] == '"') && (var[var.length() - 2] == '"');
         bool isDblWildcard = isSurroundWithInnerDblQuotes && (isUnderscoreExist && isSecondUnderscoreExist);
+        if (isdigit(var[2])) {
+            throw QuerySyntaxErrorException();
+        }
         return isDblWildcard;
+    }
+
+    if (isSurroundWithDblQuotes) {
+        if (isdigit(var[1])) {
+            throw QuerySyntaxErrorException();
+        }
     }
 
     // wm todo: isValid pattern expr: "+5", "5-4x"
