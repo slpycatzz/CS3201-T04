@@ -41,5 +41,8 @@
     <ClCompile Include="PKBUnitTest.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="FrontendParserUnitTest.cpp">
+      <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

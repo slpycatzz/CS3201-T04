@@ -1,4 +1,4 @@
-procedure x {		\\1
+procedure x {	\\1
   x = 5;		\\2
   while i {		\\3
     x = 6;		\\4
