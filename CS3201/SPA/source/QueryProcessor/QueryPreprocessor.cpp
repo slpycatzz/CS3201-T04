@@ -74,7 +74,7 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
 
 // wm TODO: case insensitive str_cmp
 bool QueryPreprocessor::processQuery(string query) {
-    vector<string> queryList = Utils::Split(query, ' ');
+    vector<string> queryList = Utils::Split(Utils::TrimLeadingSpaces(query), ' ');
 
     /* Expecting first token to be select */
     if (queryList[0] != "select") {
@@ -136,7 +136,9 @@ bool QueryPreprocessor::parseSelect(vector<string> queryList) {
         selectVars += queryList[i];
     }
     selectList = Utils::Split(selectVars, CHAR_SYMBOL_COMMA);
-
+    if (selectList.size() >= 2) {
+        throw QuerySyntaxErrorException();
+    }
     // wm todo: move this loop into another function
     for (unsigned int i = 0; i < selectList.size(); i++) {
         if (selectList[0].compare("boolean") == 0) {
@@ -195,20 +197,20 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
             // isArgValid(relationType, argType, argNumber)
             // argNumber e.g. 1st arg, 2nd arg...
             if (!r.isArgValid(relType, getVarType(varList[i]), i)) {
-                return false;
+                throw QuerySyntaxErrorException();
             }
             varTypeList.push_back(getVarType(varList[i]));
         } else if (isConstantVar(varList[i])) {
         // constant var, e.g. ("x","v",_, _"a"_), pattern string belongs here
             // wm todo: add pattern string type
             if (!r.isArgValid(relType, "variable", i)) {
-                return false;
+                throw QuerySyntaxErrorException();
             }
             varTypeList.push_back("variable");
         } else if (Utils::IsNonNegativeNumeric(varList[i])) {
         // constant int, e.g. (1,2)
             if (!r.isArgValid(relType, "constant", i)) {
-                return false;
+                throw QuerySyntaxErrorException();
             }
             varTypeList.push_back("constant");
         } else {
