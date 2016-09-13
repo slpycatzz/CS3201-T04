@@ -23,6 +23,7 @@ CandidateMapList QueryEvaluator::getCandidates(PKB &pkb, std::pair<Var, Symbol> 
 			insertMap(Utils::IntToString(pkb.GetSymbolStmtNumbers(var.second)), var.first, result);
 			break;
 		default:
+      break;
 	}
 	return result;
 }
@@ -50,12 +51,12 @@ bool QueryEvaluator::selectClauseResults(PKB &pkb, Clause &clause,
 {
 	bool hasCandidates;
 	std::vector<Var> args(clause.getArg());
-	if (args.size == 1) {
+	if (args.size() == 1) {
 		Var var = args[0];
 		CandidateMapList candidateList = cands[var];
 		hasCandidates = Filter(candidateList, pkb, clause, cands);
 	}
-	else if (args.size == 2) {
+	else if (args.size() == 2) {
 		Var var0 = args[0], var1 = args[1];
 		CandidateMapList candLst0 = cands[var0];
 		CandidateMapList candLst1 = cands[var1];
@@ -172,7 +173,7 @@ ResultList QueryEvaluator::getResultsFromTotalCandidateList(TotalCandidateMap &c
 }
 
 bool QueryEvaluator::isBoolSelect(std::unordered_map<std::string, Symbol> &selectList) {
-	if (selectList.size == 1 && selectList.begin()->second == BOOLEAN) {
+	if (selectList.size() == 1 && selectList.begin()->second == BOOLEAN) {
 		return true;
 	}
 	else {
