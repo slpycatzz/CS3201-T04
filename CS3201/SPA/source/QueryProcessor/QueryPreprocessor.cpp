@@ -43,7 +43,7 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
 
     string declarationType = declaration.substr(0, declaration.find_first_of(" \t"));
     string variablesStr = declaration.substr(declaration.find_first_of(" \t"));
-    
+
     declarationType = Utils::TrimSpaces(declarationType);
     variablesStr = Utils::TrimSpaces(variablesStr);
 
@@ -66,25 +66,26 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
             throw QuerySyntaxErrorException();
         }
 
-        // note(to self): currently no need to insert to qt, only Select vars are required
         varMap[variableNames[i]] = declarationType;
     }
 
     return true;
 }
 
-// wm TODO: case insensitive str_cmp...>.<, throw err...
+// wm TODO: case insensitive str_cmp
 bool QueryPreprocessor::processQuery(string query) {
     vector<string> queryList = Utils::Split(query, ' ');
 
-    // Select [arg] such that ... pattern...
-    if (queryList[0] != SYMBOL_SELECT) {
+    /* Expecting first token to be select */
+    if (queryList[0] != "select") {
         // std::cout << "no select found";
         throw QuerySyntaxErrorException();
     }
 
+    /* parse [select...] statement */
     parseSelect(queryList);
 
+    /* remaining string: [such that...pattern...with...]*/
     queryList = getNextToken(queryList);
 
     if (queryList.size() == 0) {
@@ -94,6 +95,7 @@ bool QueryPreprocessor::processQuery(string query) {
     bool isSuccess = false;
     string prevClause;
 
+    /* continue parsing [such that... pattern...] clauses until end of query */
     while (queryList.size() > 0) {
         // wm todo: check if EOL reached or no items left works
         if ((queryList[1].size() > 0 && queryList[1][0] == NULL) || queryList[1].size() == 0) {
@@ -110,6 +112,7 @@ bool QueryPreprocessor::processQuery(string query) {
             break;
         }
 
+        /* stop parsing if [such that...pattern...] query fails, trim processed part of query */
         if (isSuccess == false) {
             return false;
         } else {
@@ -285,6 +288,12 @@ bool QueryPreprocessor::isValidVarName(string varName) {
     if (varName.length() == 0) {
         return false;
     }
+
+    /* varName cannot be a token */
+    if (Constants::StringToSymbol(varName) != INVALID) {
+        return false;
+    }
+
     const std::regex regex_pattern("^[a-zA-Z][a-zA-Z0-9_]*$");
     return std::regex_match(varName, regex_pattern);
 }

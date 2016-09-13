@@ -41,14 +41,14 @@ void RelationTable::initTable() {
     // relRef : ModifiesS | UsesS | Parent | ParentT | Follows | FollowsT
     // design-entity : stmt | assign | while | variable | constant | prog_line
     // stmt: assign | while | if | prog_line
-    arg1 = { "stmt", "assign", "while", "variable", "constant", "prog_line", "underscore"};
+    arg1 = { "stmt", "assign", "while", "variable", "constant", "prog_line"};
     arg2 = { "varName", "variable", "underscore" };
     clauseMap1["modifies"] = arg1;
     clauseMap2["modifies"] = arg2;
     arg1.clear();
     arg2.clear();
 
-    arg1 = { "stmt", "assign", "while", "variable", "constant", "prog_line", "undescore"};
+    arg1 = { "stmt", "assign", "while", "variable", "constant", "prog_line"};
     arg2 = { "varName", "variable", "underscore" };
     clauseMap1["uses"] = arg1;
     clauseMap2["uses"] = arg2;

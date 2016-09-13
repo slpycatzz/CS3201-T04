@@ -14,10 +14,12 @@ class QueryPreprocessor {
     QueryPreprocessor();
     ~QueryPreprocessor();
 
+    /*  query is size n, [first to n - 1 will be declaration, n will be all the clauses] */
+    /*  e.g. "assign a,a2;while w1; select a such that uses(a,"x")" */
     void preprocessQuery(std::string query);
     QueryTree getQueryTree();
 
-// private:
+ private:
      bool processDeclaration(std::string declaration);
      bool processQuery(std::string query);
 
