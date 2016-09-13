@@ -38,5 +38,8 @@
     <ClCompile Include="QueryProcessor\QueryPreprocessorUnitTest.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
+    <ClCompile Include="PKBUnitTest.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

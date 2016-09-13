@@ -73,7 +73,6 @@ class PKB {
     static std::set<unsigned int> GetStmtNumberUsing(std::string variableName);
     static std::set<std::string> GetProcedureUsedVariables(std::string procedureName);
     static std::set<std::string> GetProceduresNameUsing(std::string variableName);
-
     static void PrintUsesTable();
     static void PrintUsesProcedureTable();
 
