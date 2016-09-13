@@ -462,11 +462,53 @@ namespace UnitTest {
           testProcSet.insert("PANDA");
           testProcSet.insert("TIGER");
           Assert::AreEqual(PKB::GetProceduresNameUsing("x"), testProcSet);
-
          
       }
       TEST_METHOD(ParentTableTest) {
-        Assert::AreEqual(true, false);
+          //sample line
+          // 22 PANDA {
+          // 23     while(i){
+          // 24         y = x - 5;
+          // 25         if y then {
+          // 26             Call TIGER;
+          // 27              x++; }
+          // 28         i--;}
+          //    } 
+
+          map<unsigned int, set<unsigned int>> testParentTable;//<parent, child>
+          set<unsigned int> testSet23, testSet25;
+          testSet23.insert(24);
+          testSet23.insert(25);
+          testSet23.insert(28);
+          testSet25.insert(26);
+          testSet25.insert(27);
+          
+          testParentTable[23] = testSet23;
+          testParentTable[25] = testSet25;
+          PKB::GenerateParentTable(testParentTable);
+
+          Assert::IsTrue(PKB::IsParent(23, 24));
+          Assert::IsFalse(PKB::IsParent(24, 23));
+          Assert::IsTrue(PKB::IsParent(25, 26));
+          Assert::IsFalse(PKB::IsParent(23, 26));
+          
+          Assert::IsTrue(PKB::IsParentTransitive(23, 26));
+          Assert::IsFalse(PKB::IsParentTransitive(26, 27));
+
+          Assert::AreEqual(PKB::GetParent(26), unsigned int (25));
+          Assert::AreNotEqual(PKB::GetParent(26), unsigned int(23));
+
+          
+          Assert::AreEqual(PKB::GetParentsTransitive(24), testSet23);
+          set<unsigned int> testSet2325, testSetAll; 
+          testSet2325.insert(23);
+          testSet2325.insert(25);
+          Assert::AreEqual(PKB::GetParentsTransitive(27), testSet2325);
+
+          Assert::AreEqual(PKB::GetChildren(23), testSet23);
+          testSetAll.insert(24, 28);
+          Assert::AreEqual(PKB::GetChildrenTransitive(23), testSetAll);
+          
       }
       TEST_METHOD(FollowsTableTest) {
         Assert::AreEqual(true, false);
