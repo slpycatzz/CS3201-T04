@@ -1,5 +1,6 @@
 #pragma once
-#include "Clause.h"
+
+#include "QueryProcessor/Clause.h"
 #include "QueryTree.h"
 #include "PKB/PKB.h"
 typedef std::vector<std::string> ResultList;
