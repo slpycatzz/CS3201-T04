@@ -8,7 +8,7 @@ class QueryProjector {
 public:
     QueryProjector();
     ~QueryProjector();
-    std::list<std::string> formatOutput(std::vector<std::string> resultList);
+    std::list<std::string> formatResult(std::vector<std::string> resultList);
 
 private:
 };

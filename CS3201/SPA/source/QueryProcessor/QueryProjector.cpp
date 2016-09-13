@@ -6,7 +6,7 @@ QueryProjector::QueryProjector() {}
 
 QueryProjector::~QueryProjector() {}
 
-std::list<std::string> QueryProjector::formatOutput(std::vector<std::string> resultList) {
+std::list<std::string> QueryProjector::formatResult(std::vector<std::string> resultList) {
     std::list<std::string> result;
 
     for (std::string s : resultList) {
