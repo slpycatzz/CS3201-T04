@@ -7,6 +7,7 @@
 #include "Exceptions.h"
 #include "Frontend/FrontendParser.h"
 #include "QueryProcessor/QueryPreprocessor.h"
+#include "QueryProcessor/QueryEvaluator.h"
 #include "QueryProcessor/QueryProjector.h"
 #include "TestWrapper.h"
 
@@ -47,6 +48,7 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
     }
 
     QueryPreprocessor queryPreprocessor = QueryPreprocessor();
+    //QueryEvaluator queryEvaluator = QueryEvaluator();
     QueryProjector queryProjector = QueryProjector();
 
     try {
