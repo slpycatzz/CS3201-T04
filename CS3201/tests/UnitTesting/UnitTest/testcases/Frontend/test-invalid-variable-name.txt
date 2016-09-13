@@ -1,6 +1,6 @@
-procedure x_a {		\\1
+procedure x_a {	\\1
   x = 5;		\\2
   while i {		\\3
-    x_abc = 6;		\\4
+    x_abc = 6;	\\4
   }
 }

@@ -1,0 +1,12 @@
+procedure Test1 {
+    a = 1;
+    b = a + a;
+    c = b;
+    x = 3;
+    while b {
+        x = x + a + 1; }
+    while c {
+        x = b + c + 2; 
+        while x {
+            a = a + c; } 
+        z = 1; } }

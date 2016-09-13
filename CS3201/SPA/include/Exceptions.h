@@ -6,7 +6,7 @@
 const char MESSAGE_DEFAULT[]            = "An unknown exception has occurred.";
 const char MESSAGE_FILENOTFOUND[]       = "A file with the specified filepath does not exist.";
 const char MESSAGE_PROGRAMSYNTAXERROR[] = "Frontend parser encountered a syntax error in the program.";
-const char MESSAGE_PROGRAMLOGICERROR[]  = "Frontend parser encounted a logic error in the program.";
+const char MESSAGE_PROGRAMLOGICERROR[]  = "Frontend parser encountered a logic error in the program.";
 const char MESSAGE_QUERYSYNTAXERROR[]   = "Query parser encountered a syntax error in the query.";
 
 class Exception : public std::exception {
