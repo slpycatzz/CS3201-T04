@@ -15,9 +15,12 @@ class QueryEvaluator {
     QueryEvaluator();
     ~QueryEvaluator();
 
+    // return the result list as a list of strings after evaluating the query
+    ResultList selectQueryResults(PKB &pkb, QueryTree &query);
+
  private:
 	 // evaluate a single clause to see if it is true
-	 bool evaluateClause(PKB &pkb, Clause &clause, CandidateCombination &candMap);
+	 //bool evaluateClause(PKB &pkb, Clause &clause, CandidateCombination &candMap);
 	 
 	 bool evaluateSuchThatClause(PKB &pkb, std::string clauseType, Candidate var0, Candidate var1);
 	 bool evaluateUses(PKB &pkb, Candidate var0, Candidate var1);
@@ -57,9 +60,6 @@ class QueryEvaluator {
 		 Candidate const2, TotalCombinationList &combinations);
 
 	 void insertMap(std::vector<std::string> list, VarName var, PartialCombinationList &result);
-	 
-	 // return the result list as a list of strings after evaluating the query
-	 ResultList selectQueryResults(PKB &pkb, QueryTree &query);
 
 	 ResultList getResultsFromCombinationList(TotalCombinationList &cands, std::unordered_map<std::string, Symbol> &selectList);
 

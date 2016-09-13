@@ -1,3 +1,5 @@
+#pragma once
+
 #include "QueryProcessor/Clause.h"
 #include "QueryProcessor/QueryEvaluator.h"
 #include "Utils.h"
