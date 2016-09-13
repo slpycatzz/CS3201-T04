@@ -146,15 +146,125 @@ namespace UnitTest {
         procedureNames.push_back(string("Cat"));
         procedureNames.push_back(string("Giraffe"));
         procedureNames.push_back(string("Tyson"));
-        
         PKB::GenerateProcedureTable(procedureNames);
+        
         Assert::AreEqual(procedureNames.size(), PKB::GetNumberOfProcedure());
       }
-      TEST_METHOD(StmtTableTest) {
-        Assert::AreEqual(true, false);
+      TEST_METHOD(ProcTable_hasProcedure) {
+          vector<string> procedureNames;
+
+          procedureNames.push_back(string("Panda"));
+          procedureNames.push_back(string("Cat"));
+          procedureNames.push_back(string("Giraffe"));
+          procedureNames.push_back(string("Tyson"));
+          PKB::GenerateProcedureTable(procedureNames);
+          
+          Assert::AreEqual(PKB::HasProcedure("Panda"), true);
+          Assert::AreEqual(PKB::HasProcedure("Elephant"), false);
       }
-      TEST_METHOD(AssignTableTest) {
-        Assert::AreEqual(true, false);
+      TEST_METHOD(ProcTable_getProcName_and_getProcIndex) {
+          vector<string> procedureNames;
+
+          procedureNames.push_back(string("Panda"));
+          procedureNames.push_back(string("Cat"));
+          procedureNames.push_back(string("Giraffe"));
+          procedureNames.push_back(string("Tyson"));
+          PKB::GenerateProcedureTable(procedureNames);
+           
+          Assert::AreEqual(PKB::GetProcedureName(4), std::string("Tyson"));
+          Assert::AreEqual(PKB::GetProcedureIndex(std::string("Cat")), unsigned int (2));
+      }
+      TEST_METHOD(ProcTable_GetAllProcedures) {
+          vector<string> procedureNames;
+
+          procedureNames.push_back(string("Panda"));
+          procedureNames.push_back(string("Cat"));
+          procedureNames.push_back(string("Giraffe"));
+          procedureNames.push_back(string("Tyson"));
+          PKB::GenerateProcedureTable(procedureNames);
+          
+          Assert::AreEqual(PKB::GetAllProcedures(), procedureNames);
+      }
+      TEST_METHOD(StmtTable_set_and_get_stmts) {
+          map<unsigned int, std::string> testStmtTable;
+
+          testStmtTable[unsigned int(1)] = std::string("y = x + 3;"); 
+          testStmtTable[unsigned int(2)] = std::string("x++;");
+          PKB::GenerateStmtTable(testStmtTable);
+          //how to ascertain that all the statements are inside the table? 
+          Assert::AreEqual(testStmtTable.size(), unsigned int (2));
+      }
+      TEST_METHOD(StmtTable_getStmtSymbol) {
+          map<unsigned int, std::string> testStmtTable;
+
+          testStmtTable[unsigned int(1)] = std::string("y = x + 3;");
+          testStmtTable[unsigned int(2)] = std::string("x++;");
+          PKB::GenerateStmtTable(testStmtTable);
+
+          Assert::AreEqual(PKB::GetStmtSymbol(unsigned int(1)), std::string("=+"));
+      }
+      TEST_METHOD(StmtTable_GetSymbolsStmtNos) {
+          map<unsigned int, std::string> testStmtTable;
+
+          testStmtTable[unsigned int(1)] = std::string("y = x + 3;");
+          testStmtTable[unsigned int(2)] = std::string("x++;");
+          PKB::GenerateStmtTable(testStmtTable);
+
+          vector<unsigned int> stmts;
+          stmts.push_back(1);
+          stmts.push_back(2);
+       
+          Assert::AreEqual(PKB::GetSymbolStmtNumbers("+"), stmts);
+          Assert::AreNotEqual(PKB::GetSymbolStmtNumbers("*"), stmts);
+
+          Assert::AreEqual(PKB::GetSymbolStmtNumbers(PLUS), stmts);
+          Assert::AreNotEqual(PKB::GetSymbolStmtNumbers(MINUS), stmts);
+      }
+      TEST_METHOD(AssignTableTest_setget) {
+          map<unsigned int, TreeNode*> testAssgTable;
+          TreeNode * ifNode = PKB::CreateASTNode(IF, 20);
+          TreeNode * assignNode1 = PKB::CreateASTNode(ASSIGN, 40);
+          TreeNode * assignNode2 = PKB::CreateASTNode(ASSIGN, 41);
+
+          testAssgTable[unsigned int(1)] = ifNode;
+          testAssgTable[unsigned int(2)] = assignNode1;
+          testAssgTable[unsigned int(3)] = assignNode2;
+
+          PKB::GenerateAssignTable(testAssgTable);
+        Assert::AreEqual(PKB::GetNumberOfAssign(), unsigned int(2));
+      }
+      TEST_METHOD(AssignTableTest_getNode) {
+          map<unsigned int, TreeNode*> testAssgTable;
+          TreeNode * ifNode = PKB::CreateASTNode(IF, 20);
+          TreeNode * assignNode1 = PKB::CreateASTNode(ASSIGN, 40);
+          TreeNode * assignNode2 = PKB::CreateASTNode(ASSIGN, 41);
+
+          testAssgTable[unsigned int(1)] = ifNode;
+          testAssgTable[unsigned int(2)] = assignNode1;
+          testAssgTable[unsigned int(3)] = assignNode2;
+
+          PKB::GenerateAssignTable(testAssgTable);
+          Assert::AreEqual(PKB::GetAssignTreeNode(unsigned int(40)), assignNode1);
+          Assert::AreNotEqual(PKB::GetAssignTreeNode(unsigned int(20)), ifNode);
+      }
+      TEST_METHOD(AssignTableTest_getAllNodes) {
+          set<TreeNode*> testSet;
+          map<unsigned int, TreeNode*> testAssgTable;
+
+          TreeNode * ifNode = PKB::CreateASTNode(IF, 20);
+          TreeNode * assignNode1 = PKB::CreateASTNode(ASSIGN, 40);
+          TreeNode * assignNode2 = PKB::CreateASTNode(ASSIGN, 41);
+          testAssgTable[unsigned int(1)] = ifNode;
+          testAssgTable[unsigned int(2)] = assignNode1;
+          testAssgTable[unsigned int(3)] = assignNode2;
+
+          PKB::GenerateAssignTable(testAssgTable);
+
+          testSet.insert(assignNode1);
+          testSet.insert(assignNode2);
+
+          Assert::AreEqual(PKB::GetAllAssignTreeNodes(), testSet);
+
       }
       TEST_METHOD(ModifiesTableTest) {
         Assert::AreEqual(true, false);
