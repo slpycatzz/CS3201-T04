@@ -16,7 +16,7 @@ public:
             frontendParser.parseProgram(filePath);
         }
         catch (std::exception& ex) {
-            Assert::AreEqual(ex.what(), "Frontend parser encounted a logic error in the program.");
+            Assert::AreEqual(ex.what(), "Frontend parser encountered a logic error in the program.");
         }
     }
 

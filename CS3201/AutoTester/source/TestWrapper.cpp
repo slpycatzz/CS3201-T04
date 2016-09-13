@@ -56,7 +56,7 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
         std::vector<std::string> queryResult { "" };  // store query result here
 
         /* Projector here. Store answer into results. */
-        results = queryProjector.formatOutput(queryResult);
+        results = queryProjector.formatResult(queryResult);
     } catch (std::exception& ex) {
         return;
     }
