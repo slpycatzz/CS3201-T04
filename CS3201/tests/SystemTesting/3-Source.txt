@@ -1,0 +1,14 @@
+procedure Test3 {
+    while i {
+        x = x + 1;
+        y = x + 1;
+        z = y + 1; }
+    i = 1;
+    while x {
+        while z {
+            z = i;
+            while y {
+                z = y + 1; } }
+        i = i + x + z;
+        y = z + 1; }
+    y = x + z + 2; }
