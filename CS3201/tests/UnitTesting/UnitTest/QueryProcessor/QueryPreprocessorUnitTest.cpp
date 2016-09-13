@@ -50,7 +50,6 @@ public:
 				actual += resList[i].getArg()[j] + " ";
 			}
 		}
-		// actual = qp.testMethodOut();
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(QueryParserPatternSelectTwo) {
@@ -74,7 +73,6 @@ public:
 				actual += resList[i].getArg()[j] + " ";
 			}
 		}
-		// actual = qp.testMethodOut();
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(QueryParserSuchThatWithStringConstant) {
@@ -97,7 +95,6 @@ public:
 				actual += resList[i].getArg()[j] + " ";
 			}
 		}
-		// actual = qp.testMethodOut();
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(QueryParserSuchThatWithNumericConstant) {
@@ -120,7 +117,6 @@ public:
 				actual += resList[i].getArg()[j] + " ";
 			}
 		}
-		// actual = qp.testMethodOut();
 		Assert::AreEqual(expected, actual);
 	}
     TEST_METHOD(QueryParserInvalidQuery) {
@@ -131,19 +127,13 @@ public:
         std::string query;
         query = "assign a,a1; variable x;";
         query += "select a such that uses(\"1a\", x)";
-        //query = "assign a;";
-        //query += "select a pattern a(_,_)";
 
         try {
             qp.preprocessQuery(query);
-            //Logger::WriteMessage("Valid query");
         }
         catch (std::exception& ex) {
             Assert::AreEqual(ex.what(), "Query parser encountered a syntax error in the query.");
-            //Logger::WriteMessage(ex.what());
         }
-
-        // actual = qp.testMethodOut();
 
     }
 	TEST_METHOD(QueryParserSelectOneVars) {
