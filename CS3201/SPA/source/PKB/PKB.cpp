@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -102,7 +103,7 @@ vector<string> PKB::GetAllConstantValues() {
 
     vector<string> vec(result.size());
     std::copy(result.begin(), result.end(), vec.begin());
-    
+
     return vec;
 }
 
@@ -247,8 +248,13 @@ TreeNode* PKB::GetAssignTreeNode(unsigned int stmtNumber) {
     return assignTable_.getValue(stmtNumber);
 }
 
-set<TreeNode*> PKB::GetAllAssignTreeNodes() {
-    return assignTable_.getValues();
+vector<TreeNode*> PKB::GetAllAssignTreeNodes() {
+    set<TreeNode*> result = assignTable_.getValues();
+
+    vector<TreeNode*> vec(result.size());
+    std::copy(result.begin(), result.end(), vec.begin());
+
+    return vec;
 }
 
 /* END   - Assign table functions */

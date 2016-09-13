@@ -52,7 +52,7 @@ class PKB {
 
     static void GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns);
     static TreeNode* GetAssignTreeNode(unsigned int stmtNumber);
-    static std::set<TreeNode*> GetAllAssignTreeNodes();
+    static std::vector<TreeNode*> GetAllAssignTreeNodes();
 
     static void GenerateModifiesTable(std::map<unsigned int, std::set<std::string>> modifies);
     static void GenerateModifiesProcedureTable(std::map<std::string, std::set<std::string>> modifiesProcedure);
