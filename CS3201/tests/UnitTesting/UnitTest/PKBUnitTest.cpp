@@ -191,7 +191,6 @@ namespace UnitTest {
           testStmtTable[unsigned int(1)] = std::string("y = x + 3;"); 
           testStmtTable[unsigned int(2)] = std::string("x++;");
           PKB::GenerateStmtTable(testStmtTable);
-          //how to ascertain that all the statements are inside the table? 
           Assert::AreEqual(testStmtTable.size(), unsigned int (2));
       }
       TEST_METHOD(StmtTable_getStmtSymbol) {
@@ -400,7 +399,71 @@ namespace UnitTest {
       }
 
       TEST_METHOD(UsesTableTest) {
-        Assert::AreEqual(true, false);
+          //sample line
+          // 22 PANDA {
+          // 23 y = x - 5;
+          // 24 x++;
+          // } 
+          // 25 TIGER {
+          // 26 z = (x - y) * 6; 
+          // 27 y--; 
+          map<unsigned int, set<std::string>> testUsesTable;
+          set<std::string> testSet23, testSet26;
+          
+          testSet23.insert(std::string("x"));
+          testUsesTable[unsigned int(23)] = testSet23; 
+          
+          testSet26.insert(std::string("x")); 
+          testSet26.insert(std::string("y"));   
+          testUsesTable[unsigned int(26)] = testSet26; 
+
+          PKB::GenerateUsesTable(testUsesTable);
+          
+          Assert::AreEqual(testUsesTable.size(), unsigned int(2));
+          
+          Assert::IsTrue(PKB::IsUses(23, "x"));
+          Assert::IsFalse(PKB::IsUses(24,"x")); 
+
+          Assert::AreEqual(PKB::GetUsedVariables(26), testSet26);
+          
+          set<unsigned int> testSet2326;
+          testSet2326.insert(23);
+          testSet2326.insert(26);
+          Assert::AreEqual(PKB::GetStmtNumberUsing("x"), testSet2326); 
+      }
+      TEST_METHOD(UsesProcedureTableTest) {
+          //sample line
+          // 22 PANDA {
+          // 23 y = x - 5;
+          // 24 x++;
+          // } 
+          // 25 TIGER {
+          // 26 z = (x - y) * 6; 
+          // 27 y--; 
+          map<std::string, set<std::string>> testUsesProcTable;
+          set<std::string> testSetPanda, testSetTiger;
+
+          testSetPanda.insert("x");
+          testSetTiger.insert("x");
+          testSetTiger.insert("y");
+
+          testUsesProcTable["PANDA"] = testSetPanda;
+          testUsesProcTable["TIGER"] = testSetTiger;
+          PKB::GenerateUsesProcedureTable(testUsesProcTable);
+
+          Assert::AreEqual(testUsesProcTable.size(), unsigned int(2));
+
+          Assert::IsTrue(PKB::IsUsesProcedure("PANDA", "x")); 
+          Assert::IsFalse(PKB::IsUsesProcedure("PANDA", "y"));
+
+          Assert::AreEqual(PKB::GetProcedureUsedVariables("TIGER"), testSetTiger);
+
+          set<std::string> testProcSet;
+          testProcSet.insert("PANDA");
+          testProcSet.insert("TIGER");
+          Assert::AreEqual(PKB::GetProceduresNameUsing("x"), testProcSet);
+
+         
       }
       TEST_METHOD(ParentTableTest) {
         Assert::AreEqual(true, false);
