@@ -77,5 +77,22 @@ public:
         // actual = qp.testMethodOut();
         Assert::AreEqual(expected, actual);
     }
+    TEST_METHOD(QueryParserInvalidQuery) {
+        std::string expected, actual;
+        QueryPreprocessor qp;
+        QueryTree qt;
+
+        std::string query;
+        query = "assign a,a1; while w1,w2; variable x;";
+        query += "select a,w1 such taht uses(a1, x)";
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            Assert::AreEqual(ex.what(), "Query parser encountered a syntax error in the query.");
+        }
+        // actual = qp.testMethodOut();
+
+    }
     };
 }   // namespace UnitTest
