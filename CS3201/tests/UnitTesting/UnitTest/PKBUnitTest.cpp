@@ -511,7 +511,46 @@ namespace UnitTest {
           
       }
       TEST_METHOD(FollowsTableTest) {
-        Assert::AreEqual(true, false);
+          //sample line
+          // 22 PANDA {
+          // 23     while(i){
+          // 24         y = x - 5;
+          // 25         if y then {
+          // 26             Call TIGER;
+          // 27              x++; }
+          // 28         i--;
+          // 29         y--;}
+          //    } 
+          map<unsigned int, unsigned int> testFollowsTable;//<before, after>
+          testFollowsTable[24] = 25; 
+          testFollowsTable[26] = 27;
+          testFollowsTable[25] = 28; 
+          testFollowsTable[28] = 29; 
+
+          PKB::GenerateFollowsTable(testFollowsTable);
+
+          Assert::AreEqual(testFollowsTable.size(), unsigned int(3));
+
+          Assert::IsTrue(PKB::IsFollows(24, 25)); // follows immediately
+          Assert::IsTrue(PKB::IsFollows(25, 28)); // same nesting level, and same stmtList
+          Assert::IsFalse(PKB::IsFollows(25, 24)); //not the reverse
+          Assert::IsFalse(PKB::IsFollows(24, 26)); // different nesting level
+          Assert::IsFalse(PKB::IsFollows(24, 28)); // not immediately after
+
+          Assert::IsTrue(PKB::IsFollowsTransitive(24, 28));
+          Assert::IsTrue(PKB::IsFollowsTransitive(28, 29));
+          
+          Assert::AreEqual(PKB::GetFollows(24), unsigned int(25));
+          Assert::AreEqual(PKB::GetFollowing(29), unsigned int(28));
+
+          set<unsigned int> testSetFollows24, testSetFollowing27;
+          testSetFollows24.insert(25);
+          testSetFollows24.insert(28);
+          testSetFollows24.insert(29); 
+          testSetFollowing27.insert(26);
+
+          Assert::AreEqual(PKB::GetFollowsTransitive(24), testSetFollows24);
+          Assert::AreEqual(PKB::GetFollowingTransitive(26), testSetFollowing27);
       }
   };
 }
