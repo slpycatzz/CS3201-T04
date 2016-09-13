@@ -19,12 +19,12 @@ public:
         QueryPreprocessor qp;
         QueryTree qt;
 
-        qp.preprocessQuery("assign a,a1; while w1,w2;select a,w1");
+        qp.preprocessQuery("assign a,a1; while w1,w2;select a");
         qt = qp.getQueryTree();
         std::vector<std::string> varList;
 
         varList = qt.getResults();
-        expected = "a w1 ";
+        expected = "a ";
         for (unsigned int i = 0; i < varList.size(); i++) {
             actual += varList[i] + " ";
         }
@@ -37,7 +37,7 @@ public:
 
         std::string query;
         query = "assign a,a1; while w1,w2; variable x;";
-        query += "select a,w1 such that uses(a1, x)";
+        query += "select a such that uses(a1, x)";
         qp.preprocessQuery(query);
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
@@ -60,7 +60,7 @@ public:
 
         std::string query;
         query = "assign a,a1; while w1,w2;";
-        query += "select a,w1 pattern a1(\"x\",_)";
+        query += "select a pattern a1(\"x\",_)";
         qp.preprocessQuery(query);
 
         qt = qp.getQueryTree();
@@ -84,7 +84,7 @@ public:
 
         std::string query;
         query = "assign a,a1; while w1,w2; variable x;";
-        query += "select a,w1 such taht uses(a1, x)";
+        query += "select a such taht uses(a1, x)";
         try {
             qp.preprocessQuery(query);
         }
