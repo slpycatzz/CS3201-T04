@@ -226,9 +226,9 @@ namespace UnitTest {
           TreeNode * assignNode1 = PKB::CreateASTNode(ASSIGN, 40);
           TreeNode * assignNode2 = PKB::CreateASTNode(ASSIGN, 41);
 
-          testAssgTable[unsigned int(1)] = ifNode;
-          testAssgTable[unsigned int(2)] = assignNode1;
-          testAssgTable[unsigned int(3)] = assignNode2;
+          testAssgTable[unsigned int(20)] = ifNode;
+          testAssgTable[unsigned int(40)] = assignNode1;
+          testAssgTable[unsigned int(41)] = assignNode2;
 
           PKB::GenerateAssignTable(testAssgTable);
         Assert::AreEqual(PKB::GetNumberOfAssign(), unsigned int(2));
@@ -239,9 +239,9 @@ namespace UnitTest {
           TreeNode * assignNode1 = PKB::CreateASTNode(ASSIGN, 40);
           TreeNode * assignNode2 = PKB::CreateASTNode(ASSIGN, 41);
 
-          testAssgTable[unsigned int(1)] = ifNode;
-          testAssgTable[unsigned int(2)] = assignNode1;
-          testAssgTable[unsigned int(3)] = assignNode2;
+          testAssgTable[unsigned int(20)] = ifNode;
+          testAssgTable[unsigned int(40)] = assignNode1;
+          testAssgTable[unsigned int(41)] = assignNode2;
 
           PKB::GenerateAssignTable(testAssgTable);
           Assert::AreEqual(PKB::GetAssignTreeNode(unsigned int(40)), assignNode1);
@@ -254,9 +254,9 @@ namespace UnitTest {
           TreeNode * ifNode = PKB::CreateASTNode(IF, 20);
           TreeNode * assignNode1 = PKB::CreateASTNode(ASSIGN, 40);
           TreeNode * assignNode2 = PKB::CreateASTNode(ASSIGN, 41);
-          testAssgTable[unsigned int(1)] = ifNode;
-          testAssgTable[unsigned int(2)] = assignNode1;
-          testAssgTable[unsigned int(3)] = assignNode2;
+          testAssgTable[unsigned int(20)] = ifNode;
+          testAssgTable[unsigned int(40)] = assignNode1;
+          testAssgTable[unsigned int(41)] = assignNode2;
 
           PKB::GenerateAssignTable(testAssgTable);
 
@@ -266,9 +266,139 @@ namespace UnitTest {
           Assert::AreEqual(PKB::GetAllAssignTreeNodes(), testSet);
 
       }
-      TEST_METHOD(ModifiesTableTest) {
-        Assert::AreEqual(true, false);
+      TEST_METHOD(ModifiesTableTest_Generate) {
+          //sample line
+          // 22 PANDA {
+          // 23 y = x - 5;
+          // 24 x++;
+          // 25 ...
+          // }
+          map<unsigned int, std::set<std::string>> testModTable; 
+          set<std::string> testSet, testSet1;
+          testSet.insert(std::string("y"));
+          testModTable[unsigned int(23)] = testSet;
+          testSet1.insert(std::string("x"));
+          testModTable[unsigned int(24)] = testSet1;
+
+          PKB::GenerateModifiesTable(testModTable);
+
+          Assert::IsTrue(PKB::IsModifies(unsigned int(23), std::string("y")));
+          Assert::IsFalse(PKB::IsModifies(unsigned int(23), std::string("x")));
+          Assert::IsTrue(PKB::IsModifies(unsigned int(24), std::string("x")));
       }
+      TEST_METHOD(ModifiesTableTest_getModVariables) {
+          //sample line
+          // 22 PANDA {
+          // 23 y = x - 5;
+          // 24 x++;
+          // 25 ...
+          // }
+          map<unsigned int, std::set<std::string>> testModTable;
+          set<std::string> testSet, testSet1;
+          testSet.insert(std::string("y"));
+          testModTable[unsigned int(23)] = testSet;
+          testSet1.insert(std::string("x"));
+          testModTable[unsigned int(24)] = testSet1;
+       
+          PKB::GenerateModifiesTable(testModTable);
+          Assert::AreEqual(PKB::GetModifiedVariables(unsigned int(23)), testSet);
+          Assert::AreNotEqual(PKB::GetModifiedVariables(unsigned int(24)), testSet);
+      }
+      TEST_METHOD(ModifiesTableTest_getStmtNo) {
+          //sample line
+          // 22 PANDA {
+          // 23 y = x - 5;
+          // 24 x++;
+          // 25 ...
+          // }
+          map<unsigned int, std::set<std::string>> testModTable;
+          set<std::string> testSet, testSet1;
+          testSet.insert(std::string("y"));
+          testModTable[unsigned int(23)] = testSet;
+          testSet1.insert(std::string("x"));
+          testModTable[unsigned int(24)] = testSet1;
+          set <unsigned int> testX; 
+          testX.insert(24);
+
+          PKB::GenerateModifiesTable(testModTable);
+            
+          Assert::AreEqual(PKB::GetStmtNumberModifying(std::string("x")),testX);
+      }
+      TEST_METHOD(ModifiesTableTest_generateModProcTable) {
+          //sample line
+          // 22 PANDA {
+          // 23 y = x - 5;
+          // 24 x++;
+          // }
+          // 25 TIGER {
+          // 26 z = y * 6; 
+          // 27 y--; 
+
+          map<std::string, set<std::string>> testModProcTable; 
+          set<std::string> testSet, testSet1, testSet2;
+          testSet.insert(std::string("y"));
+          testModProcTable[std::string("PANDA")] = testSet;
+          testModProcTable[std::string("TIGER")] = testSet;
+          testSet1.insert(std::string("x"));
+          testModProcTable[std::string("PANDA")] = testSet1;
+          testSet2.insert(std::string("z"));
+          testModProcTable[std::string("TIGER")] = testSet2;
+          PKB::GenerateModifiesProcedureTable(testModProcTable);
+
+          Assert::AreEqual(testModProcTable.size(), unsigned int(4));
+      }
+      TEST_METHOD(ModifiesTableTest_isModProc) {
+          //sample line
+          // 22 PANDA {
+          // 23 y = x - 5;
+          // 24 x++;
+          // }
+          // 25 TIGER {
+          // 26 z = y * 6; 
+          // 27 y--; 
+
+          map<std::string, set<std::string>> testModProcTable;
+          set<std::string> testSet, testSet1, testSet2;
+          testSet.insert(std::string("y"));
+          testModProcTable[std::string("PANDA")] = testSet;
+          testModProcTable[std::string("TIGER")] = testSet;
+          testSet1.insert(std::string("x"));
+          testModProcTable[std::string("PANDA")] = testSet1;
+          testSet2.insert(std::string("z"));
+          testModProcTable[std::string("TIGER")] = testSet2;
+          PKB::GenerateModifiesProcedureTable(testModProcTable);
+
+          Assert::IsTrue(PKB::IsModifiesProcedure(std::string("PANDA"), std::string("y")));
+          Assert::IsFalse(PKB::IsModifiesProcedure(std::string("PANDA"), std::string("z")));
+          Assert::IsTrue(PKB::IsModifiesProcedure(std::string("TIGER"), std::string("y")));
+      }
+      TEST_METHOD(ModifiesTableTest_get_proc_and_var) {
+          //sample line
+          // 22 PANDA {
+          // 23 y = x - 5;
+          // 24 x++;
+          // }
+          // 25 TIGER {
+          // 26 z = y * 6; 
+          // 27 y--; 
+
+          map<std::string, set<std::string>> testModProcTable;
+          set<std::string> testSet, testSet1, testSet2, testSetPanda;
+          testSet.insert(std::string("y"));
+          testModProcTable[std::string("PANDA")] = testSet;
+          testModProcTable[std::string("TIGER")] = testSet;
+          testSet1.insert(std::string("x"));
+          testModProcTable[std::string("PANDA")] = testSet1;
+          testSet2.insert(std::string("z"));
+          testModProcTable[std::string("TIGER")] = testSet2;
+          PKB::GenerateModifiesProcedureTable(testModProcTable);
+          
+          testSet1.insert(std::string("y")); 
+          Assert::AreEqual(PKB::GetProcedureModifiedVariables(std::string("PANDA")),testSet1);
+          testSetPanda.insert(std::string("PANDA"));
+          Assert::AreEqual(PKB::GetProceduresNameModifying("x"), testSetPanda);
+      }
+
       TEST_METHOD(UsesTableTest) {
         Assert::AreEqual(true, false);
       }
