@@ -38,6 +38,8 @@ class Utils {
 
     static bool IsValidNamingConvention(std::string str);
     static bool IsAlphanumeric(std::string str);
+	static bool IsStringLiteral(std::string str);
+	static bool IsLiteral(std::string str);
     static bool IsNonNegativeNumeric(std::string str);
     static bool StartsWithAlphabet(std::string str);
 };

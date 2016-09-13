@@ -6,7 +6,7 @@ QueryEvaluator::QueryEvaluator() {}
 
 QueryEvaluator::~QueryEvaluator() {}
 
-PartialCombinationList QueryEvaluator::getCandidates(PKB &pkb, std::pair<Var, Symbol> var) {
+PartialCombinationList QueryEvaluator::getCandidates(PKB &pkb, std::pair<VarName, Symbol> var) {
 	PartialCombinationList result;
 	switch (var.second) {
 		case VARIABLE:
@@ -38,7 +38,7 @@ TotalCombinationList QueryEvaluator::getTotalCandidateList(PKB &pkb, QueryTree &
 	return totalCandLst;
 }
 
-void QueryEvaluator::insertMap(std::vector<std::string> list, Var var, PartialCombinationList &result)
+void QueryEvaluator::insertMap(std::vector<std::string> list, VarName var, PartialCombinationList &result)
 {
 	for (std::string varName : list) {
 		CandidateCombination candidate({ { var, varName } });
@@ -47,71 +47,112 @@ void QueryEvaluator::insertMap(std::vector<std::string> list, Var var, PartialCo
 }
 
 bool QueryEvaluator::selectClauseResults(PKB &pkb, Clause &clause,
-	TotalCombinationList &cands)
+	TotalCombinationList &combinations)
 {
 	bool hasCandidates;
-	std::vector<Var> args(clause.getArg());
-	if (args.size() == 1) {
-		Var var = args[0];
-		PartialCombinationList candidateList = cands[var];
-		hasCandidates = Filter(candidateList, pkb, clause, cands);
+	std::string type(clause.getClauseType());
+	if (type.compare(SYMBOL_PATTERN)) {
+
 	}
-	else if (args.size() == 2) {
-		Var var0 = args[0], var1 = args[1];
-		PartialCombinationList candLst0 = cands[var0];
-		PartialCombinationList candLst1 = cands[var1];
-		hasCandidates = MergeAndFilter(candLst0, candLst1, pkb, clause, cands);
+	else {
+		std::vector<VarName> args(clause.getArg());
+		VarName var0(args[0]), var1(args[1]);
+		if (Utils::IsLiteral(var0)) {
+			if (Utils::IsLiteral(var1)) {
+				FilterNoVarClause(pkb, type, var0, var1, combinations);
+			}
+			else {
+				FilterSecondVarClause(pkb, type, var0, var1, combinations);
+			}
+		}
+		else {
+			if (Utils::IsLiteral(var1)) {
+				FilterFirstVarClause(pkb, type, var0, var1, combinations);
+			}
+			else {
+				FilterTwoVarsClause(pkb, type, var0, var1, combinations);
+			}
+		}
 	}
 	return hasCandidates;
 }
 
-bool QueryEvaluator::Filter(PartialCombinationList &candidateList,
-	PKB & pkb, Clause &clause, TotalCombinationList &cands)
+bool QueryEvaluator::FilterTwoVarsClause(PKB &pkb, std::string clauseType,
+	VarName &var0, VarName &var1, TotalCombinationList &combinations)
 {
-	PartialCombinationList filteredList;
-	for (CandidateCombination tup : candidateList) {
-		if (evaluateClause(pkb, clause, tup)) {
-			filteredList.push_back(tup);
-		}
-	}
-	if (filteredList.empty()) return false;
-	for (auto kv : cands) {
-		if (kv.second == candidateList) {
-			cands.insert_or_assign(kv.first, filteredList);
-		}
-	}
-	return true;
-}
-
-bool QueryEvaluator::MergeAndFilter(PartialCombinationList &candLst0,
-	PartialCombinationList &candLst1, PKB & pkb, Clause & clause,
-	TotalCombinationList &cands)
-{
+	PartialCombinationList candLst0(combinations[var0]);
+	PartialCombinationList candLst1(combinations[var1]);
 	PartialCombinationList filteredList;
 	if (&candLst0 == &candLst1) {
 		for (CandidateCombination tup : candLst0) {
-			if (evaluateClause(pkb, clause, tup)) {
+			Candidate arg0(tup[var0]), arg1(tup[var1]);
+			if (evaluateSuchThatClause(pkb, clauseType, arg0, arg1)) {
 				filteredList.push_back(tup);
 			}
 		}
 	}
 	else {
 		for (CandidateCombination tup0 : candLst0) {
+			Candidate arg0(tup0[var0]);
 			for (CandidateCombination tup1 : candLst1) {
-				CandidateCombination tup = Utils::MergeMap(tup0, tup1);
-				if (evaluateClause(pkb, clause, tup)) {
-					filteredList.push_back(tup);
+				Candidate arg1(tup1[var1]);
+				if (evaluateSuchThatClause(pkb, clauseType, arg0, arg1)) {
+					filteredList.push_back(Utils::MergeMap(tup0, tup1));
 				}
 			}
 		}
 	}
 	if (filteredList.empty()) return false;
-	for (auto kv : cands) {
+	for (auto kv : combinations) {
 		if (kv.second == candLst0 || kv.second == candLst1) {
-			cands.insert_or_assign(kv.first, filteredList);
+			combinations.insert_or_assign(kv.first, filteredList);
 		}
 	}
 	return true;
+}
+
+bool QueryEvaluator::FilterFirstVarClause(PKB &pkb, std::string clauseType,
+ VarName var, Candidate constant, TotalCombinationList &combinations)
+{
+	PartialCombinationList candidateList(combinations[var]);
+	PartialCombinationList filteredList;
+	for (CandidateCombination tup : candidateList) {
+		if (evaluateSuchThatClause(pkb, clauseType, tup[var], constant)) {
+			filteredList.push_back(tup);
+		}
+	}
+	if (filteredList.empty()) return false;
+	for (auto kv : combinations) {
+		if (kv.second == candidateList) {
+			combinations.insert_or_assign(kv.first, filteredList);
+		}
+	}
+	return true;
+}
+
+bool QueryEvaluator::FilterSecondVarClause(PKB &pkb, std::string clauseType,
+	Candidate constant, VarName var, TotalCombinationList &combinations)
+{
+	PartialCombinationList candidateList(combinations[var]);
+	PartialCombinationList filteredList;
+	for (CandidateCombination tup : candidateList) {
+		if (evaluateSuchThatClause(pkb, clauseType, constant, tup[var])) {
+			filteredList.push_back(tup);
+		}
+	}
+	if (filteredList.empty()) return false;
+	for (auto kv : combinations) {
+		if (kv.second == candidateList) {
+			combinations.insert_or_assign(kv.first, filteredList);
+		}
+	}
+	return true;
+}
+
+bool QueryEvaluator::FilterNoVarClause(PKB &pkb, std::string clauseType,
+	Candidate const1, Candidate const2, TotalCombinationList &combinations)
+{
+	return evaluateSuchThatClause(pkb, clauseType, const1, const2);
 }
 
 bool QueryEvaluator::evaluateQuery(PKB &pkb, QueryTree &query)
@@ -144,13 +185,13 @@ ResultList QueryEvaluator::selectQueryResults(PKB &pkb, QueryTree &query)
 			return ResultList();
 		}
 		else {
-			ResultList resultList(getResultsFromTotalCandidateList(allCandidates, selectList));
+			ResultList resultList(getResultsFromCombinationList(allCandidates, selectList));
 			return resultList;
 		}
 	}
 }
 
-ResultList QueryEvaluator::getResultsFromTotalCandidateList(TotalCombinationList &cands,
+ResultList QueryEvaluator::getResultsFromCombinationList(TotalCombinationList &cands,
 	std::unordered_map<std::string, Symbol> &selectList)
 {
 	std::vector<std::string> varList;
@@ -181,124 +222,139 @@ bool QueryEvaluator::isBoolSelect(std::unordered_map<std::string, Symbol> &selec
 	}
 }
 
-bool QueryEvaluator::evaluateClause(PKB &pkb, Clause &clause, CandidateCombination &tup)
+bool QueryEvaluator::evaluateSuchThatClause(PKB &pkb,
+	std::string clauseType, Candidate var0, Candidate var1)
 {
-	std::string type = clause.getClauseType();
-	if (type.compare("uses")) { evaluateUses(pkb, clause, tup); }
-	else if (type.compare("modifies")) { evaluateModifies(pkb, clause, tup); }
-	else if (type.compare("parent")) { evaluateParent(pkb, clause, tup); }
-	else if (type.compare("parent_star")) { evaluateParentStar(pkb, clause, tup); }
-	else if (type.compare("follows")) { evaluateFollows(pkb, clause, tup); }
-	else if (type.compare("follows_star")) { evaluateFollowsStar(pkb, clause, tup); }
-	else if (type.compare("next")) { evaluateNext(pkb, clause, tup); }
-	else if (type.compare("next_star")) { evaluateNextStar(pkb, clause, tup); }
-	else if (type.compare("calls")) { evaluateCalls(pkb, clause, tup); }
-	else if (type.compare("calls_star")) { evaluateCallsStar(pkb, clause, tup); }
-	else if (type.compare("affects")) { evaluateAffects(pkb, clause, tup); }
-	else if (type.compare("affects_star")) { evaluateAffectsStar(pkb, clause, tup); }
+	if (clauseType.compare("uses")) {
+		evaluateUses(pkb, var0, var1);
+	}
+	else if (clauseType.compare("modifies")) {
+		evaluateModifies(pkb, var0, var1);
+	}
+	else if (clauseType.compare("parent")) {
+		evaluateParent(pkb, var0, var1);
+	}
+	else if (clauseType.compare("parent_star")) {
+		evaluateParentStar(pkb, var0, var1);
+	}
+	else if (clauseType.compare("follows")) {
+		evaluateFollows(pkb, var0, var1);
+	}
+	else if (clauseType.compare("follows_star")) {
+		evaluateFollowsStar(pkb, var0, var1); }
+	else if (clauseType.compare("next")) {
+		evaluateNext(pkb, var0, var1);
+	}
+	else if (clauseType.compare("next_star")) {
+		evaluateNextStar(pkb, var0, var1);
+	}
+	else if (clauseType.compare("calls")) {
+		evaluateCalls(pkb, var0, var1);
+	}
+	else if (clauseType.compare("calls_star")) {
+		evaluateCallsStar(pkb, var0, var1);
+	}
+	else if (clauseType.compare("affects")) {
+		evaluateAffects(pkb, var0, var1);
+	}
+	else if (clauseType.compare("affects_star")) {
+		evaluateAffectsStar(pkb, var0, var1);
+	}
 
 	return false;
 }
 
-bool QueryEvaluator::evaluateUses(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	Var var(tup[args[1]]);
-	Var arg0(tup[args[0]]);
-	if (Utils::IsNonNegativeNumeric(arg0)) {
-		int stmtNo(Utils::StringToInt(arg0));
-		return pkb.IsUses(stmtNo, var);
+bool QueryEvaluator::evaluateUses(PKB &pkb, Candidate procOrStmtNo, Candidate varName)
+{
+	if (Utils::IsNonNegativeNumeric(procOrStmtNo)) {
+		int stmtNo(Utils::StringToInt(procOrStmtNo));
+		return pkb.IsUses(stmtNo, varName);
 	}
 	else {
-		return pkb.IsUsesProcedure(arg0, var);
+		return pkb.IsUsesProcedure(procOrStmtNo, varName);
 	}
 }
 
-bool QueryEvaluator::evaluateModifies(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	Var var(tup[args[1]]);
-	Var arg0(tup[args[0]]);
-	if (Utils::IsNonNegativeNumeric(arg0)) {
-		int stmtNo(Utils::StringToInt(arg0));
-		return pkb.IsModifies(stmtNo, var);
+bool QueryEvaluator::evaluateModifies(PKB &pkb, Candidate procOrStmtNo, Candidate varName)
+{
+	if (Utils::IsNonNegativeNumeric(procOrStmtNo)) {
+		int stmtNo(Utils::StringToInt(procOrStmtNo));
+		return pkb.IsModifies(stmtNo, varName);
 	}
 	else {
-		return pkb.IsModifiesProcedure(arg0, var);
+		return pkb.IsModifiesProcedure(procOrStmtNo, varName);
 	}
 }
 
-bool QueryEvaluator::evaluateParent(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	int stmtNo1(Utils::StringToInt(tup[args[1]]));
-	int stmtNo2(Utils::StringToInt(tup[args[0]]));
+bool QueryEvaluator::evaluateParent(PKB &pkb, Candidate stmt1, Candidate stmt2)
+{
+	int stmtNo1(Utils::StringToInt(stmt1));
+	int stmtNo2(Utils::StringToInt(stmt2));
 	return pkb.IsParent(stmtNo1, stmtNo2);
 }
 
-bool QueryEvaluator::evaluateParentStar(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	int stmtNo1(Utils::StringToInt(tup[args[1]]));
-	int stmtNo2(Utils::StringToInt(tup[args[0]]));
+bool QueryEvaluator::evaluateParentStar(PKB &pkb, Candidate stmt1, Candidate stmt2)
+{
+	int stmtNo1(Utils::StringToInt(stmt1));
+	int stmtNo2(Utils::StringToInt(stmt2));
 	return pkb.IsParentTransitive(stmtNo1, stmtNo2);
 }
 
-bool QueryEvaluator::evaluateFollows(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	int stmtNo1(Utils::StringToInt(tup[args[1]]));
-	int stmtNo2(Utils::StringToInt(tup[args[0]]));
+bool QueryEvaluator::evaluateFollows(PKB &pkb, Candidate stmt1, Candidate stmt2)
+{
+	int stmtNo1(Utils::StringToInt(stmt1));
+	int stmtNo2(Utils::StringToInt(stmt2));
 	return pkb.IsFollows(stmtNo1, stmtNo2);
 }
 
-bool QueryEvaluator::evaluateFollowsStar(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	int stmtNo1(Utils::StringToInt(tup[args[1]]));
-	int stmtNo2(Utils::StringToInt(tup[args[0]]));
+bool QueryEvaluator::evaluateFollowsStar(PKB &pkb, Candidate stmt1, Candidate stmt2)
+{
+	int stmtNo1(Utils::StringToInt(stmt1));
+	int stmtNo2(Utils::StringToInt(stmt2));
 	return pkb.IsFollowsTransitive(stmtNo1, stmtNo2);
 }
 
-bool QueryEvaluator::evaluateNext(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	int stmtNo1(Utils::StringToInt(tup[args[1]]));
-	int stmtNo2(Utils::StringToInt(tup[args[0]]));
+bool QueryEvaluator::evaluateNext(PKB &pkb, Candidate stmt1, Candidate stmt2)
+{
+	int stmtNo1(Utils::StringToInt(stmt1));
+	int stmtNo2(Utils::StringToInt(stmt2));
 	//return pkb.IsNext(stmtNo1, stmtNo2);
 	return false;
 }
 
-bool QueryEvaluator::evaluateNextStar(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	int stmtNo1(Utils::StringToInt(tup[args[1]]));
-	int stmtNo2(Utils::StringToInt(tup[args[0]]));
+bool QueryEvaluator::evaluateNextStar(PKB &pkb, Candidate stmt1, Candidate stmt2)
+{
+	int stmtNo1(Utils::StringToInt(stmt1));
+	int stmtNo2(Utils::StringToInt(stmt2));
 	//return pkb.IsNextTransitive(stmtNo1, stmtNo2);
 	return false;
 }
 
-bool QueryEvaluator::evaluateCalls(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	Var proc1(tup[args[1]]);
-	Var proc2(tup[args[0]]);
-	//return pkb.isCalls(proc1, proc2);
+bool QueryEvaluator::evaluateCalls(PKB &pkb, Candidate proc1, Candidate proc2)
+{
+	//return pkb.IsCalls(proc1, proc2);
 	return false;
 }
 
-bool QueryEvaluator::evaluateCallsStar(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	Var proc1(tup[args[1]]);
-	Var proc2(tup[args[0]]);
-	//return pkb.isCallsTransitive(proc1, proc2);
+bool QueryEvaluator::evaluateCallsStar(PKB &pkb, Candidate proc1, Candidate proc2)
+{
+	//return pkb.IsCallsTransitive(proc1, proc2);
 	return false;
 }
 
-bool QueryEvaluator::evaluateAffects(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	int stmtNo1(Utils::StringToInt(tup[args[1]]));
-	int stmtNo2(Utils::StringToInt(tup[args[0]]));
+bool QueryEvaluator::evaluateAffects(PKB &pkb, Candidate assign1, Candidate assign2)
+{
+	int stmtNo1(Utils::StringToInt(assign1));
+	int stmtNo2(Utils::StringToInt(assign2));
 	//return pkb.IsAffects(stmtNo1, stmtNo2);
 	return false;
 }
 
-bool QueryEvaluator::evaluateAffectsStar(PKB &pkb, Clause &clause, CandidateCombination &tup) {
-	std::vector<Var> args(clause.getArg());
-	int stmtNo1(Utils::StringToInt(tup[args[1]]));
-	int stmtNo2(Utils::StringToInt(tup[args[0]]));
-	//return pkb.IsAffectTransitive(stmtNo1, stmtNo2);
+bool QueryEvaluator::evaluateAffectsStar(PKB &pkb, Candidate assign1, Candidate assign2)
+{
+	int stmtNo1(Utils::StringToInt(assign1));
+	int stmtNo2(Utils::StringToInt(assign2));
+	//return pkb.IsAffectsTransitive(stmtNo1, stmtNo2);
 	return false;
 }
 

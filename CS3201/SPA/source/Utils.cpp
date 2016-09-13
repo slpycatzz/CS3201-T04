@@ -201,6 +201,14 @@ bool Utils::IsNonNegativeNumeric(string str) {
     return true;
 }
 
+bool Utils::IsStringLiteral(std::string str) {
+	return ((str[0] == '\"') && (str[1] == '\"'));
+}
+
+bool Utils::IsLiteral(std::string str) {
+	return (IsNonNegativeNumeric(str) || IsStringLiteral(str));
+}
+
 bool Utils::StartsWithAlphabet(string str) {
     return (isalpha(str[0])) ? true : false;
 }
