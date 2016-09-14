@@ -9,6 +9,7 @@
 #include "PKB/Table.h"
 #include "PKB/TransitiveTable.h"
 #include "TreeNode.h"
+#include "Utils.h"
 
 class PKB {
  public:
@@ -53,6 +54,8 @@ class PKB {
     static void GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns);
     static TreeNode* GetAssignTreeNode(unsigned int stmtNumber);
     static std::vector<TreeNode*> GetAllAssignTreeNodes();
+	static bool IsExactPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree);
+	static bool IsSubPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree);
 
     static void GenerateModifiesTable(std::map<unsigned int, std::set<std::string>> modifies);
     static void GenerateModifiesProcedureTable(std::map<std::string, std::set<std::string>> modifiesProcedure);

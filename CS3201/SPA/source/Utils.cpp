@@ -60,6 +60,46 @@ unordered_map<K, V> Utils::MergeMap(unordered_map<K, V> &map1, unordered_map<K, 
     return map1;
 }
 
+TreeNode* Utils::buildExprTree(std::string expr) {
+	unsigned i = expr.find_first_not_of('_');
+	unsigned j = expr.find_last_not_of('_');
+	std::string temp(expr.substr(i, j-i+1));
+	return &TreeNode(VARIABLE, temp);
+}
+
+bool Utils::IsSameTreeNode(TreeNode &node1, TreeNode &node2) {
+	return ((node1.getSymbol == node2.getSymbol)
+		&& (node1.getValue.compare(node2.getValue));
+}
+
+bool Utils::IsSameTree(TreeNode &tree1, TreeNode &tree2) {
+	if (!IsSameTreeNode(tree1, tree2)) {
+		return false;
+	}
+	else {
+		std::vector<TreeNode*> childrenLst1(tree1.getChildren());
+		std::vector<TreeNode*> childrenLst2(tree2.getChildren());
+		if (childrenLst1.size() != childrenLst2.size()) return false;
+		for (unsigned i = 0; i < childrenLst1.size(); i++) {
+			if (!IsSameTree(*childrenLst1[i], *childrenLst2[i])) return false;
+		}
+		return true;
+	}
+}
+
+bool Utils::IsSubTree(TreeNode &tree1, TreeNode &tree2) {
+	if (IsSameTree(tree1, tree2)) {
+		return true;
+	}
+	else {
+		std::vector<TreeNode*> childrenLst1(tree1.getChildren());
+		for (unsigned i = 0; i < childrenLst1.size(); i++) {
+			if (IsSubTree(*childrenLst1[i], tree2)) return true;
+		}
+		return false;
+	}
+}
+
 //template<class T>
 bool Utils::VectorContains(vector<unsigned int> vec, unsigned int value) {
     return (std::find(vec.begin(), vec.end(), value) != vec.end());

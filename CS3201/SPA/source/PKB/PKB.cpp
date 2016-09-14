@@ -257,6 +257,20 @@ vector<TreeNode*> PKB::GetAllAssignTreeNodes() {
     return vec;
 }
 
+bool IsExactPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree) {
+	TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo));
+	bool matchLHS(PKB::IsModifies(stmtNo, varName));
+	bool matchRHS(Utils::IsSameTree(*RHS, *exprTree));
+	return (matchLHS && matchRHS);
+}
+
+bool IsSubPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree) {
+	TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo));
+	bool matchLHS(PKB::IsModifies(stmtNo, varName));
+	bool matchRHS(Utils::IsSubTree(*RHS, *exprTree));
+	return (matchLHS && matchRHS);
+}
+
 /* END   - Assign table functions */
 /* START - Modifies table functions */
 

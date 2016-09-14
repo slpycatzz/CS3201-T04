@@ -3,11 +3,13 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include "TreeNode.h"
 
 class Utils {
  public:
     template<class K, class V>
-    static std::vector<std::vector<V>> Flatten(std::unordered_map<K, std::vector<V>> &map, std::vector<K> &list, unsigned int start, unsigned int end);
+    static std::vector<std::vector<V>> Flatten(std::unordered_map<K, std::vector<V>> &map,
+		std::vector<K> &list, unsigned int start, unsigned int end);
 
     template<class T>
     static std::vector<std::vector<T>> Zip(std::vector<T> list1, std::vector<T> list2);
@@ -17,6 +19,12 @@ class Utils {
 
     //template<class T>
     static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
+
+	static TreeNode* buildExprTree(std::string expr);
+
+	static bool IsSameTreeNode(TreeNode &node1, TreeNode &node2);
+	static bool IsSameTree(TreeNode &tree1, TreeNode &tree2);
+	static bool IsSubTree(TreeNode &tree1, TreeNode &tree2);
 
     static std::string VectorToString(std::vector<std::string> &vec);
     static std::vector<std::string> VectorToString(std::vector<std::vector<std::string>> &vec);

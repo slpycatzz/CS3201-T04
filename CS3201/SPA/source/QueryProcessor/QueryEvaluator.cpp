@@ -52,29 +52,89 @@ bool QueryEvaluator::selectClauseResults(PKB &pkb, Clause &clause,
 	bool hasCandidates;
 	std::string type(clause.getClauseType());
 	if (type.compare(SYMBOL_PATTERN)) {
-
+		std::vector<VarName> args(clause.getArg());
+		VarName lhs(args[0]), rhs(args[1]), assignStmt(args[2]);
+		if (Utils::IsStringLiteral(lhs)) {
+			hasCandidates = FilterNoVarPattern(pkb, assignStmt, lhs, rhs, combinations);
+		}
+		else {
+			hasCandidates = FilterOneVarPattern(pkb, assignStmt, lhs, rhs, combinations);
+		}
 	}
 	else {
 		std::vector<VarName> args(clause.getArg());
 		VarName var0(args[0]), var1(args[1]);
 		if (Utils::IsLiteral(var0)) {
 			if (Utils::IsLiteral(var1)) {
-				FilterNoVarClause(pkb, type, var0, var1, combinations);
+				hasCandidates = FilterNoVarClause(pkb, type, var0, var1, combinations);
 			}
 			else {
-				FilterSecondVarClause(pkb, type, var0, var1, combinations);
+				hasCandidates = FilterSecondVarClause(pkb, type, var0, var1, combinations);
 			}
 		}
 		else {
 			if (Utils::IsLiteral(var1)) {
-				FilterFirstVarClause(pkb, type, var0, var1, combinations);
+				hasCandidates = FilterFirstVarClause(pkb, type, var0, var1, combinations);
 			}
 			else {
-				FilterTwoVarsClause(pkb, type, var0, var1, combinations);
+				hasCandidates = FilterTwoVarsClause(pkb, type, var0, var1, combinations);
 			}
 		}
 	}
 	return hasCandidates;
+}
+
+bool QueryEvaluator::FilterNoVarPattern(PKB &pkb, VarName assignStmt, Candidate lhs,
+	Candidate expr, TotalCombinationList &combinations)
+{
+	PartialCombinationList candidateList(combinations[assignStmt]);
+	PartialCombinationList filteredList;
+	for (CandidateCombination tup : candidateList) {
+		if (evaluatePatternClause(pkb, tup[assignStmt], lhs, expr)) {
+			filteredList.push_back(tup);
+		}
+	}
+	if (filteredList.empty()) return false;
+	for (auto kv : combinations) {
+		if (kv.second == candidateList) {
+			combinations.insert_or_assign(kv.first, filteredList);
+		}
+	}
+	return true;
+}
+
+bool QueryEvaluator::FilterOneVarPattern(PKB &pkb, VarName assignStmt, VarName lhs,
+	Candidate expr, TotalCombinationList &combinations)
+{
+	PartialCombinationList candLst0(combinations[assignStmt]);
+	PartialCombinationList candLst1(combinations[lhs]);
+	PartialCombinationList filteredList;
+	if (&candLst0 == &candLst1) {
+		for (CandidateCombination tup : candLst0) {
+			Candidate stmtCand(tup[assignStmt]), lhsCand(tup[lhs]);
+			if (evaluateSuchThatClause(pkb, stmtCand, lhsCand, expr)) {
+				filteredList.push_back(tup);
+			}
+		}
+	}
+	else {
+		for (CandidateCombination tup0 : candLst0) {
+			Candidate stmtCand(tup0[assignStmt]);
+			for (CandidateCombination tup1 : candLst1) {
+				Candidate lhsCand(tup1[lhs]);
+				if (evaluateSuchThatClause(pkb, stmtCand, lhsCand, expr)) {
+					filteredList.push_back(Utils::MergeMap(tup0, tup1));
+				}
+			}
+		}
+	}
+	if (filteredList.empty()) return false;
+	for (auto kv : combinations) {
+		if (kv.second == candLst0 || kv.second == candLst1) {
+			combinations.insert_or_assign(kv.first, filteredList);
+		}
+	}
+	return true;
 }
 
 bool QueryEvaluator::FilterTwoVarsClause(PKB &pkb, std::string clauseType,
@@ -219,6 +279,22 @@ bool QueryEvaluator::isBoolSelect(std::unordered_map<std::string, Symbol> &selec
 	}
 	else {
 		return false;
+	}
+}
+
+bool QueryEvaluator::evaluateClause(PKB &pkb, Clause &clause, CandidateCombination &comb) {
+	return false;
+}
+
+bool QueryEvaluator::evaluatePatternClause(PKB &pkb, Candidate assignStmt,
+	Candidate lhsVar, std::string expr)
+{
+	TreeNode* node(Utils::buildExprTree(expr));
+	if (expr.find_first_of('_') == std::string::npos) {
+		return pkb.IsExactPattern(Utils::StringToInt(assignStmt), lhsVar, node);
+	}
+	else {
+		return pkb.IsSubPattern(Utils::StringToInt(assignStmt), lhsVar, node);
 	}
 }
 
