@@ -37,13 +37,13 @@ public:
 
         std::string query;
         query = "assign a,a1; while w1,w2; variable x;";
-        query += "Select a such that uses(a1, x)";
+        query += "Select a such that Uses(a1, x)";
         qp.preprocessQuery(query);
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
 
 		resList = qt.getSuchThat();
-		expected = "uses a1 x ";
+		expected = "Uses a1 x ";
 		for (unsigned int i = 0; i < resList.size(); i++) {
 			actual += resList[i].getClauseType() + " ";
 			for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
@@ -82,13 +82,13 @@ public:
 
 		std::string query;
 		query = "assign a,a1; variable x;";
-		query += "Select a such that uses(a1, \"x\")";
+		query += "Select a such that Uses(a1, \"x\")";
 		qp.preprocessQuery(query);
 		qt = qp.getQueryTree();
 		std::vector<Clause> resList;
 
 		resList = qt.getSuchThat();
-		expected = "uses a1 \"x\" ";
+		expected = "Uses a1 \"x\" ";
 		for (unsigned int i = 0; i < resList.size(); i++) {
 			actual += resList[i].getClauseType() + " ";
 			for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
@@ -104,13 +104,13 @@ public:
 
 		std::string query;
 		query = "assign a,a1; variable x;";
-		query += "Select a such that uses(1, x)";
+		query += "Select a such that Uses(1, x)";
 		qp.preprocessQuery(query);
 		qt = qp.getQueryTree();
 		std::vector<Clause> resList;
 
 		resList = qt.getSuchThat();
-		expected = "uses 1 x ";
+		expected = "Uses 1 x ";
 		for (unsigned int i = 0; i < resList.size(); i++) {
 			actual += resList[i].getClauseType() + " ";
 			for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
@@ -159,13 +159,13 @@ public:
 
 		std::string query;
 		query = "assign a,a1; variable x;";
-		query += "Select a such that uses(a1, x)";
+		query += "Select a such that Uses(a1, x)";
 		qp.preprocessQuery(query);
 		qt = qp.getQueryTree();
 		std::vector<Clause> resList;
 
 		resList = qt.getSuchThat();
-		expected = "uses a1 x ";
+		expected = "Uses a1 x ";
 		for (unsigned int i = 0; i < resList.size(); i++) {
 			actual += resList[i].getClauseType() + " ";
 			for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
