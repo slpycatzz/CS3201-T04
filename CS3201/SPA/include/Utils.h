@@ -12,14 +12,23 @@ class Utils {
 		Flatten(std::unordered_map<std::string, std::vector<std::string>> &map,
 		std::vector<std::string> &list, unsigned int start, unsigned int end);
 
+
     template<class T>
     static std::vector<std::vector<T>> Zip(std::vector<T> list1, std::vector<T> list2);
 
     //template<class K, class V>
-    static std::unordered_map<std::string, std::string> MergeMap(std::unordered_map<std::string, std::string> &map1, std::unordered_map<std::string, std::string> &map2);
+    static std::unordered_map<std::string, std::string>
+		MergeMap(std::unordered_map<std::string, std::string> &map1,
+			std::unordered_map<std::string, std::string> &map2);
+
+	static std::unordered_map<std::string, std::string>
+		ReduceMap(std::unordered_map<std::string, std::string> &map,
+			std::vector<std::string> &selections);
 
     //template<class T>
     static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
+
+	static bool VectorContains(std::vector<std::string> vec, std::string str);
 
 	static TreeNode* buildExprTree(std::string expr);
 
@@ -29,6 +38,9 @@ class Utils {
 
     static std::string VectorToString(std::vector<std::string> &vec);
     static std::vector<std::string> VectorToString(std::vector<std::vector<std::string>> &vec);
+
+	static std::string MapToString(std::unordered_map<std::string, std::string> &map);
+	static std::string MapToValueString(std::unordered_map<std::string, std::string> &map);
 
     static std::string IntToString(unsigned int i);
     static std::vector<std::string> IntToString(std::vector<unsigned int> vec);

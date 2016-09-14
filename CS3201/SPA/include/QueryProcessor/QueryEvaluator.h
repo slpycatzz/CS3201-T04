@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
 #include "QueryProcessor/Clause.h"
 #include "QueryTree.h"
@@ -55,11 +56,14 @@ class QueryEvaluator {
 
 	 void insertMap(std::vector<std::string> list, VarName var, PartialCombinationList &result);
 
-	 ResultList getResultsFromCombinationList(TotalCombinationList &cands, std::unordered_map<std::string, Symbol> &selectList);
+	 ResultList getResultsFromCombinationList(TotalCombinationList &combinations,
+		 std::vector<VarName> &selectList);
 
-	 std::unordered_map<std::string, std::vector<Candidate>>
-		 getSelectMap(std::unordered_map<std::string, Symbol>& selectList,
-		 TotalCombinationList & cands);
+	 PartialCombinationList getSelectedCombinations(TotalCombinationList &cands,
+		 std::vector<VarName>& selectList);
+
+	 PartialCombinationList mergeCombinationList(PartialCombinationList &combList1,
+		 PartialCombinationList &combList2);
 
 	 bool isBoolSelect(std::unordered_map<std::string, Symbol>& selectList);
 
