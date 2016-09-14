@@ -44,6 +44,10 @@ public:
 		return qt;
 	}
 	TEST_METHOD(QE_GetCadidatesTest) {
+
+    //since PKB is a static class. CLEAR IT before running test
+    PKB::clear();
+
 		getSampleProgram();
 		QueryTree qt(getQueryTree("variable v; Select v such that Modifies(1, \"a\");"));
 
@@ -51,9 +55,12 @@ public:
 		PKB pkb;
 		std::vector<std::string> result(qe.selectQueryResults(pkb, qt));
 		Logger::WriteMessage(Utils::VectorToString(result).c_str());
-
 	}
 	TEST_METHOD(TestEvaluateSuchThatClause) {
+
+    //since PKB is a static class. CLEAR IT before running test
+    PKB::clear();
+
 		getSampleProgram();
 		QueryTree qt = getQueryTree("variable v; Select v such that Modifies(1, \"a\");");
 		QueryEvaluator qe;
