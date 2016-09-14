@@ -10,24 +10,14 @@ QueryTree::QueryTree() {}
 
 QueryTree::~QueryTree() {}
 
-
-// varType(Symbol), varList
-bool QueryTree::insertSelect(std::string varType, std::vector<std::string> varList) {
-    Symbol symbol = Constants::StringToSymbol(varType);
-
-    for (unsigned int i = 0; i < varList.size(); i++) {
-        varSelectMap[varList[i]] = symbol;
-    }
-
-    return true;
-}
-
 bool QueryTree::insertDeclaration(std::unordered_map<std::string, Symbol> varSymbolMap) {
-    varMap = varSymbolMap;
+    for (std::pair<std::string, Symbol> pair : varSymbolMap) {
+        varMap.insert(pair);
+    }
     return true;
 }
 
-// wm todo: can use insertSelect instead
+/* should be insert to varList only, varSelectMap to be phased out */
 bool QueryTree::insertSelect(std::string varName, std::string varType) {
     Symbol symbol = Constants::StringToSymbol(varType);
     varSelectMap[varName] = symbol;
