@@ -119,6 +119,8 @@ bool QueryPreprocessor::processQuery(string query) {
         if (isSuccess == false) {
             return false;
         } else {
+            // wm todo: advance token after each parseSuchThat or pattern
+            queryList.erase(queryList.begin(), queryList.begin() + 1);
             queryList = getNextToken(queryList);
         }
     }
