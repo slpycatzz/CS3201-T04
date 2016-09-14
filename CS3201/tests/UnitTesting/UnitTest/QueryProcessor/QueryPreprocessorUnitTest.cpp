@@ -19,7 +19,7 @@ public:
 		QueryPreprocessor qp;
 		QueryTree qt;
 
-        qp.preprocessQuery("assign a,a1; while w1,w2;select a");
+        qp.preprocessQuery("assign a,a1; while w1,w2;Select a");
         qt = qp.getQueryTree();
         std::vector<std::string> varList;
 
@@ -37,7 +37,7 @@ public:
 
         std::string query;
         query = "assign a,a1; while w1,w2; variable x;";
-        query += "select a such that uses(a1, x)";
+        query += "Select a such that uses(a1, x)";
         qp.preprocessQuery(query);
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
@@ -59,7 +59,7 @@ public:
 
 		std::string query;
 		query = "assign a,a1;";
-		query += "select a pattern a1(\"x\",_)";
+		query += "Select a pattern a1(\"x\",_)";
 		qp.preprocessQuery(query);
 
 		qt = qp.getQueryTree();
@@ -82,7 +82,7 @@ public:
 
 		std::string query;
 		query = "assign a,a1; variable x;";
-		query += "select a such that uses(a1, \"x\")";
+		query += "Select a such that uses(a1, \"x\")";
 		qp.preprocessQuery(query);
 		qt = qp.getQueryTree();
 		std::vector<Clause> resList;
@@ -104,7 +104,7 @@ public:
 
 		std::string query;
 		query = "assign a,a1; variable x;";
-		query += "select a such that uses(1, x)";
+		query += "Select a such that uses(1, x)";
 		qp.preprocessQuery(query);
 		qt = qp.getQueryTree();
 		std::vector<Clause> resList;
@@ -126,7 +126,7 @@ public:
 
         std::string query;
         query = "assign a,a1; variable x;";
-        query += "select a such that uses(\"1a\", x)";
+        query += "Select a such that uses(\"1a\", x)";
 
         try {
             qp.preprocessQuery(query);
@@ -141,7 +141,7 @@ public:
 		QueryPreprocessor qp;
 		QueryTree qt;
 
-		qp.preprocessQuery("assign a,a1; while w1,w2;select a");
+		qp.preprocessQuery("assign a,a1; while w1,w2;Select a");
 		qt = qp.getQueryTree();
 		std::vector<std::string> varList;
 
@@ -159,7 +159,7 @@ public:
 
 		std::string query;
 		query = "assign a,a1; variable x;";
-		query += "select a such that uses(a1, x)";
+		query += "Select a such that uses(a1, x)";
 		qp.preprocessQuery(query);
 		qt = qp.getQueryTree();
 		std::vector<Clause> resList;
@@ -180,7 +180,7 @@ public:
 
 		std::string query;
 		query = "assign a,a1;";
-		query += "select a pattern a1(\"x\",_)";
+		query += "Select a pattern a1(\"x\",_)";
 		qp.preprocessQuery(query);
 
 		qt = qp.getQueryTree();
