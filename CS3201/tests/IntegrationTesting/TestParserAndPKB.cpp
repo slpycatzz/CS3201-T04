@@ -18,6 +18,10 @@ namespace IntegrationTesting {
   TEST_CLASS(IntegrationTest) {
     public:
       TEST_METHOD(Parser_and_PKB) {
+
+        //since PKB is a static class. CLEAR IT before running test
+        PKB::clear();
+
         string fileName = "..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt";
         parse(fileName);
         
