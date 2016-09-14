@@ -38,11 +38,11 @@
     <ClCompile Include="QueryProcessor\QueryPreprocessorUnitTest.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="PKBUnitTest.cpp">
-      <Filter>Source Files\PKB</Filter>
-    </ClCompile>
-    <ClCompile Include="FrontendParserUnitTest.cpp">
+    <ClCompile Include="Frontend\FrontendParserUnitTest.cpp">
       <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="PKB\PKBUnitTest.cpp">
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

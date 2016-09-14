@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "QueryProcessor/Clause.h"
 #include "QueryProcessor/QueryEvaluator.h"
 #include "Utils.h"
@@ -167,6 +171,7 @@ ResultList QueryEvaluator::selectQueryResults(PKB &pkb, QueryTree &query)
 	std::vector<Clause> clauseList = query.getClauses("suchThat pattern");
 	TotalCombinationList allCandidates(getTotalCandidateList(pkb, query));
 	std::unordered_map<std::string, Symbol> selectList = query.getSelect();
+
 	bool hasMoreCandidates;
 	for (Clause clause : clauseList) {
 		hasMoreCandidates = selectClauseResults(pkb, clause, allCandidates);

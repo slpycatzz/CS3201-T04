@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AutoTester", "AutoTester\AutoTester.vcxproj", "{20A7FBF3-D972-4220-A6AA-960484999FBB}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -11,6 +11,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SPA", "SPA\SPA.vcxproj", "{10D30226-FBE5-4C0E-84D7-61CC065DEE24}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntegrationTesting", "tests\IntegrationTesting\IntegrationTesting.vcxproj", "{09AD1D74-2D3C-42AE-B4E0-52A792A27E60}"
+	ProjectSection(ProjectDependencies) = postProject
+		{10D30226-FBE5-4C0E-84D7-61CC065DEE24} = {10D30226-FBE5-4C0E-84D7-61CC065DEE24}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "tests\UnitTesting\UnitTest\UnitTest.vcxproj", "{920D278B-915F-4AB0-B329-265DBB391008}"
 EndProject

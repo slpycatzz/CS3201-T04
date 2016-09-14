@@ -1,8 +1,13 @@
 #pragma once
 
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "QueryProcessor/Clause.h"
 #include "QueryTree.h"
 #include "PKB/PKB.h"
+
 typedef std::vector<std::string> ResultList;
 typedef std::string Candidate;
 typedef std::string VarName;

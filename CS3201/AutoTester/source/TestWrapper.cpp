@@ -48,23 +48,21 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
     }
 
     QueryPreprocessor queryPreprocessor = QueryPreprocessor();
-    //QueryEvaluator queryEvaluator = QueryEvaluator();
+    QueryEvaluator queryEvaluator = QueryEvaluator();
     QueryProjector queryProjector = QueryProjector();
-    PKB pkb = PKB();
 
     try {
         QueryTree queryTree;
         queryPreprocessor.preprocessQuery(query);
 
         //Evaluator here.
-        //queryTree = queryPreprocessor.getQueryTree();
-        //std::vector<std::string> queryResult = selectQueryResults(pkb, queryTree);
-
-        std::vector<std::string> queryResult { "" };  // store query result here
+        queryTree = queryPreprocessor.getQueryTree();
+        std::vector<std::string> queryResult = queryEvaluator.selectQueryResults(PKB(), queryTree);
 
         /* Projector here. Store answer into results. */
         results = queryProjector.formatResult(queryResult);
     } catch (std::exception& ex) {
+        std::cout << ex.what() << std::endl;
         return;
     }
 }

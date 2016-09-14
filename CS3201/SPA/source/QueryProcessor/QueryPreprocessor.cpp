@@ -77,7 +77,7 @@ bool QueryPreprocessor::processQuery(string query) {
     vector<string> queryList = Utils::Split(Utils::TrimLeadingSpaces(query), ' ');
 
     /* Expecting first token to be select */
-    if (queryList[0] != "select") {
+    if (queryList[0] != SYMBOL_SELECT) {
         // std::cout << "no select found";
         throw QuerySyntaxErrorException();
     }
