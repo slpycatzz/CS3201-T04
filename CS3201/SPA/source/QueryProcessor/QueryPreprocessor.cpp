@@ -104,10 +104,10 @@ bool QueryPreprocessor::processQuery(string query) {
         if ((queryList[1].size() > 0 && queryList[1][0] == NULL) || queryList[1].size() == 0) {
             break;
         }
-        if (toLower(queryList[0]).compare("such") == 0 && toLower(queryList[1]).compare("that") == 0) {
+        if (queryList[0].compare("such") == 0 && queryList[1].compare("that") == 0) {
             isSuccess = parseSuchThat(queryList);
             prevClause = "such that";
-        } else if (toLower(queryList[0]).compare("pattern") == 0) {
+        } else if (queryList[0].compare("pattern") == 0) {
             isSuccess = parsePattern(queryList);
             prevClause = "pattern";
 
@@ -196,7 +196,7 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
         }
     }
 
-    relType[0] = tolower(relType[0]);
+    //relType[0] = tolower(relType[0]);
     for (unsigned int i = 0; i < varList.size(); i++) {
         if (isVarExist(varList[i])) {
             // isArgValid(relationType, argType, argNumber)
@@ -226,8 +226,9 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
 
     if (clauseType == "such that") {
         /* convert relType to lowercase */
-        std::string relationType = toLower(relType);
-        qt.insertSuchThat(relationType, varList);
+        //std::string relationType = toLower(relType);
+        //qt.insertSuchThat(relationType, varList);
+        qt.insertSuchThat(relType, varList);
     } else if (clauseType == "pattern") {
         // clauseType: "pattern", arg: arg1, arg2, arg3/patternType(a,ifstmt,while...)
         varList.push_back(relTypeArg);
@@ -333,7 +334,7 @@ vector<string> QueryPreprocessor::getNextToken(vector<string> queryList) {
     vector<string> result;
 
     for (unsigned int i = 0; i < queryList.size(); i++) {
-        if (toLower(queryList[i]).compare("such") == 0 || toLower(queryList[i]).compare("pattern") == 0) {
+        if (queryList[i].compare("such") == 0 || queryList[i].compare("pattern") == 0) {
             end = i;
             break;
         }

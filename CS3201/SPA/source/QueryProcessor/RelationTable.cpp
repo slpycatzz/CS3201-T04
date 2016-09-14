@@ -43,35 +43,35 @@ void RelationTable::initTable() {
     // stmt: assign | while | if | prog_line
     arg1 = { "stmt", "assign", "while", "variable", "constant", "prog_line"};
     arg2 = { "varName", "variable", "underscore" };
-    clauseMap1["modifies"] = arg1;
-    clauseMap2["modifies"] = arg2;
+    clauseMap1["Modifies"] = arg1;
+    clauseMap2["Modifies"] = arg2;
     arg1.clear();
     arg2.clear();
 
     arg1 = { "stmt", "assign", "while", "variable", "constant", "prog_line"};
     arg2 = { "varName", "variable", "underscore" };
-    clauseMap1["uses"] = arg1;
-    clauseMap2["uses"] = arg2;
+    clauseMap1["Uses"] = arg1;
+    clauseMap2["Uses"] = arg2;
     arg1.clear();
     arg2.clear();
 
     arg1 = { "stmt", "assign", "while", "constant", "prog_line", "underscore"};
     arg2 = { "stmt", "assign", "while", "constant", "prog_line", "underscore"};
-    clauseMap1["parent"] = arg1;
-    clauseMap2["parent"] = arg2;
+    clauseMap1["Parent"] = arg1;
+    clauseMap2["Parent"] = arg2;
 
-    clauseMap1["parent*"] = arg1;
-    clauseMap2["parent*"] = arg2;
+    clauseMap1["Parent*"] = arg1;
+    clauseMap2["Parent*"] = arg2;
     arg1.clear();
     arg2.clear();
 
     arg1 = { "stmt", "assign", "while", "constant", "prog_line", "underscore" };
     arg2 = { "stmt", "assign", "while", "constant", "prog_line", "underscore" };
-    clauseMap1["follows"] = arg1;
-    clauseMap2["follows"] = arg2;
+    clauseMap1["Follows"] = arg1;
+    clauseMap2["Follows"] = arg2;
 
-    clauseMap1["follows*"] = arg1;
-    clauseMap2["follows*"] = arg2;
+    clauseMap1["Follows*"] = arg1;
+    clauseMap2["Follows*"] = arg2;
     arg1.clear();
     arg2.clear();
 

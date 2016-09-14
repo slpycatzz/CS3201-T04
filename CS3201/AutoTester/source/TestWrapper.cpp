@@ -45,8 +45,8 @@ void TestWrapper::parse(std::string filePath) {
 }
 
 /*
- * Function for evaluating a list of SIMPLE queries.
- */
+* Function for evaluating a list of SIMPLE queries.
+*/
 void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
     /* Check if AutoTester sent stop signal. */
     if (AbstractWrapper::GlobalStop) {
@@ -56,38 +56,45 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
     QueryPreprocessor queryPreprocessor = QueryPreprocessor();
     QueryEvaluator queryEvaluator = QueryEvaluator();
     QueryProjector queryProjector = QueryProjector();
+    PKB pkb;
 
     try {
-        QueryTree queryTree;
         queryPreprocessor.preprocessQuery(query);
+        QueryTree queryTree = queryPreprocessor.getQueryTree();
 
-        //Evaluator here.
-        queryTree = queryPreprocessor.getQueryTree();
-        //std::vector<std::string> queryResult = queryEvaluator.selectQueryResults(PKB(), queryTree);
-        
-        //test select
+        //test getVarMap (declarations)
+        std::unordered_map<std::string, Symbol> varMap = queryTree.getVarMap();
+        for (auto kv : varMap) {
+            out << kv.second << " " << kv.first << "; ";
+        }
+
+        //test getSelect
         std::unordered_map<std::string, Symbol> selectMap = queryTree.getSelect();
         for (auto kv : selectMap) {
             out << kv.second << " " << kv.first << "; ";
         }
-        
+
+
         //test clauses
         std::vector<Clause> clauses = queryTree.getClauses("suchThat pattern");
-        
+
         for (Clause c : clauses) {
             out << c.getClauseType() << " ";
             for (int i = 0; i < c.getArgCount(); i++) {
                 out << c.getArg()[i] << " ";
             }
-            out << std::endl;
         }
-        
+        out << std::endl;
+
         //out.close();
-        
+
+        //Evaluator here.
+        //std::vector<std::string> queryResult = queryEvaluator.selectQueryResults(pkb, queryTree);
 
         /* Projector here. Store answer into results. */
         //results = queryProjector.formatResult(queryResult);
-    } catch (std::exception& ex) {
+    }
+    catch (std::exception& ex) {
         //std::cout << ex.what() << std::endl;
         out << std::endl << ex.what() << std::endl;
         return;

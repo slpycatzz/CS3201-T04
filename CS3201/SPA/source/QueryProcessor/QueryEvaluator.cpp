@@ -357,39 +357,39 @@ bool QueryEvaluator::evaluatePatternClause(PKB &pkb, Candidate assignStmt,
 bool QueryEvaluator::evaluateSuchThatClause(PKB &pkb,
 	std::string clauseType, Candidate var0, Candidate var1)
 {
-	if (clauseType.compare("uses")) {
+	if (clauseType.compare("Uses")) {
 		evaluateUses(pkb, var0, var1);
 	}
-	else if (clauseType.compare("modifies")) {
+	else if (clauseType.compare("Modifies")) {
 		evaluateModifies(pkb, var0, var1);
 	}
-	else if (clauseType.compare("parent")) {
+	else if (clauseType.compare("Parent")) {
 		evaluateParent(pkb, var0, var1);
 	}
-	else if (clauseType.compare("parent_star")) {
+	else if (clauseType.compare("Parent*")) {
 		evaluateParentStar(pkb, var0, var1);
 	}
-	else if (clauseType.compare("follows")) {
+	else if (clauseType.compare("Follows")) {
 		evaluateFollows(pkb, var0, var1);
 	}
-	else if (clauseType.compare("follows_star")) {
+	else if (clauseType.compare("Follows*")) {
 		evaluateFollowsStar(pkb, var0, var1); }
-	else if (clauseType.compare("next")) {
+	else if (clauseType.compare("Next")) {
 		evaluateNext(pkb, var0, var1);
 	}
-	else if (clauseType.compare("next_star")) {
+	else if (clauseType.compare("Next*")) {
 		evaluateNextStar(pkb, var0, var1);
 	}
-	else if (clauseType.compare("calls")) {
+	else if (clauseType.compare("Calls")) {
 		evaluateCalls(pkb, var0, var1);
 	}
-	else if (clauseType.compare("calls_star")) {
+	else if (clauseType.compare("Calls*")) {
 		evaluateCallsStar(pkb, var0, var1);
 	}
-	else if (clauseType.compare("affects")) {
+	else if (clauseType.compare("Affects")) {
 		evaluateAffects(pkb, var0, var1);
 	}
-	else if (clauseType.compare("affects_star")) {
+	else if (clauseType.compare("Affects*")) {
 		evaluateAffectsStar(pkb, var0, var1);
 	}
 
