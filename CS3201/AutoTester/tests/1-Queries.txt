@@ -1,0 +1,30 @@
+1 - pattern 1
+assign a;
+Select a pattern a("a",_)
+1, 10
+5000
+2 - pattern 2
+assign a;
+Select a pattern a(_,_"a"_)
+2, 6, 10
+5000
+3 - pattern 3
+assign a;
+Select a pattern a("c","b")
+3
+5000
+4 - modifies 1
+assign a;
+Select a such that Modifies(a,"b")
+2
+5000
+5 - modifies 2
+stmt s;
+Select s such that Modifies(s,"x")
+4, 5, 6, 7, 8
+5000
+6 - modifies 3
+while w;
+Select w such that Modifies(w,"x")
+5, 7
+5000

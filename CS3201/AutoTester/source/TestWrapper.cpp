@@ -1,5 +1,6 @@
 #include <exception>
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <string>
 #include <vector>
@@ -11,6 +12,8 @@
 #include "QueryProcessor/QueryProjector.h"
 #include "TestWrapper.h"
 
+std::ofstream out;
+
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
 AbstractWrapper* WrapperFactory::createWrapper() {
@@ -21,7 +24,10 @@ AbstractWrapper* WrapperFactory::createWrapper() {
 // Do not modify the following line
 volatile bool TestWrapper::GlobalStop = false;
 
-TestWrapper::TestWrapper() {}
+TestWrapper::TestWrapper() {
+    out.clear();
+    out.open("tests\\output.txt");
+}
 
 /*
  * Function for parsing a SIMPLE source program.
@@ -57,12 +63,33 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
 
         //Evaluator here.
         queryTree = queryPreprocessor.getQueryTree();
-        std::vector<std::string> queryResult = queryEvaluator.selectQueryResults(PKB(), queryTree);
+        //std::vector<std::string> queryResult = queryEvaluator.selectQueryResults(PKB(), queryTree);
+        
+        //test select
+        std::unordered_map<std::string, Symbol> selectMap = queryTree.getSelect();
+        for (auto kv : selectMap) {
+            out << kv.second << " " << kv.first << "; ";
+        }
+        
+        //test clauses
+        std::vector<Clause> clauses = queryTree.getClauses("suchThat pattern");
+        
+        for (Clause c : clauses) {
+            out << c.getClauseType() << " ";
+            for (int i = 0; i < c.getArgCount(); i++) {
+                out << c.getArg()[i] << " ";
+            }
+            out << std::endl;
+        }
+        
+        //out.close();
+        
 
         /* Projector here. Store answer into results. */
-        results = queryProjector.formatResult(queryResult);
+        //results = queryProjector.formatResult(queryResult);
     } catch (std::exception& ex) {
-        std::cout << ex.what() << std::endl;
+        //std::cout << ex.what() << std::endl;
+        out << std::endl << ex.what() << std::endl;
         return;
     }
 }

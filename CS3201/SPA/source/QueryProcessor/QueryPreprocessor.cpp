@@ -193,6 +193,8 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
             relType = "pattern";
         }
     }
+
+    relType[0] = tolower(relType[0]);
     for (unsigned int i = 0; i < varList.size(); i++) {
         if (isVarExist(varList[i])) {
             // isArgValid(relationType, argType, argNumber)

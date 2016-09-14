@@ -1,0 +1,6 @@
+5 a; pattern "a" _ a 
+5 a; pattern _ _"a"_ a 
+5 a; pattern "c" "b" a 
+5 a; modifies a "b" 
+31 s; modifies s "x" 
+6 w; modifies w "x" 

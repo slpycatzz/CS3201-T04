@@ -70,7 +70,7 @@ std::vector<Clause> QueryTree::getClauses(std::string clauseType) {
     std::vector<Clause> result;
 	std::vector<std::string> typeList = Utils::SplitAndIgnoreEmpty(clauseType, ' ');
 	for (std::string type : typeList) {
-		if (type.compare("pattern")) {
+		if (type == "pattern") {
 			std::vector<Clause> patternClauses = getPattern();
 			result.insert(result.end(), patternClauses.begin(), patternClauses.end());
 		}
