@@ -15,12 +15,8 @@ using std::string;
 using std::vector;
 
 QueryPreprocessor::QueryPreprocessor() {
-    // wm todo: remove these if not used
-    relMap = {
-        { "follows", "f_symbol" }, { "follows*", "f_s_symbol" },
-        { "parent", "p_symbol" }, { "parent*", "p_s_symbol" },
-        { "modifies", "m_symbol" }, { "uses", "uses_symbol" }
-    };
+    /* allowed entity type for declaration e.g. For [assign a;] assign is allowed */
+    // wm todo: get a better name
     entMap = {
         { "stmt", "0" }, { "assign", "1" }, { "while", "2" }, { "variable", "3" }, { "constant", "4" }, { "prog_line", "5" }
     };
@@ -58,7 +54,7 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
     if (variableNames.size() == 0) {
         throw QuerySyntaxErrorException();
     }
-
+    std::unordered_map<string, Symbol> varSymbolMap;
     for (unsigned int i = 0; i < variableNames.size(); i++) {
         variableNames[i] = Utils::TrimSpaces(variableNames[i]);
 
@@ -67,8 +63,14 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
             throw QuerySyntaxErrorException();
         }
 
+        /* containes declared vars, pass to queryTree */
+        varSymbolMap[variableNames[i]] = Constants::StringToSymbol(declarationType);
+
+        /* wm todo: used internally, varSymbolMap should be sufficient, still in use */
         varMap[variableNames[i]] = declarationType;
     }
+
+    qt.insertDeclaration(varSymbolMap);
 
     return true;
 }

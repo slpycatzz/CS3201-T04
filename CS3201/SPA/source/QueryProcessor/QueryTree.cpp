@@ -16,16 +16,21 @@ bool QueryTree::insertSelect(std::string varType, std::vector<std::string> varLi
     Symbol symbol = Constants::StringToSymbol(varType);
 
     for (unsigned int i = 0; i < varList.size(); i++) {
-        varMap[varList[i]] = symbol;
+        varSelectMap[varList[i]] = symbol;
     }
 
+    return true;
+}
+
+bool QueryTree::insertDeclaration(std::unordered_map<std::string, Symbol> varSymbolMap) {
+    varMap = varSymbolMap;
     return true;
 }
 
 // wm todo: can use insertSelect instead
 bool QueryTree::insertSelect(std::string varName, std::string varType) {
     Symbol symbol = Constants::StringToSymbol(varType);
-    varMap[varName] = symbol;
+    varSelectMap[varName] = symbol;
     varList.push_back(varName);
     return true;
 }
@@ -51,8 +56,11 @@ bool QueryTree::insertPattern(std::string varName, std::vector<std::string> argL
     return false;
 }
 
+
+// wm TODO: SELECT MAY BECOME <a1,a2> (A PAIR) SO VARMAP MAY BE UNSUITABLE AFTER ITERATION 1
+// considering change to varList probably?
 std::unordered_map<std::string, Symbol> QueryTree::getSelect() {
-    return varMap;
+    return varSelectMap;
 }
 
 std::vector<std::string> QueryTree::getResults() {
@@ -68,21 +76,21 @@ std::vector<Clause> QueryTree::getPattern() {
 
 std::vector<Clause> QueryTree::getClauses(std::string clauseType) {
     std::vector<Clause> result;
-	std::vector<std::string> typeList = Utils::SplitAndIgnoreEmpty(clauseType, ' ');
-	for (std::string type : typeList) {
-		if (type == "pattern") {
-			std::vector<Clause> patternClauses = getPattern();
-			result.insert(result.end(), patternClauses.begin(), patternClauses.end());
-		}
-		else {
+    std::vector<std::string> typeList = Utils::SplitAndIgnoreEmpty(clauseType, ' ');
+    for (std::string type : typeList) {
+        if (type == "pattern") {
+            std::vector<Clause> patternClauses = getPattern();
+            result.insert(result.end(), patternClauses.begin(), patternClauses.end());
+        } else {
             std::vector<Clause> suchThatClauses = getSuchThat();
             result.insert(result.end(), suchThatClauses.begin(), suchThatClauses.end());
-		}
+        }
     }
     return result;
 }
 
+/* returns delcared Variable mapping */
 std::unordered_map<std::string, Symbol> QueryTree::getVarMap() {
-	return varMap;
+    return varMap;
 }
 
