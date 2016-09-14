@@ -43,6 +43,20 @@ public:
 		QueryTree qt(qp.getQueryTree());
 		return qt;
 	}
+  TEST_METHOD(Parser_and_PKB) {
+
+    //since PKB is a static class. CLEAR IT before running test
+    PKB::clear();
+
+    string fileName = "..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt";
+    parse(fileName);
+
+    Assert::AreEqual(42, int(PKB::GetNumberOfAssign()));
+    Assert::AreEqual(0, int(PKB::GetNumberOfCall()));
+    Assert::AreEqual(0, int(PKB::GetNumberOfIf()));
+    Assert::AreEqual(1, int(PKB::GetNumberOfProcedure()));
+    Assert::AreEqual(7, int(PKB::GetNumberOfWhile()));
+  }
 	TEST_METHOD(QE_GetCadidatesTest) {
 
     //since PKB is a static class. CLEAR IT before running test
