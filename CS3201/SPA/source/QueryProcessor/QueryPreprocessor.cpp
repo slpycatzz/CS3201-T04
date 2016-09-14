@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <regex>
 #include <string>
@@ -76,7 +77,7 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
 bool QueryPreprocessor::processQuery(string query) {
     vector<string> queryList = Utils::Split(Utils::TrimLeadingSpaces(query), ' ');
 
-    /* Expecting first token to be select */
+    /* Expecting first token to be Select (case-sensitive) */
     if (queryList[0] != SYMBOL_SELECT) {
         // std::cout << "no select found";
         throw QuerySyntaxErrorException();
@@ -101,10 +102,10 @@ bool QueryPreprocessor::processQuery(string query) {
         if ((queryList[1].size() > 0 && queryList[1][0] == NULL) || queryList[1].size() == 0) {
             break;
         }
-        if (queryList[0].compare("such") == 0 && queryList[1].compare("that") == 0) {
+        if (toLower(queryList[0]).compare("such") == 0 && toLower(queryList[1]).compare("that") == 0) {
             isSuccess = parseSuchThat(queryList);
             prevClause = "such that";
-        } else if (queryList[0].compare("pattern") == 0) {
+        } else if (toLower(queryList[0]).compare("pattern") == 0) {
             isSuccess = parsePattern(queryList);
             prevClause = "pattern";
 
@@ -141,7 +142,7 @@ bool QueryPreprocessor::parseSelect(vector<string> queryList) {
     }
     // wm todo: move this loop into another function
     for (unsigned int i = 0; i < selectList.size(); i++) {
-        if (selectList[0].compare("boolean") == 0) {
+        if (toLower(selectList[0]).compare("boolean") == 0) {
             // wm todo: create boolean var type for querytree
             qt.insertSelect("boolean", "boolean");
         } else if (isVarExist(selectList[i])) {
@@ -186,7 +187,7 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
     if (clauseType == "pattern") {
         relTypeArg = relType;
         relType = getVarType(relType);
-        if (relType.compare("assign") == 0) {
+        if (toLower(relType).compare("assign") == 0) {
             relType = "patternAssign";
         } else {
             relType = "pattern";
@@ -220,9 +221,8 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
     }
 
     if (clauseType == "such that") {
-        //convert relType to lowercase
-        std::string relationType = relType;
-        std::transform(relationType.begin(), relationType.end(), relationType.begin(), ::tolower);
+        /* convert relType to lowercase */
+        std::string relationType = toLower(relType);
         qt.insertSuchThat(relationType, varList);
     } else if (clauseType == "pattern") {
         // clauseType: "pattern", arg: arg1, arg2, arg3/patternType(a,ifstmt,while...)
@@ -289,7 +289,7 @@ bool QueryPreprocessor::isConstantVar(string var) {
 }
 
 bool QueryPreprocessor::isVarExist(string var) {
-    if (var.compare("boolean") == 0) {
+    if (toLower(var).compare("boolean") == 0) {
         return true;
     }
     if (varMap.find(var) != varMap.end()) {
@@ -329,7 +329,7 @@ vector<string> QueryPreprocessor::getNextToken(vector<string> queryList) {
     vector<string> result;
 
     for (unsigned int i = 0; i < queryList.size(); i++) {
-        if (queryList[i].compare("such") == 0 || queryList[i].compare("pattern") == 0) {
+        if (toLower(queryList[i]).compare("such") == 0 || toLower(queryList[i]).compare("pattern") == 0) {
             end = i;
             break;
         }
@@ -357,3 +357,7 @@ string QueryPreprocessor::testMethodOut() {
     return out;
 }
 
+string QueryPreprocessor::toLower(string data) {
+    std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+    return data;
+}
