@@ -57,6 +57,10 @@ class QueryEvaluator {
 
 	 ResultList getResultsFromCombinationList(TotalCombinationList &cands, std::unordered_map<std::string, Symbol> &selectList);
 
+	 std::unordered_map<std::string, std::vector<Candidate>>
+		 getSelectMap(std::unordered_map<std::string, Symbol>& selectList,
+		 TotalCombinationList & cands);
+
 	 bool isBoolSelect(std::unordered_map<std::string, Symbol>& selectList);
 
 private:

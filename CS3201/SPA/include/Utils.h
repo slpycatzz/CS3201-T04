@@ -8,7 +8,8 @@
 class Utils {
  public:
     //template<class K, class V>
-    static std::vector<std::vector<std::string>> Flatten(std::unordered_map<std::string, std::vector<std::string>> &map,
+    static std::vector<std::vector<std::string>>
+		Flatten(std::unordered_map<std::string, std::vector<std::string>> &map,
 		std::vector<std::string> &list, unsigned int start, unsigned int end);
 
     template<class T>

@@ -261,23 +261,38 @@ ResultList QueryEvaluator::selectQueryResults(PKB &pkb, QueryTree &query)
 ResultList QueryEvaluator::getResultsFromCombinationList(TotalCombinationList &cands,
 	std::unordered_map<std::string, Symbol> &selectList)
 {
+	std::unordered_map<std::string, std::vector<Candidate>>
+		selectMap(getSelectMap(selectList, cands));
 	std::vector<std::string> varList;
+	for (auto kv : selectMap) {
+		varList.push_back(kv.first);
+	}
+	std::vector<std::vector<Candidate>>
+		resultVectors = Utils::Flatten(selectMap, varList, 0, varList.size() - 1);
+	ResultList resultList;
+	for (std::vector<Candidate> candTup : resultVectors) {
+		resultList.push_back(Utils::VectorToString(candTup));
+	}
+	return resultList;
+}
+
+std::unordered_map<std::string, std::vector<Candidate>>
+QueryEvaluator::getSelectMap(std::unordered_map<std::string, Symbol> &selectList,
+	TotalCombinationList &cands)
+{
 	std::unordered_map<std::string, std::vector<Candidate>> selectMap;
 	for (auto kv : selectList) {
-		varList.push_back(kv.first);
 		std::vector<Candidate> candList;
 		PartialCombinationList* section = &cands[kv.first];
 		for (CandidateCombination cm : *section) {
 			candList.push_back(cm[kv.first]);
 		}
 		selectMap[kv.first] = candList;
+
+		// Debug - DELETE AFTER DONE
+		std::cout << kv.first << " : " << Utils::VectorToString(candList) << "\n";
 	}
-	std::vector<std::vector<Candidate>>* resultVectors = &Utils::Flatten(selectMap, varList, 0, varList.size() - 1);
-	ResultList resultList;
-	for (std::vector<Candidate> candTup : *resultVectors) {
-		resultList.push_back(Utils::VectorToString(candTup));
-	}
-	return resultList;
+	return selectMap;
 }
 
 bool QueryEvaluator::isBoolSelect(std::unordered_map<std::string, Symbol> &selectList) {

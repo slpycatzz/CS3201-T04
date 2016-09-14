@@ -13,24 +13,28 @@ using std::unordered_map;
 using std::vector;
 
 //template<class K, class V>
-vector<vector<string>> Utils::Flatten(unordered_map<string, vector<string>> &map, vector<string> &list, unsigned int start, unsigned int end) {
+vector<vector<string>> Utils::Flatten(unordered_map<string, vector<string>> &map,
+	vector<string> &list, unsigned int start, unsigned int end) {
     using V_vector = vector<string>;
 
     vector<vector<string>> result;
-    if (start > end) {
-        return vector<vector<string>>();
+	vector<string> firstVList = map[list[start]];
+    if (start == end) {
+		for (string value : firstVList) {
+			vector<string> vec({ value });
+			result.push_back(vec);
+		}
     }
+	else {
+		std::vector<vector<string>> recursiveList = Flatten(map, list, start + 1, end);
 
-    vector<string> firstVList = map[list[start]];
-    std::vector<vector<string>> recursiveList = Flatten(map, list, start + 1, end);
-
-    for (string value : firstVList) {
-        for (vector<string> vec : recursiveList) {
-            vec.insert(vec.begin(), value);
-
-            result.push_back(vec);
-        }
-    }
+		for (string value : firstVList) {
+			for (vector<string> vec : recursiveList) {
+				vec.insert(vec.begin(), value);
+				result.push_back(vec);
+			}
+		}
+	}
 
     return result;
 }
