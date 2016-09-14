@@ -192,6 +192,17 @@ std::string Utils::MapToValueString(std::unordered_map<std::string, std::string>
 	return ss.str();
 }
 
+std::string Utils::LiteralToCandidate(std::string literal) {
+	if (IsStringLiteral(literal)) {
+		unsigned i = literal.find_first_of("\"");
+		unsigned j = literal.find_last_of("\"");
+		return literal.substr(i, j - i + 1);
+	}
+	else {
+		return literal;
+	}
+}
+
 std::string Utils::IntToString(unsigned int i) {
     return std::to_string(i);
 }

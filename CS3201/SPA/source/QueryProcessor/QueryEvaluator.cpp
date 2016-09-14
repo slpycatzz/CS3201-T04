@@ -62,7 +62,7 @@ bool QueryEvaluator::selectClauseResults(PKB &pkb, Clause &clause,
 		std::vector<VarName> args(clause.getArg());
 		VarName lhs(args[0]), rhs(args[1]), assignStmt(args[2]);
 		if (Utils::IsStringLiteral(lhs)) {
-			hasCandidates = FilterNoVarPattern(pkb, assignStmt, lhs, rhs, combinations);
+			hasCandidates = FilterNoVarPattern(pkb, assignStmt, Utils::LiteralToCandidate(lhs), rhs, combinations);
 		}
 		else {
 			hasCandidates = FilterOneVarPattern(pkb, assignStmt, lhs, rhs, combinations);
@@ -73,15 +73,18 @@ bool QueryEvaluator::selectClauseResults(PKB &pkb, Clause &clause,
 		VarName var0(args[0]), var1(args[1]);
 		if (Utils::IsLiteral(var0)) {
 			if (Utils::IsLiteral(var1)) {
-				hasCandidates = FilterNoVarClause(pkb, type, var0, var1, combinations);
+				hasCandidates = FilterNoVarClause(pkb, type, Utils::LiteralToCandidate(var0),
+					Utils::LiteralToCandidate(var1), combinations);
 			}
 			else {
-				hasCandidates = FilterSecondVarClause(pkb, type, var0, var1, combinations);
+				hasCandidates = FilterSecondVarClause(pkb, type,
+					Utils::LiteralToCandidate(var0), var1, combinations);
 			}
 		}
 		else {
 			if (Utils::IsLiteral(var1)) {
-				hasCandidates = FilterFirstVarClause(pkb, type, var0, var1, combinations);
+				hasCandidates = FilterFirstVarClause(pkb, type, var0,
+					Utils::LiteralToCandidate(var1), combinations);
 			}
 			else {
 				hasCandidates = FilterTwoVarsClause(pkb, type, var0, var1, combinations);
@@ -335,7 +338,19 @@ bool QueryEvaluator::isBoolSelect(std::unordered_map<std::string, Symbol> &selec
 }
 
 bool QueryEvaluator::evaluateClause(PKB &pkb, Clause &clause, CandidateCombination &comb) {
-	return false;
+	std::string type(clause.getClauseType());
+	std::vector<std::string> args(clause.getArg());
+	if (type == SYMBOL_PATTERN) {
+		Candidate assignStmt(comb[args[2]]);
+		Candidate lhsVar(comb[args[0]]);
+		Candidate expr(comb[args[1]]);
+		return evaluatePatternClause(pkb, assignStmt, lhsVar, expr);
+	}
+	else {
+		Candidate var0(comb[args[0]]);
+		Candidate var1(comb[args[1]]);
+		return evaluateSuchThatClause(pkb, type, var0, var1);
+	}
 }
 
 bool QueryEvaluator::evaluatePatternClause(PKB &pkb, Candidate assignStmt,

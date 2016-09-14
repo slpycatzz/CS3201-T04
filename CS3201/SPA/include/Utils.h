@@ -42,6 +42,8 @@ class Utils {
 	static std::string MapToString(std::unordered_map<std::string, std::string> &map);
 	static std::string MapToValueString(std::unordered_map<std::string, std::string> &map);
 
+	static std::string LiteralToCandidate(std::string literal);
+
     static std::string IntToString(unsigned int i);
     static std::vector<std::string> IntToString(std::vector<unsigned int> vec);
 

@@ -33,20 +33,36 @@ public:
 			exit(EXIT_FAILURE);
 		}
 	}
-	TEST_METHOD(QE_GetCadidatesTest) {
+	void getSampleProgram() {
 		string fileName = "..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt";
 		parse(fileName);
-		
-		string query("variable v; Select v such that Modifies(1, \"a\");");
+	}
+	QueryTree getQueryTree(std::string query) {
 		QueryPreprocessor qp;
 		qp.preprocessQuery(query);
 		QueryTree qt(qp.getQueryTree());
+		return qt;
+	}
+	TEST_METHOD(QE_GetCadidatesTest) {
+		getSampleProgram();
+		QueryTree qt(getQueryTree("variable v; Select v such that Modifies(1, \"a\");"));
 
 		QueryEvaluator qe;
 		PKB pkb;
 		std::vector<std::string> result(qe.selectQueryResults(pkb, qt));
 		Logger::WriteMessage(Utils::VectorToString(result).c_str());
 
+	}
+	TEST_METHOD(TestEvaluateSuchThatClause) {
+		getSampleProgram();
+		QueryTree qt = getQueryTree("variable v; Select v such that Modifies(1, \"a\");");
+		QueryEvaluator qe;
+		PKB pkb;
+
+		Clause cl = *qt.getClauses("suchThat pattern").begin();
+		Logger::WriteMessage(cl.getClauseType().c_str());
+		//Assert::IsTrue(qe.evaluateSuchThatClause(pkb, "Modifies", "1", "a"));
+		Assert::AreSame<unsigned>(Utils::StringToInt("1"), 1);
 	}
 	};
 }

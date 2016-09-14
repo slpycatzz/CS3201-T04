@@ -67,20 +67,25 @@ class QueryEvaluator {
 
 	 bool isBoolSelect(std::unordered_map<std::string, Symbol>& selectList);
 
+	 // evaluate a single clause to see if it is true
+	 bool evaluateClause(PKB &pkb, Clause &clause, CandidateCombination &candMap);
+
+	 bool evaluatePatternClause(PKB & pkb, Candidate assignStmt, Candidate lhsVar, std::string expr);
+
+	 bool evaluateSuchThatClause(PKB &pkb, std::string clauseType, Candidate var0, Candidate var1);
+
+	 bool evaluateModifies(PKB &pkb, Candidate var0, Candidate var1);
+	 bool evaluateFollows(PKB &pkb, Candidate var0, Candidate var1);
+
 	 std::string log;
 
 private:
-	// evaluate a single clause to see if it is true
-	bool evaluateClause(PKB &pkb, Clause &clause, CandidateCombination &candMap);
 
-	bool evaluatePatternClause(PKB & pkb, Candidate assignStmt, Candidate lhsVar, std::string expr);
-
-	bool evaluateSuchThatClause(PKB &pkb, std::string clauseType, Candidate var0, Candidate var1);
 	bool evaluateUses(PKB &pkb, Candidate var0, Candidate var1);
-	bool evaluateModifies(PKB &pkb, Candidate var0, Candidate var1);
+	
 	bool evaluateParent(PKB &pkb, Candidate var0, Candidate var1);
 	bool evaluateParentStar(PKB &pkb, Candidate var0, Candidate var1);
-	bool evaluateFollows(PKB &pkb, Candidate var0, Candidate var1);
+
 	bool evaluateFollowsStar(PKB &pkb, Candidate var0, Candidate var1);
 	bool evaluateNext(PKB &pkb, Candidate var0, Candidate var1);
 	bool evaluateNextStar(PKB &pkb, Candidate var0, Candidate var1);
