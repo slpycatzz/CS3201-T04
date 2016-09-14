@@ -196,5 +196,63 @@ public:
 		}
 		Assert::AreEqual(expected, actual);
 	}
+    TEST_METHOD(ExtractQueryTreeOneClause) {
+        std::string query = "assign a; Select a pattern a(\"a\", _)";
+        QueryPreprocessor queryPreprocessor = QueryPreprocessor();
+        queryPreprocessor.preprocessQuery(query);
+        QueryTree queryTree = queryPreprocessor.getQueryTree();
+
+        std::string actual, expected;
+
+        std::unordered_map<std::string, Symbol> varMap = queryTree.getVarMap();
+        for (auto kv : varMap) {
+            actual += Constants::SymbolToString(kv.second) + " " + kv.first + "; ";
+        }
+
+        std::unordered_map<std::string, Symbol> selectMap = queryTree.getSelect();
+        for (auto kv : selectMap) {
+            actual += Constants::SymbolToString(kv.second) + " " + kv.first + "; ";
+        }
+
+        std::vector<Clause> clauses = queryTree.getClauses("suchThat pattern");
+        for (Clause c : clauses) {
+            actual += c.getClauseType() + " ";
+            for (int i = 0; i < c.getArgCount(); i++) {
+                actual += c.getArg()[i] + " ";
+            }
+        }
+
+        expected = "assign a; assign a; pattern \"a\" _ a "; //declaration; select a; pattern
+        Assert::AreEqual(actual, expected);
+    }
+    TEST_METHOD(ExtractQueryTreeTwoClauses) {
+        std::string query = "assign a, a1; Select a pattern a(\"e\", _) such that Follows(a, a1)";
+        QueryPreprocessor queryPreprocessor = QueryPreprocessor();
+        queryPreprocessor.preprocessQuery(query);
+        QueryTree queryTree = queryPreprocessor.getQueryTree();
+
+        std::string actual, expected;
+
+        std::unordered_map<std::string, Symbol> varMap = queryTree.getVarMap();
+        for (auto kv : varMap) {
+            actual += Constants::SymbolToString(kv.second) + " " + kv.first + "; ";
+        }
+
+        std::unordered_map<std::string, Symbol> selectMap = queryTree.getSelect();
+        for (auto kv : selectMap) {
+            actual += Constants::SymbolToString(kv.second) + " " + kv.first + "; ";
+        }
+
+        std::vector<Clause> clauses = queryTree.getClauses("suchThat pattern");
+        for (Clause c : clauses) {
+            actual += c.getClauseType() + " ";
+            for (int i = 0; i < c.getArgCount(); i++) {
+                actual += c.getArg()[i] + " ";
+            }
+        }
+
+        expected = "assign a; assign a1; assign a; Follows a a1 pattern \"e\" _ a "; //declaration; select a; Follows
+        Assert::AreEqual(actual, expected);
+    }
     };
 }   // namespace UnitTest
