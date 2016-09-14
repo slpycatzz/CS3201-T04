@@ -94,20 +94,6 @@ public:
 		
 		std::string expected("<<a:1,b:2,c:4>,<a:1,b:2,c:5>,<a:2,b:3,c:4>,<a:2,b:3,c:5>>");
 		Assert::AreEqual(expected, actual.str());
-
-		/**
-		std::vector<std::string> varList;
-		for (auto kv : selectMap) {
-			varList.push_back(kv.first);
-			Logger::WriteMessage(kv.first.c_str());
-		}
-		std::vector<std::vector<Candidate>>
-			result = Utils::Flatten(selectMap, varList, 0, varList.size() - 1);
-		std::string actual = Utils::VectorToString(Utils::VectorToString(result));
-		Logger::WriteMessage(actual.c_str());
-		std::string expected("<<1,2>,<1,3>,<2,2>,<2,3>>");
-		Assert::AreEqual(expected, actual);
-		**/
 	}
     TEST_METHOD(TestGetResultsFromCombinationList) {
 		std::unordered_map<std::string, std::string> candidateCombi1({ { "a", "1" },{ "b", "2" } });
