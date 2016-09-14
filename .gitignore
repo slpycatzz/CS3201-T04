@@ -66,6 +66,10 @@ Icon?
 *.swp
 *.tmp
 
+# Project-specific files
+========================
+AutoTester/tests/
+
 # User-specific files
 # ===================
 *.sln.docstates
