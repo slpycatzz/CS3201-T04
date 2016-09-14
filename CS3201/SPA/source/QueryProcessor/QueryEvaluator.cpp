@@ -373,40 +373,40 @@ bool QueryEvaluator::evaluateSuchThatClause(PKB &pkb,
 	std::string clauseType, Candidate var0, Candidate var1)
 {
 	if (clauseType == "Uses") {
-		evaluateUses(pkb, var0, var1);
+		return evaluateUses(pkb, var0, var1);
 	}
 	else if (clauseType == "Modifies") {
-		evaluateModifies(pkb, var0, var1);
+		return evaluateModifies(pkb, var0, var1);
 	}
 	else if (clauseType == "Parent") {
-		evaluateParent(pkb, var0, var1);
+		return evaluateParent(pkb, var0, var1);
 	}
 	else if (clauseType == "Parent*") {
-		evaluateParentStar(pkb, var0, var1);
+		return evaluateParentStar(pkb, var0, var1);
 	}
 	else if (clauseType == "Follows") {
-		evaluateFollows(pkb, var0, var1);
+		return evaluateFollows(pkb, var0, var1);
 	}
 	else if (clauseType == "Follows*") {
-		evaluateFollowsStar(pkb, var0, var1);
+		return evaluateFollowsStar(pkb, var0, var1);
 	}
 	else if (clauseType == ("Next")) {
-		evaluateNext(pkb, var0, var1);
+		return evaluateNext(pkb, var0, var1);
 	}
 	else if (clauseType == ("Next*")) {
-		evaluateNextStar(pkb, var0, var1);
+		return evaluateNextStar(pkb, var0, var1);
 	}
 	else if (clauseType == ("Calls")) {
-		evaluateCalls(pkb, var0, var1);
+		return evaluateCalls(pkb, var0, var1);
 	}
 	else if (clauseType == ("Calls*")) {
-		evaluateCallsStar(pkb, var0, var1);
+		return evaluateCallsStar(pkb, var0, var1);
 	}
 	else if (clauseType == ("Affects")) {
-		evaluateAffects(pkb, var0, var1);
+		return evaluateAffects(pkb, var0, var1);
 	}
 	else if (clauseType == ("Affects*")) {
-		evaluateAffectsStar(pkb, var0, var1);
+		return evaluateAffectsStar(pkb, var0, var1);
 	}
 
 	return false;

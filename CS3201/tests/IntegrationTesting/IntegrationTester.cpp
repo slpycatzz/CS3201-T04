@@ -45,8 +45,8 @@ public:
 	}
 	TEST_METHOD(QE_GetCadidatesTest) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("variable v; Select v such that Modifies(1, \"a\");"));
-
+		QueryTree qt(getQueryTree("variable v; Select v;"));
+		
 		QueryEvaluator qe;
 		PKB pkb;
 		std::vector<std::string> result(qe.selectQueryResults(pkb, qt));
@@ -55,14 +55,12 @@ public:
 	}
 	TEST_METHOD(TestEvaluateSuchThatClause) {
 		getSampleProgram();
-		QueryTree qt = getQueryTree("variable v; Select v such that Modifies(1, \"a\");");
+		QueryTree qt = getQueryTree("assign a; Select a;");
 		QueryEvaluator qe;
 		PKB pkb;
 
-		Clause cl = *qt.getClauses("suchThat pattern").begin();
-		Logger::WriteMessage(cl.getClauseType().c_str());
-		//Assert::IsTrue(qe.evaluateSuchThatClause(pkb, "Modifies", "1", "a"));
-		Assert::AreSame<unsigned>(Utils::StringToInt("1"), 1);
+		std::vector<std::string> results(qe.selectQueryResults(pkb, qt));
+		Logger::WriteMessage(Utils::VectorToString(results).c_str());
 	}
 	};
 }
