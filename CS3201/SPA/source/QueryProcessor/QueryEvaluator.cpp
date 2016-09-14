@@ -58,7 +58,7 @@ bool QueryEvaluator::selectClauseResults(PKB &pkb, Clause &clause,
 {
 	bool hasCandidates;
 	std::string type(clause.getClauseType());
-	if (type.compare(SYMBOL_PATTERN)) {
+	if (type == SYMBOL_PATTERN) {
 		std::vector<VarName> args(clause.getArg());
 		VarName lhs(args[0]), rhs(args[1]), assignStmt(args[2]);
 		if (Utils::IsStringLiteral(lhs)) {

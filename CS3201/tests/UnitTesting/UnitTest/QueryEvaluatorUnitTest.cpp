@@ -80,7 +80,6 @@ public:
 		PartialCombinationList::iterator it(selectedCombs.begin());
 		while (true) {
 			std::string str = Utils::MapToString(*it);
-			Logger::WriteMessage(str.c_str());
 			actual << str;
 			it++;
 			if (it == selectedCombs.end()) {
