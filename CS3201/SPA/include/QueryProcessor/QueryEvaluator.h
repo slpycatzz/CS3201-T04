@@ -67,6 +67,8 @@ class QueryEvaluator {
 
 	 bool isBoolSelect(std::unordered_map<std::string, Symbol>& selectList);
 
+	 std::string log;
+
 private:
 	// evaluate a single clause to see if it is true
 	bool evaluateClause(PKB &pkb, Clause &clause, CandidateCombination &candMap);

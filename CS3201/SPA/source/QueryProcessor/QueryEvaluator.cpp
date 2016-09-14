@@ -341,7 +341,7 @@ bool QueryEvaluator::evaluateClause(PKB &pkb, Clause &clause, CandidateCombinati
 bool QueryEvaluator::evaluatePatternClause(PKB &pkb, Candidate assignStmt,
 	Candidate lhsVar, std::string expr)
 {
-	if (Utils::TrimSpaces(expr).compare("_")) {
+	if (Utils::TrimSpaces(expr) == "_") {
 		std::vector<TreeNode*> vt(pkb.GetAllAssignTreeNodes());
 		return !vt.empty();
 	}
@@ -357,39 +357,40 @@ bool QueryEvaluator::evaluatePatternClause(PKB &pkb, Candidate assignStmt,
 bool QueryEvaluator::evaluateSuchThatClause(PKB &pkb,
 	std::string clauseType, Candidate var0, Candidate var1)
 {
-	if (clauseType.compare("Uses")) {
+	if (clauseType == "Uses") {
 		evaluateUses(pkb, var0, var1);
 	}
-	else if (clauseType.compare("Modifies")) {
+	else if (clauseType == "Modifies") {
 		evaluateModifies(pkb, var0, var1);
 	}
-	else if (clauseType.compare("Parent")) {
+	else if (clauseType == "Parent") {
 		evaluateParent(pkb, var0, var1);
 	}
-	else if (clauseType.compare("Parent*")) {
+	else if (clauseType == "Parent*") {
 		evaluateParentStar(pkb, var0, var1);
 	}
-	else if (clauseType.compare("Follows")) {
+	else if (clauseType == "Follows") {
 		evaluateFollows(pkb, var0, var1);
 	}
-	else if (clauseType.compare("Follows*")) {
-		evaluateFollowsStar(pkb, var0, var1); }
-	else if (clauseType.compare("Next")) {
+	else if (clauseType == "Follows*") {
+		evaluateFollowsStar(pkb, var0, var1);
+	}
+	else if (clauseType == ("Next")) {
 		evaluateNext(pkb, var0, var1);
 	}
-	else if (clauseType.compare("Next*")) {
+	else if (clauseType == ("Next*")) {
 		evaluateNextStar(pkb, var0, var1);
 	}
-	else if (clauseType.compare("Calls")) {
+	else if (clauseType == ("Calls")) {
 		evaluateCalls(pkb, var0, var1);
 	}
-	else if (clauseType.compare("Calls*")) {
+	else if (clauseType == ("Calls*")) {
 		evaluateCallsStar(pkb, var0, var1);
 	}
-	else if (clauseType.compare("Affects")) {
+	else if (clauseType == ("Affects")) {
 		evaluateAffects(pkb, var0, var1);
 	}
-	else if (clauseType.compare("Affects*")) {
+	else if (clauseType == ("Affects*")) {
 		evaluateAffectsStar(pkb, var0, var1);
 	}
 

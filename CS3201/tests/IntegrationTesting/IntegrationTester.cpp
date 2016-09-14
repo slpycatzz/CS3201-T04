@@ -37,7 +37,7 @@ public:
 		string fileName = "..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt";
 		parse(fileName);
 		
-		string query("while a; Select a such that Modifies(a, \"a\");");
+		string query("variable v; Select v such that Modifies(1, \"a\");");
 		QueryPreprocessor qp;
 		qp.preprocessQuery(query);
 		QueryTree qt(qp.getQueryTree());

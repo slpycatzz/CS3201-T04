@@ -111,5 +111,8 @@ public:
 		std::string expected("<<1,2>,<2,3>>");
 		Assert::AreEqual(expected, actual);
     }
+	TEST_METHOD(TestFilterOneVarClause) {
+
+	}
 	};
 }
