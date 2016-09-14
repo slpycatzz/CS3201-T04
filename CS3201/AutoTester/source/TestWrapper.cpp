@@ -7,6 +7,7 @@
 #include "Exceptions.h"
 #include "Frontend/FrontendParser.h"
 #include "QueryProcessor/QueryPreprocessor.h"
+#include "QueryProcessor/QueryEvaluator.h"
 #include "QueryProcessor/QueryProjector.h"
 #include "TestWrapper.h"
 
@@ -47,17 +48,21 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
     }
 
     QueryPreprocessor queryPreprocessor = QueryPreprocessor();
+    QueryEvaluator queryEvaluator = QueryEvaluator();
     QueryProjector queryProjector = QueryProjector();
 
     try {
+        QueryTree queryTree;
         queryPreprocessor.preprocessQuery(query);
 
-        // Evaluator here.
-        std::vector<std::string> queryResult { "" };  // store query result here
+        //Evaluator here.
+        queryTree = queryPreprocessor.getQueryTree();
+        std::vector<std::string> queryResult = queryEvaluator.selectQueryResults(PKB(), queryTree);
 
         /* Projector here. Store answer into results. */
         results = queryProjector.formatResult(queryResult);
     } catch (std::exception& ex) {
+        std::cout << ex.what() << std::endl;
         return;
     }
 }

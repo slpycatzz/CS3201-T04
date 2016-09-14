@@ -12,21 +12,20 @@ using std::stringstream;
 using std::unordered_map;
 using std::vector;
 
-template<class K, class V>
-vector<vector<V>> Utils::Flatten(unordered_map<K, vector<V>> &map, vector<K> &list, unsigned int start, unsigned int end) {
-    using V_vector = vector<V>;
+//template<class K, class V>
+vector<vector<string>> Utils::Flatten(unordered_map<string, vector<string>> &map, vector<string> &list, unsigned int start, unsigned int end) {
+    using V_vector = vector<string>;
 
-    vector<V_vector> result;
+    vector<vector<string>> result;
     if (start > end) {
-        return vector<V>();
+        return vector<vector<string>>();
     }
 
-    V_vector firstVList = map[selectList[start]];
-    std::vector<V_vector> recursiveList = Flatten(map, selectList, start + 1, end);
+    vector<string> firstVList = map[list[start]];
+    std::vector<vector<string>> recursiveList = Flatten(map, list, start + 1, end);
 
-    for (V value : firstVList) {
-        for (V_vector : recursiveList) {
-            V_vector vec = recursiveList;
+    for (string value : firstVList) {
+        for (vector<string> vec : recursiveList) {
             vec.insert(vec.begin(), value);
 
             result.push_back(vec);
@@ -53,8 +52,8 @@ vector<vector<T>> Utils::Zip(vector<T> list1, vector<T> list2) {
     return result;
 }
 
-template<class K, class V>
-unordered_map<K, V> Utils::MergeMap(unordered_map<K, V> &map1, unordered_map<K, V> &map2) {
+//template<class K, class V>
+unordered_map<string, string> Utils::MergeMap(unordered_map<string, string> &map1, unordered_map<string, string> &map2) {
     map1.insert(map2.begin(), map2.end());
 
     return map1;

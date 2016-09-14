@@ -30,7 +30,7 @@ namespace IntegrationTesting {
 
       void parse(string filePath) {
         FrontendParser frontendParser = FrontendParser();
-
+        
         try {
           frontendParser.parseProgram(filePath);
 

@@ -19,7 +19,7 @@ public:
 		QueryPreprocessor qp;
 		QueryTree qt;
 
-        qp.preprocessQuery("assign a,a1; while w1,w2;select a");
+        qp.preprocessQuery("assign a,a1; while w1,w2;Select a");
         qt = qp.getQueryTree();
         std::vector<std::string> varList;
 
@@ -37,7 +37,7 @@ public:
 
         std::string query;
         query = "assign a,a1; while w1,w2; variable x;";
-        query += "select a such that uses(a1, x)";
+        query += "Select a such that uses(a1, x)";
         qp.preprocessQuery(query);
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
@@ -50,7 +50,6 @@ public:
 				actual += resList[i].getArg()[j] + " ";
 			}
 		}
-		// actual = qp.testMethodOut();
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(QueryParserPatternSelectTwo) {
@@ -59,8 +58,8 @@ public:
 		QueryTree qt;
 
 		std::string query;
-		query = "assign a,a1; while w1,w2;";
-		query += "select a,w1 pattern a1(\"x\",_)";
+		query = "assign a,a1;";
+		query += "Select a pattern a1(\"x\",_)";
 		qp.preprocessQuery(query);
 
 		qt = qp.getQueryTree();
@@ -74,7 +73,6 @@ public:
 				actual += resList[i].getArg()[j] + " ";
 			}
 		}
-		// actual = qp.testMethodOut();
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(QueryParserSuchThatWithStringConstant) {
@@ -83,8 +81,8 @@ public:
 		QueryTree qt;
 
 		std::string query;
-		query = "assign a,a1; while w1,w2; variable x;";
-		query += "select a,w1 such that uses(a1, \"x\")";
+		query = "assign a,a1; variable x;";
+		query += "Select a such that uses(a1, \"x\")";
 		qp.preprocessQuery(query);
 		qt = qp.getQueryTree();
 		std::vector<Clause> resList;
@@ -97,7 +95,6 @@ public:
 				actual += resList[i].getArg()[j] + " ";
 			}
 		}
-		// actual = qp.testMethodOut();
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(QueryParserSuchThatWithNumericConstant) {
@@ -106,8 +103,8 @@ public:
 		QueryTree qt;
 
 		std::string query;
-		query = "assign a,a1; while w1,w2; variable x;";
-		query += "select a,w1 such that uses(1, x)";
+		query = "assign a,a1; variable x;";
+		query += "Select a such that uses(1, x)";
 		qp.preprocessQuery(query);
 		qt = qp.getQueryTree();
 		std::vector<Clause> resList;
@@ -120,7 +117,6 @@ public:
 				actual += resList[i].getArg()[j] + " ";
 			}
 		}
-		// actual = qp.testMethodOut();
 		Assert::AreEqual(expected, actual);
 	}
     TEST_METHOD(QueryParserInvalidQuery) {
@@ -130,33 +126,27 @@ public:
 
         std::string query;
         query = "assign a,a1; variable x;";
-        query += "select a such that uses(\"1a\", x)";
-        //query = "assign a;";
-        //query += "select a pattern a(_,_)";
+        query += "Select a such that uses(\"1a\", x)";
 
         try {
             qp.preprocessQuery(query);
-            //Logger::WriteMessage("Valid query");
         }
         catch (std::exception& ex) {
             Assert::AreEqual(ex.what(), "Query parser encountered a syntax error in the query.");
-            //Logger::WriteMessage(ex.what());
         }
 
-        // actual = qp.testMethodOut();
-
     }
-	TEST_METHOD(QueryParserSelectTwoVars) {
+	TEST_METHOD(QueryParserSelectOneVars) {
 		std::string expected, actual;
 		QueryPreprocessor qp;
 		QueryTree qt;
 
-		qp.preprocessQuery("assign a,a1; while w1,w2;select a,w1");
+		qp.preprocessQuery("assign a,a1; while w1,w2;Select a");
 		qt = qp.getQueryTree();
 		std::vector<std::string> varList;
 
 		varList = qt.getResults();
-		expected = "a w1 ";
+		expected = "a ";
 		for (unsigned int i = 0; i < varList.size(); i++) {
 			actual += varList[i] + " ";
 		}
@@ -168,8 +158,8 @@ public:
 		QueryTree qt;
 
 		std::string query;
-		query = "assign a,a1; while w1,w2; variable x;";
-		query += "select a,w1 such that uses(a1, x)";
+		query = "assign a,a1; variable x;";
+		query += "Select a such that uses(a1, x)";
 		qp.preprocessQuery(query);
 		qt = qp.getQueryTree();
 		std::vector<Clause> resList;
@@ -189,8 +179,8 @@ public:
 		QueryTree qt;
 
 		std::string query;
-		query = "assign a,a1; while w1,w2;";
-		query += "select a pattern a1(\"x\",_)";
+		query = "assign a,a1;";
+		query += "Select a pattern a1(\"x\",_)";
 		qp.preprocessQuery(query);
 
 		qt = qp.getQueryTree();
@@ -204,7 +194,6 @@ public:
 				actual += resList[i].getArg()[j] + " ";
 			}
 		}
-		// actual = qp.testMethodOut();
 		Assert::AreEqual(expected, actual);
 	}
     };

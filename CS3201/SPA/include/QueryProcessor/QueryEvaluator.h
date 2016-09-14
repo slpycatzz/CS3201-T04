@@ -1,7 +1,13 @@
 #pragma once
-#include "Clause.h"
+
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include "QueryProcessor/Clause.h"
 #include "QueryTree.h"
 #include "PKB/PKB.h"
+
 typedef std::vector<std::string> ResultList;
 typedef std::string Candidate;
 typedef std::string VarName;
@@ -14,6 +20,9 @@ class QueryEvaluator {
  public:
     QueryEvaluator();
     ~QueryEvaluator();
+
+    // return the result list as a list of strings after evaluating the query
+    ResultList selectQueryResults(PKB &pkb, QueryTree &query);
 
 	 // retrieve all possible candidates for a variable
 	 PartialCombinationList getCandidates(PKB &pkb, std::pair<VarName, Symbol> var);
@@ -45,9 +54,6 @@ class QueryEvaluator {
 		 Candidate const2, TotalCombinationList &combinations);
 
 	 void insertMap(std::vector<std::string> list, VarName var, PartialCombinationList &result);
-	 
-	 // return the result list as a list of strings after evaluating the query
-	 ResultList selectQueryResults(PKB &pkb, QueryTree &query);
 
 	 ResultList getResultsFromCombinationList(TotalCombinationList &cands, std::unordered_map<std::string, Symbol> &selectList);
 

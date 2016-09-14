@@ -41,14 +41,16 @@
     <ClCompile Include="QueryProcessor\QueryPreprocessorUnitTest.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="PKBUnitTest.cpp">
-      <Filter>Source Files\PKB</Filter>
-    </ClCompile>
-    <ClCompile Include="FrontendParserUnitTest.cpp">
+    <ClCompile Include="Frontend\FrontendParserUnitTest.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="QueryEvaluatorUnitTest.cpp">
       <Filter>Source Files\QueryEvaluator</Filter>
+=======
+    <ClCompile Include="PKB\PKBUnitTest.cpp">
+      <Filter>Source Files\PKB</Filter>
+>>>>>>> f04969aa429deaf36b0416e1e4c4b05f433bb872
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -165,8 +165,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FrontendParserUnitTest.cpp" />
-    <ClCompile Include="PKBUnitTest.cpp" />
+    <ClCompile Include="Frontend\FrontendParserUnitTest.cpp" />
+    <ClCompile Include="PKB\PKBUnitTest.cpp" />
     <ClCompile Include="QueryProcessor\QueryPreprocessorUnitTest.cpp" />
     <ClCompile Include="QueryEvaluatorUnitTest.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -14,8 +14,8 @@ class Utils {
     template<class T>
     static std::vector<std::vector<T>> Zip(std::vector<T> list1, std::vector<T> list2);
 
-    template<class K, class V>
-    static std::unordered_map<K, V> MergeMap(std::unordered_map<K, V> &map1, std::unordered_map<K, V> &map2);
+    //template<class K, class V>
+    static std::unordered_map<std::string, std::string> MergeMap(std::unordered_map<std::string, std::string> &map1, std::unordered_map<std::string, std::string> &map2);
 
     //template<class T>
     static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
