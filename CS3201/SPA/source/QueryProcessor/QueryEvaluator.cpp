@@ -311,6 +311,10 @@ bool QueryEvaluator::evaluateClause(PKB &pkb, Clause &clause, CandidateCombinati
 bool QueryEvaluator::evaluatePatternClause(PKB &pkb, Candidate assignStmt,
 	Candidate lhsVar, std::string expr)
 {
+	if (Utils::TrimSpaces(expr).compare("_")) {
+		std::vector<TreeNode*> vt(pkb.GetAllAssignTreeNodes());
+		return !vt.empty();
+	}
 	TreeNode* node(Utils::buildExprTree(expr));
 	if (expr.find_first_of('_') == std::string::npos) {
 		return pkb.IsExactPattern(Utils::StringToInt(assignStmt), lhsVar, node);
