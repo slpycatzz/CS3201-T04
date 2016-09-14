@@ -108,11 +108,15 @@ string Utils::VectorToString(vector<string> &vec) {
     ss << "<";
 
     vector<string>::iterator itr(vec.begin());
-    while (itr != --vec.end()) {
-        ss << *itr << CHAR_SYMBOL_COMMA;
+    while (itr != vec.end()) {
+        ss << *itr;
+        itr++;
+        if (itr != vec.end()) {
+            ss << CHAR_SYMBOL_COMMA;
+        }
     }
 
-    ss << *itr << ">";
+    ss << ">";
 
     return ss.str();
 }
