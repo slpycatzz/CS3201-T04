@@ -129,6 +129,11 @@ class Table {
         }
     }
 
+    inline void clear() {
+      keyToValueMap.clear();
+      valueToKeyMap.clear();
+    }
+
  private:
     std::map<K, std::set<V>> keyToValueMap;
     std::map<V, std::set<K>> valueToKeyMap;

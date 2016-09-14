@@ -129,6 +129,11 @@ class TransitiveTable {
         }
     }
 
+    inline void clear() {
+      keyToValueTransitiveMap.clear();
+      valueToKeyTransitiveMap.clear();
+    }
+
  private:
     std::map<K, std::set<V>> keyToValueTransitiveMap;
     std::map<V, std::set<K>> valueToKeyTransitiveMap;
