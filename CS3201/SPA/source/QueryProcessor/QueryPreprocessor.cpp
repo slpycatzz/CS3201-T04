@@ -220,7 +220,10 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
     }
 
     if (clauseType == "such that") {
-        qt.insertSuchThat(relType, varList);
+        //convert relType to lowercase
+        std::string relationType = relType;
+        std::transform(relationType.begin(), relationType.end(), relationType.begin(), ::tolower);
+        qt.insertSuchThat(relationType, varList);
     } else if (clauseType == "pattern") {
         // clauseType: "pattern", arg: arg1, arg2, arg3/patternType(a,ifstmt,while...)
         varList.push_back(relTypeArg);
