@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "stdafx.h"
 #include "targetver.h"
@@ -54,29 +55,47 @@ public:
 		std::string expected("<<1,3>,<1,4>,<1,5>,<2,3>,<2,4>,<2,5>>");
 		Assert::AreEqual(expected, actual);
 	}
-	TEST_METHOD(TestGetSelectMap) {
-		std::unordered_map<std::string, std::string> candidateCombi1({ { "a", "1" },{ "b", "2" } }); 
-		std::unordered_map<std::string, std::string> candidateCombi2({ { "a", "2" }, { "b", "3" } });
-		std::vector<std::unordered_map<std::string, std::string>> partialCombi{ candidateCombi1, candidateCombi2 };
-		std::unordered_map<std::string, std::vector<std::unordered_map<std::string, std::string>>> totalCombi;
-		totalCombi.insert_or_assign("a", partialCombi);
-		totalCombi.insert_or_assign("b", partialCombi);
-		totalCombi.insert_or_assign("c", partialCombi);
-		std::unordered_map<std::string, Symbol> selectList{ { "a", ASSIGN },{ "b", ASSIGN } };
+	TEST_METHOD(TestGetSelectCombinations) {
+		
+		CandidateCombination candidateCombi1({ { "a", "1" },{ "b", "2" } }); 
+		CandidateCombination candidateCombi2({ { "a", "2" }, { "b", "3" } });
+		PartialCombinationList partialCombi1{ candidateCombi1, candidateCombi2 };
+		
+		CandidateCombination candidateCombi3({ {"c", "4"} });
+		CandidateCombination candidateCombi4({ {"c", "5"} });
+		PartialCombinationList partialCombi2{ candidateCombi3, candidateCombi4 };
+
+		TotalCombinationList totalCombi;
+
+		totalCombi.insert_or_assign("a", partialCombi1);
+		totalCombi.insert_or_assign("b", partialCombi1);
+		totalCombi.insert_or_assign("c", partialCombi2);
+		std::vector<std::string> selectList{ "a", "b" , "c" };
 
 		QueryEvaluator qe = QueryEvaluator();
-		std::vector<std::string> vt;
-		std::unordered_map<VarName, std::vector<Candidate>>
-			selectMap(qe.getSelectMap(selectList, totalCombi));
-		/**
-		for (auto kv : selectMap) {
-			std::string msg(kv.first + " : " + Utils::VectorToString(kv.second));
-			vt.push_back(msg);
+		std::stringstream actual;
+		actual << "<";
+		PartialCombinationList
+			selectedCombs(qe.getSelectedCombinations(totalCombi, selectList));
+		PartialCombinationList::iterator it(selectedCombs.begin());
+		while (true) {
+			std::string str = Utils::MapToString(*it);
+			Logger::WriteMessage(str.c_str());
+			actual << str;
+			it++;
+			if (it == selectedCombs.end()) {
+				actual << ">";
+				break;
+			}
+			else {
+				actual << ",";
+			}
 		}
-		std::string expected("<a : <1,2>,b : <2,3>>");
-		Assert::AreEqual(expected, Utils::VectorToString(vt));
-		**/
+		
+		std::string expected("<<a:1,b:2,c:4>,<a:1,b:2,c:5>,<a:2,b:3,c:4>,<a:2,b:3,c:5>>");
+		Assert::AreEqual(expected, actual.str());
 
+		/**
 		std::vector<std::string> varList;
 		for (auto kv : selectMap) {
 			varList.push_back(kv.first);
@@ -88,6 +107,7 @@ public:
 		Logger::WriteMessage(actual.c_str());
 		std::string expected("<<1,2>,<1,3>,<2,2>,<2,3>>");
 		Assert::AreEqual(expected, actual);
+		**/
 	}
     TEST_METHOD(TestGetResultsFromCombinationList) {
 		std::unordered_map<std::string, std::string> candidateCombi1({ { "a", "1" },{ "b", "2" } });
@@ -97,13 +117,13 @@ public:
         totalCombi.insert_or_assign("a", partialCombi);
         totalCombi.insert_or_assign("b", partialCombi);
         totalCombi.insert_or_assign("c", partialCombi);
-        std::unordered_map<std::string, Symbol> selectList{ {"a", ASSIGN},{ "b", ASSIGN } };
+        std::vector<std::string> selectList{ "a", "b" };
 
         QueryEvaluator qe = QueryEvaluator();
         std::vector<std::string> result(qe.getResultsFromCombinationList(totalCombi, selectList));
         std::string actual = Utils::VectorToString(result);
         Logger::WriteMessage(actual.c_str());
-		std::string expected("<<1,2>,<1,3>,<2,2>,<2,3>>");
+		std::string expected("<<1,2>,<2,3>>");
 		Assert::AreEqual(expected, actual);
     }
 	};

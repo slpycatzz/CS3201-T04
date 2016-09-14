@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <sstream>
 
 #include "QueryProcessor/Clause.h"
 #include "QueryProcessor/QueryEvaluator.h"
@@ -230,14 +231,16 @@ ResultList QueryEvaluator::selectQueryResults(PKB &pkb, QueryTree &query)
 {
 	std::vector<Clause> clauseList = query.getClauses("suchThat pattern");
 	TotalCombinationList allCandidates(getTotalCandidateList(pkb, query));
-	std::unordered_map<std::string, Symbol> selectList = query.getSelect();
+	std::unordered_map<VarName, Symbol> selectMap = query.getSelect();
+	std::vector<VarName> selectList;
+	for (auto kv : selectMap) selectList.push_back(kv.first);
 
 	bool hasMoreCandidates;
 	for (Clause clause : clauseList) {
 		hasMoreCandidates = selectClauseResults(pkb, clause, allCandidates);
 		if (!hasMoreCandidates) break;
 	}
-	if (isBoolSelect(selectList)) {
+	if (isBoolSelect(selectMap)) {
 		ResultList resultList;
 		if (hasMoreCandidates) {
 			resultList.push_back(SYMBOL_TRUE);
@@ -258,41 +261,68 @@ ResultList QueryEvaluator::selectQueryResults(PKB &pkb, QueryTree &query)
 	}
 }
 
-ResultList QueryEvaluator::getResultsFromCombinationList(TotalCombinationList &cands,
-	std::unordered_map<std::string, Symbol> &selectList)
+ResultList QueryEvaluator::getResultsFromCombinationList
+(TotalCombinationList &combinations, std::vector<VarName> &selectList)
 {
-	std::unordered_map<std::string, std::vector<Candidate>>
-		selectMap(getSelectMap(selectList, cands));
-	std::vector<std::string> varList;
-	for (auto kv : selectMap) {
-		varList.push_back(kv.first);
+	PartialCombinationList
+		selectedCombinations(getSelectedCombinations(combinations, selectList));
+	ResultList result;
+	
+	for (CandidateCombination comb : selectedCombinations) {
+		std::string item(Utils::MapToValueString(comb));
+		result.push_back(item);
 	}
-	std::vector<std::vector<Candidate>>
-		resultVectors = Utils::Flatten(selectMap, varList, 0, varList.size() - 1);
-	ResultList resultList;
-	for (std::vector<Candidate> candTup : resultVectors) {
-		resultList.push_back(Utils::VectorToString(candTup));
-	}
-	return resultList;
+	return result;
 }
 
-std::unordered_map<std::string, std::vector<Candidate>>
-QueryEvaluator::getSelectMap(std::unordered_map<std::string, Symbol> &selectList,
-	TotalCombinationList &cands)
+PartialCombinationList
+QueryEvaluator::getSelectedCombinations
+(TotalCombinationList &combinations, std::vector<VarName> &selectList)
 {
-	std::unordered_map<std::string, std::vector<Candidate>> selectMap;
-	for (auto kv : selectList) {
-		std::vector<Candidate> candList;
-		PartialCombinationList* section = &cands[kv.first];
-		for (CandidateCombination cm : *section) {
-			candList.push_back(cm[kv.first]);
-		}
-		selectMap[kv.first] = candList;
-
-		// Debug - DELETE AFTER DONE
-		std::cout << kv.first << " : " << Utils::VectorToString(candList) << "\n";
+	/* Base case for recursion */
+	if (selectList.empty()) {
+		PartialCombinationList baseResult;
+		baseResult.push_back(CandidateCombination());
+		return baseResult;
 	}
-	return selectMap;
+	
+	/* Extract the first section out */
+	VarName firstVar(*selectList.begin());
+	PartialCombinationList firstPartialList(combinations[firstVar]);
+	std::vector<VarName> firstVarSet;
+	std::vector<VarName>::iterator iter(selectList.begin());
+	while (iter != selectList.end()) {
+		if (combinations[*iter] == firstPartialList) {
+			firstVarSet.push_back(*iter);
+			iter = selectList.erase(iter);
+		}
+		else {
+			++iter;
+		}
+	}
+	
+	/* TODO: Account for duplicates of sub-combinations */
+	std::vector<CandidateCombination> reducedList;
+	for (CandidateCombination comb : firstPartialList) {
+		reducedList.push_back(Utils::ReduceMap(comb, firstVarSet));
+	}
+
+	/* Recursive step */
+	PartialCombinationList recursedList(getSelectedCombinations(combinations, selectList));
+	PartialCombinationList result = mergeCombinationList(reducedList, recursedList);
+	return result;
+}
+
+PartialCombinationList QueryEvaluator::mergeCombinationList(PartialCombinationList &combList1,
+	PartialCombinationList &combList2)
+{
+	PartialCombinationList result;
+	for (CandidateCombination comb1 : combList1) {
+		for (CandidateCombination comb2 : combList2) {
+			result.push_back(Utils::MergeMap(comb1, comb2));
+		}
+	}
+	return result;
 }
 
 bool QueryEvaluator::isBoolSelect(std::unordered_map<std::string, Symbol> &selectList) {

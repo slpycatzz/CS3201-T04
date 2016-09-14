@@ -57,10 +57,26 @@ vector<vector<T>> Utils::Zip(vector<T> list1, vector<T> list2) {
 }
 
 //template<class K, class V>
-unordered_map<string, string> Utils::MergeMap(unordered_map<string, string> &map1, unordered_map<string, string> &map2) {
-    map1.insert(map2.begin(), map2.end());
+unordered_map<string, string>
+Utils::MergeMap(unordered_map<string, string> &map1,
+	unordered_map<string, string> &map2) {
+	unordered_map<string, string> map;
+    map.insert(map1.begin(), map1.end());
+	map.insert(map2.begin(), map2.end());
+    return map;
+}
 
-    return map1;
+std::unordered_map<std::string, std::string>
+Utils::ReduceMap(std::unordered_map<std::string, std::string> &map,
+	std::vector<std::string> &selections)
+{
+	std::unordered_map<std::string, std::string> result;
+	for (auto kv : map) {
+		if (VectorContains(selections, kv.first)) {
+			result.insert_or_assign(kv.first, kv.second);
+		}
+	}
+	return result;
 }
 
 TreeNode* Utils::buildExprTree(std::string expr) {
@@ -107,6 +123,10 @@ bool Utils::VectorContains(vector<unsigned int> vec, unsigned int value) {
     return (std::find(vec.begin(), vec.end(), value) != vec.end());
 }
 
+bool Utils::VectorContains(vector<std::string> vec, std::string value) {
+	return (std::find(vec.begin(), vec.end(), value) != vec.end());
+}
+
 string Utils::VectorToString(vector<string> &vec) {
     stringstream ss;
     ss << "<";
@@ -132,6 +152,44 @@ vector<string> Utils::VectorToString(vector<vector<string>> &vec) {
     }
 
     return result;
+}
+
+std::string Utils::MapToString(std::unordered_map<std::string, std::string> &map) {
+	std::stringstream ss;
+	ss << "<";
+	
+	std::unordered_map<std::string, std::string>::iterator iter(map.begin());
+	while (true) {
+		ss << (*iter).first << ":" << (*iter).second;
+		iter++;
+		if (iter == map.end()) {
+			ss << ">";
+			break;
+		}
+		else {
+			ss << ",";
+		}
+	}
+	return ss.str();
+}
+
+std::string Utils::MapToValueString(std::unordered_map<std::string, std::string> &map) {
+	std::stringstream ss;
+	ss << "<";
+
+	std::unordered_map<std::string, std::string>::iterator iter(map.begin());
+	while (true) {
+		ss << (*iter).second;
+		iter++;
+		if (iter == map.end()) {
+			ss << ">";
+			break;
+		}
+		else {
+			ss << ",";
+		}
+	}
+	return ss.str();
 }
 
 std::string Utils::IntToString(unsigned int i) {
