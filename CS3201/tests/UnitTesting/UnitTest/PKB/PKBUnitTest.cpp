@@ -21,6 +21,7 @@ namespace UnitTest {
   TEST_CLASS(PKBTest) {
     public:
       TEST_METHOD(AST_set_and_get_root) {
+        PKB::clear();
         TreeNode * rootNode = PKB::CreateASTNode(PROCEDURE);
         string expected = rootNode->getValue();
         PKB::SetASTRoot(rootNode);
@@ -29,6 +30,7 @@ namespace UnitTest {
       }
       TEST_METHOD(AST_create_node_for_every_symbol) {
         // TODO(pixelducky): Update this test case to cover all symbols
+        PKB::clear();
         TreeNode * programNode = PKB::CreateASTNode(PROGRAM);
         TreeNode * procNode = PKB::CreateASTNode(PROCEDURE);
         TreeNode * whileNode = PKB::CreateASTNode(WHILE, 10);
@@ -70,6 +72,7 @@ namespace UnitTest {
       }
       TEST_METHOD(AST_create_node_for_every_symbol_with_value) {
         // TODO(pixelducky): Update this test case to cover all symbols
+        PKB::clear();
         TreeNode * procNode = PKB::CreateASTNode(PROCEDURE, "Cat");
         TreeNode * whileNode = PKB::CreateASTNode(WHILE, 10);
         TreeNode * ifNode = PKB::CreateASTNode(IF, 20);
@@ -90,6 +93,7 @@ namespace UnitTest {
       }
       TEST_METHOD(AST_check_if_tree_is_valid) {
         // TODO(pixelducky): this test case may be redudant.
+        PKB::clear();
         TreeNode * programNode = PKB::CreateASTNode(PROGRAM);
         TreeNode * procNode = PKB::CreateASTNode(PROCEDURE, "Cat");
         TreeNode * stmtListNodeProc = PKB::CreateASTNode(STMTLIST);
@@ -138,6 +142,8 @@ namespace UnitTest {
       }
       TEST_METHOD(ProcTable_set_and_get_procedures) {
         // TODO(pixelducky): can be more exhaustive - check if proc names exist
+        PKB::clear();
+
         vector<string> procedureNames;
 
         procedureNames.push_back(string("Panda"));
@@ -155,13 +161,14 @@ namespace UnitTest {
         Assert::AreEqual(unsigned int(2), PKB::GetProcedureIndex(string("Cat")));
       }
       TEST_METHOD(StmtTable_set_and_get_stmtSymbol) {
+          PKB::clear();
           map<unsigned int, string> stmts;
           stmts.emplace(10, "call");
           stmts.emplace(11, "assign");
           stmts.emplace(12, "assign");
           stmts.emplace(13, "if");
           stmts.emplace(14, "while");
-          
+
           PKB::GenerateStmtTable(stmts);
           Assert::AreEqual(string("call"), PKB::GetStmtSymbol(10));
           Assert::AreEqual(string("assign"), PKB::GetStmtSymbol(11));
@@ -170,6 +177,7 @@ namespace UnitTest {
           Assert::AreEqual(string("while"), PKB::GetStmtSymbol(14));
       }
       TEST_METHOD(StmtTable_GetSymbolsStmtNos) {
+          PKB::clear();
           map<unsigned int, string> testStmtTable;
 
           testStmtTable[static_cast<unsigned int>(1)] = string("y = x + 3;");
@@ -187,16 +195,16 @@ namespace UnitTest {
           // Assert::AreNotEqual(PKB::GetSymbolStmtNumbers(MINUS), stmts);
       }
       TEST_METHOD(AssignTableTest_set_and_get) {
+          PKB::clear();
           map<unsigned int, TreeNode*> assignments;
           TreeNode * assignNode1 = PKB::CreateASTNode(ASSIGN, 40);
           TreeNode * assignNode2 = PKB::CreateASTNode(ASSIGN, 41);
           assignments.insert(std::make_pair(assignNode1->getStmtNumber(), assignNode1));
           assignments.insert(std::make_pair(assignNode2->getStmtNumber(), assignNode2));
-        
+
           PKB::GenerateAssignTable(assignments);
           Assert::AreEqual(assignNode1->getStmtNumber(), PKB::GetAssignTreeNode(40)->getStmtNumber());
           Assert::AreEqual(assignNode2->getStmtNumber(), PKB::GetAssignTreeNode(41)->getStmtNumber());
-
       }
       TEST_METHOD(ModifiesTable_set_and_get) {
           // sample line
@@ -205,6 +213,7 @@ namespace UnitTest {
           // 24 x++;
           // 25 ...
           // }
+          PKB::clear();
           map<unsigned int, set<string>> testModTable;
           set<string> testSet, testSet1;
           testSet.insert(string("y"));
@@ -227,7 +236,7 @@ namespace UnitTest {
           // 25 TIGER {
           // 26 z = y * 6;
           // 27 y--;
-
+          PKB::clear();
           map<string, set<string>> testModProcTable;
           set<string> testSet, testSet1, testSet2;
           testSet.insert(string("y"));
@@ -241,7 +250,6 @@ namespace UnitTest {
           Assert::IsTrue(PKB::IsModifiesProcedure(string("TIGER"), string("x")));
           Assert::IsFalse(PKB::IsModifiesProcedure(string("TIGER"), string("z")));
           Assert::AreEqual(1, int(PKB::GetProceduresNameModifying("y").size()));
-
       }
       TEST_METHOD(UsesTable_set_and_get) {
           // sample line
@@ -252,6 +260,7 @@ namespace UnitTest {
           // 25 TIGER {
           // 26 z = (x - y) * 6;
           // 27 y--;
+          PKB::clear();
           map<unsigned int, set<string>> testUsesTable;
           set<string> testSet23, testSet26;
 
@@ -285,6 +294,7 @@ namespace UnitTest {
           // 25 TIGER {
           // 26 z = (x - y) * 6;
           // 27 y--;
+          PKB::clear();
           map<string, set<string>> testUsesProcTable;
           set<string> testSetPanda, testSetTiger;
 
@@ -318,7 +328,7 @@ namespace UnitTest {
           // 27              x++; }
           // 28         i--;}
           //    }
-
+          PKB::clear();
           map<unsigned int, set<unsigned int>> testParentTable;  // <parent, child>
           set<unsigned int> testSet23, testSet25;
           testSet23.insert(24);
@@ -349,6 +359,7 @@ namespace UnitTest {
           // 28         i--;
           // 29         y--;}
           //    }
+          PKB::clear();
           map<unsigned int, unsigned int> testFollowsTable;  // <before, after>
           testFollowsTable[24] = 25;
           testFollowsTable[26] = 27;
