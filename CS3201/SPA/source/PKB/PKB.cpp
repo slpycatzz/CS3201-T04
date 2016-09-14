@@ -258,17 +258,17 @@ vector<TreeNode*> PKB::GetAllAssignTreeNodes() {
 }
 
 bool PKB::IsExactPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree) {
-	TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo));
-	bool matchLHS(PKB::IsModifies(stmtNo, varName));
-	bool matchRHS(Utils::IsSameTree(*RHS, *exprTree));
-	return (matchLHS && matchRHS);
+  TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo));
+  bool matchLHS(PKB::IsModifies(stmtNo, varName));
+  bool matchRHS(Utils::IsSameTree(*RHS, *exprTree));
+  return (matchLHS && matchRHS);
 }
 
 bool PKB::IsSubPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree) {
-	TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo));
-	bool matchLHS(PKB::IsModifies(stmtNo, varName));
-	bool matchRHS(Utils::IsSubTree(*RHS, *exprTree));
-	return (matchLHS && matchRHS);
+  TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo));
+  bool matchLHS(PKB::IsModifies(stmtNo, varName));
+  bool matchRHS(Utils::IsSubTree(*RHS, *exprTree));
+  return (matchLHS && matchRHS);
 }
 
 /* END   - Assign table functions */
@@ -475,6 +475,32 @@ unsigned int PKB::GetNumberOfIf() {
 
 unsigned int PKB::GetNumberOfCall() {
     return numberOfCall_;
+}
+
+void PKB::clear() {
+  numberOfProcedure_ = 0;
+  numberOfAssign_ = 0;
+  numberOfWhile_ = 0;
+  numberOfIf_ = 0;
+  numberOfCall_ = 0;
+
+  constantTable_.clear();
+  variableTable_.clear();
+  procedureTable_.clear();
+  stmtTable_.clear();
+  assignTable_.clear();
+
+  modifiesTable_.clear();
+  modifiesProcedureTable_.clear();
+
+  usesTable_.clear();
+  usesProcedureTable_.clear();
+
+  parentTable_.clear();
+  parentTransitiveTable_.clear();
+
+  followsTable_.clear();
+  followsTransitiveTable_.clear();
 }
 
 /* START - Other functions */
