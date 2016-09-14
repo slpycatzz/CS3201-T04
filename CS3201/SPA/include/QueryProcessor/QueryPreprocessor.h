@@ -45,6 +45,7 @@ class QueryPreprocessor {
      RelationTable r;
      QueryTree qt;
 
+     std::string toLower(std::string);
      std::string out;
      std::string testMethodOut();
 };
