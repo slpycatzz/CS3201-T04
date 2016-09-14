@@ -67,8 +67,7 @@ TreeNode* Utils::buildExprTree(std::string expr) {
 }
 
 bool Utils::IsSameTreeNode(TreeNode &node1, TreeNode &node2) {
-	return ((node1.getSymbol == node2.getSymbol)
-		&& (node1.getValue.compare(node2.getValue));
+	return ((node1.getSymbol() == node2.getSymbol()) && (node1.getValue().compare(node2.getValue())));
 }
 
 bool Utils::IsSameTree(TreeNode &tree1, TreeNode &tree2) {
