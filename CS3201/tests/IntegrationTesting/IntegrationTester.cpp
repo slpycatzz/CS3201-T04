@@ -43,7 +43,7 @@ public:
 		QueryTree qt(qp.getQueryTree());
 		return qt;
 	}
-  TEST_METHOD(Parser_and_PKB) {
+  TEST_METHOD(Integration_Parser_and_PKB) {
 
     //since PKB is a static class. CLEAR IT before running test
     PKB::clear();
@@ -57,7 +57,7 @@ public:
     Assert::AreEqual(1, int(PKB::GetNumberOfProcedure()));
     Assert::AreEqual(7, int(PKB::GetNumberOfWhile()));
   }
-	TEST_METHOD(QE_GetCadidatesTest) {
+	TEST_METHOD(Integration_QE_GetCadidatesTest) {
 
     //since PKB is a static class. CLEAR IT before running test
     PKB::clear();
