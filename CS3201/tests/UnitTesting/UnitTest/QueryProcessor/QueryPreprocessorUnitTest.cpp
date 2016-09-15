@@ -124,17 +124,20 @@ public:
         QueryPreprocessor qp;
         QueryTree qt;
 
+        bool isValid;
+
         std::string query;
         query = "assign a,a1; variable x;";
         query += "Select a such that uses(\"1a\", x)";
 
         try {
             qp.preprocessQuery(query);
+            isValid = true;
         }
         catch (std::exception& ex) {
-            Assert::AreEqual(ex.what(), "Query parser encountered a syntax error in the query.");
+            isValid = false;
         }
-
+        Assert::AreEqual(isValid, false);
     }
 	TEST_METHOD(QueryParserSelectOneVars) {
 		std::string expected, actual;
