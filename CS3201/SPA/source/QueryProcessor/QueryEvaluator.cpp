@@ -13,21 +13,21 @@ QueryEvaluator::QueryEvaluator() {}
 
 QueryEvaluator::~QueryEvaluator() {}
 
-PartialCombinationList QueryEvaluator::getCandidates(PKB &pkb, std::pair<VarName, Symbol> var) {
+PartialCombinationList QueryEvaluator::getCandidates(std::pair<VarName, Symbol> var) {
 	PartialCombinationList result;
 	switch (var.second) {
 		case VARIABLE:
-			insertMap(pkb.GetAllVariableNames(), var.first, result);
+			insertMap(PKB::GetAllVariableNames(), var.first, result);
 			break;
 		case PROCEDURE:
-			insertMap(pkb.GetAllProcedures(), var.first, result);
+			insertMap(PKB::GetAllProcedures(), var.first, result);
 			break;
 		case PROGRAM_LINE:
 		case STMT:
 		case ASSIGN:
 		case IF:
 		case WHILE:
-			insertMap(Utils::IntToString(pkb.GetSymbolStmtNumbers(var.second)), var.first, result);
+			insertMap(Utils::IntToString(PKB::GetSymbolStmtNumbers(var.second)), var.first, result);
 			break;
 		default:
 			break;
@@ -35,11 +35,11 @@ PartialCombinationList QueryEvaluator::getCandidates(PKB &pkb, std::pair<VarName
 	return result;
 }
 
-TotalCombinationList QueryEvaluator::getTotalCandidateList(PKB &pkb, QueryTree &query) {
+TotalCombinationList QueryEvaluator::getTotalCandidateList(QueryTree &query) {
 	TotalCombinationList totalCandLst;
 	std::unordered_map<std::string, Symbol> varMap = query.getVarMap();
 	for (auto kv : varMap) {
-		PartialCombinationList candMapLst(getCandidates(pkb, kv));
+		PartialCombinationList candMapLst(getCandidates(kv));
 		totalCandLst.insert_or_assign(kv.first, candMapLst);
 	}
 	return totalCandLst;
@@ -53,7 +53,7 @@ void QueryEvaluator::insertMap(std::vector<std::string> list, VarName var, Parti
 	}
 }
 
-bool QueryEvaluator::selectClauseResults(PKB &pkb, Clause &clause,
+bool QueryEvaluator::selectClauseResults(Clause &clause,
 	TotalCombinationList &combinations)
 {
 	bool hasCandidates;
@@ -62,10 +62,10 @@ bool QueryEvaluator::selectClauseResults(PKB &pkb, Clause &clause,
 		std::vector<VarName> args(clause.getArg());
 		VarName lhs(args[0]), rhs(args[1]), assignStmt(args[2]);
 		if (Utils::IsStringLiteral(lhs)) {
-			hasCandidates = FilterNoVarPattern(pkb, assignStmt, Utils::LiteralToCandidate(lhs), rhs, combinations);
+			hasCandidates = FilterNoVarPattern(assignStmt, Utils::LiteralToCandidate(lhs), rhs, combinations);
 		}
 		else {
-			hasCandidates = FilterOneVarPattern(pkb, assignStmt, lhs, rhs, combinations);
+			hasCandidates = FilterOneVarPattern(assignStmt, lhs, rhs, combinations);
 		}
 	}
 	else {
@@ -73,34 +73,34 @@ bool QueryEvaluator::selectClauseResults(PKB &pkb, Clause &clause,
 		VarName var0(args[0]), var1(args[1]);
 		if (Utils::IsLiteral(var0)) {
 			if (Utils::IsLiteral(var1)) {
-				hasCandidates = FilterNoVarClause(pkb, type, Utils::LiteralToCandidate(var0),
+				hasCandidates = FilterNoVarClause(type, Utils::LiteralToCandidate(var0),
 					Utils::LiteralToCandidate(var1), combinations);
 			}
 			else {
-				hasCandidates = FilterSecondVarClause(pkb, type,
+				hasCandidates = FilterSecondVarClause(type,
 					Utils::LiteralToCandidate(var0), var1, combinations);
 			}
 		}
 		else {
 			if (Utils::IsLiteral(var1)) {
-				hasCandidates = FilterFirstVarClause(pkb, type, var0,
+				hasCandidates = FilterFirstVarClause(type, var0,
 					Utils::LiteralToCandidate(var1), combinations);
 			}
 			else {
-				hasCandidates = FilterTwoVarsClause(pkb, type, var0, var1, combinations);
+				hasCandidates = FilterTwoVarsClause(type, var0, var1, combinations);
 			}
 		}
 	}
 	return hasCandidates;
 }
 
-bool QueryEvaluator::FilterNoVarPattern(PKB &pkb, VarName assignStmt, Candidate lhs,
+bool QueryEvaluator::FilterNoVarPattern(VarName assignStmt, Candidate lhs,
 	Candidate expr, TotalCombinationList &combinations)
 {
 	PartialCombinationList candidateList(combinations[assignStmt]);
 	PartialCombinationList filteredList;
 	for (CandidateCombination tup : candidateList) {
-		if (evaluatePatternClause(pkb, tup[assignStmt], lhs, expr)) {
+		if (evaluatePatternClause(tup[assignStmt], lhs, expr)) {
 			filteredList.push_back(tup);
 		}
 	}
@@ -113,7 +113,7 @@ bool QueryEvaluator::FilterNoVarPattern(PKB &pkb, VarName assignStmt, Candidate 
 	return true;
 }
 
-bool QueryEvaluator::FilterOneVarPattern(PKB &pkb, VarName assignStmt, VarName lhs,
+bool QueryEvaluator::FilterOneVarPattern(VarName assignStmt, VarName lhs,
 	Candidate expr, TotalCombinationList &combinations)
 {
 	PartialCombinationList candLst0(combinations[assignStmt]);
@@ -122,7 +122,7 @@ bool QueryEvaluator::FilterOneVarPattern(PKB &pkb, VarName assignStmt, VarName l
 	if (&candLst0 == &candLst1) {
 		for (CandidateCombination tup : candLst0) {
 			Candidate stmtCand(tup[assignStmt]), lhsCand(tup[lhs]);
-			if (evaluateSuchThatClause(pkb, stmtCand, lhsCand, expr)) {
+			if (evaluatePatternClause(stmtCand, lhsCand, expr)) {
 				filteredList.push_back(tup);
 			}
 		}
@@ -132,7 +132,7 @@ bool QueryEvaluator::FilterOneVarPattern(PKB &pkb, VarName assignStmt, VarName l
 			Candidate stmtCand(tup0[assignStmt]);
 			for (CandidateCombination tup1 : candLst1) {
 				Candidate lhsCand(tup1[lhs]);
-				if (evaluateSuchThatClause(pkb, stmtCand, lhsCand, expr)) {
+				if (evaluatePatternClause(stmtCand, lhsCand, expr)) {
 					filteredList.push_back(Utils::MergeMap(tup0, tup1));
 				}
 			}
@@ -147,7 +147,7 @@ bool QueryEvaluator::FilterOneVarPattern(PKB &pkb, VarName assignStmt, VarName l
 	return true;
 }
 
-bool QueryEvaluator::FilterTwoVarsClause(PKB &pkb, std::string clauseType,
+bool QueryEvaluator::FilterTwoVarsClause(std::string clauseType,
 	VarName &var0, VarName &var1, TotalCombinationList &combinations)
 {
 	PartialCombinationList candLst0(combinations[var0]);
@@ -156,7 +156,7 @@ bool QueryEvaluator::FilterTwoVarsClause(PKB &pkb, std::string clauseType,
 	if (&candLst0 == &candLst1) {
 		for (CandidateCombination tup : candLst0) {
 			Candidate arg0(tup[var0]), arg1(tup[var1]);
-			if (evaluateSuchThatClause(pkb, clauseType, arg0, arg1)) {
+			if (evaluateSuchThatClause(clauseType, arg0, arg1)) {
 				filteredList.push_back(tup);
 			}
 		}
@@ -166,7 +166,7 @@ bool QueryEvaluator::FilterTwoVarsClause(PKB &pkb, std::string clauseType,
 			Candidate arg0(tup0[var0]);
 			for (CandidateCombination tup1 : candLst1) {
 				Candidate arg1(tup1[var1]);
-				if (evaluateSuchThatClause(pkb, clauseType, arg0, arg1)) {
+				if (evaluateSuchThatClause(clauseType, arg0, arg1)) {
 					filteredList.push_back(Utils::MergeMap(tup0, tup1));
 				}
 			}
@@ -181,13 +181,13 @@ bool QueryEvaluator::FilterTwoVarsClause(PKB &pkb, std::string clauseType,
 	return true;
 }
 
-bool QueryEvaluator::FilterFirstVarClause(PKB &pkb, std::string clauseType,
+bool QueryEvaluator::FilterFirstVarClause(std::string clauseType,
  VarName var, Candidate constant, TotalCombinationList &combinations)
 {
 	PartialCombinationList candidateList(combinations[var]);
 	PartialCombinationList filteredList;
 	for (CandidateCombination tup : candidateList) {
-		if (evaluateSuchThatClause(pkb, clauseType, tup[var], constant)) {
+		if (evaluateSuchThatClause(clauseType, tup[var], constant)) {
 			filteredList.push_back(tup);
 		}
 	}
@@ -200,13 +200,13 @@ bool QueryEvaluator::FilterFirstVarClause(PKB &pkb, std::string clauseType,
 	return true;
 }
 
-bool QueryEvaluator::FilterSecondVarClause(PKB &pkb, std::string clauseType,
+bool QueryEvaluator::FilterSecondVarClause(std::string clauseType,
 	Candidate constant, VarName var, TotalCombinationList &combinations)
 {
 	PartialCombinationList candidateList(combinations[var]);
 	PartialCombinationList filteredList;
 	for (CandidateCombination tup : candidateList) {
-		if (evaluateSuchThatClause(pkb, clauseType, constant, tup[var])) {
+		if (evaluateSuchThatClause(clauseType, constant, tup[var])) {
 			filteredList.push_back(tup);
 		}
 	}
@@ -219,28 +219,29 @@ bool QueryEvaluator::FilterSecondVarClause(PKB &pkb, std::string clauseType,
 	return true;
 }
 
-bool QueryEvaluator::FilterNoVarClause(PKB &pkb, std::string clauseType,
+bool QueryEvaluator::FilterNoVarClause(std::string clauseType,
 	Candidate const1, Candidate const2, TotalCombinationList &combinations)
 {
-	return evaluateSuchThatClause(pkb, clauseType, const1, const2);
+	log.append(const1 + " " + const2);
+	return evaluateSuchThatClause(clauseType, const1, const2);
 }
 
-bool QueryEvaluator::evaluateQuery(PKB &pkb, QueryTree &query)
+bool QueryEvaluator::evaluateQuery(QueryTree &query)
 {
 	return false;
 }
 
-ResultList QueryEvaluator::selectQueryResults(PKB &pkb, QueryTree &query)
+ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 {
 	std::vector<Clause> clauseList = query.getClauses("suchThat pattern");
-	TotalCombinationList allCandidates(getTotalCandidateList(pkb, query));
+	TotalCombinationList allCandidates(getTotalCandidateList(query));
 	std::unordered_map<VarName, Symbol> selectMap = query.getSelect();
 	std::vector<VarName> selectList;
 	for (auto kv : selectMap) selectList.push_back(kv.first);
 
 	bool hasMoreCandidates;
 	for (Clause clause : clauseList) {
-		hasMoreCandidates = selectClauseResults(pkb, clause, allCandidates);
+		hasMoreCandidates = selectClauseResults(clause, allCandidates);
 		if (!hasMoreCandidates) break;
 	}
 	if (isBoolSelect(selectMap)) {
@@ -337,172 +338,266 @@ bool QueryEvaluator::isBoolSelect(std::unordered_map<std::string, Symbol> &selec
 	}
 }
 
-bool QueryEvaluator::evaluateClause(PKB &pkb, Clause &clause, CandidateCombination &comb) {
+bool QueryEvaluator::evaluateClause(Clause &clause, CandidateCombination &comb) {
 	std::string type(clause.getClauseType());
 	std::vector<std::string> args(clause.getArg());
 	if (type == SYMBOL_PATTERN) {
 		Candidate assignStmt(comb[args[2]]);
 		Candidate lhsVar(comb[args[0]]);
 		Candidate expr(comb[args[1]]);
-		return evaluatePatternClause(pkb, assignStmt, lhsVar, expr);
+		return evaluatePatternClause(assignStmt, lhsVar, expr);
 	}
 	else {
 		Candidate var0(comb[args[0]]);
 		Candidate var1(comb[args[1]]);
-		return evaluateSuchThatClause(pkb, type, var0, var1);
+		return evaluateSuchThatClause(type, var0, var1);
 	}
 }
 
-bool QueryEvaluator::evaluatePatternClause(PKB &pkb, Candidate assignStmt,
+bool QueryEvaluator::evaluatePatternClause(Candidate assignStmt,
 	Candidate lhsVar, std::string expr)
 {
 	if (Utils::TrimSpaces(expr) == "_") {
-		std::vector<TreeNode*> vt(pkb.GetAllAssignTreeNodes());
-		return !vt.empty();
+		if (lhsVar == "_") {
+			unsigned assignNo(Utils::StringToInt(assignStmt));
+			return (PKB::GetAssignTreeNode(assignNo) != NULL);
+		}
+		else {
+			return PKB::IsModifies(Utils::StringToInt(assignStmt), lhsVar);
+		}
+	}
+	if (lhsVar == "_") {
+		TreeNode* node(Utils::buildExprTree(expr));
+		if (expr.find_first_of('_') == std::string::npos) {
+			return PKB::IsExactRHS(Utils::StringToInt(assignStmt), node);
+		}
+		else {
+			return PKB::IsSubRHS(Utils::StringToInt(assignStmt), node);
+		}
 	}
 	TreeNode* node(Utils::buildExprTree(expr));
 	if (expr.find_first_of('_') == std::string::npos) {
-		return pkb.IsExactPattern(Utils::StringToInt(assignStmt), lhsVar, node);
+		return PKB::IsExactPattern(Utils::StringToInt(assignStmt), lhsVar, node);
 	}
 	else {
-		return pkb.IsSubPattern(Utils::StringToInt(assignStmt), lhsVar, node);
+		return PKB::IsSubPattern(Utils::StringToInt(assignStmt), lhsVar, node);
 	}
 }
 
-bool QueryEvaluator::evaluateSuchThatClause(PKB &pkb,
+bool QueryEvaluator::evaluateSuchThatClause(
 	std::string clauseType, Candidate var0, Candidate var1)
 {
 	if (clauseType == "Uses") {
-		return evaluateUses(pkb, var0, var1);
+		return evaluateUses(var0, var1);
 	}
 	else if (clauseType == "Modifies") {
-		return evaluateModifies(pkb, var0, var1);
+		return evaluateModifies(var0, var1);
 	}
 	else if (clauseType == "Parent") {
-		return evaluateParent(pkb, var0, var1);
+		return evaluateParent(var0, var1);
 	}
 	else if (clauseType == "Parent*") {
-		return evaluateParentStar(pkb, var0, var1);
+		return evaluateParentStar(var0, var1);
 	}
 	else if (clauseType == "Follows") {
-		return evaluateFollows(pkb, var0, var1);
+		return evaluateFollows(var0, var1);
 	}
 	else if (clauseType == "Follows*") {
-		return evaluateFollowsStar(pkb, var0, var1);
+		return evaluateFollowsStar(var0, var1);
 	}
 	else if (clauseType == ("Next")) {
-		return evaluateNext(pkb, var0, var1);
+		return evaluateNext(var0, var1);
 	}
 	else if (clauseType == ("Next*")) {
-		return evaluateNextStar(pkb, var0, var1);
+		return evaluateNextStar(var0, var1);
 	}
 	else if (clauseType == ("Calls")) {
-		return evaluateCalls(pkb, var0, var1);
+		return evaluateCalls(var0, var1);
 	}
 	else if (clauseType == ("Calls*")) {
-		return evaluateCallsStar(pkb, var0, var1);
+		return evaluateCallsStar(var0, var1);
 	}
 	else if (clauseType == ("Affects")) {
-		return evaluateAffects(pkb, var0, var1);
+		return evaluateAffects(var0, var1);
 	}
 	else if (clauseType == ("Affects*")) {
-		return evaluateAffectsStar(pkb, var0, var1);
+		return evaluateAffectsStar(var0, var1);
 	}
 
 	return false;
 }
 
-bool QueryEvaluator::evaluateUses(PKB &pkb, Candidate procOrStmtNo, Candidate varName)
+bool QueryEvaluator::evaluateUses(Candidate procOrStmtNo, Candidate varName)
+{
+	if (Utils::IsNonNegativeNumeric(procOrStmtNo)) {
+		if (varName == "_") {
+			return (!PKB::GetUsedVariables(Utils::StringToInt(procOrStmtNo)).empty());
+		}
+		else {
+			int stmtNo(Utils::StringToInt(procOrStmtNo));
+			return PKB::IsUses(stmtNo, varName);
+		}
+	}
+	else if (procOrStmtNo == "_") {
+		if (varName == "_") {
+			return (PKB::GetNumberOfAssign() > 0);
+		}
+		else {
+			return (!PKB::GetStmtNumberUsing(varName).empty());
+		}
+	}
+	else {
+		return PKB::IsUsesProcedure(procOrStmtNo, varName);
+	}
+}
+
+bool QueryEvaluator::evaluateModifies(Candidate procOrStmtNo, Candidate varName)
 {
 	if (Utils::IsNonNegativeNumeric(procOrStmtNo)) {
 		int stmtNo(Utils::StringToInt(procOrStmtNo));
-		return pkb.IsUses(stmtNo, varName);
+		if (varName == "_") {
+			return (!PKB::GetModifiedVariables(stmtNo).empty());
+		}
+		return PKB::IsModifies(stmtNo, varName);
 	}
 	else {
-		return pkb.IsUsesProcedure(procOrStmtNo, varName);
+		return PKB::IsModifiesProcedure(procOrStmtNo, varName);
 	}
 }
 
-bool QueryEvaluator::evaluateModifies(PKB &pkb, Candidate procOrStmtNo, Candidate varName)
+bool QueryEvaluator::evaluateParent(Candidate stmt1, Candidate stmt2)
 {
-	if (Utils::IsNonNegativeNumeric(procOrStmtNo)) {
-		int stmtNo(Utils::StringToInt(procOrStmtNo));
-		return pkb.IsModifies(stmtNo, varName);
+	if (stmt1 == "_") {
+		if (stmt2 == "_") {
+			return (PKB::GetNumberOfIf() + PKB::GetNumberOfWhile() > 0);
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return (!PKB::GetParentsTransitive(stmtNo2).empty());
+		}
 	}
 	else {
-		return pkb.IsModifiesProcedure(procOrStmtNo, varName);
+		int stmtNo1(Utils::StringToInt(stmt1));
+		if (stmt2 == "_") {
+			return (!PKB::GetChildrenTransitive(stmtNo1).empty());
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return PKB::IsParent(stmtNo1, stmtNo2);
+		}
 	}
 }
 
-bool QueryEvaluator::evaluateParent(PKB &pkb, Candidate stmt1, Candidate stmt2)
+bool QueryEvaluator::evaluateParentStar(Candidate stmt1, Candidate stmt2)
 {
-	int stmtNo1(Utils::StringToInt(stmt1));
-	int stmtNo2(Utils::StringToInt(stmt2));
-	return pkb.IsParent(stmtNo1, stmtNo2);
+	if (stmt1 == "_") {
+		if (stmt2 == "_") {
+			return (PKB::GetNumberOfIf() + PKB::GetNumberOfWhile() > 0);
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return (!PKB::GetParentsTransitive(stmtNo2).empty());
+		}
+	}
+	else {
+		int stmtNo1(Utils::StringToInt(stmt1));
+		if (stmt2 == "_") {
+			return (!PKB::GetChildrenTransitive(stmtNo1).empty());
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return PKB::IsParentTransitive(stmtNo1, stmtNo2);
+		}
+	}
 }
 
-bool QueryEvaluator::evaluateParentStar(PKB &pkb, Candidate stmt1, Candidate stmt2)
+bool QueryEvaluator::evaluateFollows(Candidate stmt1, Candidate stmt2)
 {
-	int stmtNo1(Utils::StringToInt(stmt1));
-	int stmtNo2(Utils::StringToInt(stmt2));
-	return pkb.IsParentTransitive(stmtNo1, stmtNo2);
+	if (stmt1 == "_") {
+		if (stmt2 == "_") {
+			return true; // TODO
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return (PKB::GetFollows(stmtNo2) > 0);
+		}
+	}
+	else {
+		int stmtNo1(Utils::StringToInt(stmt1));
+		if (stmt2 == "_") {
+			return (PKB::GetFollowing(stmtNo1) > 0);
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return PKB::IsFollows(stmtNo1, stmtNo2);
+		}
+	}
 }
 
-bool QueryEvaluator::evaluateFollows(PKB &pkb, Candidate stmt1, Candidate stmt2)
+bool QueryEvaluator::evaluateFollowsStar(Candidate stmt1, Candidate stmt2)
 {
-	int stmtNo1(Utils::StringToInt(stmt1));
-	int stmtNo2(Utils::StringToInt(stmt2));
-	return pkb.IsFollows(stmtNo1, stmtNo2);
+	if (stmt1 == "_") {
+		if (stmt2 == "_") {
+			return true; // TODO
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return (PKB::GetFollows(stmtNo2) > 0);
+		}
+	}
+	else {
+		int stmtNo1(Utils::StringToInt(stmt1));
+		if (stmt2 == "_") {
+			return (PKB::GetFollowing(stmtNo1) > 0);
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return PKB::IsFollowsTransitive(stmtNo1, stmtNo2);
+		}
+	}
 }
 
-bool QueryEvaluator::evaluateFollowsStar(PKB &pkb, Candidate stmt1, Candidate stmt2)
+bool QueryEvaluator::evaluateNext(Candidate stmt1, Candidate stmt2)
 {
 	int stmtNo1(Utils::StringToInt(stmt1));
 	int stmtNo2(Utils::StringToInt(stmt2));
-	return pkb.IsFollowsTransitive(stmtNo1, stmtNo2);
-}
-
-bool QueryEvaluator::evaluateNext(PKB &pkb, Candidate stmt1, Candidate stmt2)
-{
-	int stmtNo1(Utils::StringToInt(stmt1));
-	int stmtNo2(Utils::StringToInt(stmt2));
-	//return pkb.IsNext(stmtNo1, stmtNo2);
+	//return PKB::IsNext(stmtNo1, stmtNo2);
 	return false;
 }
 
-bool QueryEvaluator::evaluateNextStar(PKB &pkb, Candidate stmt1, Candidate stmt2)
+bool QueryEvaluator::evaluateNextStar(Candidate stmt1, Candidate stmt2)
 {
 	int stmtNo1(Utils::StringToInt(stmt1));
 	int stmtNo2(Utils::StringToInt(stmt2));
-	//return pkb.IsNextTransitive(stmtNo1, stmtNo2);
+	//return PKB::IsNextTransitive(stmtNo1, stmtNo2);
 	return false;
 }
 
-bool QueryEvaluator::evaluateCalls(PKB &pkb, Candidate proc1, Candidate proc2)
+bool QueryEvaluator::evaluateCalls(Candidate proc1, Candidate proc2)
 {
-	//return pkb.IsCalls(proc1, proc2);
+	//return PKB::IsCalls(proc1, proc2);
 	return false;
 }
 
-bool QueryEvaluator::evaluateCallsStar(PKB &pkb, Candidate proc1, Candidate proc2)
+bool QueryEvaluator::evaluateCallsStar(Candidate proc1, Candidate proc2)
 {
-	//return pkb.IsCallsTransitive(proc1, proc2);
+	//return PKB::IsCallsTransitive(proc1, proc2);
 	return false;
 }
 
-bool QueryEvaluator::evaluateAffects(PKB &pkb, Candidate assign1, Candidate assign2)
+bool QueryEvaluator::evaluateAffects(Candidate assign1, Candidate assign2)
 {
 	int stmtNo1(Utils::StringToInt(assign1));
 	int stmtNo2(Utils::StringToInt(assign2));
-	//return pkb.IsAffects(stmtNo1, stmtNo2);
+	//return PKB::IsAffects(stmtNo1, stmtNo2);
 	return false;
 }
 
-bool QueryEvaluator::evaluateAffectsStar(PKB &pkb, Candidate assign1, Candidate assign2)
+bool QueryEvaluator::evaluateAffectsStar(Candidate assign1, Candidate assign2)
 {
 	int stmtNo1(Utils::StringToInt(assign1));
 	int stmtNo2(Utils::StringToInt(assign2));
-	//return pkb.IsAffectsTransitive(stmtNo1, stmtNo2);
+	//return PKB::IsAffectsTransitive(stmtNo1, stmtNo2);
 	return false;
 }
 

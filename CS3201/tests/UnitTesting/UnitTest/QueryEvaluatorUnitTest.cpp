@@ -111,5 +111,34 @@ public:
 		std::string expected("<<1,2>,<2,3>>");
 		Assert::AreEqual(expected, actual);
     }
+	TEST_METHOD(TestIsLiteral) {
+		std::string s("\"x\"");
+		Assert::IsTrue(s[0] == '\"');
+	}
+	TEST_METHOD(TestLiteralToCandidate) {
+		std::string s("\"x\"");
+		Assert::AreEqual(Utils::LiteralToCandidate(s), std::string("x"));
+	}
+	TEST_METHOD(TestIsSameTreeNode) {
+		TreeNode root1(TreeNode(ASSIGN, "a"));
+		TreeNode root2(TreeNode(ASSIGN, "a"));
+		Assert::IsTrue(Utils::IsSameTreeNode(root1, root2));
+	}
+	TEST_METHOD(TestIsSameTree) {
+		TreeNode root1(TreeNode(ASSIGN, "a"));
+		TreeNode root2(TreeNode(ASSIGN, "a"));
+
+		root1.addChild(&TreeNode(ASSIGN, "b"));
+		root2.addChild(&TreeNode(ASSIGN, "b"));
+
+		root1.addChild(&TreeNode(ASSIGN, "c"));
+		root2.addChild(&TreeNode(ASSIGN, "c"));
+
+		Assert::IsTrue(Utils::IsSameTree(root1, root2));
+	}
+	TEST_METHOD(TestBuildExprTree) {
+		TreeNode* root(Utils::buildExprTree("_\"x\"_"));
+		Assert::AreEqual(std::string("x"), root->getValue());
+	}
 	};
 }

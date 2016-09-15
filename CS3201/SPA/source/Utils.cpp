@@ -82,12 +82,12 @@ Utils::ReduceMap(std::unordered_map<std::string, std::string> &map,
 TreeNode* Utils::buildExprTree(std::string expr) {
 	unsigned i = expr.find_first_not_of('_');
 	unsigned j = expr.find_last_not_of('_');
-	std::string temp(expr.substr(i, j-i+1));
-	return &TreeNode(VARIABLE, temp);
+	std::string temp(LiteralToCandidate(expr.substr(i, j-i+1)));
+	return new TreeNode(VARIABLE, temp);
 }
 
 bool Utils::IsSameTreeNode(TreeNode &node1, TreeNode &node2) {
-	return ((node1.getSymbol() == node2.getSymbol()) && (node1.getValue().compare(node2.getValue())));
+	return ((node1.getSymbol() == node2.getSymbol()) && (node1.getValue() == (node2.getValue())));
 }
 
 bool Utils::IsSameTree(TreeNode &tree1, TreeNode &tree2) {
@@ -196,7 +196,7 @@ std::string Utils::LiteralToCandidate(std::string literal) {
 	if (IsStringLiteral(literal)) {
 		unsigned i = literal.find_first_of("\"");
 		unsigned j = literal.find_last_of("\"");
-		return literal.substr(i, j - i + 1);
+		return literal.substr(i+1, j-i-1);
 	}
 	else {
 		return literal;
@@ -317,7 +317,8 @@ bool Utils::IsNonNegativeNumeric(string str) {
 }
 
 bool Utils::IsStringLiteral(std::string str) {
-	return ((str[0] == '\"') && (str[1] == '\"'));
+	return (((str[0] == '\"') && (str[str.length()-1] == '\"')) ||
+		(str == "_"));
 }
 
 bool Utils::IsLiteral(std::string str) {

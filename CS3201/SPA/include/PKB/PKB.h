@@ -56,6 +56,10 @@ class PKB {
     static std::vector<TreeNode*> GetAllAssignTreeNodes();
     static bool IsExactPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree);
     static bool IsSubPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree);
+	static bool IsExactRHS(unsigned stmtNo, TreeNode* exprTree);
+	static bool IsSubRHS(unsigned stmtNo, TreeNode* exprTree);
+	static bool HasExactPattern(TreeNode* exprTree);
+	static bool HasSubPattern(TreeNode* exprTree);
 
     static void GenerateModifiesTable(std::map<unsigned int, std::set<std::string>> modifies);
     static void GenerateModifiesProcedureTable(std::map<std::string, std::set<std::string>> modifiesProcedure);
@@ -106,8 +110,10 @@ class PKB {
     static unsigned int GetNumberOfCall();
 
     static void clear();
+	static std::string log;
 
- private:
+private:
+
     static unsigned int numberOfProcedure_;
     static unsigned int numberOfAssign_;
     static unsigned int numberOfWhile_;
