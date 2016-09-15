@@ -10,7 +10,7 @@ std::list<std::string> QueryProjector::formatResult(std::vector<std::string> res
     std::list<std::string> result;
 
     for (std::string s : resultList) {
-        result.emplace_back(s);
+        result.emplace_back(s.substr(1, s.length() - 2));
     }
 
     return result;
