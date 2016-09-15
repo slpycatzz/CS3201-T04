@@ -35,6 +35,7 @@ public:
 	}
 	void getSampleProgram() {
 		string fileName = "..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt";
+        PKB::clear();
 		parse(fileName);
 	}
 	QueryTree getQueryTree(std::string query) {
@@ -56,25 +57,15 @@ public:
 			return s;
 		}
 	}
-  TEST_METHOD(Integration_Parser_and_PKB) {
-
-    //since PKB is a static class. CLEAR IT before running test
-    PKB::clear();
-
-    string fileName = "..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt";
-    parse(fileName);
-
-    Assert::AreEqual(42, int(PKB::GetNumberOfAssign()));
-    Assert::AreEqual(0, int(PKB::GetNumberOfCall()));
-    Assert::AreEqual(0, int(PKB::GetNumberOfIf()));
-    Assert::AreEqual(1, int(PKB::GetNumberOfProcedure()));
-    Assert::AreEqual(7, int(PKB::GetNumberOfWhile()));
-  }
+    TEST_METHOD(Integration_Parser_and_PKB) {
+        getSampleProgram();
+        Assert::AreEqual(42, int(PKB::GetNumberOfAssign()));
+        Assert::AreEqual(0, int(PKB::GetNumberOfCall()));
+        Assert::AreEqual(0, int(PKB::GetNumberOfIf()));
+        Assert::AreEqual(1, int(PKB::GetNumberOfProcedure()));
+        Assert::AreEqual(7, int(PKB::GetNumberOfWhile()));
+    }
 	TEST_METHOD(Integration_QE_GetCadidatesTest) {
-
-    //since PKB is a static class. CLEAR IT before running test
-    PKB::clear();
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("variable v; Select v;"));
 		
@@ -85,7 +76,6 @@ public:
 		Logger::WriteMessage(Utils::VectorToString(result).c_str());
 	}
 	TEST_METHOD(TestGetCandidates) {
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("stmt a; Select a such that Modifies(a, \"a\");"));
 		QueryEvaluator qe;
@@ -103,10 +93,6 @@ public:
 		//Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestEvaluateModifies) {
-
-    //since PKB is a static class. CLEAR IT before running test
-    PKB::clear();
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; Select a such that Modifies(a, \"a\");"));
 		QueryEvaluator qe;
@@ -116,7 +102,6 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestEvaluateFollows) {
-		
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; while w; Select a such that Follows(a, w);"));
 		QueryEvaluator qe;
@@ -126,7 +111,6 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestEvaluateFollowsWithConst) {
-		
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; while w; Select w such that Follows(3, a);"));
 		QueryEvaluator qe;
@@ -136,7 +120,6 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestGetModifies) {
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; variable v; Select v such that Modifies(1, v);"));
 		QueryEvaluator qe;
@@ -146,7 +129,6 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestGetUses) {
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; variable v; Select a such that Uses(a, \"a\");"));
 		QueryEvaluator qe;
@@ -156,7 +138,6 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestExactPattern) {
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",\"c\");"));
 		QueryEvaluator qe;
@@ -166,7 +147,6 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestExactRHSPattern) {
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_,\"c\");"));
 		QueryEvaluator qe;
@@ -176,7 +156,6 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestUnderscorePattern) {
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",_);"));
 		QueryEvaluator qe;
@@ -186,7 +165,6 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestSubPattern) {
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_);"));
 		QueryEvaluator qe;
@@ -196,7 +174,6 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestEvaluateExactPattern) {
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, \"c\");"));
 		QueryEvaluator qe;
@@ -205,12 +182,18 @@ public:
 		Assert::IsTrue(f);
 	}
 	TEST_METHOD(TestEvaluateSubPattern) {
-
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_);"));
 		QueryEvaluator qe;
 
 		Assert::IsTrue(qe.evaluatePatternClause("37", "e", "_\"c\"_"));
 	}
+    TEST_METHOD(TestSubPatternConstant) {
+        getSampleProgram();
+        QueryTree qt(getQueryTree("assign a; Select a pattern a(_, _\"97\"_);"));
+        QueryEvaluator qe;
+    
+        Assert::IsTrue(qe.evaluatePatternClause("1", "_", "_\"97\"_"));
+    }
 	};
 }

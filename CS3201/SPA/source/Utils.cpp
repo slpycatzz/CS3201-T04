@@ -83,7 +83,13 @@ TreeNode* Utils::buildExprTree(std::string expr) {
 	unsigned i = expr.find_first_not_of('_');
 	unsigned j = expr.find_last_not_of('_');
 	std::string temp(LiteralToCandidate(expr.substr(i, j-i+1)));
-	return new TreeNode(VARIABLE, temp);
+    
+    if (Utils::IsNonNegativeNumeric(temp)) {
+        return new TreeNode(CONSTANT, temp);
+    }
+    else {
+        return new TreeNode(VARIABLE, temp);
+    }
 }
 
 bool Utils::IsSameTreeNode(TreeNode &node1, TreeNode &node2) {
