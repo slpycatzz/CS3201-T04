@@ -420,7 +420,7 @@ bool PKB::IsParent(unsigned int parent, unsigned int child) {
 }
 
 bool PKB::IsParentTransitive(unsigned int parent, unsigned int child) {
-    return parentTable_.hasKeyToValue(parent, child);
+    return parentTransitiveTable_.hasKeyToValue(parent, child);
 }
 
 unsigned int PKB::GetParent(unsigned int child) {

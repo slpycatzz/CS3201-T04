@@ -46,13 +46,13 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
 
     /* Validate if variable type exists. */
     if (!isValidVarType(declarationType)) {
-        throw QuerySyntaxErrorException();
+        throw QuerySyntaxErrorException("1");
     }
 
     vector<string> variableNames = Utils::Split(variablesStr, CHAR_SYMBOL_COMMA);
 
     if (variableNames.size() == 0) {
-        throw QuerySyntaxErrorException();
+        throw QuerySyntaxErrorException("2");
     }
     std::unordered_map<string, Symbol> varSymbolMap;
     for (unsigned int i = 0; i < variableNames.size(); i++) {
@@ -60,7 +60,7 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
 
         /* Validate if variable name follows naming convention. */
         if (!Utils::IsValidNamingConvention(variableNames[i])) {
-            throw QuerySyntaxErrorException();
+            throw QuerySyntaxErrorException("3");
         }
 
         /* containes declared vars, pass to queryTree */
@@ -82,7 +82,7 @@ bool QueryPreprocessor::processQuery(string query) {
     /* Expecting first token to be Select (case-sensitive) */
     if (queryList[0] != SYMBOL_SELECT) {
         // std::cout << "no select found";
-        throw QuerySyntaxErrorException();
+        throw QuerySyntaxErrorException("4");
     }
 
     /* parse [select...] statement */
@@ -142,7 +142,7 @@ bool QueryPreprocessor::parseSelect(vector<string> queryList) {
     }
     selectList = Utils::Split(selectVars, CHAR_SYMBOL_COMMA);
     if (selectList.size() >= 2) {
-        throw QuerySyntaxErrorException();
+        throw QuerySyntaxErrorException("5");
     }
     // wm todo: move this loop into another function
     for (unsigned int i = 0; i < selectList.size(); i++) {
@@ -153,7 +153,7 @@ bool QueryPreprocessor::parseSelect(vector<string> queryList) {
             qt.insertSelect(selectList[i], getVarType(selectList[i]));
         } else {
             // std::cout << "invalid variable entered!";
-            throw QuerySyntaxErrorException();
+            throw QuerySyntaxErrorException("6");
         }
     }
 
@@ -198,38 +198,34 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
         }
     }
 
-    //relType[0] = tolower(relType[0]);
     for (unsigned int i = 0; i < varList.size(); i++) {
         if (isVarExist(varList[i])) {
             // isArgValid(relationType, argType, argNumber)
             // argNumber e.g. 1st arg, 2nd arg...
             if (!r.isArgValid(relType, getVarType(varList[i]), i)) {
-                throw QuerySyntaxErrorException();
+                throw QuerySyntaxErrorException("7");
             }
             varTypeList.push_back(getVarType(varList[i]));
         } else if (isConstantVar(varList[i])) {
         // constant var, e.g. ("x","v",_, _"a"_), pattern string belongs here
             // wm todo: add pattern string type
             if (!r.isArgValid(relType, "variable", i)) {
-                throw QuerySyntaxErrorException();
+                throw QuerySyntaxErrorException("8");
             }
             varTypeList.push_back("variable");
         } else if (Utils::IsNonNegativeNumeric(varList[i])) {
         // constant int, e.g. (1,2)
             if (!r.isArgValid(relType, "constant", i)) {
-                throw QuerySyntaxErrorException();
+                throw QuerySyntaxErrorException("9");
             }
             varTypeList.push_back("constant");
         } else {
             // std::cout << "invalid relation entered!";
-            throw QuerySyntaxErrorException();
+            throw QuerySyntaxErrorException("10");
         }
     }
 
     if (clauseType == "such that") {
-        /* convert relType to lowercase */
-        //std::string relationType = toLower(relType);
-        //qt.insertSuchThat(relationType, varList);
         qt.insertSuchThat(relType, varList);
     } else if (clauseType == "pattern") {
         // clauseType: "pattern", arg: arg1, arg2, arg3/patternType(a,ifstmt,while...)
@@ -253,7 +249,7 @@ bool QueryPreprocessor::parsePattern(vector<string> pattern) {
 
     if (!isVarExist(var)) {
         // std::cout << "invalid var: " + var;
-        throw QuerySyntaxErrorException();
+        throw QuerySyntaxErrorException("11");
      }
 
     string argStr = patternStr.substr(
@@ -280,14 +276,14 @@ bool QueryPreprocessor::isConstantVar(string var) {
         isSurroundWithInnerDblQuotes = (var[1] == '"') && (var[var.length() - 2] == '"');
         bool isDblWildcard = isSurroundWithInnerDblQuotes && (isUnderscoreExist && isSecondUnderscoreExist);
         if (isdigit(var[2])) {
-            throw QuerySyntaxErrorException();
+            throw QuerySyntaxErrorException("12");
         }
         return isDblWildcard;
     }
 
     if (isSurroundWithDblQuotes) {
         if (isdigit(var[1])) {
-            throw QuerySyntaxErrorException();
+            throw QuerySyntaxErrorException("13");
         }
     }
 

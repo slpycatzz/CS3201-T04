@@ -48,4 +48,8 @@ class QuerySyntaxErrorException : public Exception {
     QuerySyntaxErrorException() {
         message = MESSAGE_QUERYSYNTAXERROR;
     }
+    QuerySyntaxErrorException(std::string extraInfo) {
+        message = MESSAGE_QUERYSYNTAXERROR;
+        message += " " + extraInfo;
+    }
 };
