@@ -221,7 +221,12 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
             varTypeList.push_back("constant");
         } else {
             // std::cout << "invalid relation entered!";
-            throw QuerySyntaxErrorException("10");
+            std::string message = "vars: ";
+            for (std::string var : varList) {
+                message += var + " ";  
+            }
+
+            throw QuerySyntaxErrorException("10. " + message);
         }
     }
 
@@ -272,23 +277,33 @@ bool QueryPreprocessor::isConstantVar(string var) {
     if (var.length() == 1) {
         return isUnderscoreExist;
     }
-    if (var.length() >= 5) {
+    if (var.length() > 1) {
         isSurroundWithInnerDblQuotes = (var[1] == '"') && (var[var.length() - 2] == '"');
         bool isDblWildcard = isSurroundWithInnerDblQuotes && (isUnderscoreExist && isSecondUnderscoreExist);
-        if (isdigit(var[2])) {
-            throw QuerySyntaxErrorException("12");
+        if (isDblWildcard) {
+            if (isdigit(var[2])) {
+                std::string removedWildcard = var.substr(2, var.length() - 4);
+                std::regex regex_pattern("^[0-9][0-9_]*$");
+                if (std::regex_match(removedWildcard, regex_pattern)) {
+                    return isDblWildcard;
+                }
+                else {
+                    throw QuerySyntaxErrorException("12");
+                }
+            } 
+            else {
+                return isDblWildcard;
+            }
         }
-        return isDblWildcard;
-    }
-
-    if (isSurroundWithDblQuotes) {
-        if (isdigit(var[1])) {
-            throw QuerySyntaxErrorException("13");
+        else {
+            if (isSurroundWithDblQuotes && isdigit(var[1])) {
+                throw QuerySyntaxErrorException("13");
+            }
+            return isSurroundWithDblQuotes;
         }
     }
 
     // wm todo: isValid pattern expr: "+5", "5-4x"
-    return isSurroundWithDblQuotes;
 }
 
 bool QueryPreprocessor::isVarExist(string var) {
