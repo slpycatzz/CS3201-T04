@@ -1,4 +1,4 @@
-procedure Test1 {
+procedure Test2 {
     weird = 41 + NAMES;                         \\1
     while a {                                   \\2
         NAMES = a + 32 + NAMES + 91 + b;        \\3
