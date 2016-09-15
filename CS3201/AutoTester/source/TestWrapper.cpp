@@ -12,8 +12,6 @@
 #include "QueryProcessor/QueryProjector.h"
 #include "TestWrapper.h"
 
-//std::ofstream out;
-
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
 AbstractWrapper* WrapperFactory::createWrapper() {
@@ -24,10 +22,7 @@ AbstractWrapper* WrapperFactory::createWrapper() {
 // Do not modify the following line
 volatile bool TestWrapper::GlobalStop = false;
 
-TestWrapper::TestWrapper() {
-    //out.clear();
-    //out.open("tests\\output.txt");
-}
+TestWrapper::TestWrapper() {}
 
 /*
  * Function for parsing a SIMPLE source program.
@@ -56,21 +51,20 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
     QueryPreprocessor queryPreprocessor = QueryPreprocessor();
     QueryEvaluator queryEvaluator = QueryEvaluator();
     QueryProjector queryProjector = QueryProjector();
-    PKB pkb;
 
     try {
         queryPreprocessor.preprocessQuery(query);
         QueryTree queryTree = queryPreprocessor.getQueryTree();
 
         //Evaluator here.
-        //std::vector<std::string> queryResult = queryEvaluator.selectQueryResults(pkb, queryTree);
+        std::vector<std::string> queryResult = queryEvaluator.selectQueryResults(queryTree);
 
         /* Projector here. Store answer into results. */
-        //results = queryProjector.formatResult(queryResult);
+        results = queryProjector.formatResult(queryResult);
+        
     }
     catch (std::exception& ex) {
         std::cout << ex.what() << std::endl;
-        //out << std::endl << ex.what() << std::endl;
         return;
     }
 }
