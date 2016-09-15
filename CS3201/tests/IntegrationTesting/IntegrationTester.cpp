@@ -84,6 +84,24 @@ public:
 		std::vector<std::string> result(qe.selectQueryResults(qt));
 		Logger::WriteMessage(Utils::VectorToString(result).c_str());
 	}
+	TEST_METHOD(TestGetCandidates) {
+
+		getSampleProgram();
+		QueryTree qt(getQueryTree("stmt a; Select a such that Modifies(a, \"a\");"));
+		QueryEvaluator qe;
+
+		TotalCombinationList total(qe.getTotalCandidateList(qt));
+		Logger::WriteMessage(printTotalCombinationList(total).c_str());
+		for (unsigned i : PKB::GetSymbolStmtNumbers(STMT)) {
+			Logger::WriteMessage(std::to_string(i).c_str());
+		}
+
+		/**
+		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
+		std::string expected("<<1>,<8>,<9>,<10>,<16>,<23>,<29>>");
+		**/
+		//Assert::AreEqual(expected, actual);
+	}
 	TEST_METHOD(TestEvaluateModifies) {
 
     //since PKB is a static class. CLEAR IT before running test
