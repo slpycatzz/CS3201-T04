@@ -283,8 +283,7 @@ bool QueryPreprocessor::isConstantVar(string var) {
         if (isDblWildcard) {
             if (isdigit(var[2])) {
                 std::string removedWildcard = var.substr(2, var.length() - 4);
-                std::regex regex_pattern("^[0-9][0-9_]*$");
-                if (std::regex_match(removedWildcard, regex_pattern)) {
+                if (Utils::IsNonNegativeNumeric(removedWildcard)) {
                     return isDblWildcard;
                 }
                 else {
@@ -297,7 +296,14 @@ bool QueryPreprocessor::isConstantVar(string var) {
         }
         else {
             if (isSurroundWithDblQuotes && isdigit(var[1])) {
-                throw QuerySyntaxErrorException("13");
+                std::string removedQuotes = var.substr(1, var.length() - 3);
+                
+                if (Utils::IsNonNegativeNumeric(removedQuotes)) {
+                    return isSurroundWithDblQuotes;
+                }
+                else {
+                    throw QuerySyntaxErrorException("13");
+                }
             }
             return isSurroundWithDblQuotes;
         }

@@ -41,7 +41,7 @@ Select a such that Uses(a,"a")
 9 - uses 3
 variable v;
 Select v such that Uses(7,v)
-a, b, c, x, z
+a, b, c, x
 5000
 10 - parent 1
 stmt s;
@@ -96,12 +96,12 @@ Select w such that Follows*(s,w)
 20 - follows* 2
 stmt s; while w;
 Select w such that Follows*(w,s)
-9
+5, 9
 5000
 21 - follows* 3
 stmt s; while w;
 Select s such that Follows*(s,w)
-1, 2, 3, 4, 8
+1, 2, 3, 4, 5, 8
 5000
 22 - combination 1
 assign a;
@@ -111,12 +111,12 @@ Select a pattern a(_,_"a"_) such that Modifies(a,"x")
 23 - combination 2
 assign a;
 Select a such that Uses(a,"a") pattern a(_,_"a"_)
-2, 6
+2, 6, 10
 5000
 24 - combination 3
 assign a, a1; variable v;
 Select a such that Uses(a,v) pattern a1(v,_)
-2, 6, 8, 10
+2, 3, 6, 8, 10
 5000
 25 - combination 4
 assign a; stmt s;
@@ -141,7 +141,7 @@ Select w pattern a(_,_"c"_) such that Parent*(w,a)
 29 - combination 8
 assign a; stmt s;
 Select a pattern a("x",_) such that Follows(a,s)
-8
+4, 8
 5000
 30 - combination 9
 assign a, a1;

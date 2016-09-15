@@ -11,7 +11,7 @@ Select a pattern a(_,_"x"_)
 3 - pattern 3
 assign a;
 Select a pattern a(_,"1")
-5, 7, 9
+9
 5000
 4 - modifies 1
 assign a;
@@ -96,12 +96,12 @@ Select w such that Follows*(s,w)
 20 - follows* 2
 stmt s; while w;
 Select s such that Follows*(w,s)
-10, 11
+6, 10, 11
 5000
 21 - follows* 3
 stmt s; while w;
 Select s such that Follows*(s,w)
-1, 2, 7
+1, 2, 3, 7
 5000
 22 - combination 1
 assign a;

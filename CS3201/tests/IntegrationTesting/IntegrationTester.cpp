@@ -77,7 +77,7 @@ public:
 	}
 	TEST_METHOD(TestGetCandidates) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("stmt a; Select a such that Modifies(a, \"a\");"));
+		QueryTree qt(getQueryTree("stmt a; Select a such that Modifies(a, \"a\")"));
 		QueryEvaluator qe;
 
 		TotalCombinationList total(qe.getTotalCandidateList(qt));
@@ -94,7 +94,7 @@ public:
 	}
 	TEST_METHOD(TestEvaluateModifies) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; Select a such that Modifies(a, \"a\");"));
+		QueryTree qt(getQueryTree("assign a; Select a such that Modifies(a, \"a\")"));
 		QueryEvaluator qe;
 
 		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
@@ -103,7 +103,7 @@ public:
 	}
 	TEST_METHOD(TestEvaluateFollows) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; while w; Select a such that Follows(a, w);"));
+		QueryTree qt(getQueryTree("assign a; while w; Select a such that Follows(a, w)"));
 		QueryEvaluator qe;
 		
 		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
@@ -112,7 +112,7 @@ public:
 	}
 	TEST_METHOD(TestEvaluateFollowsWithConst) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; while w; Select w such that Follows(3, a);"));
+		QueryTree qt(getQueryTree("assign a; while w; Select w such that Follows(3, a)"));
 		QueryEvaluator qe;
 
 		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
@@ -121,7 +121,7 @@ public:
 	}
 	TEST_METHOD(TestGetModifies) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; variable v; Select v such that Modifies(1, v);"));
+		QueryTree qt(getQueryTree("assign a; variable v; Select v such that Modifies(1, v)"));
 		QueryEvaluator qe;
 
 		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
@@ -130,7 +130,7 @@ public:
 	}
 	TEST_METHOD(TestGetUses) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; variable v; Select a such that Uses(a, \"a\");"));
+		QueryTree qt(getQueryTree("assign a; variable v; Select a such that Uses(a, \"a\")"));
 		QueryEvaluator qe;
 
 		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
@@ -139,7 +139,7 @@ public:
 	}
 	TEST_METHOD(TestExactPattern) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",\"c\");"));
+		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",\"c\")"));
 		QueryEvaluator qe;
 
 		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
@@ -148,7 +148,7 @@ public:
 	}
 	TEST_METHOD(TestExactRHSPattern) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_,\"c\");"));
+		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_,\"c\")"));
 		QueryEvaluator qe;
 
 		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
@@ -157,7 +157,7 @@ public:
 	}
 	TEST_METHOD(TestUnderscorePattern) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",_);"));
+		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",_)"));
 		QueryEvaluator qe;
 
 		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
@@ -166,7 +166,7 @@ public:
 	}
 	TEST_METHOD(TestSubPattern) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_);"));
+		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_)"));
 		QueryEvaluator qe;
 
 		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
@@ -175,7 +175,7 @@ public:
 	}
 	TEST_METHOD(TestEvaluateExactPattern) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, \"c\");"));
+		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, \"c\")"));
 		QueryEvaluator qe;
 
 		bool f(qe.evaluatePatternClause("2", "c", "\"c\""));
@@ -183,17 +183,24 @@ public:
 	}
 	TEST_METHOD(TestEvaluateSubPattern) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_);"));
+		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_)"));
 		QueryEvaluator qe;
 
 		Assert::IsTrue(qe.evaluatePatternClause("37", "e", "_\"c\"_"));
 	}
     TEST_METHOD(TestSubPatternConstant) {
         getSampleProgram();
-        QueryTree qt(getQueryTree("assign a; Select a pattern a(_, _\"97\"_);"));
+        QueryTree qt(getQueryTree("assign a; Select a pattern a(_, _\"97\"_)"));
         QueryEvaluator qe;
     
         Assert::IsTrue(qe.evaluatePatternClause("1", "_", "_\"97\"_"));
+    }
+    TEST_METHOD(TestExactPatternConstant) {
+        getSampleProgram();
+        QueryTree qt(getQueryTree("assign a; Select a pattern a(_, \"42\")"));
+        QueryEvaluator qe;
+
+        Assert::IsTrue(qe.evaluatePatternClause("25", "_", "\"42\""));
     }
 	};
 }
