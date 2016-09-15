@@ -221,7 +221,14 @@ string PKB::GetStmtSymbol(unsigned int stmtNumber) {
 }
 
 vector<unsigned int> PKB::GetSymbolStmtNumbers(string symbol) {
-    set<unsigned int> result = stmtTable_.getKeys(symbol);
+    set<unsigned int> result;
+
+    if (symbol == "stmt") {
+        result = stmtTable_.getKeys();
+    }
+    else {
+        result = stmtTable_.getKeys(symbol);
+    }
 
     vector<unsigned int> vec(result.size());
     std::copy(result.begin(), result.end(), vec.begin());

@@ -41,6 +41,15 @@ class Table {
         return *(valueToKeyMap[value].begin());
     }
 
+    inline std::set<K> getKeys() {
+        std::set<K> keys;
+        for (const auto &pair : valueToKeyMap) {
+            keys.insert(pair.second.begin(), pair.second.end());
+        }
+
+        return keys;
+    }
+
     inline std::set<K> getKeys(V value) {
         /* If does not exist, return empty set. */
         if (!hasValue(value)) {
