@@ -15,11 +15,6 @@ using std::string;
 using std::vector;
 
 QueryPreprocessor::QueryPreprocessor() {
-    /* allowed entity type for declaration e.g. For [assign a;] assign is allowed */
-    // wm todo: get a better name
-    entMap = {
-        { "stmt", "0" }, { "assign", "1" }, { "while", "2" }, { "variable", "3" }, { "constant", "4" }, { "prog_line", "5" }
-    };
 }
 
 QueryPreprocessor::~QueryPreprocessor() {}
@@ -54,7 +49,7 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
     if (variableNames.size() == 0) {
         throw QuerySyntaxErrorException("2");
     }
-    std::unordered_map<string, Symbol> varSymbolMap;
+
     for (unsigned int i = 0; i < variableNames.size(); i++) {
         variableNames[i] = Utils::TrimSpaces(variableNames[i]);
 
@@ -63,11 +58,8 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
             throw QuerySyntaxErrorException("3");
         }
 
-        /* containes declared vars, pass to queryTree */
+        /* contains declared vars, pass to queryTree */
         varSymbolMap[variableNames[i]] = Constants::StringToSymbol(declarationType);
-
-        /* wm todo: used internally, varSymbolMap should be sufficient, still in use */
-        varMap[variableNames[i]] = declarationType;
     }
 
     qt.insertDeclaration(varSymbolMap);
@@ -223,7 +215,7 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
             // std::cout << "invalid relation entered!";
             std::string message = "vars: ";
             for (std::string var : varList) {
-                message += var + " ";  
+                message += var + " ";
             }
 
             throw QuerySyntaxErrorException("10. " + message);
@@ -285,23 +277,19 @@ bool QueryPreprocessor::isConstantVar(string var) {
                 std::string removedWildcard = var.substr(2, var.length() - 4);
                 if (Utils::IsNonNegativeNumeric(removedWildcard)) {
                     return isDblWildcard;
-                }
-                else {
+                } else {
                     throw QuerySyntaxErrorException("12");
                 }
-            } 
-            else {
+            } else {
                 return isDblWildcard;
             }
-        }
-        else {
+        } else {
             if (isSurroundWithDblQuotes && isdigit(var[1])) {
                 std::string removedQuotes = var.substr(1, var.length() - 3);
-                
+
                 if (Utils::IsNonNegativeNumeric(removedQuotes)) {
                     return isSurroundWithDblQuotes;
-                }
-                else {
+                } else {
                     throw QuerySyntaxErrorException("13");
                 }
             }
@@ -316,7 +304,7 @@ bool QueryPreprocessor::isVarExist(string var) {
     if (toLower(var).compare("boolean") == 0) {
         return true;
     }
-    if (varMap.find(var) != varMap.end()) {
+    if (varSymbolMap.find(var) != varSymbolMap.end()) {
         return true;
     }
     return false;
@@ -340,11 +328,22 @@ bool QueryPreprocessor::isValidVarType(string varName) {
     if (varName.length() == 0) {
         return false;
     }
-    auto t = entMap.find(varName);
-    if (t == entMap.end()) {
-        return false;
+
+    Symbol varTypeSymbol = Constants::StringToSymbol(varName);
+
+    switch (varTypeSymbol) {
+        case STMT:
+        case ASSIGN:
+        case WHILE:
+        case VARIABLE:
+        case CONSTANT:
+        case PROGRAM_LINE:
+            return true;
+        default:
+            return false;
     }
-    return true;
+
+    return false;
 }
 
 // find next token in the list and return list from next token onwards
@@ -353,7 +352,8 @@ vector<string> QueryPreprocessor::getNextToken(vector<string> queryList) {
     vector<string> result;
 
     for (unsigned int i = 0; i < queryList.size(); i++) {
-        if (queryList[i].compare("such") == 0 || queryList[i].compare("pattern") == 0) {
+        if (queryList[i].compare("such") == 0 || queryList[i].compare("pattern") == 0
+            || queryList[i].compare("and") == 0) {
             end = i;
             break;
         }
@@ -368,8 +368,8 @@ vector<string> QueryPreprocessor::getNextToken(vector<string> queryList) {
 
 // todo: return symbol enum type
 string QueryPreprocessor::getVarType(string var) {
-    string varType = varMap.find(var)->second;
-    return varType;
+    Symbol varType = varSymbolMap.find(var)->second;
+    return Constants::SymbolToString(varType);
 }
 
 QueryTree QueryPreprocessor::getQueryTree() {

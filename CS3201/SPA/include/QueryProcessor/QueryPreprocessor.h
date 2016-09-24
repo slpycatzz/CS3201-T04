@@ -40,8 +40,7 @@ class QueryPreprocessor {
 
      std::vector<std::string> queries;
      std::unordered_map<std::string, std::string> varMap;
-     std::unordered_map<std::string, std::string> relMap;
-     std::unordered_map<std::string, std::string> entMap;
+     std::unordered_map<std::string, Symbol> varSymbolMap;
      RelationTable r;
      QueryTree qt;
 
