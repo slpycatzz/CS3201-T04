@@ -1,0 +1,55 @@
+1 - pattern space
+assign a;
+Select a pattern a("c ",_)
+2, 3, 5, 24, 26, 41, 48
+5000
+2 - pattern tab
+assign a;
+Select a pattern a(_,_"g	"_)
+13, 14, 23, 24, 31, 45
+5000
+3 - pattern space and tab
+assign a;
+Select a pattern a("a	","c ")
+16
+5000
+4 - parent 1
+stmt s;
+Select s such that Parent(s,s)
+
+5000
+5 - parent 2
+assign a;
+Select a such that Parent(a,a)
+
+5000
+6 - parent 3
+while w;
+Select w such that Parent(w,w)
+
+5000
+7 - parent* 1
+stmt s;
+Select s such that Parent*(s,s)
+
+5000
+8 - parent* 2
+assign a;
+Select a such that Parent*(a,a)
+
+5000
+9 - parent* 3
+while w;
+Select w such that Parent*(w,w)
+
+5000
+10 - parent underscore 1
+stmt s;
+Select s such that Parent(s,_)
+6, 7, 12, 30, 33, 35, 38
+5000
+11 - parent* underscore 1
+stmt s;
+Select s such that Parent*(s,_)
+6, 7, 12, 30, 33, 35, 38
+5000
