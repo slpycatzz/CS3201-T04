@@ -345,6 +345,7 @@ namespace UnitTest {
           Assert::IsFalse(PKB::IsParent(24, 23));
           Assert::IsTrue(PKB::IsParent(25, 26));
           Assert::IsFalse(PKB::IsParent(23, 26));
+          Assert::IsFalse(PKB::IsParent(25, 25)); 
 
           Assert::IsTrue(PKB::IsParentTransitive(23, 25));
       }
@@ -370,6 +371,8 @@ namespace UnitTest {
           Assert::IsTrue(PKB::IsFollows(24, 25));   // follows immediately
           Assert::IsTrue(PKB::IsFollows(25, 28));   // same nesting level, and same stmtList
           Assert::IsFalse(PKB::IsFollows(25, 24));  // not the reverse
+          //new test case for Follows (s,s), should assert false
+          Assert::IsFalse(PKB::IsFollows(25, 25));
           Assert::IsFalse(PKB::IsFollows(24, 26));  // different nesting level
           Assert::IsFalse(PKB::IsFollows(24, 28));  // not immediately after
           Assert::IsTrue(PKB::IsFollowsTransitive(24, 28));
