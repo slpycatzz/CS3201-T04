@@ -68,7 +68,7 @@ Icon?
 
 # Project-specific files
 ========================
-AutoTester/tests/
+local_tests/
 
 # User-specific files
 # ===================
