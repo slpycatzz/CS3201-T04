@@ -21,7 +21,7 @@ namespace UnitTest {
   TEST_CLASS(PKBTest) {
     public:
       TEST_METHOD(AST_set_and_get_root) {
-        PKB::clear();
+        PKB::Clear();
         TreeNode * rootNode = PKB::CreateASTNode(PROCEDURE);
         string expected = rootNode->getValue();
         PKB::SetASTRoot(rootNode);
@@ -30,7 +30,7 @@ namespace UnitTest {
       }
       TEST_METHOD(AST_create_node_for_every_symbol) {
         // TODO(pixelducky): Update this test case to cover all symbols
-        PKB::clear();
+        PKB::Clear();
         TreeNode * programNode = PKB::CreateASTNode(PROGRAM);
         TreeNode * procNode = PKB::CreateASTNode(PROCEDURE);
         TreeNode * whileNode = PKB::CreateASTNode(WHILE, 10);
@@ -72,7 +72,7 @@ namespace UnitTest {
       }
       TEST_METHOD(AST_create_node_for_every_symbol_with_value) {
         // TODO(pixelducky): Update this test case to cover all symbols
-        PKB::clear();
+        PKB::Clear();
         TreeNode * procNode = PKB::CreateASTNode(PROCEDURE, "Cat");
         TreeNode * whileNode = PKB::CreateASTNode(WHILE, 10);
         TreeNode * ifNode = PKB::CreateASTNode(IF, 20);
@@ -93,7 +93,7 @@ namespace UnitTest {
       }
       TEST_METHOD(AST_check_if_tree_is_valid) {
         // TODO(pixelducky): this test case may be redudant.
-        PKB::clear();
+        PKB::Clear();
         TreeNode * programNode = PKB::CreateASTNode(PROGRAM);
         TreeNode * procNode = PKB::CreateASTNode(PROCEDURE, "Cat");
         TreeNode * stmtListNodeProc = PKB::CreateASTNode(STMTLIST);
@@ -142,7 +142,7 @@ namespace UnitTest {
       }
       TEST_METHOD(ProcTable_set_and_get_procedures) {
         // TODO(pixelducky): can be more exhaustive - check if proc names exist
-        PKB::clear();
+        PKB::Clear();
 
         vector<string> procedureNames;
 
@@ -161,7 +161,7 @@ namespace UnitTest {
         Assert::AreEqual(unsigned int(2), PKB::GetProcedureIndex(string("Cat")));
       }
       TEST_METHOD(StmtTable_set_and_get_stmtSymbol) {
-          PKB::clear();
+          PKB::Clear();
           map<unsigned int, string> stmts;
           stmts.emplace(10, "call");
           stmts.emplace(11, "assign");
@@ -177,7 +177,7 @@ namespace UnitTest {
           Assert::AreEqual(string("while"), PKB::GetStmtSymbol(14));
       }
       TEST_METHOD(StmtTable_GetSymbolsStmtNos) {
-          PKB::clear();
+          PKB::Clear();
           map<unsigned int, string> testStmtTable;
 
           testStmtTable[static_cast<unsigned int>(1)] = string("y = x + 3;");
@@ -195,7 +195,7 @@ namespace UnitTest {
           // Assert::AreNotEqual(PKB::GetSymbolStmtNumbers(MINUS), stmts);
       }
       TEST_METHOD(AssignTableTest_set_and_get) {
-          PKB::clear();
+          PKB::Clear();
           map<unsigned int, TreeNode*> assignments;
           TreeNode * assignNode1 = PKB::CreateASTNode(ASSIGN, 40);
           TreeNode * assignNode2 = PKB::CreateASTNode(ASSIGN, 41);
@@ -213,7 +213,7 @@ namespace UnitTest {
           // 24 x++;
           // 25 ...
           // }
-          PKB::clear();
+          PKB::Clear();
           map<unsigned int, set<string>> testModTable;
           set<string> testSet, testSet1;
           testSet.insert(string("y"));
@@ -236,7 +236,7 @@ namespace UnitTest {
           // 25 TIGER {
           // 26 z = y * 6;
           // 27 y--;
-          PKB::clear();
+          PKB::Clear();
           map<string, set<string>> testModProcTable;
           set<string> testSet, testSet1, testSet2;
           testSet.insert(string("y"));
@@ -260,7 +260,7 @@ namespace UnitTest {
           // 25 TIGER {
           // 26 z = (x - y) * 6;
           // 27 y--;
-          PKB::clear();
+          PKB::Clear();
           map<unsigned int, set<string>> testUsesTable;
           set<string> testSet23, testSet26;
 
@@ -294,7 +294,7 @@ namespace UnitTest {
           // 25 TIGER {
           // 26 z = (x - y) * 6;
           // 27 y--;
-          PKB::clear();
+          PKB::Clear();
           map<string, set<string>> testUsesProcTable;
           set<string> testSetPanda, testSetTiger;
 
@@ -328,7 +328,7 @@ namespace UnitTest {
           // 27              x++; }
           // 28         i--;}
           //    }
-          PKB::clear();
+          PKB::Clear();
           map<unsigned int, set<unsigned int>> testParentTable;  // <parent, child>
           set<unsigned int> testSet23, testSet25;
           testSet23.insert(24);
@@ -360,7 +360,7 @@ namespace UnitTest {
           // 28         i--;
           // 29         y--;}
           //    }
-          PKB::clear();
+          PKB::Clear();
           map<unsigned int, unsigned int> testFollowsTable;  // <before, after>
           testFollowsTable[24] = 25;
           testFollowsTable[26] = 27;
@@ -379,6 +379,8 @@ namespace UnitTest {
           Assert::IsTrue(PKB::IsFollowsTransitive(28, 29));
           Assert::AreEqual(unsigned int(25), PKB::GetFollowing(24));
           Assert::AreEqual(unsigned int(0), PKB::GetFollowing(29));
+
+          Assert::AreEqual(unsigned int(0), PKB::GetFollows(10));
       }
   };
 }  // namespace UnitTest

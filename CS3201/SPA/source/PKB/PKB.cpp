@@ -22,8 +22,6 @@ unsigned int PKB::numberOfWhile_     = 0;
 unsigned int PKB::numberOfIf_        = 0;
 unsigned int PKB::numberOfCall_      = 0;
 
-std::string PKB::log = std::string("");
-
 Table<unsigned int, string> PKB::constantTable_;
 Table<unsigned int, string> PKB::variableTable_;
 Table<unsigned int, string> PKB::procedureTable_;
@@ -41,10 +39,6 @@ TransitiveTable<unsigned int, unsigned int> PKB::parentTransitiveTable_;
 
 Table<unsigned int, unsigned int> PKB::followsTable_;
 TransitiveTable<unsigned int, unsigned int> PKB::followsTransitiveTable_;
-
-PKB::PKB() {}
-
-PKB::~PKB() {}
 
 /* START - AST functions */
 
@@ -93,11 +87,11 @@ bool PKB::HasConstant(string constantValue) {
 }
 
 string PKB::GetConstantValue(unsigned int index) {
-    return constantTable_.getValue(index);
+    return (constantTable_.hasKey(index)) ? constantTable_.getValue(index) : "";
 }
 
 unsigned int PKB::GetConstantIndex(string constantValue) {
-    return constantTable_.getKey(constantValue);
+    return (constantTable_.hasValue(constantValue)) ? constantTable_.getKey(constantValue) : 0;
 }
 
 vector<string> PKB::GetAllConstantValues() {
@@ -130,11 +124,11 @@ bool PKB::HasVariable(string variableName) {
 }
 
 string PKB::GetVariableName(unsigned int index) {
-    return variableTable_.getValue(index);
+    return (variableTable_.hasKey(index)) ? variableTable_.getValue(index) : "";
 }
 
 unsigned int PKB::GetVariableIndex(string variableName) {
-    return variableTable_.getKey(variableName);
+    return (variableTable_.hasValue(variableName)) ? variableTable_.getKey(variableName) : 0;
 }
 
 vector<string> PKB::GetAllVariableNames() {
@@ -166,11 +160,11 @@ bool PKB::HasProcedure(string procedureName) {
 }
 
 string PKB::GetProcedureName(unsigned int index) {
-    return procedureTable_.getValue(index);
+    return (procedureTable_.hasKey(index)) ? procedureTable_.getValue(index) : "";
 }
 
 unsigned int PKB::GetProcedureIndex(string procedureName) {
-    return procedureTable_.getKey(procedureName);
+    return (procedureTable_.hasValue(procedureName)) ? procedureTable_.getKey(procedureName) : 0;
 }
 
 vector<string> PKB::GetAllProcedures() {
@@ -217,18 +211,11 @@ void PKB::GenerateStmtTable(map<unsigned int, string> stmts) {
 }
 
 string PKB::GetStmtSymbol(unsigned int stmtNumber) {
-    return stmtTable_.getValue(stmtNumber);
+    return (stmtTable_.hasKey(stmtNumber)) ? stmtTable_.getValue(stmtNumber) : "";
 }
 
 vector<unsigned int> PKB::GetSymbolStmtNumbers(string symbol) {
-    set<unsigned int> result;
-
-    if (symbol == "stmt") {
-        result = stmtTable_.getKeys();
-    }
-    else {
-        result = stmtTable_.getKeys(symbol);
-    }
+    set<unsigned int> result = (symbol == SYMBOL_STMT) ? stmtTable_.getKeys() : stmtTable_.getKeys(symbol);
 
     vector<unsigned int> vec(result.size());
     std::copy(result.begin(), result.end(), vec.begin());
@@ -247,14 +234,14 @@ void PKB::PrintStmtTable() {
 /* END   - Stmt table functions */
 /* START - Assign table functions */
 
-void PKB::GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns) {
+void PKB::GenerateAssignTable(map<unsigned int, TreeNode*> assigns) {
     for (auto &assign : assigns) {
         assignTable_.insert(assign.first, assign.second);
     }
 }
 
 TreeNode* PKB::GetAssignTreeNode(unsigned int stmtNumber) {
-    return assignTable_.getValue(stmtNumber);
+    return (assignTable_.hasKey(stmtNumber)) ? assignTable_.getValue(stmtNumber) : nullptr;
 }
 
 vector<TreeNode*> PKB::GetAllAssignTreeNodes() {
@@ -266,46 +253,52 @@ vector<TreeNode*> PKB::GetAllAssignTreeNodes() {
     return vec;
 }
 
-bool PKB::IsExactPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree) {
-  TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo)->getChildren()[1]);
-  bool matchLHS(PKB::IsModifies(stmtNo, varName));
-  bool matchRHS(Utils::IsSameTree(*RHS, *exprTree));
-  return (matchLHS && matchRHS);
+bool PKB::IsExactPattern(unsigned int stmtNo, string varName, TreeNode* exprTree) {
+    TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo)->getChildren()[1]);
+
+    bool matchLHS(PKB::IsModifies(stmtNo, varName));
+    bool matchRHS(Utils::IsSameTree(*RHS, *exprTree));
+
+    return (matchLHS && matchRHS);
 }
 
-bool PKB::IsSubPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree) {
-  TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo)->getChildren()[1]);
-  bool matchLHS(PKB::IsModifies(stmtNo, varName));
-  bool matchRHS(Utils::IsSubTree(*RHS, *exprTree));
-  return (matchLHS && matchRHS);
+bool PKB::IsSubPattern(unsigned int stmtNo, string varName, TreeNode* exprTree) {
+    TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo)->getChildren()[1]);
+
+    bool matchLHS(PKB::IsModifies(stmtNo, varName));
+    bool matchRHS(Utils::IsSubTree(*RHS, *exprTree));
+
+    return (matchLHS && matchRHS);
 }
 
 bool PKB::HasExactPattern(TreeNode* exprTree) {
-	for (TreeNode* node : GetAllAssignTreeNodes()) {
-		if (Utils::IsSameTree(*node->getChildren()[1], *exprTree)) {
-			return true;
-		}
-	}
-	return false;
+    for (TreeNode* node : GetAllAssignTreeNodes()) {
+        if (Utils::IsSameTree(*node->getChildren()[1], *exprTree)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool PKB::HasSubPattern(TreeNode* exprTree) {
-	for (TreeNode* node : GetAllAssignTreeNodes()) {
-		if (Utils::IsSubTree(*node->getChildren()[1], *exprTree)) {
-			return true;
-		}
-	}
-	return false;
+    for (TreeNode* node : GetAllAssignTreeNodes()) {
+        if (Utils::IsSubTree(*node->getChildren()[1], *exprTree)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
-bool PKB::IsExactRHS(unsigned stmtNo, TreeNode* exprTree) {
-	TreeNode* node(GetAssignTreeNode(stmtNo));
-	return Utils::IsSameTree(*node->getChildren()[1], *exprTree);
+bool PKB::IsExactRHS(unsigned int stmtNo, TreeNode* exprTree) {
+    TreeNode* node(GetAssignTreeNode(stmtNo));
+    return Utils::IsSameTree(*node->getChildren()[1], *exprTree);
 }
 
-bool PKB::IsSubRHS(unsigned stmtNo, TreeNode* exprTree) {
-	TreeNode* node(GetAssignTreeNode(stmtNo));
-	return Utils::IsSubTree(*node->getChildren()[1], *exprTree);
+bool PKB::IsSubRHS(unsigned int stmtNo, TreeNode* exprTree) {
+    TreeNode* node(GetAssignTreeNode(stmtNo));
+    return Utils::IsSubTree(*node->getChildren()[1], *exprTree);
 }
 
 /* END   - Assign table functions */
@@ -327,8 +320,16 @@ bool PKB::IsModifies(unsigned int stmtNumber, string variableName) {
     return modifiesTable_.hasKeyToValue(stmtNumber, variableName);
 }
 
-bool PKB::IsModifiesProcedure(std::string procedureName, string variableName) {
+bool PKB::IsModifies(unsigned int stmtNumber, set<string> variableNames) {
+    return modifiesTable_.hasKeyToValues(stmtNumber, variableNames);
+}
+
+bool PKB::IsModifiesProcedure(string procedureName, string variableName) {
     return modifiesProcedureTable_.hasKeyToValue(procedureName, variableName);
+}
+
+bool PKB::IsModifiesProcedure(string procedureName, set<string> variableNames) {
+    return modifiesProcedureTable_.hasKeyToValues(procedureName, variableNames);
 }
 
 set<string> PKB::GetModifiedVariables(unsigned int stmtNumber) {
@@ -356,7 +357,6 @@ void PKB::PrintModifiesProcedureTable() {
 }
 
 /* END   - Modifies table functions */
-/* END   - Stmt table functions */
 /* START - Uses table functions */
 
 void PKB::GenerateUsesTable(map<unsigned int, set<string>> uses) {
@@ -375,8 +375,16 @@ bool PKB::IsUses(unsigned int stmtNumber, string variableName) {
     return usesTable_.hasKeyToValue(stmtNumber, variableName);
 }
 
-bool PKB::IsUsesProcedure(std::string procedureName, std::string variableName) {
+bool PKB::IsUses(unsigned int stmtNumber, set<string> variableNames) {
+    return usesTable_.hasKeyToValues(stmtNumber, variableNames);
+}
+
+bool PKB::IsUsesProcedure(string procedureName, string variableName) {
     return usesProcedureTable_.hasKeyToValue(procedureName, variableName);
+}
+
+bool PKB::IsUsesProcedure(string procedureName, set<string> variableNames) {
+    return usesProcedureTable_.hasKeyToValues(procedureName, variableNames);
 }
 
 set<string> PKB::GetUsedVariables(unsigned int stmtNumber) {
@@ -419,19 +427,27 @@ bool PKB::IsParent(unsigned int parent, unsigned int child) {
     return parentTable_.hasKeyToValue(parent, child);
 }
 
+bool PKB::IsParent(unsigned int parent, set<unsigned int> children) {
+    return parentTable_.hasKeyToValues(parent, children);
+}
+
 bool PKB::IsParentTransitive(unsigned int parent, unsigned int child) {
     return parentTransitiveTable_.hasKeyToValue(parent, child);
 }
 
+bool PKB::IsParentTransitive(unsigned int parent, set<unsigned int> children) {
+    return parentTransitiveTable_.hasKeyToValues(parent, children);
+}
+
 unsigned int PKB::GetParent(unsigned int child) {
-    return parentTable_.getKey(child);
+    return (parentTable_.hasValue(child)) ? parentTable_.getKey(child) : 0;
 }
 
 set<unsigned int> PKB::GetChildren(unsigned int parent) {
     return parentTable_.getValues(parent);
 }
 
-set<unsigned int> PKB::GetParentsTransitive(unsigned child) {
+set<unsigned int> PKB::GetParentsTransitive(unsigned int child) {
     return parentTransitiveTable_.getKeys(child);
 }
 
@@ -463,23 +479,31 @@ bool PKB::IsFollows(unsigned int follows, unsigned int following) {
     return followsTable_.hasKeyToValue(follows, following);
 }
 
+bool PKB::IsFollows(unsigned int follows, set<unsigned int> followings) {
+    return followsTable_.hasKeyToValues(follows, followings);
+}
+
 bool PKB::IsFollowsTransitive(unsigned int follows, unsigned int following) {
     return followsTransitiveTable_.hasKeyToValue(follows, following);
 }
 
+bool PKB::IsFollowsTransitive(unsigned int follows, set<unsigned int> followings) {
+    return followsTransitiveTable_.hasKeyToValues(follows, followings);
+}
+
 unsigned int PKB::GetFollows(unsigned int following) {
-    return followsTable_.getKey(following);
+    return (followsTable_.hasValue(following)) ? followsTable_.getKey(following) : 0;
 }
 
 unsigned int PKB::GetFollowing(unsigned int follows) {
     return followsTable_.getValue(follows);
 }
 
-set<unsigned int> PKB::GetFollowsTransitive(unsigned following) {
+set<unsigned int> PKB::GetFollowsTransitive(unsigned int following) {
     return followsTransitiveTable_.getKeys(following);
 }
 
-set<unsigned int> PKB::GetFollowingTransitive(unsigned follows) {
+set<unsigned int> PKB::GetFollowingTransitive(unsigned int follows) {
     return followsTransitiveTable_.getValues(follows);
 }
 
@@ -492,7 +516,7 @@ void PKB::PrintFollowsTransitiveTable() {
 }
 
 /* END   - Follows table functions */
-/* START - Other functions */
+/* START - Miscellaneous functions */
 
 unsigned int PKB::GetNumberOfProcedure() {
     return numberOfProcedure_;
@@ -514,30 +538,30 @@ unsigned int PKB::GetNumberOfCall() {
     return numberOfCall_;
 }
 
-void PKB::clear() {
-  numberOfProcedure_ = 0;
-  numberOfAssign_ = 0;
-  numberOfWhile_ = 0;
-  numberOfIf_ = 0;
-  numberOfCall_ = 0;
+void PKB::Clear() {
+    numberOfProcedure_ = 0;
+    numberOfAssign_ = 0;
+    numberOfWhile_ = 0;
+    numberOfIf_ = 0;
+    numberOfCall_ = 0;
 
-  constantTable_.clear();
-  variableTable_.clear();
-  procedureTable_.clear();
-  stmtTable_.clear();
-  assignTable_.clear();
+    constantTable_.clear();
+    variableTable_.clear();
+    procedureTable_.clear();
+    stmtTable_.clear();
+    assignTable_.clear();
 
-  modifiesTable_.clear();
-  modifiesProcedureTable_.clear();
+    modifiesTable_.clear();
+    modifiesProcedureTable_.clear();
 
-  usesTable_.clear();
-  usesProcedureTable_.clear();
+    usesTable_.clear();
+    usesProcedureTable_.clear();
 
-  parentTable_.clear();
-  parentTransitiveTable_.clear();
+    parentTable_.clear();
+    parentTransitiveTable_.clear();
 
-  followsTable_.clear();
-  followsTransitiveTable_.clear();
+    followsTable_.clear();
+    followsTransitiveTable_.clear();
 }
 
-/* START - Other functions */
+/* START - Miscellaneous functions */

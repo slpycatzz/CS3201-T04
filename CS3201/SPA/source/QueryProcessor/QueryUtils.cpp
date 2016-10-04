@@ -8,8 +8,8 @@
 using std::string;
 
 TreeNode* QueryUtils::BuildExpressionTree(std::string expr) {
-    unsigned i = expr.find_first_not_of('_');
-    unsigned j = expr.find_last_not_of('_');
+    unsigned i = expr.find_first_not_of(CHAR_SYMBOL_UNDERSCORE);
+    unsigned j = expr.find_last_not_of(CHAR_SYMBOL_UNDERSCORE);
     std::string temp(LiteralToCandidate(expr.substr(i, j - i + 1)));
 
     if (Utils::IsNonNegativeNumeric(temp)) {

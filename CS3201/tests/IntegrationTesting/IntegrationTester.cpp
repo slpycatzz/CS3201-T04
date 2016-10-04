@@ -35,7 +35,7 @@ public:
 	}
 	void getSampleProgram() {
 		string fileName = "..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt";
-        PKB::clear();
+        PKB::Clear();
 		parse(fileName);
 	}
 	QueryTree getQueryTree(std::string query) {

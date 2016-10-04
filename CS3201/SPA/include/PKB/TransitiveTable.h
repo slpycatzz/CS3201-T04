@@ -12,11 +12,12 @@ class TransitiveTable {
     inline ~TransitiveTable<K, V>() {}
 
     inline void generateKeyToValueTransitiveMap(Table<unsigned int, unsigned int> table) {
-        if (table.getKeyToValueMap().empty()) {
+        if (table.getKeyToValuesMap().empty()) {
             return;
         }
 
-        for (const auto &pair : table.getKeyToValueMap()) {
+        /* Perform DFS on the table to get transitive table. */
+        for (const auto &pair : table.getKeyToValuesMap()) {
             std::stack<K> keyStack;
             keyStack.push(pair.first);
 
@@ -40,11 +41,12 @@ class TransitiveTable {
     }
 
     inline void generateValueToKeyTransitiveMap(Table<unsigned int, unsigned int> table) {
-        if (table.getValueToKeyMap().empty()) {
+        if (table.getValueToKeysMap().empty()) {
             return;
         }
 
-        for (const auto &pair : table.getValueToKeyMap()) {
+        /* Perform DFS on the table to get transitive table. */
+        for (const auto &pair : table.getValueToKeysMap()) {
             std::stack<K> valueStack;
             valueStack.push(pair.first);
 
@@ -86,23 +88,47 @@ class TransitiveTable {
     }
 
     inline bool hasKey(K key) {
-        return (keyToValueTransitiveMap.find(key) != keyToValueTransitiveMap.end());
+        return (keyToValueTransitiveMap.count(key) == 1);
     }
 
     inline bool hasValue(V value) {
-        return (valueToKeyTransitiveMap.find(value) != valueToKeyTransitiveMap.end());
+        return (valueToKeyTransitiveMap.count(value) == 1);
     }
 
     inline bool hasKeyToValue(K key, V value) {
         std::set<V> values = keyToValueTransitiveMap[key];
 
-        return (find(values.begin(), values.end(), value) != values.end());
+        return (values.count(value) == 1);
+    }
+
+    inline bool hasKeyToValues(K key, std::set<V> subvalues) {
+        std::set<V> values = keyToValueTransitiveMap[key];
+
+        for (auto &value : subvalues) {
+            if (values.count(value) != 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     inline bool hasValueToKey(K key, V value) {
         std::set<K> keys = valueToKeyTransitiveMap[value];
 
-        return (find(keys.begin(), keys.end(), key) != keys.end());
+        return (keys.count(key) == 1);
+    }
+
+    inline bool hasValueToKeys(std::set<K> subkeys, V value) {
+        std::set<K> keys = valueToKeyTransitiveMap[value];
+
+        for (auto &key : subkeys) {
+            if (keys.count(key) != 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     inline void printTable() {
@@ -130,8 +156,8 @@ class TransitiveTable {
     }
 
     inline void clear() {
-      keyToValueTransitiveMap.clear();
-      valueToKeyTransitiveMap.clear();
+        keyToValueTransitiveMap.clear();
+        valueToKeyTransitiveMap.clear();
     }
 
  private:

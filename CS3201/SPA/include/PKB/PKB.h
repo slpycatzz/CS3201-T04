@@ -13,9 +13,6 @@
 
 class PKB {
  public:
-    PKB();
-    ~PKB();
-
     static void SetASTRoot(TreeNode *root);
     static TreeNode* GetASTRoot();
     static TreeNode* CreateASTNode(Symbol symbol);
@@ -54,17 +51,19 @@ class PKB {
     static void GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns);
     static TreeNode* GetAssignTreeNode(unsigned int stmtNumber);
     static std::vector<TreeNode*> GetAllAssignTreeNodes();
-    static bool IsExactPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree);
-    static bool IsSubPattern(unsigned stmtNo, std::string varName, TreeNode* exprTree);
-	static bool IsExactRHS(unsigned stmtNo, TreeNode* exprTree);
-	static bool IsSubRHS(unsigned stmtNo, TreeNode* exprTree);
-	static bool HasExactPattern(TreeNode* exprTree);
-	static bool HasSubPattern(TreeNode* exprTree);
+    static bool IsExactPattern(unsigned int stmtNo, std::string varName, TreeNode* exprTree);
+    static bool IsSubPattern(unsigned int stmtNo, std::string varName, TreeNode* exprTree);
+    static bool IsExactRHS(unsigned int stmtNo, TreeNode* exprTree);
+    static bool IsSubRHS(unsigned int stmtNo, TreeNode* exprTree);
+    static bool HasExactPattern(TreeNode* exprTree);
+    static bool HasSubPattern(TreeNode* exprTree);
 
     static void GenerateModifiesTable(std::map<unsigned int, std::set<std::string>> modifies);
     static void GenerateModifiesProcedureTable(std::map<std::string, std::set<std::string>> modifiesProcedure);
     static bool IsModifies(unsigned int stmtNumber, std::string variableName);
+    static bool IsModifies(unsigned int stmtNumber, std::set<std::string> variableNames);
     static bool IsModifiesProcedure(std::string procedureName, std::string variableName);
+    static bool IsModifiesProcedure(std::string procedureName, std::set<std::string> variableNames);
     static std::set<std::string> GetModifiedVariables(unsigned int stmtNumber);
     static std::set<unsigned int> GetStmtNumberModifying(std::string variableName);
     static std::set<std::string> GetProcedureModifiedVariables(std::string procedureName);
@@ -75,7 +74,9 @@ class PKB {
     static void GenerateUsesTable(std::map<unsigned int, std::set<std::string>> uses);
     static void GenerateUsesProcedureTable(std::map<std::string, std::set<std::string>> usesProcedure);
     static bool IsUses(unsigned int stmtNumber, std::string variableName);
+    static bool IsUses(unsigned int stmtNumber, std::set<std::string> variableNames);
     static bool IsUsesProcedure(std::string procedureName, std::string variableName);
+    static bool IsUsesProcedure(std::string procedureName, std::set<std::string> variableNames);
     static std::set<std::string> GetUsedVariables(unsigned int stmtNumber);
     static std::set<unsigned int> GetStmtNumberUsing(std::string variableName);
     static std::set<std::string> GetProcedureUsedVariables(std::string procedureName);
@@ -85,21 +86,25 @@ class PKB {
 
     static void GenerateParentTable(std::map<unsigned int, std::set<unsigned int>> parent);
     static bool IsParent(unsigned int parent, unsigned int child);
+    static bool IsParent(unsigned int parent, std::set<unsigned int> children);
     static bool IsParentTransitive(unsigned int parent, unsigned int child);
+    static bool IsParentTransitive(unsigned int parent, std::set<unsigned int> children);
     static unsigned int GetParent(unsigned int child);
     static std::set<unsigned int> GetChildren(unsigned int parent);
-    static std::set<unsigned int> GetParentsTransitive(unsigned child);
+    static std::set<unsigned int> GetParentsTransitive(unsigned int child);
     static std::set<unsigned int> GetChildrenTransitive(unsigned int parent);
     static void PrintParentTable();
     static void PrintParentTransitiveTable();
 
     static void GenerateFollowsTable(std::map<unsigned int, unsigned int> follows);
     static bool IsFollows(unsigned int follows, unsigned int following);
+    static bool IsFollows(unsigned int follows, std::set<unsigned int> followings);
     static bool IsFollowsTransitive(unsigned int follows, unsigned int following);
+    static bool IsFollowsTransitive(unsigned int follows, std::set<unsigned int> followings);
     static unsigned int GetFollows(unsigned int following);
     static unsigned int GetFollowing(unsigned int follows);
-    static std::set<unsigned int> GetFollowsTransitive(unsigned following);
-    static std::set<unsigned int> GetFollowingTransitive(unsigned follows);
+    static std::set<unsigned int> GetFollowsTransitive(unsigned int following);
+    static std::set<unsigned int> GetFollowingTransitive(unsigned int follows);
     static void PrintFollowsTable();
     static void PrintFollowsTransitiveTable();
 
@@ -109,11 +114,9 @@ class PKB {
     static unsigned int GetNumberOfIf();
     static unsigned int GetNumberOfCall();
 
-    static void clear();
-	static std::string log;
+    static void Clear();
 
-private:
-
+ private:
     static unsigned int numberOfProcedure_;
     static unsigned int numberOfAssign_;
     static unsigned int numberOfWhile_;

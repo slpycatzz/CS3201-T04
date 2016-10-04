@@ -12,38 +12,37 @@ class Table {
     inline ~Table<K, V>() {}
 
     inline void insert(K key, V value) {
-        keyToValueMap[key].insert(value);
-        valueToKeyMap[value].insert(key);
+        keyToValuesMap[key].insert(value);
+        valueToKeysMap[value].insert(key);
     }
 
     inline void insert(K key, std::set<V> values) {
-        keyToValueMap.insert(std::make_pair(key, values));
+        keyToValuesMap.insert(std::make_pair(key, values));
 
         for (auto &value : values) {
-            valueToKeyMap[value].insert(key);
+            valueToKeysMap[value].insert(key);
         }
     }
 
     inline void insert(std::set<K> keys, V value) {
-        valueToKeyMap.insert(std::make_pair(value, keys));
+        valueToKeysMap.insert(std::make_pair(value, keys));
 
         for (auto &key : keys) {
-            keyToValueMap[key].insert(value);
+            keyToValuesMap[key].insert(value);
         }
     }
 
     inline K getKey(V value) {
-        /* If does not exist, return empty set. */
         if (!hasValue(value)) {
             return NULL;
         }
 
-        return *(valueToKeyMap[value].begin());
+        return *(valueToKeysMap[value].begin());
     }
 
     inline std::set<K> getKeys() {
         std::set<K> keys;
-        for (const auto &pair : valueToKeyMap) {
+        for (const auto &pair : valueToKeysMap) {
             keys.insert(pair.second.begin(), pair.second.end());
         }
 
@@ -56,21 +55,20 @@ class Table {
             return std::set<K>();
         }
 
-        return valueToKeyMap[value];
+        return valueToKeysMap[value];
     }
 
     inline V getValue(K key) {
-        /* If does not exist, return empty set. */
         if (!hasKey(key)) {
             return NULL;
         }
 
-        return *(keyToValueMap[key].begin());
+        return *(keyToValuesMap[key].begin());
     }
 
     inline std::set<V> getValues() {
         std::set<V> values;
-        for (const auto &pair : keyToValueMap) {
+        for (const auto &pair : keyToValuesMap) {
             values.insert(pair.second.begin(), pair.second.end());
         }
 
@@ -83,39 +81,63 @@ class Table {
             return std::set<V>();
         }
 
-        return keyToValueMap[key];
+        return keyToValuesMap[key];
     }
 
-    inline std::map<K, std::set<V>> getKeyToValueMap() {
-        return keyToValueMap;
+    inline std::map<K, std::set<V>> getKeyToValuesMap() {
+        return keyToValuesMap;
     }
 
-    inline std::map<V, std::set<K>> getValueToKeyMap() {
-        return valueToKeyMap;
+    inline std::map<V, std::set<K>> getValueToKeysMap() {
+        return valueToKeysMap;
     }
 
     inline bool hasKey(K key) {
-        return (keyToValueMap.find(key) != keyToValueMap.end());
+        return (keyToValuesMap.count(key) == 1);
     }
 
     inline bool hasValue(V value) {
-        return (valueToKeyMap.find(value) != valueToKeyMap.end());
+        return (valueToKeysMap.count(value) == 1);
     }
 
     inline bool hasKeyToValue(K key, V value) {
-        std::set<V> values = keyToValueMap[key];
+        std::set<V> values = keyToValuesMap[key];
 
-        return (find(values.begin(), values.end(), value) != values.end());
+        return (values.count(value) == 1);
+    }
+
+    inline bool hasKeyToValues(K key, std::set<V> subvalues) {
+        std::set<V> values = keyToValuesMap[key];
+
+        for (auto &value : subvalues) {
+            if (values.count(value) != 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     inline bool hasValueToKey(K key, V value) {
-        std::set<K> keys = valueToKeyMap[value];
+        std::set<K> keys = valueToKeysMap[value];
 
-        return (find(keys.begin(), keys.end(), key) != keys.end());
+        return (keys.count(key) == 1);
+    }
+
+    inline bool hasValueToKeys(std::set<K> subkeys, V value) {
+        std::set<K> keys = valueToKeysMap[value];
+
+        for (auto &key : subkeys) {
+            if (keys.count(key) != 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     inline void printTable() {
-        for (const auto &pair : keyToValueMap) {
+        for (const auto &pair : keyToValuesMap) {
             std::cout << pair.first << " -> { ";
 
             for (const auto &value : pair.second) {
@@ -127,7 +149,7 @@ class Table {
 
         std::cout << "=====================" << std::endl;
 
-        for (const auto &pair : valueToKeyMap) {
+        for (const auto &pair : valueToKeysMap) {
             std::cout << pair.first << " -> { ";
 
             for (const auto &key : pair.second) {
@@ -139,11 +161,11 @@ class Table {
     }
 
     inline void clear() {
-      keyToValueMap.clear();
-      valueToKeyMap.clear();
+        keyToValuesMap.clear();
+        valueToKeysMap.clear();
     }
 
  private:
-    std::map<K, std::set<V>> keyToValueMap;
-    std::map<V, std::set<K>> valueToKeyMap;
+    std::map<K, std::set<V>> keyToValuesMap;
+    std::map<V, std::set<K>> valueToKeysMap;
 };
