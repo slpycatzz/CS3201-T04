@@ -28,6 +28,7 @@
     <ClInclude Include="include\PKB\TransitiveTable.h" />
     <ClInclude Include="include\QueryProcessor\Clause.h" />
     <ClInclude Include="include\QueryProcessor\QueryEvaluator.h" />
+    <ClInclude Include="include\QueryProcessor\QueryOptimizer.h" />
     <ClInclude Include="include\QueryProcessor\QueryPreprocessor.h" />
     <ClInclude Include="include\QueryProcessor\QueryProjector.h" />
     <ClInclude Include="include\QueryProcessor\QueryTree.h" />
@@ -44,6 +45,7 @@
     <ClCompile Include="source\PKB\PKB.cpp" />
     <ClCompile Include="source\QueryProcessor\Clause.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryEvaluator.cpp" />
+    <ClCompile Include="source\QueryProcessor\QueryOptimizer.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryPreprocessor.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryProjector.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryTree.cpp" />
