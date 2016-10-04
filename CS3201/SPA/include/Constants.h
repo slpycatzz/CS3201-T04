@@ -45,7 +45,7 @@ const char SYMBOL_VAR_NAME[]    = "varName";
 const char SYMBOL_VALUE[]       = "value";
 const char SYMBOL_STMTNUMBER[]  = "stmt#";
 
-const char SYMBOL_TRUE[] = "true";
+const char SYMBOL_TRUE[]  = "true";
 const char SYMBOL_FALSE[] = "false";
 
 const char CHAR_SYMBOL_EQUAL             = '=';
@@ -59,6 +59,7 @@ const char CHAR_SYMBOL_OPENBRACKET       = '(';
 const char CHAR_SYMBOL_CLOSEBRACKET      = ')';
 const char CHAR_SYMBOL_UNDERSCORE        = '_';
 const char CHAR_SYMBOL_COMMA             = ',';
+const char CHAR_SYMBOL_DOUBLEQUOTES      = '\"';
 
 enum Symbol {
     INVALID, UNDEFINED,
