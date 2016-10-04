@@ -12,209 +12,191 @@ using std::stringstream;
 using std::unordered_map;
 using std::vector;
 
-//template<class K, class V>
 vector<vector<string>> Utils::Flatten(unordered_map<string, vector<string>> &map,
-	vector<string> &list, unsigned int start, unsigned int end) {
-    using V_vector = vector<string>;
-
+    vector<string> &list, unsigned int start, unsigned int end) {
     vector<vector<string>> result;
-	vector<string> firstVList = map[list[start]];
+    vector<string> firstVList = map[list[start]];
+
     if (start == end) {
-		for (string value : firstVList) {
-			vector<string> vec({ value });
-			result.push_back(vec);
-		}
-    }
-	else {
-		std::vector<vector<string>> recursiveList = Flatten(map, list, start + 1, end);
+        for (string value : firstVList) {
+            vector<string> vec({ value });
+            result.push_back(vec);
+        }
 
-		for (string value : firstVList) {
-			for (vector<string> vec : recursiveList) {
-				vec.insert(vec.begin(), value);
-				result.push_back(vec);
-			}
-		}
-	}
+    } else {
+        vector<vector<string>> recursiveList = Flatten(map, list, start + 1, end);
 
-    return result;
-}
-
-template<class T>
-vector<vector<T>> Utils::Zip(vector<T> list1, vector<T> list2) {
-    vector<vector<T>> result;
-
-    for (T item1 : list1) {
-        for (T item2 : list2) {
-            vector<T> item;
-            item.push_back(item1);
-            item.push_back(item2);
-
-            result.push_back<item>;
+        for (string value : firstVList) {
+            for (vector<string> vec : recursiveList) {
+                vec.insert(vec.begin(), value);
+                result.push_back(vec);
+            }
         }
     }
 
     return result;
 }
 
-//template<class K, class V>
-unordered_map<string, string>
-Utils::MergeMap(unordered_map<string, string> &map1,
-	unordered_map<string, string> &map2) {
-	unordered_map<string, string> map;
-    map.insert(map1.begin(), map1.end());
-	map.insert(map2.begin(), map2.end());
-    return map;
-}
+vector<vector<string>> Utils::Zip(vector<string> list1, vector<string> list2) {
+    vector<vector<string>> result;
 
-std::unordered_map<std::string, std::string>
-Utils::ReduceMap(std::unordered_map<std::string, std::string> &map,
-	std::vector<std::string> &selections)
-{
-	std::unordered_map<std::string, std::string> result;
-	for (auto kv : map) {
-		if (VectorContains(selections, kv.first)) {
-			result.insert_or_assign(kv.first, kv.second);
-		}
-	}
-	return result;
-}
+    for (string item1 : list1) {
+        for (string item2 : list2) {
+            vector<string> item;
+            item.push_back(item1);
+            item.push_back(item2);
 
-TreeNode* Utils::buildExprTree(std::string expr) {
-	unsigned i = expr.find_first_not_of('_');
-	unsigned j = expr.find_last_not_of('_');
-	std::string temp(LiteralToCandidate(expr.substr(i, j-i+1)));
-    
-    if (Utils::IsNonNegativeNumeric(temp)) {
-        return new TreeNode(CONSTANT, temp);
+            result.push_back(item);
+        }
     }
-    else {
-        return new TreeNode(VARIABLE, temp);
-    }
+
+    return result;
 }
 
-bool Utils::IsSameTreeNode(TreeNode &node1, TreeNode &node2) {
-	return ((node1.getSymbol() == node2.getSymbol()) && (node1.getValue() == (node2.getValue())));
+bool Utils::IsSubTree(TreeNode &tree, TreeNode &subTree) {
+    if (IsSameTree(tree, subTree)) {
+        return true;
+    }
+
+    vector<TreeNode*> children(tree.getChildren());
+
+    for (unsigned int i = 0; i < children.size(); i++) {
+        if (IsSubTree(*children[i], subTree)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool Utils::IsSameTree(TreeNode &tree1, TreeNode &tree2) {
-	if (!IsSameTreeNode(tree1, tree2)) {
-		return false;
-	}
-	else {
-		std::vector<TreeNode*> childrenLst1(tree1.getChildren());
-		std::vector<TreeNode*> childrenLst2(tree2.getChildren());
-		if (childrenLst1.size() != childrenLst2.size()) return false;
-		for (unsigned i = 0; i < childrenLst1.size(); i++) {
-			if (!IsSameTree(*childrenLst1[i], *childrenLst2[i])) return false;
-		}
-		return true;
-	}
+    if (!IsSameTreeNode(tree1, tree2)) {
+        return false;
+    }
+
+    vector<TreeNode*> children1(tree1.getChildren());
+    vector<TreeNode*> children2(tree2.getChildren());
+
+    if (children1.size() != children2.size()) {
+        return false;
+    }
+
+    for (unsigned int i = 0; i < children1.size(); i++) {
+        if (!IsSameTree(*children1[i], *children2[i])) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
-bool Utils::IsSubTree(TreeNode &tree1, TreeNode &tree2) {
-	if (IsSameTree(tree1, tree2)) {
-		return true;
-	}
-	else {
-		std::vector<TreeNode*> childrenLst1(tree1.getChildren());
-		for (unsigned i = 0; i < childrenLst1.size(); i++) {
-			if (IsSubTree(*childrenLst1[i], tree2)) return true;
-		}
-		return false;
-	}
+bool Utils::IsSameTreeNode(TreeNode &node1, TreeNode &node2) {
+    return ((node1.getSymbol() == node2.getSymbol()) && (node1.getValue() == (node2.getValue())));
 }
 
-//template<class T>
 bool Utils::VectorContains(vector<unsigned int> vec, unsigned int value) {
     return (std::find(vec.begin(), vec.end(), value) != vec.end());
 }
 
-bool Utils::VectorContains(vector<std::string> vec, std::string value) {
-	return (std::find(vec.begin(), vec.end(), value) != vec.end());
+bool Utils::VectorContains(vector<string> vec, string value) {
+    return (std::find(vec.begin(), vec.end(), value) != vec.end());
 }
 
 string Utils::VectorToString(vector<string> &vec) {
     stringstream ss;
     ss << "<";
 
-    vector<string>::iterator itr(vec.begin());
-    while (itr != vec.end()) {
-        ss << *itr;
-        itr++;
-        if (itr != vec.end()) {
+    vector<string>::iterator iter(vec.begin());
+    while (iter != vec.end()) {
+        ss << *iter;
+
+        iter++;
+        if (iter != vec.end()) {
             ss << CHAR_SYMBOL_COMMA;
         }
     }
 
     ss << ">";
-
     return ss.str();
 }
 
-vector<string> Utils::VectorToString(vector<vector<string>> &vec) {
+vector<string> Utils::VectorToStrings(vector<vector<string>> &vecs) {
     vector<string> result;
-    for (vector<string> item : vec) {
-        result.push_back(VectorToString(item));
+
+    for (vector<string> vec : vecs) {
+        result.push_back(VectorToString(vec));
     }
 
     return result;
 }
 
-std::string Utils::MapToString(std::unordered_map<std::string, std::string> &map) {
-	std::stringstream ss;
-	ss << "<";
-	
-	std::unordered_map<std::string, std::string>::iterator iter(map.begin());
-	while (true) {
-		ss << (*iter).first << ":" << (*iter).second;
-		iter++;
-		if (iter == map.end()) {
-			ss << ">";
-			break;
-		}
-		else {
-			ss << ",";
-		}
-	}
-	return ss.str();
+unordered_map<string, string> Utils::MergeMap(unordered_map<string, string> &map1, unordered_map<string, string> &map2) {
+    unordered_map<string, string> map;
+
+    map.insert(map1.begin(), map1.end());
+    map.insert(map2.begin(), map2.end());
+
+    return map;
 }
 
-std::string Utils::MapToValueString(std::unordered_map<std::string, std::string> &map) {
-	std::stringstream ss;
-	ss << "<";
+unordered_map<string, string> Utils::ReduceMap(unordered_map<string, string> &map, vector<string> &selections) {
+    unordered_map<string, string> result;
+    for (auto kv : map) {
+        if (VectorContains(selections, kv.first)) {
+            result.insert_or_assign(kv.first, kv.second);
+        }
+    }
 
-	std::unordered_map<std::string, std::string>::iterator iter(map.begin());
-	while (true) {
-		ss << (*iter).second;
-		iter++;
-		if (iter == map.end()) {
-			ss << ">";
-			break;
-		}
-		else {
-			ss << ",";
-		}
-	}
-	return ss.str();
+    return result;
 }
 
-std::string Utils::LiteralToCandidate(std::string literal) {
-	if (IsStringLiteral(literal)) {
-		unsigned i = literal.find_first_of("\"");
-		unsigned j = literal.find_last_of("\"");
-		return literal.substr(i+1, j-i-1);
-	}
-	else {
-		return literal;
-	}
+string Utils::MapToString(unordered_map<string, string> &map) {
+    stringstream ss;
+    ss << "<";
+
+    unordered_map<string, string>::iterator iter(map.begin());
+    while (true) {
+        ss << (*iter).first << ":" << (*iter).second;
+
+        iter++;
+        if (iter == map.end()) {
+            break;
+        }
+
+        ss << CHAR_SYMBOL_COMMA;
+    }
+
+    ss << ">";
+    return ss.str();
 }
 
-std::string Utils::IntToString(unsigned int i) {
+string Utils::MapToValueString(unordered_map<string, string> &map) {
+    stringstream ss;
+    ss << "<";
+
+    unordered_map<string, string>::iterator iter(map.begin());
+    while (true) {
+        ss << (*iter).second;
+
+        iter++;
+        if (iter == map.end()) {
+            break;
+        }
+
+        ss << CHAR_SYMBOL_COMMA;
+    }
+
+    ss << ">";
+    return ss.str();
+}
+
+string Utils::IntToString(unsigned int i) {
     return std::to_string(i);
 }
 
-vector<string> Utils::IntToString(vector<unsigned int> vec) {
+vector<string> Utils::IntsToStrings(vector<unsigned int> vec) {
     vector<string> result;
+
     for (unsigned int i : vec) {
         result.push_back(IntToString(i));
     }
@@ -226,8 +208,9 @@ unsigned int Utils::StringToInt(string str) {
     return std::stoi(str);
 }
 
-vector<unsigned int> Utils::StringToInt(vector<string> vec) {
-    vector<unsigned> result;
+vector<unsigned int> Utils::StringsToInts(vector<string> vec) {
+    vector<unsigned int> result;
+
     for (string str : vec) {
         result.push_back(StringToInt(str));
     }
@@ -299,7 +282,7 @@ string Utils::TrimTrailingSpaces(string str) {
 }
 
 bool Utils::IsValidNamingConvention(string str) {
-    return StartsWithAlphabet(str) && IsAlphanumeric(str);
+    return StartsWithAnAlphabet(str) && IsAlphanumeric(str);
 }
 
 bool Utils::IsAlphanumeric(string str) {
@@ -322,15 +305,22 @@ bool Utils::IsNonNegativeNumeric(string str) {
     return true;
 }
 
-bool Utils::IsStringLiteral(std::string str) {
-	return (((str[0] == '\"') && (str[str.length()-1] == '\"')) ||
-		(str == "_"));
+bool Utils::StartsWith(string str, char c) {
+    return (str[0] == c);
 }
 
-bool Utils::IsLiteral(std::string str) {
-	return (IsNonNegativeNumeric(str) || IsStringLiteral(str));
+bool Utils::StartsWith(string str, string substr) {
+    return (str.compare(0, substr.length(), substr) == 0);
 }
 
-bool Utils::StartsWithAlphabet(string str) {
-    return (isalpha(str[0])) ? true : false;
+bool Utils::StartsWithAnAlphabet(string str) {
+    return isalpha(str[0]);
+}
+
+bool Utils::EndsWith(string str, char c) {
+    return (str[str.length() - 1] == c);
+}
+
+bool Utils::EndsWith(string str, string substr) {
+    return (str.compare(str.length() - substr.length(), substr.length(), substr) == 0);
 }

@@ -81,6 +81,9 @@
     <ClInclude Include="include\PKB\TransitiveTable.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
+    <ClInclude Include="include\QueryProcessor\QueryUtils.h">
+      <Filter>Header Files\QueryProcessor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Utils.cpp">
@@ -120,6 +123,9 @@
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
     <ClCompile Include="source\QueryProcessor\Clause.cpp">
+      <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\QueryUtils.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
   </ItemGroup>

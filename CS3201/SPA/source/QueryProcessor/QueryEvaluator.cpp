@@ -7,6 +7,7 @@
 
 #include "QueryProcessor/Clause.h"
 #include "QueryProcessor/QueryEvaluator.h"
+#include "QueryProcessor/QueryUtils.h"
 #include "Utils.h"
 
 QueryEvaluator::QueryEvaluator() {}
@@ -27,7 +28,7 @@ PartialCombinationList QueryEvaluator::getCandidates(std::pair<VarName, Symbol> 
 		case ASSIGN:
 		case IF:
 		case WHILE:
-			insertMap(Utils::IntToString(PKB::GetSymbolStmtNumbers(var.second)), var.first, result);
+			insertMap(Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(var.second)), var.first, result);
 			break;
 		default:
 			break;
@@ -61,8 +62,8 @@ bool QueryEvaluator::selectClauseResults(Clause &clause,
 	if (type == SYMBOL_PATTERN) {
 		std::vector<VarName> args(clause.getArg());
 		VarName lhs(args[0]), rhs(args[1]), assignStmt(args[2]);
-		if (Utils::IsStringLiteral(lhs)) {
-			hasCandidates = FilterNoVarPattern(assignStmt, Utils::LiteralToCandidate(lhs), rhs, combinations);
+		if (QueryUtils::IsStringLiteral(lhs)) {
+			hasCandidates = FilterNoVarPattern(assignStmt, QueryUtils::LiteralToCandidate(lhs), rhs, combinations);
 		}
 		else {
 			hasCandidates = FilterOneVarPattern(assignStmt, lhs, rhs, combinations);
@@ -71,20 +72,20 @@ bool QueryEvaluator::selectClauseResults(Clause &clause,
 	else {
 		std::vector<VarName> args(clause.getArg());
 		VarName var0(args[0]), var1(args[1]);
-		if (Utils::IsLiteral(var0)) {
-			if (Utils::IsLiteral(var1)) {
-				hasCandidates = FilterNoVarClause(type, Utils::LiteralToCandidate(var0),
-					Utils::LiteralToCandidate(var1), combinations);
+		if (QueryUtils::IsLiteral(var0)) {
+			if (QueryUtils::IsLiteral(var1)) {
+				hasCandidates = FilterNoVarClause(type, QueryUtils::LiteralToCandidate(var0),
+                    QueryUtils::LiteralToCandidate(var1), combinations);
 			}
 			else {
 				hasCandidates = FilterSecondVarClause(type,
-					Utils::LiteralToCandidate(var0), var1, combinations);
+                    QueryUtils::LiteralToCandidate(var0), var1, combinations);
 			}
 		}
 		else {
-			if (Utils::IsLiteral(var1)) {
+			if (QueryUtils::IsLiteral(var1)) {
 				hasCandidates = FilterFirstVarClause(type, var0,
-					Utils::LiteralToCandidate(var1), combinations);
+                    QueryUtils::LiteralToCandidate(var1), combinations);
 			}
 			else {
 				hasCandidates = FilterTwoVarsClause(type, var0, var1, combinations);
@@ -239,7 +240,7 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 	std::vector<VarName> selectList;
 	for (auto kv : selectMap) selectList.push_back(kv.first);
 
-	bool hasMoreCandidates;
+	bool hasMoreCandidates = false;
 	for (Clause clause : clauseList) {
 		hasMoreCandidates = selectClauseResults(clause, allCandidates);
 		if (!hasMoreCandidates) break;
@@ -367,7 +368,7 @@ bool QueryEvaluator::evaluatePatternClause(Candidate assignStmt,
 		}
 	}
 	if (lhsVar == "_") {
-		TreeNode* node(Utils::buildExprTree(expr));
+		TreeNode* node(QueryUtils::BuildExpressionTree(expr));
 		if (expr.find_first_of('_') == std::string::npos) {
 			return PKB::IsExactRHS(Utils::StringToInt(assignStmt), node);
 		}
@@ -375,7 +376,7 @@ bool QueryEvaluator::evaluatePatternClause(Candidate assignStmt,
 			return PKB::IsSubRHS(Utils::StringToInt(assignStmt), node);
 		}
 	}
-	TreeNode* node(Utils::buildExprTree(expr));
+	TreeNode* node(QueryUtils::BuildExpressionTree(expr));
 	if (expr.find_first_of('_') == std::string::npos) {
 		return PKB::IsExactPattern(Utils::StringToInt(assignStmt), lhsVar, node);
 	}

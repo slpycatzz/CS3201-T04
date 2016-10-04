@@ -7,48 +7,37 @@
 
 class Utils {
  public:
-    //template<class K, class V>
     static std::vector<std::vector<std::string>>
-		Flatten(std::unordered_map<std::string, std::vector<std::string>> &map,
-		std::vector<std::string> &list, unsigned int start, unsigned int end);
+        Flatten(std::unordered_map<std::string, std::vector<std::string>> &map,
+        std::vector<std::string> &list, unsigned int start, unsigned int end);
 
+    static std::vector<std::vector<std::string>> Zip(std::vector<std::string> list1, std::vector<std::string> list2);
 
-    template<class T>
-    static std::vector<std::vector<T>> Zip(std::vector<T> list1, std::vector<T> list2);
+    static bool IsSubTree(TreeNode &tree, TreeNode &subTree);
+    static bool IsSameTree(TreeNode &tree1, TreeNode &tree2);
+    static bool IsSameTreeNode(TreeNode &node1, TreeNode &node2);
 
-    //template<class K, class V>
-    static std::unordered_map<std::string, std::string>
-		MergeMap(std::unordered_map<std::string, std::string> &map1,
-			std::unordered_map<std::string, std::string> &map2);
-
-	static std::unordered_map<std::string, std::string>
-		ReduceMap(std::unordered_map<std::string, std::string> &map,
-			std::vector<std::string> &selections);
-
-    //template<class T>
     static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
-
-	static bool VectorContains(std::vector<std::string> vec, std::string str);
-
-	static TreeNode* buildExprTree(std::string expr);
-
-	static bool IsSameTreeNode(TreeNode &node1, TreeNode &node2);
-	static bool IsSameTree(TreeNode &tree1, TreeNode &tree2);
-	static bool IsSubTree(TreeNode &tree1, TreeNode &tree2);
-
+    static bool VectorContains(std::vector<std::string> vec, std::string str);
     static std::string VectorToString(std::vector<std::string> &vec);
-    static std::vector<std::string> VectorToString(std::vector<std::vector<std::string>> &vec);
+    static std::vector<std::string> VectorToStrings(std::vector<std::vector<std::string>> &vec);
 
-	static std::string MapToString(std::unordered_map<std::string, std::string> &map);
-	static std::string MapToValueString(std::unordered_map<std::string, std::string> &map);
+    static std::unordered_map<std::string, std::string> MergeMap(
+        std::unordered_map<std::string, std::string> &map1,
+        std::unordered_map<std::string, std::string> &map2);
 
-	static std::string LiteralToCandidate(std::string literal);
+    static std::unordered_map<std::string, std::string> ReduceMap(
+        std::unordered_map<std::string, std::string> &map,
+        std::vector<std::string> &selections);
+
+    static std::string MapToString(std::unordered_map<std::string, std::string> &map);
+    static std::string MapToValueString(std::unordered_map<std::string, std::string> &map);
 
     static std::string IntToString(unsigned int i);
-    static std::vector<std::string> IntToString(std::vector<unsigned int> vec);
+    static std::vector<std::string> IntsToStrings(std::vector<unsigned int> vec);
 
     static unsigned StringToInt(std::string str);
-    static std::vector<unsigned int> StringToInt(std::vector<std::string> vec);
+    static std::vector<unsigned int> StringsToInts(std::vector<std::string> vec);
 
     static void Split(std::string str, char delimiter, std::vector<std::string> &target);
     static std::vector<std::string> Split(std::string str, char delimiter);
@@ -61,8 +50,11 @@ class Utils {
 
     static bool IsValidNamingConvention(std::string str);
     static bool IsAlphanumeric(std::string str);
-	static bool IsStringLiteral(std::string str);
-	static bool IsLiteral(std::string str);
     static bool IsNonNegativeNumeric(std::string str);
-    static bool StartsWithAlphabet(std::string str);
+
+    static bool StartsWith(std::string str, char c);
+    static bool StartsWith(std::string str, std::string substr);
+    static bool StartsWithAnAlphabet(std::string str);
+    static bool EndsWith(std::string str, char c);
+    static bool EndsWith(std::string str, std::string substr);
 };

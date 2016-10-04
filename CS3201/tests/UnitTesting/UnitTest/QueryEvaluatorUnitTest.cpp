@@ -8,6 +8,7 @@
 #include "Constants.h"
 #include "Utils.h"
 #include "QueryProcessor/QueryEvaluator.h"
+#include "QueryProcessor/QueryUtils.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -41,7 +42,7 @@ public:
 		std::vector<std::vector<std::string>> vt;
 		vt.push_back(std::vector<std::string>({ "1", "2", "3" }));
 		vt.push_back(std::vector<std::string>({ "a", "b", "c" }));
-		std::string actual(Utils::VectorToString(Utils::VectorToString(vt)));
+		std::string actual(Utils::VectorToString(Utils::VectorToStrings(vt)));
 		std::string expected("<<1,2,3>,<a,b,c>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -51,7 +52,7 @@ public:
 		map.insert_or_assign("b", std::vector<Candidate>({ "3", "4", "5" }));
 		std::vector<std::vector<std::string>>
 			result(Utils::Flatten(map, std::vector<VarName>({ "a", "b" }), 0, 1));
-		std::string actual(Utils::VectorToString(Utils::VectorToString(result)));
+		std::string actual(Utils::VectorToString(Utils::VectorToStrings(result)));
 		std::string expected("<<1,3>,<1,4>,<1,5>,<2,3>,<2,4>,<2,5>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -117,7 +118,7 @@ public:
 	}
 	TEST_METHOD(TestLiteralToCandidate) {
 		std::string s("\"x\"");
-		Assert::AreEqual(Utils::LiteralToCandidate(s), std::string("x"));
+		Assert::AreEqual(QueryUtils::LiteralToCandidate(s), std::string("x"));
 	}
 	TEST_METHOD(TestIsSameTreeNode) {
 		TreeNode root1(TreeNode(ASSIGN, "a"));
@@ -137,7 +138,7 @@ public:
 		Assert::IsTrue(Utils::IsSameTree(root1, root2));
 	}
 	TEST_METHOD(TestBuildExprTree) {
-		TreeNode* root(Utils::buildExprTree("_\"x\"_"));
+		TreeNode* root(QueryUtils::BuildExpressionTree("_\"x\"_"));
 		Assert::AreEqual(std::string("x"), root->getValue());
 	}
 	};
