@@ -57,4 +57,8 @@ class Utils {
     static bool StartsWithAnAlphabet(std::string str);
     static bool EndsWith(std::string str, char c);
     static bool EndsWith(std::string str, std::string substr);
+
+    static std::string AddBracketsToExpression(std::vector<std::string> expression);
+    static bool IsOperator(std::string operator_);
+    static unsigned int GetOperatorPrecedence(std::string operator_);
 };

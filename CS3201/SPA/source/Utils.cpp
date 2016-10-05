@@ -1,4 +1,6 @@
+#include <queue>
 #include <sstream>
+#include <stack>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -11,6 +13,8 @@ using std::string;
 using std::stringstream;
 using std::unordered_map;
 using std::vector;
+
+const char DELIMITER[] = "$";
 
 vector<vector<string>> Utils::Flatten(unordered_map<string, vector<string>> &map,
     vector<string> &list, unsigned int start, unsigned int end) {
@@ -314,7 +318,7 @@ bool Utils::StartsWith(string str, string substr) {
 }
 
 bool Utils::StartsWithAnAlphabet(string str) {
-    return isalpha(str[0]);
+    return (isalpha(str[0])) ? true : false;
 }
 
 bool Utils::EndsWith(string str, char c) {
@@ -323,4 +327,98 @@ bool Utils::EndsWith(string str, char c) {
 
 bool Utils::EndsWith(string str, string substr) {
     return (str.compare(str.length() - substr.length(), substr.length(), substr) == 0);
+}
+
+string Utils::AddBracketsToExpression(vector<string> expression) {
+    std::queue<string> operands;
+    std::stack<string> operators;
+
+    /* Uses shunting yard algorithm to get postfix expression. */
+    for (string &token : expression) {
+        if (IsOperator(token)) {
+            while (!operators.empty()) {
+                string str = operators.top();
+
+                if (!IsOperator(str)) {
+                    break;
+                }
+
+                if (GetOperatorPrecedence(token) > GetOperatorPrecedence(str)) {
+                    break;
+                }
+
+                operands.push(str);
+                operators.pop();
+            }
+
+            operators.push(token);
+
+        } else if (token == string(1, CHAR_SYMBOL_OPENBRACKET)) {
+            operators.push(token);
+
+        } else if (token == string(1, CHAR_SYMBOL_CLOSEBRACKET)) {
+            while (!operators.empty()) {
+                string str = operators.top();
+                operators.pop();
+
+                if (str == string(1, CHAR_SYMBOL_OPENBRACKET)) {
+                    break;
+                }
+
+                operands.push(str);
+            }
+
+        } else {
+            /* Append delimiters to prevent sub-expression matching wrongly. */
+            token = DELIMITER + token + DELIMITER;
+
+            operands.push(token);
+        }
+    }
+
+    while (!operators.empty()) {
+        operands.push(operators.top());
+        operators.pop();
+    }
+
+    std::stack<string> result;
+
+    /* Reads the postfix expression to format the expression with brackets. */
+    while (!operands.empty()) {
+        if (IsOperator(operands.front())) {
+            string rightOperand = result.top();
+            result.pop();
+
+            string leftOperand = result.top();
+            result.pop();
+
+            /* Format with brackets. */
+            string expression = string(1, CHAR_SYMBOL_OPENBRACKET);
+            expression += leftOperand + operands.front() + rightOperand;
+            expression += string(1, CHAR_SYMBOL_CLOSEBRACKET);
+
+            operands.pop();
+            result.push(expression);
+
+        } else {
+            result.push(operands.front());
+            operands.pop();
+        }
+    }
+
+    return result.top();
+}
+
+bool Utils::IsOperator(string operator_) {
+    return (operator_ == string(1, CHAR_SYMBOL_MINUS) || operator_ == string(1, CHAR_SYMBOL_PLUS) || operator_ == string(1, CHAR_SYMBOL_MULTIPLY));
+}
+
+unsigned int Utils::GetOperatorPrecedence(string operator_) {
+    if (operator_ == string(1, CHAR_SYMBOL_MINUS) || operator_ == string(1, CHAR_SYMBOL_PLUS)) {
+        return 1;
+    } else if (operator_ == string(1, CHAR_SYMBOL_MULTIPLY)) {
+        return 2;
+    }
+
+    return 0;
 }
