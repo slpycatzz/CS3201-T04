@@ -21,21 +21,21 @@ class PKB {
     static TreeNode* CreateASTNode(Symbol symbol, unsigned int stmtNumber, std::string value);
     static void PrintASTTree();
 
-    static void GenerateConstantTable(std::vector<std::string> constants);
+    static void GenerateConstantTable(std::set<std::string> constants);
     static bool HasConstant(std::string constantValue);
     static std::string GetConstantValue(unsigned int index);
     static unsigned int GetConstantIndex(std::string constantValue);
     static std::vector<std::string> GetAllConstantValues();
     static void PrintConstantTable();
 
-    static void GenerateVariableTable(std::vector<std::string> variableNames);
+    static void GenerateVariableTable(std::set<std::string> variableNames);
     static bool HasVariable(std::string variableName);
     static std::string GetVariableName(unsigned int index);
     static unsigned int GetVariableIndex(std::string variableName);
     static std::vector<std::string> GetAllVariableNames();
     static void PrintVariableTable();
 
-    static void GenerateProcedureTable(std::vector<std::string> procedureNames);
+    static void GenerateProcedureTable(std::set<std::string> procedureNames);
     static bool HasProcedure(std::string procedureName);
     static std::string GetProcedureName(unsigned int index);
     static unsigned int GetProcedureIndex(std::string procedureName);
@@ -57,6 +57,18 @@ class PKB {
     static bool IsSubRHS(unsigned int stmtNo, TreeNode* exprTree);
     static bool HasExactPattern(TreeNode* exprTree);
     static bool HasSubPattern(TreeNode* exprTree);
+
+    static void GenerateCallsTable(std::map<std::string, std::set<std::string>> calls);
+    static bool IsCalls(std::string calling, std::string called);
+    static bool IsCalls(std::string calling, std::set<std::string> called);
+    static bool IsCallsTransitive(std::string calling, std::string called);
+    static bool IsCallsTransitive(std::string calling, std::set<std::string> called);
+    static std::string GetCalling(std::string called);
+    static std::set<std::string> GetCalled(std::string calling);
+    static std::set<std::string> GetCallingTransitive(std::string called);
+    static std::set<std::string> GetCalledTransitive(std::string calling);
+    static void PrintCallsTable();
+    static void PrintCallsTransitiveTable();
 
     static void GenerateModifiesTable(std::map<unsigned int, std::set<std::string>> modifies);
     static void GenerateModifiesProcedureTable(std::map<std::string, std::set<std::string>> modifiesProcedure);
@@ -113,6 +125,7 @@ class PKB {
     static unsigned int GetNumberOfWhile();
     static unsigned int GetNumberOfIf();
     static unsigned int GetNumberOfCall();
+    static unsigned int GetNumberOfContainerStmt();
 
     static void Clear();
 
@@ -127,7 +140,10 @@ class PKB {
     static Table<unsigned int, std::string> variableTable_;                         /* map<index, variableName>  */
     static Table<unsigned int, std::string> procedureTable_;                        /* map<index, procedureName> */
     static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbol>   */
-    static Table<unsigned int, TreeNode*> assignTable_;                             /* map<stmtNumber, AST pointer> */
+    static Table<unsigned int, TreeNode*> assignTable_;                             /* map<stmtNumber, expression string> */
+
+    static Table<std::string, std::string> callsTable_;                             /* map<procedureName, set(procedureNames) */
+    static TransitiveTable<std::string, std::string> callsTransitiveTable_;         /* map<procedureName, set(procedureNames) */
 
     static Table<unsigned int, std::string> modifiesTable_;                         /* map<stmtNumber, set(variableName)>    */
     static Table<std::string, std::string> modifiesProcedureTable_;                 /* map<procedureName, set(variableName)> */

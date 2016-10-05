@@ -2,6 +2,7 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <stack>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@ using std::vector;
 FrontendParser::FrontendParser() {
     stmtNumber_ = 1;
     tokensIndex_ = 0;
-
     currentTreeLevel_ = 0;
 }
 
@@ -44,12 +44,23 @@ void FrontendParser::parseProgram(string filePath) {
 
     PKB::SetASTRoot(callProgramRecognizer());
 
+    /* Validate non-existent calls, no procedure names that does not exist. */
+    validateNonExistentCall();
+
+    /* Validate no recursive call in program. */
+    validateRecursiveCall();
+
     /* Generic tables generation. */
     PKB::GenerateConstantTable(constants_);
     PKB::GenerateVariableTable(variableNames_);
     PKB::GenerateProcedureTable(procedureNames_);
     PKB::GenerateStmtTable(stmts_);
+
+    /* Generate expressions for assign table. */
     PKB::GenerateAssignTable(assigns_);
+
+    /* Calls table generation. Have to generate this first as other tables have dependencies on it. */
+    PKB::GenerateCallsTable(calls_);
 
     /* Generate data for design abstraction table generation. */
     setModifies();
@@ -64,9 +75,6 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateUsesProcedureTable(usesProcedure_);
     PKB::GenerateParentTable(parent_);
     PKB::GenerateFollowsTable(follows_);
-
-    // TODO(YH): Recursive call check
-    // TODO(YH): Invalid procedure call check (procedure does not exist)
 }
 
 vector<string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream) {
@@ -158,20 +166,25 @@ TreeNode* FrontendParser::callProgramRecognizer() {
 TreeNode* FrontendParser::callProcedureRecognizer() {
     expect(SYMBOL_PROCEDURE);
 
+    currentProcedureName_ = getToken();
+
     /* Validate if procedure name follows naming convention. */
-    if (!Utils::IsValidNamingConvention(peekTokens())) {
-        throw ProgramSyntaxErrorException();
+    if (!Utils::IsValidNamingConvention(currentProcedureName_)) {
+        throw ProgramSyntaxErrorException(MESSAGE_PROCEDURENAME_INVALID);
     }
 
-    string procedureName = getToken();
+    /* Validate if procedure name already exist. */
+    if (procedureNames_.count(currentProcedureName_) == 1) {
+        throw ProgramSyntaxErrorException(MESSAGE_PROCEDURENAME_EXIST);
+    }
 
     /* For PKB procedure table generation. */
-    procedureNames_.push_back(procedureName);
+    procedureNames_.insert(currentProcedureName_);
 
-    proceduresFirstStmt_.push_back(stmtNumber_);
+    proceduresFirstStmt_.push_back(std::make_pair(stmtNumber_, currentProcedureName_));
 
     /* TreeNode generation. */
-    TreeNode* procedureNode = PKB::CreateASTNode(PROCEDURE, procedureName);
+    TreeNode* procedureNode = PKB::CreateASTNode(PROCEDURE, currentProcedureName_);
     procedureNode->addChild(callStmtListRecognizer());
 
     return procedureNode;
@@ -191,7 +204,7 @@ TreeNode* FrontendParser::callStmtListRecognizer() {
 
     /* Validate if statement list is empty. */
     if (stmtListNode->getNumberOfChildren() == 0) {
-        throw ProgramLogicErrorException();
+        throw ProgramLogicErrorException(MESSAGE_EMPTY_STMTLIST);
     }
 
     currentTreeLevel_--;
@@ -218,32 +231,38 @@ TreeNode* FrontendParser::callStmtRecognizer() {
 
     } else if (accept(SYMBOL_IF)) {
         stmt = SYMBOL_IF;
-        /*throw ProgramSyntaxErrorException();  */ stmtNode = callIfRecognizer();
+        stmtNode = callIfRecognizer();
 
     } else if (accept(SYMBOL_CALL)) {
         stmt = SYMBOL_CALL;
-        throw ProgramSyntaxErrorException();  // stmtNode = callCallRecognizer();
+        stmtNode = callCallRecognizer();
 
     } else {
         throw ProgramSyntaxErrorException();
     }
 
     /* For PKB stmt table generation. */
-    stmts_.emplace(stmtNumber, stmt);
+    stmts_.insert(std::make_pair(stmtNumber, stmt));
 
     return stmtNode;
 }
 
 TreeNode* FrontendParser::callWhileRecognizer() {
+    unsigned int stmtNumber = stmtNumber_;
     TreeNode* whileNode = PKB::CreateASTNode(WHILE, stmtNumber_++);
 
     string controlVariableName = getToken();
 
+    /* Validate if variable name follows naming convention. */
+    if (!Utils::IsValidNamingConvention(controlVariableName)) {
+        throw ProgramSyntaxErrorException(MESSAGE_VARIABLENAME_INVALID);
+    }
+
     /* For PKB variable table generation. */
-    variableNames_.push_back(controlVariableName);
+    variableNames_.insert(controlVariableName);
 
     /* For PKB uses table generation. */
-    uses_[stmtNumber_ - 1].insert(controlVariableName);
+    uses_[stmtNumber].insert(controlVariableName);
 
     whileNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
     whileNode->addChild(callStmtListRecognizer());
@@ -252,15 +271,21 @@ TreeNode* FrontendParser::callWhileRecognizer() {
 }
 
 TreeNode* FrontendParser::callIfRecognizer() {
-    TreeNode* ifNode = PKB::CreateASTNode(IF, stmtNumber_++);
-
+    unsigned int stmtNumber = stmtNumber_;
     string controlVariableName = getToken();
 
+    /* Validate if variable name follows naming convention. */
+    if (!Utils::IsValidNamingConvention(controlVariableName)) {
+        throw ProgramSyntaxErrorException(MESSAGE_VARIABLENAME_INVALID);
+    }
+
+    TreeNode* ifNode = PKB::CreateASTNode(IF, stmtNumber_++);
+
     /* For PKB variable table generation. */
-    variableNames_.push_back(controlVariableName);
+    variableNames_.insert(controlVariableName);
 
     /* For PKB uses table generation. */
-    uses_[stmtNumber_ - 1].insert(controlVariableName);
+    uses_[stmtNumber].insert(controlVariableName);
 
     ifNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
 
@@ -268,7 +293,7 @@ TreeNode* FrontendParser::callIfRecognizer() {
 
     ifNode->addChild(callStmtListRecognizer());
 
-    thenLastStmt_.push_back(stmtNumber_ - 1);
+    thenLastStmt_.push_back(stmtNumber);
 
     expect(SYMBOL_IF_ELSE);
 
@@ -278,9 +303,22 @@ TreeNode* FrontendParser::callIfRecognizer() {
 }
 
 TreeNode* FrontendParser::callCallRecognizer() {
+    unsigned int stmtNumber = stmtNumber_;
     string procedureName = getToken();
 
+    /* Validate if procedure name follows naming convention. */
+    if (!Utils::IsValidNamingConvention(currentProcedureName_)) {
+        throw ProgramSyntaxErrorException(MESSAGE_PROCEDURENAME_INVALID);
+    }
+
     TreeNode* callNode = PKB::CreateASTNode(CALL, stmtNumber_++, procedureName);
+
+    /* For PKB calls table generation. */
+    calls_[currentProcedureName_].insert(procedureName);
+
+    /* For PKB modifies and uses table generation. */
+    callStmtNumbers_.insert(std::make_pair(stmtNumber, procedureName));
+    modifies_[stmtNumber] = uses_[stmtNumber] = {};
 
     expect(CHAR_SYMBOL_SEMICOLON);
 
@@ -290,21 +328,20 @@ TreeNode* FrontendParser::callCallRecognizer() {
 TreeNode* FrontendParser::callAssignRecognizer() {
     /* Validate if variable name follows naming convention. */
     if (!Utils::IsValidNamingConvention(peekTokens())) {
-        throw ProgramSyntaxErrorException();
+        throw ProgramSyntaxErrorException(MESSAGE_VARIABLENAME_INVALID);
     }
 
+    unsigned int stmtNumber = stmtNumber_;
     string controlVariableName = getToken();
 
     /* For PKB variable table generation. */
-    variableNames_.push_back(controlVariableName);
+    variableNames_.insert(controlVariableName);
 
     /* For PKB modifies table generation. */
-    modifies_[stmtNumber_].insert(controlVariableName);
+    modifies_[stmtNumber].insert(controlVariableName);
 
     TreeNode* assignNode = PKB::CreateASTNode(ASSIGN, stmtNumber_++);
-
-    /* For PKB assign table generation. */
-    assigns_.insert(std::make_pair(stmtNumber_ - 1, assignNode));
+    assigns_.insert(std::make_pair(stmtNumber, assignNode));
 
     assignNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
 
@@ -313,6 +350,10 @@ TreeNode* FrontendParser::callAssignRecognizer() {
     assignNode->addChild(callExpressionRecognizer());
 
     expect(CHAR_SYMBOL_SEMICOLON);
+
+    /* For PKB assign table generation. */
+    expressions_.insert(std::make_pair(stmtNumber, expression_));
+    expression_.clear();
 
     return assignNode;
 }
@@ -324,9 +365,13 @@ TreeNode*  FrontendParser::callExpressionRecognizer() {
         TreeNode* node;
 
         if (accept(CHAR_SYMBOL_PLUS)) {
+            expression_.push_back(string(1, CHAR_SYMBOL_PLUS));
             node = PKB::CreateASTNode(PLUS);
+
         } else if (accept(CHAR_SYMBOL_MINUS)) {
+            expression_.push_back(string(1, CHAR_SYMBOL_MINUS));
             node = PKB::CreateASTNode(MINUS);
+
         } else {
             break;
         }
@@ -344,6 +389,8 @@ TreeNode* FrontendParser::callTermRecognizer() {
     TreeNode* termNode = callFactorRecognizer();
 
     while (accept(CHAR_SYMBOL_MULTIPLY)) {
+        expression_.push_back(string(1, CHAR_SYMBOL_MULTIPLY));
+
         TreeNode* multiplyNode = PKB::CreateASTNode(MULTIPLY);
         multiplyNode->addChild(termNode);
         multiplyNode->addChild(callFactorRecognizer());
@@ -359,19 +406,24 @@ TreeNode* FrontendParser::callFactorRecognizer() {
 
     /* Higher precedence for expressions in (). */
     if (accept(CHAR_SYMBOL_OPENBRACKET)) {
+        expression_.push_back(string(1, CHAR_SYMBOL_OPENBRACKET));
+
         factorNode = callExpressionRecognizer();
         expect(CHAR_SYMBOL_CLOSEBRACKET);
+
+        expression_.push_back(string(1, CHAR_SYMBOL_CLOSEBRACKET));
 
     /* Variable. */
     } else if (Utils::IsValidNamingConvention(peekTokens())) {
         string variableName = getToken();
 
         /* For PKB variable table generation. */
-        variableNames_.push_back(variableName);
+        variableNames_.insert(variableName);
 
         /* For PKB uses table generation. */
         uses_[stmtNumber_ - 1].insert(variableName);
 
+        expression_.push_back(variableName);
         factorNode = PKB::CreateASTNode(VARIABLE, variableName);
 
     /* Constant. */
@@ -379,8 +431,9 @@ TreeNode* FrontendParser::callFactorRecognizer() {
         string constant = getToken();
 
         /* For PKB constant table generation. */
-        constants_.push_back(constant);
+        constants_.insert(constant);
 
+        expression_.push_back(constant);
         factorNode = PKB::CreateASTNode(CONSTANT, constant);
 
     } else {
@@ -435,11 +488,59 @@ string FrontendParser::getToken() {
 }
 
 void FrontendParser::setModifies() {
-    map<unsigned int, set<string>> modifiesContainers;
-
+    /* Populate modifies that are procedure local into the modifies procedure table. */
     for (const auto &pair : modifies_) {
-        unsigned int stmtNumber = pair.first;
         set<string> variableNames = pair.second;
+
+        for (int i = proceduresFirstStmt_.size() - 1; i >= 0; i--) {
+            if (proceduresFirstStmt_[i].first <= pair.first) {
+                modifiesProcedure_[proceduresFirstStmt_[i].second].insert(variableNames.begin(), variableNames.end());
+                break;
+            }
+        }
+    }
+
+    /* Populate modifies that are from other procedures. */
+    for (const auto &pair : modifiesProcedure_) {
+        set<string> procedures = PKB::GetCalled(pair.first);
+
+        /* Procedure does not have any call. */
+        if (procedures.empty()) {
+            continue;
+        }
+
+        for (const auto &procedure : procedures) {
+            if (modifiesProcedure_.count(procedure) != 1) {
+                continue;
+            }
+
+            set<string> variableNames = modifiesProcedure_[procedure];
+            modifiesProcedure_[pair.first].insert(variableNames.begin(), variableNames.end());
+        }
+    }
+
+    /* Populate the container statements. */
+    map<unsigned int, set<string>> modifiesContainers;
+    for (auto iter = modifies_.begin(); iter != modifies_.end();) {
+        unsigned int stmtNumber = iter->first;
+        set<string> variableNames;
+
+        /* If call statement, get variables from modifies procedure table. */
+        if (callStmtNumbers_.count(stmtNumber) == 1) {
+            string procedure = callStmtNumbers_[stmtNumber];
+
+            if (modifiesProcedure_.count(procedure) != 1) {
+                iter = modifies_.erase(iter);
+                continue;
+            }
+
+            variableNames = modifiesProcedure_[procedure];
+
+            /* Populate the call statements. */
+            modifies_[stmtNumber].insert(variableNames.begin(), variableNames.end());
+        } else {
+            variableNames = iter->second;
+        }
 
         if (stmtsLevels_.at(stmtNumber - 1) != 1) {
             unsigned int parentStmtNumber = getParentOfStmtNumber(stmtNumber);
@@ -450,12 +551,7 @@ void FrontendParser::setModifies() {
             }
         }
 
-        for (int i = proceduresFirstStmt_.size() - 1; i >= 0; i--) {
-            if (proceduresFirstStmt_[i] < stmtNumber) {
-                modifiesProcedure_[procedureNames_[i]].insert(variableNames.begin(), variableNames.end());
-                break;
-            }
-        }
+        iter++;
     }
 
     for (auto &pair : modifiesContainers) {
@@ -465,11 +561,58 @@ void FrontendParser::setModifies() {
 }
 
 void FrontendParser::setUses() {
-    map<unsigned int, set<string>> usesContainers;
-
+    /* Populate uses that are procedure local into the uses procedure table. */
     for (const auto &pair : uses_) {
-        unsigned int stmtNumber = pair.first;
         set<string> variableNames = pair.second;
+
+        for (int i = proceduresFirstStmt_.size() - 1; i >= 0; i--) {
+            if (proceduresFirstStmt_[i].first <= pair.first) {
+                usesProcedure_[proceduresFirstStmt_[i].second].insert(variableNames.begin(), variableNames.end());
+                break;
+            }
+        }
+    }
+
+    /* Populate uses that are from other procedures. */
+    for (const auto &pair : usesProcedure_) {
+        set<string> procedures = PKB::GetCalled(pair.first);
+
+        /* Procedure does not have any call. */
+        if (procedures.empty()) {
+            continue;
+        }
+
+        for (const auto &procedure : procedures) {
+            if (usesProcedure_.count(procedure) != 1) {
+                continue;
+            }
+
+            set<string> variableNames = usesProcedure_[procedure];
+            usesProcedure_[pair.first].insert(variableNames.begin(), variableNames.end());
+        }
+    }
+
+    map<unsigned int, set<string>> usesContainers;
+    for (auto iter = uses_.begin(); iter != uses_.end();) {
+        unsigned int stmtNumber = iter->first;
+        set<string> variableNames;
+
+        /* If call statement, get variables from uses procedure table. */
+        if (callStmtNumbers_.count(stmtNumber) == 1) {
+            string procedure = callStmtNumbers_[stmtNumber];
+
+            if (usesProcedure_.count(procedure) != 1) {
+                iter = uses_.erase(iter);
+                continue;
+            }
+
+            variableNames = usesProcedure_[procedure];
+
+            /* Populate the call statements. */
+            uses_[stmtNumber].insert(variableNames.begin(), variableNames.end());
+        } else {
+            variableNames = iter->second;
+        }
 
         if (stmtsLevels_.at(stmtNumber - 1) != 1) {
             unsigned int parentStmtNumber = getParentOfStmtNumber(stmtNumber);
@@ -480,12 +623,7 @@ void FrontendParser::setUses() {
             }
         }
 
-        for (int i = proceduresFirstStmt_.size() - 1; i >= 0; i--) {
-            if (proceduresFirstStmt_[i] < stmtNumber) {
-                usesProcedure_[procedureNames_[i]].insert(variableNames.begin(), variableNames.end());
-                break;
-            }
-        }
+        iter++;
     }
 
     for (auto &pair : usesContainers) {
@@ -542,21 +680,23 @@ int FrontendParser::getFollowOfStmtNumber(unsigned int stmtNumber) {
         return -1;
     }
 
-    /* Nothing is before the first statement of a procedure. */
-    if (Utils::VectorContains(proceduresFirstStmt_, stmtNumber)) {
-        return 0;
-    }
-
-    unsigned int stmtLevel = stmtsLevels_.at(stmtNumber - 1);
-
     /* Get stmtNumber's procedure's first statement position. */
     unsigned int j;
     for (int i = proceduresFirstStmt_.size() - 1; i >= 0; i--) {
-        if (proceduresFirstStmt_[i] < stmtNumber) {
-            j = proceduresFirstStmt_[i];
+        unsigned int number = proceduresFirstStmt_[i].first;
+
+        /* Nothing is before the first statement of a procedure. */
+        if (number == stmtNumber) {
+            return 0;
+        }
+
+        if (number < stmtNumber) {
+            j = number;
             break;
         }
     }
+
+    unsigned int stmtLevel = stmtsLevels_.at(stmtNumber - 1);
 
     unsigned int k = stmtNumber - 1;
     while (k > j, k--) {
@@ -564,7 +704,7 @@ int FrontendParser::getFollowOfStmtNumber(unsigned int stmtNumber) {
             return 0;
         }
 
-        /* Catch if statement being in same level but different statement list. */
+        /* Catch "if" statement being in same level but different statement list. */
         if (Utils::VectorContains(thenLastStmt_, (k + 1))) {
             return 0;
         }
@@ -575,4 +715,54 @@ int FrontendParser::getFollowOfStmtNumber(unsigned int stmtNumber) {
     }
 
     return -1;
+}
+
+void FrontendParser::validateNonExistentCall() {
+    set<string> procedures;
+    for (const auto &pair : calls_) {
+        procedures.insert(pair.second.begin(), pair.second.end());
+    }
+
+    for (const auto &procedure : procedures) {
+        if (procedureNames_.count(procedure) != 1) {
+            throw ProgramSyntaxErrorException(MESSAGE_NONEXISTENTCALL_EXIST);
+        }
+    }
+}
+
+void FrontendParser::validateRecursiveCall() {
+    if (calls_.empty()) {
+        return;
+    }
+
+    /* Perform DFS to check for recursive call. */
+    for (const auto &pair : calls_) {
+        std::stack<string> stack;
+        stack.push(pair.first);
+
+        set<string> uniqueCalls;
+        while (!stack.empty()) {
+            string call = stack.top();
+
+            uniqueCalls.insert(call);
+            stack.pop();
+
+            /* End of the transitive closure of the call. */
+            if (calls_.count(call) != 1) {
+                continue;
+            }
+
+            set<string> calls = calls_[call];
+
+            if (calls.count(pair.first) == 1) {
+                throw ProgramLogicErrorException(MESSAGE_RECURSIVECALL_EXIST);
+            }
+
+            for (const auto &value : calls) {
+                if (uniqueCalls.count(value) != 1) {
+                    stack.push(value);
+                }
+            }
+        }
+    }
 }

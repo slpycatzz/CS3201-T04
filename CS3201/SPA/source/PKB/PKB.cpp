@@ -28,6 +28,9 @@ Table<unsigned int, string> PKB::procedureTable_;
 Table<unsigned int, string> PKB::stmtTable_;
 Table<unsigned int, TreeNode*> PKB::assignTable_;
 
+Table<string, string> PKB::callsTable_;
+TransitiveTable<string, string> PKB::callsTransitiveTable_;
+
 Table<unsigned int, string> PKB::modifiesTable_;
 Table<string, string> PKB::modifiesProcedureTable_;
 
@@ -73,12 +76,10 @@ void PKB::PrintASTTree() {
 /* END   - AST functions */
 /* START - Constant table functions */
 
-void PKB::GenerateConstantTable(vector<string> constants) {
+void PKB::GenerateConstantTable(set<string> constants) {
     unsigned int i = 1;
     for (auto &constant : constants) {
-        if (!constantTable_.hasValue(constant)) {
-            constantTable_.insert(i++, constant);
-        }
+        constantTable_.insert(i++, constant);
     }
 }
 
@@ -110,12 +111,10 @@ void PKB::PrintConstantTable() {
 /* END   - Constant table functions */
 /* START - Variable table functions */
 
-void PKB::GenerateVariableTable(vector<string> variableNames) {
+void PKB::GenerateVariableTable(set<string> variableNames) {
     unsigned int i = 1;
     for (auto &variableName : variableNames) {
-        if (!variableTable_.hasValue(variableName)) {
-            variableTable_.insert(i++, variableName);
-        }
+        variableTable_.insert(i++, variableName);
     }
 }
 
@@ -147,7 +146,7 @@ void PKB::PrintVariableTable() {
 /* END   - Variable table functions */
 /* START - Procedure table functions */
 
-void PKB::GenerateProcedureTable(vector<string> procedureNames) {
+void PKB::GenerateProcedureTable(set<string> procedureNames) {
     unsigned int i = 1;
     for (auto &procedureName : procedureNames) {
         numberOfProcedure_++;
@@ -302,6 +301,58 @@ bool PKB::IsSubRHS(unsigned int stmtNo, TreeNode* exprTree) {
 }
 
 /* END   - Assign table functions */
+/* START - Calls table functions */
+
+void PKB::GenerateCallsTable(map<string, set<string>> calls) {
+    for (auto &pair : calls) {
+        callsTable_.insert(pair.first, pair.second);
+    }
+
+    callsTransitiveTable_.generateKeyToValueTransitiveMap(callsTable_);
+    callsTransitiveTable_.generateValueToKeyTransitiveMap(callsTable_);
+}
+
+bool PKB::IsCalls(string calling, string called) {
+    return callsTable_.hasKeyToValue(calling, called);
+}
+
+bool PKB::IsCalls(string calling, set<string> called) {
+    return callsTable_.hasKeyToValues(calling, called);
+}
+
+bool PKB::IsCallsTransitive(string calling, string called) {
+    return callsTransitiveTable_.hasKeyToValue(calling, called);
+}
+
+bool PKB::IsCallsTransitive(string calling, set<string> called) {
+    return callsTransitiveTable_.hasKeyToValues(calling, called);
+}
+
+string PKB::GetCalling(string called) {
+    return (callsTable_.hasValue(called)) ? callsTable_.getKey(called) : "";
+}
+
+set<string> PKB::GetCalled(string calling) {
+    return callsTable_.getValues(calling);
+}
+
+set<string> PKB::GetCallingTransitive(string called) {
+    return callsTransitiveTable_.getKeys(called);
+}
+
+set<string> PKB::GetCalledTransitive(string calling) {
+    return callsTransitiveTable_.getValues(calling);
+}
+
+void PKB::PrintCallsTable() {
+    callsTable_.printTable();
+}
+
+void PKB::PrintCallsTransitiveTable() {
+    callsTransitiveTable_.printTable();
+}
+
+/* END   - Calls table functions */
 /* START - Modifies table functions */
 
 void PKB::GenerateModifiesTable(map<unsigned int, set<string>> modifies) {
@@ -496,7 +547,7 @@ unsigned int PKB::GetFollows(unsigned int following) {
 }
 
 unsigned int PKB::GetFollowing(unsigned int follows) {
-    return followsTable_.getValue(follows);
+    return (followsTable_.hasKey(follows)) ? followsTable_.getValue(follows) : 0;
 }
 
 set<unsigned int> PKB::GetFollowsTransitive(unsigned int following) {
@@ -538,6 +589,10 @@ unsigned int PKB::GetNumberOfCall() {
     return numberOfCall_;
 }
 
+unsigned int PKB::GetNumberOfContainerStmt() {
+    return (numberOfWhile_ + numberOfIf_);
+}
+
 void PKB::Clear() {
     numberOfProcedure_ = 0;
     numberOfAssign_ = 0;
@@ -550,6 +605,9 @@ void PKB::Clear() {
     procedureTable_.clear();
     stmtTable_.clear();
     assignTable_.clear();
+
+    callsTable_.clear();
+    callsTransitiveTable_.clear();
 
     modifiesTable_.clear();
     modifiesProcedureTable_.clear();

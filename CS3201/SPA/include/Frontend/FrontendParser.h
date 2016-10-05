@@ -3,6 +3,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "TreeNode.h"
@@ -45,6 +46,8 @@ class FrontendParser {
     int getParentOfStmtNumber(unsigned int stmtNumber);
     int getFollowOfStmtNumber(unsigned int stmtNumber);
 
+    void validateNonExistentCall();
+    void validateRecursiveCall();
 
     /* Parser helper variables. */
     unsigned int stmtNumber_;
@@ -52,19 +55,24 @@ class FrontendParser {
     std::vector<std::string> tokens_;
 
     /* PKB tables helper variables. */
+    std::string currentProcedureName_;
+    std::vector<std::string> expression_;
+    std::map<unsigned int, std::vector<std::string>> expressions_;
     unsigned int currentTreeLevel_;
     std::vector<unsigned int> stmtsLevels_;
-    std::vector<unsigned int> proceduresFirstStmt_;
+    std::map<unsigned int, std::string> callStmtNumbers_;
+    std::vector<std::pair<unsigned int, std::string>> proceduresFirstStmt_;
     std::vector<unsigned int> thenLastStmt_;
 
     /* For PKB generic table generation. */
-    std::vector<std::string> constants_;
-    std::vector<std::string> variableNames_;
-    std::vector<std::string> procedureNames_;
+    std::set<std::string> constants_;
+    std::set<std::string> variableNames_;
+    std::set<std::string> procedureNames_;
     std::map<unsigned int, std::string> stmts_;
     std::map<unsigned int, TreeNode*> assigns_;
 
     /* For PKB design abstraction table generation. */
+    std::map<std::string, std::set<std::string>> calls_;
     std::map<unsigned int, std::set<std::string>> modifies_;
     std::map<std::string, std::set<std::string>> modifiesProcedure_;
     std::map<unsigned int, std::set<std::string>> uses_;

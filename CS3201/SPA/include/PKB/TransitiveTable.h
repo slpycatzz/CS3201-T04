@@ -11,15 +11,17 @@ class TransitiveTable {
     inline TransitiveTable<K, V>() {}
     inline ~TransitiveTable<K, V>() {}
 
-    inline void generateKeyToValueTransitiveMap(Table<unsigned int, unsigned int> table) {
-        if (table.getKeyToValuesMap().empty()) {
+    inline void generateKeyToValueTransitiveMap(Table<K, V> table) {
+        std::set<K> keys = table.getKeys();
+
+        if (keys.empty()) {
             return;
         }
 
         /* Perform DFS on the table to get transitive table. */
-        for (const auto &pair : table.getKeyToValuesMap()) {
+        for (const auto &key : keys) {
             std::stack<K> keyStack;
-            keyStack.push(pair.first);
+            keyStack.push(key);
 
             while (!keyStack.empty()) {
                 std::set<V> values = table.getValues(keyStack.top());
@@ -31,7 +33,7 @@ class TransitiveTable {
                     continue;
                 }
 
-                keyToValueTransitiveMap[pair.first].insert(values.begin(), values.end());
+                keyToValueTransitiveMap[key].insert(values.begin(), values.end());
 
                 for (const auto &value : values) {
                     keyStack.push(value);
@@ -40,15 +42,17 @@ class TransitiveTable {
         }
     }
 
-    inline void generateValueToKeyTransitiveMap(Table<unsigned int, unsigned int> table) {
-        if (table.getValueToKeysMap().empty()) {
+    inline void generateValueToKeyTransitiveMap(Table<K, V> table) {
+        std::set<V> values = table.getValues();
+
+        if (values.empty()) {
             return;
         }
 
         /* Perform DFS on the table to get transitive table. */
-        for (const auto &pair : table.getValueToKeysMap()) {
+        for (const auto &value : values) {
             std::stack<K> valueStack;
-            valueStack.push(pair.first);
+            valueStack.push(value);
 
             while (!valueStack.empty()) {
                 std::set<V> keys = table.getKeys(valueStack.top());
@@ -60,7 +64,7 @@ class TransitiveTable {
                     continue;
                 }
 
-                valueToKeyTransitiveMap[pair.first].insert(keys.begin(), keys.end());
+                valueToKeyTransitiveMap[value].insert(keys.begin(), keys.end());
 
                 for (const auto &key : keys) {
                     valueStack.push(key);
