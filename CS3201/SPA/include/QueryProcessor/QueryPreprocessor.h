@@ -19,15 +19,16 @@ class QueryPreprocessor {
     void preprocessQuery(std::string query);
     QueryTree getQueryTree();
 
+    //Temporarily made public to test the optimizer
+    bool parseSuchThat(std::vector<std::string> suchThat);
+    bool parsePattern(std::vector<std::string> pattern);
+    bool processDeclaration(std::string declaration);
+    bool parseSelect(std::vector<std::string> queryList);
+
  private:
-     bool processDeclaration(std::string declaration);
+     
      bool processQuery(std::string query);
-
-     bool parseSelect(std::vector<std::string> queryList);
-
-     bool parseSuchThat(std::vector<std::string> suchThat);
      bool parseRelation(std::string clauseType, std::string relType, std::vector<std::string> &varList);
-     bool parsePattern(std::vector<std::string> pattern);
 
      bool isVarExist(std::string var);
      bool isValidVarName(std::string varName);

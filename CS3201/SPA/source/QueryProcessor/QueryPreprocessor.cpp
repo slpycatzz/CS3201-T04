@@ -133,9 +133,13 @@ bool QueryPreprocessor::parseSelect(vector<string> queryList) {
         selectVars += queryList[i];
     }
     selectList = Utils::Split(selectVars, CHAR_SYMBOL_COMMA);
+
+    /* Iteration 1 only
     if (selectList.size() >= 2) {
         throw QuerySyntaxErrorException("5");
     }
+    */
+
     // wm todo: move this loop into another function
     for (unsigned int i = 0; i < selectList.size(); i++) {
         if (toLower(selectList[0]).compare("boolean") == 0) {

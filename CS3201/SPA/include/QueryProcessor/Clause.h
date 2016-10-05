@@ -13,6 +13,11 @@ class Clause {
      std::string getClauseType();
      std::vector<std::string> getArg();
      int getArgCount();
+
+     //Used by optimizer
+     std::string toString();
+     std::vector<std::string> getSynonyms();
+
  private:
      Symbol clauseType;
      std::string clauseName;
