@@ -48,15 +48,8 @@ class PKB {
     static std::vector<unsigned int> GetSymbolStmtNumbers(Symbol symbol);
     static void PrintStmtTable();
 
-    static void GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns);
-    static TreeNode* GetAssignTreeNode(unsigned int stmtNumber);
-    static std::vector<TreeNode*> GetAllAssignTreeNodes();
-    static bool IsExactPattern(unsigned int stmtNo, std::string varName, TreeNode* exprTree);
-    static bool IsSubPattern(unsigned int stmtNo, std::string varName, TreeNode* exprTree);
-    static bool IsExactRHS(unsigned int stmtNo, TreeNode* exprTree);
-    static bool IsSubRHS(unsigned int stmtNo, TreeNode* exprTree);
-    static bool HasExactPattern(TreeNode* exprTree);
-    static bool HasSubPattern(TreeNode* exprTree);
+    static void GenerateExpressionTable(std::map<unsigned int, std::string> expressions);
+    static void GenerateSubExpressionTable(std::map<unsigned int, std::set<std::string>> subExpressions);
 
     static void GenerateCallsTable(std::map<std::string, std::set<std::string>> calls);
     static bool IsCalls(std::string calling, std::string called);
@@ -129,6 +122,18 @@ class PKB {
 
     static void Clear();
 
+    /* START - Deprecated */
+    static void GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns);
+    static TreeNode* GetAssignTreeNode(unsigned int stmtNumber);
+    static std::vector<TreeNode*> GetAllAssignTreeNodes();
+    static bool IsExactPattern(unsigned int stmtNo, std::string varName, TreeNode* exprTree);
+    static bool IsSubPattern(unsigned int stmtNo, std::string varName, TreeNode* exprTree);
+    static bool IsExactRHS(unsigned int stmtNo, TreeNode* exprTree);
+    static bool IsSubRHS(unsigned int stmtNo, TreeNode* exprTree);
+    static bool HasExactPattern(TreeNode* exprTree);
+    static bool HasSubPattern(TreeNode* exprTree);
+    /* END - Deprecated */
+
  private:
     static unsigned int numberOfProcedure_;
     static unsigned int numberOfAssign_;
@@ -140,10 +145,12 @@ class PKB {
     static Table<unsigned int, std::string> variableTable_;                         /* map<index, variableName>  */
     static Table<unsigned int, std::string> procedureTable_;                        /* map<index, procedureName> */
     static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbol>   */
-    static Table<unsigned int, TreeNode*> assignTable_;                             /* map<stmtNumber, expression string> */
 
-    static Table<std::string, std::string> callsTable_;                             /* map<procedureName, set(procedureNames) */
-    static TransitiveTable<std::string, std::string> callsTransitiveTable_;         /* map<procedureName, set(procedureNames) */
+    static Table<unsigned int, std::string> expressionTable_;                       /* map<stmtNumber, exact expression> */
+    static Table<unsigned int, std::string> subExpressionTable_;                    /* map<stmtNumber, set(subExpressions)> */
+
+    static Table<std::string, std::string> callsTable_;                             /* map<procedureName, set(procedureNames)> */
+    static TransitiveTable<std::string, std::string> callsTransitiveTable_;         /* map<procedureName, set(procedureNames)> */
 
     static Table<unsigned int, std::string> modifiesTable_;                         /* map<stmtNumber, set(variableName)>    */
     static Table<std::string, std::string> modifiesProcedureTable_;                 /* map<procedureName, set(variableName)> */
@@ -156,4 +163,7 @@ class PKB {
 
     static Table<unsigned int, unsigned int> followsTable_;                         /* map<stmtNumber, set(stmtNumber)> */
     static TransitiveTable<unsigned int, unsigned int> followsTransitiveTable_;     /* map<stmtNumber, set(stmtNumber)> */
+
+    /* Deprecated. */
+    static Table<unsigned int, TreeNode*> assignTable_;                             /* map<stmtNumber, expression string> */
 };

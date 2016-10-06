@@ -1,5 +1,7 @@
 #pragma once
 
+#include <queue>
+#include <set>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -58,7 +60,11 @@ class Utils {
     static bool EndsWith(std::string str, char c);
     static bool EndsWith(std::string str, std::string substr);
 
-    static std::string AddBracketsToExpression(std::vector<std::string> expression);
+    static std::queue<std::string> GetPostfixExpression(std::vector<std::string> expression);
+    static std::string GetExactExpressionWithBrackets(std::queue<std::string> postfixExpression);
+    static std::set<std::string> GetSubExpressionsWithBrackets(std::queue<std::string> postfixExpression);
+
+ private:
     static bool IsOperator(std::string operator_);
     static unsigned int GetOperatorPrecedence(std::string operator_);
 };

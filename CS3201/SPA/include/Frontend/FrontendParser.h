@@ -58,6 +58,8 @@ class FrontendParser {
     std::string currentProcedureName_;
     std::vector<std::string> expression_;
     std::map<unsigned int, std::vector<std::string>> expressions_;
+    std::map<unsigned int, std::string> exactExpressions_;
+    std::map<unsigned int, std::set<std::string>> subExpressions_;
     unsigned int currentTreeLevel_;
     std::vector<unsigned int> stmtsLevels_;
     std::map<unsigned int, std::string> callStmtNumbers_;

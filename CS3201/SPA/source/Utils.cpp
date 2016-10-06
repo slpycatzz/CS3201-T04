@@ -1,4 +1,5 @@
 #include <queue>
+#include <set>
 #include <sstream>
 #include <stack>
 #include <string>
@@ -9,12 +10,13 @@
 #include "Utils.h"
 
 using std::istringstream;
+using std::queue;
+using std::set;
+using std::stack;
 using std::string;
 using std::stringstream;
 using std::unordered_map;
 using std::vector;
-
-const char DELIMITER[] = "$";
 
 vector<vector<string>> Utils::Flatten(unordered_map<string, vector<string>> &map,
     vector<string> &list, unsigned int start, unsigned int end) {
@@ -329,9 +331,10 @@ bool Utils::EndsWith(string str, string substr) {
     return (str.compare(str.length() - substr.length(), substr.length(), substr) == 0);
 }
 
-string Utils::AddBracketsToExpression(vector<string> expression) {
-    std::queue<string> operands;
-    std::stack<string> operators;
+/* Returns a queue with the postfix expression. */
+queue<string> Utils::GetPostfixExpression(vector<string> expression) {
+    queue<string> operands;
+    stack<string> operators;
 
     /* Uses shunting yard algorithm to get postfix expression. */
     for (string &token : expression) {
@@ -369,9 +372,6 @@ string Utils::AddBracketsToExpression(vector<string> expression) {
             }
 
         } else {
-            /* Append delimiters to prevent sub-expression matching wrongly. */
-            token = DELIMITER + token + DELIMITER;
-
             operands.push(token);
         }
     }
@@ -381,11 +381,15 @@ string Utils::AddBracketsToExpression(vector<string> expression) {
         operators.pop();
     }
 
-    std::stack<string> result;
+    return operands;
+}
+
+string Utils::GetExactExpressionWithBrackets(queue<string> postfixExpression) {
+    stack<string> result;
 
     /* Reads the postfix expression to format the expression with brackets. */
-    while (!operands.empty()) {
-        if (IsOperator(operands.front())) {
+    while (!postfixExpression.empty()) {
+        if (IsOperator(postfixExpression.front())) {
             string rightOperand = result.top();
             result.pop();
 
@@ -394,29 +398,74 @@ string Utils::AddBracketsToExpression(vector<string> expression) {
 
             /* Format with brackets. */
             string expression = string(1, CHAR_SYMBOL_OPENBRACKET);
-            expression += leftOperand + operands.front() + rightOperand;
+            expression += leftOperand + postfixExpression.front() + rightOperand;
             expression += string(1, CHAR_SYMBOL_CLOSEBRACKET);
 
-            operands.pop();
+            postfixExpression.pop();
             result.push(expression);
 
         } else {
-            result.push(operands.front());
-            operands.pop();
+            result.push(postfixExpression.front());
+            postfixExpression.pop();
         }
     }
 
-    return result.top();
+    return (result.empty()) ? "" : result.top();
+}
+
+set<string> Utils::GetSubExpressionsWithBrackets(queue<string> postfixExpression) {
+    stack<string> result;
+    set<string> results;
+
+    /* Reads the postfix expression to format the expression with brackets. */
+    while (!postfixExpression.empty()) {
+        if (IsOperator(postfixExpression.front())) {
+            string rightOperand = result.top();
+            result.pop();
+
+            string leftOperand = result.top();
+            result.pop();
+
+            /* Format with brackets. */
+            string expression = string(1, CHAR_SYMBOL_OPENBRACKET);
+            expression += leftOperand + postfixExpression.front() + rightOperand;
+            expression += string(1, CHAR_SYMBOL_CLOSEBRACKET);
+
+            postfixExpression.pop();
+            
+            result.push(expression);
+            results.insert(expression);
+
+        } else {
+            string operand = postfixExpression.front();
+            postfixExpression.pop();
+
+            result.push(operand);
+            results.insert(operand);
+        }
+    }
+
+    return results;
 }
 
 bool Utils::IsOperator(string operator_) {
-    return (operator_ == string(1, CHAR_SYMBOL_MINUS) || operator_ == string(1, CHAR_SYMBOL_PLUS) || operator_ == string(1, CHAR_SYMBOL_MULTIPLY));
+    if (operator_ == string(1, CHAR_SYMBOL_MINUS) || operator_ == string(1, CHAR_SYMBOL_PLUS)) {
+        return true;
+    }
+    
+    if (operator_ == string(1, CHAR_SYMBOL_MULTIPLY)) {
+        return true;
+    }
+
+    return false;
 }
 
 unsigned int Utils::GetOperatorPrecedence(string operator_) {
     if (operator_ == string(1, CHAR_SYMBOL_MINUS) || operator_ == string(1, CHAR_SYMBOL_PLUS)) {
         return 1;
-    } else if (operator_ == string(1, CHAR_SYMBOL_MULTIPLY)) {
+    } 
+    
+    if (operator_ == string(1, CHAR_SYMBOL_MULTIPLY)) {
         return 2;
     }
 

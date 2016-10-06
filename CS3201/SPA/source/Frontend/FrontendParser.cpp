@@ -1,5 +1,6 @@
 #include <fstream>
 #include <map>
+#include <queue>
 #include <set>
 #include <sstream>
 #include <stack>
@@ -15,7 +16,9 @@
 #include "Utils.h"
 
 using std::map;
+using std::queue;
 using std::set;
+using std::stack;
 using std::string;
 using std::vector;
 
@@ -57,7 +60,16 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateStmtTable(stmts_);
 
     /* Generate expressions for assign table. */
-    PKB::GenerateAssignTable(assigns_);
+    for (const auto &pair : expressions_) {
+        unsigned int stmtNumber = pair.first;
+        queue<string> postfixExpression = Utils::GetPostfixExpression(pair.second);
+
+        exactExpressions_.insert(std::make_pair(stmtNumber, Utils::GetExactExpressionWithBrackets(postfixExpression)));
+        subExpressions_.insert(std::make_pair(stmtNumber, Utils::GetSubExpressionsWithBrackets(postfixExpression)));
+    }
+
+    PKB::GenerateExpressionTable(exactExpressions_);
+    PKB::GenerateSubExpressionTable(subExpressions_);
 
     /* Calls table generation. Have to generate this first as other tables have dependencies on it. */
     PKB::GenerateCallsTable(calls_);
@@ -737,7 +749,7 @@ void FrontendParser::validateRecursiveCall() {
 
     /* Perform DFS to check for recursive call. */
     for (const auto &pair : calls_) {
-        std::stack<string> stack;
+        stack<string> stack;
         stack.push(pair.first);
 
         set<string> uniqueCalls;
