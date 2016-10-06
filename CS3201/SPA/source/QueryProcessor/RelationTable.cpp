@@ -2,12 +2,18 @@
 #include <vector>
 #include <unordered_map>
 #include "QueryProcessor/RelationTable.h"
+#include <algorithm>
 
 RelationTable::RelationTable() {
     initTable();
 }
 
 RelationTable::~RelationTable() {}
+
+bool RelationTable::isRelationValid(std::string relation) {
+    // wm todo: add uses modifies relation to be allowed
+    return true;
+}
 
 bool RelationTable::isArgValid(std::string relation, std::string arg, int i) {
     std::vector<std::string> argList;

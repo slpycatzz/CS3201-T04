@@ -9,6 +9,7 @@ class RelationTable {
     RelationTable();
     ~RelationTable();
     bool isArgValid(std::string, std::string, int);
+    bool isRelationValid(std::string);
 
  private:
     bool isArgFound(std::vector<std::string>, std::string);
