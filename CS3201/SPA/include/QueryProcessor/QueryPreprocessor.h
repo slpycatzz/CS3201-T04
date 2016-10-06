@@ -21,11 +21,13 @@ class QueryPreprocessor {
     std::string testMethodOut();
 	
 	//Temporarily made public to test the optimizer
+    /*
     bool parseSuchThat(std::vector<std::string> suchThat);
     bool parsePattern(std::vector<std::string> pattern);
-    bool processDeclaration(std::string declaration);
     bool parseSelect(std::vector<std::string> queryList);
-    bool parseRelation(string clauseType, string relType, vector<string>& varList);
+    bool parseRelation(std::string clauseType, std::string relType, std::vector<std::string>& varList);
+    */
+    bool processDeclaration(std::string declaration);
 
  private:
      void expect(std::string);

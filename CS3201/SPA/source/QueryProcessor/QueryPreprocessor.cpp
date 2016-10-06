@@ -27,6 +27,7 @@ QueryPreprocessor::~QueryPreprocessor() {}
  *  bool parseSelect(std::vector<std::string> queryList);
  *  bool parseRelation(std::string, std::string, std::vector<std::string>);
  */
+/*
  bool QueryPreprocessor::parseSelect(vector<string> queryList) {
     vector<string> selectList;
     vector<string> var, varType;
@@ -41,11 +42,11 @@ QueryPreprocessor::~QueryPreprocessor() {}
     }
     selectList = Utils::Split(selectVars, CHAR_SYMBOL_COMMA);
 
-    /* Iteration 1 only
-    if (selectList.size() >= 2) {
-        throw QuerySyntaxErrorException("5");
-    }
-    */
+    // Iteration 1 only
+    //if (selectList.size() >= 2) {
+    //    throw QuerySyntaxErrorException("5");
+    //}
+    
 
     // wm todo: move this loop into another function
     for (unsigned int i = 0; i < selectList.size(); i++) {
@@ -169,6 +170,7 @@ bool QueryPreprocessor::parseRelation(string clauseType, string relType, vector<
     }
     return true;
 }
+*/
  /* END: methods kept temporarily for optimizer testing [not in use] */
 
 void QueryPreprocessor::preprocessQuery(string query) {
