@@ -12,14 +12,20 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTest {
-	TEST_CLASS(QueryPreprocessorTest) {
+    TEST_CLASS(QueryPreprocessorTest) {
 public:
-	TEST_METHOD(QueryParserSelect) {
-		std::string expected, actual;
-		QueryPreprocessor qp;
-		QueryTree qt;
+    TEST_METHOD(QueryParserSelect) {
+        std::string expected, actual, query;
+        QueryPreprocessor qp;
+        QueryTree qt;
 
-        qp.preprocessQuery("assign a,a1; while w1,w2;Select a");
+        query = "assign a,a1; while w1,w2;Select a";
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            actual = ex.what();
+        }
         qt = qp.getQueryTree();
         std::vector<std::string> varList;
 
@@ -38,87 +44,106 @@ public:
         std::string query;
         query = "assign a,a1; while w1,w2; variable x;";
         query += "Select a such that Uses(a1, x)";
-        qp.preprocessQuery(query);
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            actual = ex.what();
+        }
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
 
-		resList = qt.getSuchThat();
-		expected = "Uses a1 x ";
-		for (unsigned int i = 0; i < resList.size(); i++) {
-			actual += resList[i].getClauseType() + " ";
-			for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
-				actual += resList[i].getArg()[j] + " ";
-			}
-		}
-		Assert::AreEqual(expected, actual);
-	}
-	TEST_METHOD(QueryParserPatternSelectTwo) {
-		std::string expected, actual;
-		QueryPreprocessor qp;
-		QueryTree qt;
+        resList = qt.getSuchThat();
+        expected = "Uses a1 x ";
+        for (unsigned int i = 0; i < resList.size(); i++) {
+            actual += resList[i].getClauseType() + " ";
+            for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
+                actual += resList[i].getArg()[j] + " ";
+            }
+        }
+        Assert::AreEqual(expected, actual);
+    }
+    TEST_METHOD(QueryParserPatternSelectTwo) {
+        std::string expected, actual;
+        QueryPreprocessor qp;
+        QueryTree qt;
 
-		std::string query;
-		query = "assign a,a1;";
-		query += "Select a pattern a1(\"x\",_)";
-		qp.preprocessQuery(query);
+        std::string query;
+        query = "assign a,a1;";
+        query += "Select a pattern a1(\"x\",_)";
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            actual = ex.what();
+        }
+        qt = qp.getQueryTree();
+        std::vector<Clause> resList;
 
-		qt = qp.getQueryTree();
-		std::vector<Clause> resList;
+        resList = qt.getPattern();
+        expected = "pattern \"x\" _ a1 ";
+        for (unsigned int i = 0; i < resList.size(); i++) {
+            actual += resList[i].getClauseType() + " ";
+            for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
+                actual += resList[i].getArg()[j] + " ";
+            }
+        }
+        Assert::AreEqual(expected, actual);
+    }
+    TEST_METHOD(QueryParserSuchThatWithStringConstant) {
+        std::string expected, actual;
+        QueryPreprocessor qp;
+        QueryTree qt;
 
-		resList = qt.getPattern();
-		expected = "pattern \"x\" _ a1 ";
-		for (unsigned int i = 0; i < resList.size(); i++) {
-			actual += resList[i].getClauseType() + " ";
-			for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
-				actual += resList[i].getArg()[j] + " ";
-			}
-		}
-		Assert::AreEqual(expected, actual);
-	}
-	TEST_METHOD(QueryParserSuchThatWithStringConstant) {
-		std::string expected, actual;
-		QueryPreprocessor qp;
-		QueryTree qt;
+        std::string query;
+        query = "assign a,a1; variable x;";
+        query += "Select a such that Uses(a1, \"x\")";
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            actual = ex.what();
+        }
+        qt = qp.getQueryTree();
+        std::vector<Clause> resList;
 
-		std::string query;
-		query = "assign a,a1; variable x;";
-		query += "Select a such that Uses(a1, \"x\")";
-		qp.preprocessQuery(query);
-		qt = qp.getQueryTree();
-		std::vector<Clause> resList;
+        resList = qt.getSuchThat();
+        expected = "Uses a1 \"x\" ";
+        for (unsigned int i = 0; i < resList.size(); i++) {
+            actual += resList[i].getClauseType() + " ";
+            for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
+                actual += resList[i].getArg()[j] + " ";
+            }
+        }
+        Assert::AreEqual(expected, actual);
+    }
+    TEST_METHOD(QueryParserSuchThatWithNumericConstant) {
+        std::string expected, actual;
+        QueryPreprocessor qp;
+        QueryTree qt;
 
-		resList = qt.getSuchThat();
-		expected = "Uses a1 \"x\" ";
-		for (unsigned int i = 0; i < resList.size(); i++) {
-			actual += resList[i].getClauseType() + " ";
-			for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
-				actual += resList[i].getArg()[j] + " ";
-			}
-		}
-		Assert::AreEqual(expected, actual);
-	}
-	TEST_METHOD(QueryParserSuchThatWithNumericConstant) {
-		std::string expected, actual;
-		QueryPreprocessor qp;
-		QueryTree qt;
+        std::string query;
+        query = "assign a,a1; variable x;";
+        query += "Select a such that Uses(1, x)";
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            actual = ex.what();
+        }
+        qt = qp.getQueryTree();
+        std::vector<Clause> resList;
 
-		std::string query;
-		query = "assign a,a1; variable x;";
-		query += "Select a such that Uses(1, x)";
-		qp.preprocessQuery(query);
-		qt = qp.getQueryTree();
-		std::vector<Clause> resList;
-
-		resList = qt.getSuchThat();
-		expected = "Uses 1 x ";
-		for (unsigned int i = 0; i < resList.size(); i++) {
-			actual += resList[i].getClauseType() + " ";
-			for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
-				actual += resList[i].getArg()[j] + " ";
-			}
-		}
-		Assert::AreEqual(expected, actual);
-	}
+        resList = qt.getSuchThat();
+        expected = "Uses 1 x ";
+        for (unsigned int i = 0; i < resList.size(); i++) {
+            actual += resList[i].getClauseType() + " ";
+            for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
+                actual += resList[i].getArg()[j] + " ";
+            }
+        }
+        Assert::AreEqual(expected, actual);
+    }
     TEST_METHOD(QueryParserInvalidQuery) {
         std::string expected, actual;
         QueryPreprocessor qp;
@@ -139,66 +164,81 @@ public:
         }
         Assert::AreEqual(isValid, false);
     }
-	TEST_METHOD(QueryParserSelectOneVars) {
-		std::string expected, actual;
-		QueryPreprocessor qp;
-		QueryTree qt;
+    TEST_METHOD(QueryParserSelectOneVars) {
+        std::string expected, actual, query;
+        QueryPreprocessor qp;
+        QueryTree qt;
 
-		qp.preprocessQuery("assign a,a1; while w1,w2;Select a");
-		qt = qp.getQueryTree();
-		std::vector<std::string> varList;
+        query = "assign a,a1; while w1,w2;Select a";
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            actual = ex.what();
+        }
+        qt = qp.getQueryTree();
+        std::vector<std::string> varList;
 
-		varList = qt.getResults();
-		expected = "a ";
-		for (unsigned int i = 0; i < varList.size(); i++) {
-			actual += varList[i] + " ";
-		}
-		Assert::AreEqual(expected, actual);
-	}
-	TEST_METHOD(QueryParserSuchThatTwoVars) {
-		std::string expected, actual;
-		QueryPreprocessor qp;
-		QueryTree qt;
+        varList = qt.getResults();
+        expected = "a ";
+        for (unsigned int i = 0; i < varList.size(); i++) {
+            actual += varList[i] + " ";
+        }
+        Assert::AreEqual(expected, actual);
+    }
+    TEST_METHOD(QueryParserSuchThatTwoVars) {
+        std::string expected, actual;
+        QueryPreprocessor qp;
+        QueryTree qt;
 
-		std::string query;
-		query = "assign a,a1; variable x;";
-		query += "Select a such that Uses(a1, x)";
-		qp.preprocessQuery(query);
-		qt = qp.getQueryTree();
-		std::vector<Clause> resList;
+        std::string query;
+        query = "assign a,a1; variable x;";
+        query += "Select a such that Uses(a1, x)";
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            actual = ex.what();
+        }
+        qt = qp.getQueryTree();
+        std::vector<Clause> resList;
 
-		resList = qt.getSuchThat();
-		expected = "Uses a1 x ";
-		for (unsigned int i = 0; i < resList.size(); i++) {
-			actual += resList[i].getClauseType() + " ";
-			for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
-				actual += resList[i].getArg()[j] + " ";
-			}
-		}
-	}
-	TEST_METHOD(QueryParserPattern) {
-		std::string expected, actual;
-		QueryPreprocessor qp;
-		QueryTree qt;
+        resList = qt.getSuchThat();
+        expected = "Uses a1 x ";
+        for (unsigned int i = 0; i < resList.size(); i++) {
+            actual += resList[i].getClauseType() + " ";
+            for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
+                actual += resList[i].getArg()[j] + " ";
+            }
+        }
+    }
+    TEST_METHOD(QueryParserPattern) {
+        std::string expected, actual;
+        QueryPreprocessor qp;
+        QueryTree qt;
 
-		std::string query;
-		query = "assign a,a1;";
-		query += "Select a pattern a1(\"x\",_)";
-		qp.preprocessQuery(query);
+        std::string query;
+        query = "assign a,a1;";
+        query += "Select a pattern a1(\"x\",_)";
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            actual = ex.what();
+        }
+        qt = qp.getQueryTree();
+        std::vector<Clause> resList;
 
-		qt = qp.getQueryTree();
-		std::vector<Clause> resList;
-
-		resList = qt.getPattern();
-		expected = "pattern \"x\" _ a1 ";
-		for (unsigned int i = 0; i < resList.size(); i++) {
-			actual += resList[i].getClauseType() + " ";
-			for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
-				actual += resList[i].getArg()[j] + " ";
-			}
-		}
-		Assert::AreEqual(expected, actual);
-	}
+        resList = qt.getPattern();
+        expected = "pattern \"x\" _ a1 ";
+        for (unsigned int i = 0; i < resList.size(); i++) {
+            actual += resList[i].getClauseType() + " ";
+            for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
+                actual += resList[i].getArg()[j] + " ";
+            }
+        }
+        Assert::AreEqual(expected, actual);
+    }
     TEST_METHOD(ExtractQueryTreeOneClause) {
         std::string query = "assign a; Select a pattern a(\"a\", _)";
         QueryPreprocessor queryPreprocessor = QueryPreprocessor();
@@ -225,7 +265,7 @@ public:
             }
         }
 
-        expected = "assign a; assign a; pattern \"a\" _ a "; //declaration; select a; pattern
+        expected = "assign a; assign a; pattern \"a\" _ a ";  // declaration; select a; pattern
         Assert::AreEqual(actual, expected);
     }
     TEST_METHOD(ExtractQueryTreeTwoClauses) {
@@ -254,7 +294,7 @@ public:
             }
         }
 
-        expected = "assign a; assign a1; assign a; Follows a a1 pattern \"e\" _ a "; //declaration; select a; Follows
+        expected = "assign a; assign a1; assign a; Follows a a1 pattern \"e\" _ a ";  // declaration; select a; Follows
         Assert::AreEqual(actual, expected);
     }
     };
