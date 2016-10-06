@@ -2,7 +2,6 @@
 #include <vector>
 #include <unordered_map>
 #include "QueryProcessor/RelationTable.h"
-#include <algorithm>
 
 RelationTable::RelationTable() {
     initTable();
@@ -10,12 +9,21 @@ RelationTable::RelationTable() {
 
 RelationTable::~RelationTable() {}
 
-bool RelationTable::isRelationValid(std::string relation) {
-    // wm todo: add uses modifies relation to be allowed
+bool RelationTable::isRelationValid(Symbol relation, Symbol clause) {
+    // clause = PATTERN
+    // relation = ASSIGN/IF/WHILE [for-pattern]
+    // relation = USES/MODIFIES/... [for suchthat]
+
+    // wm todo: check textbook...
     return true;
 }
 
+// wm todo change to Symbol...
 bool RelationTable::isArgValid(std::string relation, std::string arg, int i) {
+    // relation = ASSIGN/IF/WHILE [for-pattern]
+    // relation = USES/MODIFIES/... [for suchthat]
+    // arg = ASSIGN/BOOLEAN/VARIABLE...
+
     std::vector<std::string> argList;
 
     switch (i) {

@@ -19,22 +19,26 @@ class QueryPreprocessor {
     void preprocessQuery(std::string query);
     QueryTree getQueryTree();
     std::string testMethodOut();
-	
-	//Temporarily made public to test the optimizer
+
+    // Temporarily made public to test the optimizer
     /*
     bool parseSuchThat(std::vector<std::string> suchThat);
     bool parsePattern(std::vector<std::string> pattern);
     bool parseSelect(std::vector<std::string> queryList);
     bool parseRelation(std::string clauseType, std::string relType, std::vector<std::string>& varList);
     */
+
+    // usage: e.g. "Select <a,a1> such that Uses(a1,"x")"
     bool processDeclaration(std::string declaration);
 
  private:
-     void expect(std::string);
-     void expect(char);
-     int accept(std::string);
-     int accept(char);
-     int accept(Symbol);
+     void expect(std::string word);
+     void expect(char token);
+     int accept(std::string word);
+     int accept(char token);
+
+     /* return 1 if token found, do nothing after */
+     int accept(Symbol varType);
      std::string peek();
 
      std::string getVar();
