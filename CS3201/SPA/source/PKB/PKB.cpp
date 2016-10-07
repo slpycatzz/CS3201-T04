@@ -25,6 +25,7 @@ unsigned int PKB::numberOfCall_      = 0;
 Table<unsigned int, string> PKB::constantTable_;
 Table<unsigned int, string> PKB::variableTable_;
 Table<unsigned int, string> PKB::procedureTable_;
+Table<unsigned int, string> PKB::controlVariableTable_;
 Table<unsigned int, string> PKB::stmtTable_;
 
 Table<unsigned int, string> PKB::expressionTable_;
@@ -185,6 +186,40 @@ void PKB::PrintProcedureTable() {
 }
 
 /* END   - Procedure table functions */
+/* START - Control variable table functions */
+
+void PKB::GenerateControlVariableTable(map<unsigned int, string> controlVariables) {
+    for (auto &controlVariable : controlVariables) {
+        controlVariableTable_.insert(controlVariable.first, controlVariable.second);
+    }
+}
+
+bool PKB::HasControlVariable(std::string controlVariable) {
+    return controlVariableTable_.hasValue(controlVariable);
+}
+
+bool PKB::HasControlVariableAtStmtNumber(unsigned int stmtNumber, string controlVariable) {
+    return controlVariableTable_.hasKeyToValue(stmtNumber, controlVariable);
+}
+
+string PKB::GetControlVariable(unsigned int stmtNumber) {
+    return (controlVariableTable_.hasKey(stmtNumber)) ? controlVariableTable_.getValue(stmtNumber) : "";
+}
+
+vector<string> PKB::GetAllControlVariables() {
+    set<string> result = controlVariableTable_.getValues();
+
+    vector<string> vec(result.size());
+    std::copy(result.begin(), result.end(), vec.begin());
+
+    return vec;
+}
+
+void PKB::PrintControlVariableTable() {
+    controlVariableTable_.printTable();
+}
+
+/* END - Control variable table functions */
 /* START - Stmt table functions */
 
 void PKB::GenerateStmtTable(map<unsigned int, string> stmts) {
@@ -236,7 +271,7 @@ void PKB::PrintStmtTable() {
 }
 
 /* END   - Stmt table functions */
-/* START - Assign table functions */
+/* START - Expression table functions */
 
 void PKB::GenerateExpressionTable(map<unsigned int, string> expressions) {
     for (auto &pair : expressions) {
@@ -250,7 +285,7 @@ void PKB::GenerateSubExpressionTable(map<unsigned int, set<string>> subExpressio
     }
 }
 
-/* END   - Assign table functions */
+/* END   - Expression table functions */
 /* START - Calls table functions */
 
 void PKB::GenerateCallsTable(map<string, set<string>> calls) {

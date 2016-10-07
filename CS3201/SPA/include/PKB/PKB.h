@@ -42,6 +42,13 @@ class PKB {
     static std::vector<std::string> GetAllProcedures();
     static void PrintProcedureTable();
 
+    static void GenerateControlVariableTable(std::map<unsigned int, std::string> controlVariables);
+    static bool HasControlVariable(std::string controlVariable);
+    static bool HasControlVariableAtStmtNumber(unsigned int stmtNumber, std::string controlVariable);
+    static std::string GetControlVariable(unsigned int stmtNumber);
+    static std::vector<std::string> GetAllControlVariables();
+    static void PrintControlVariableTable();
+
     static void GenerateStmtTable(std::map<unsigned int, std::string> stmts);
     static std::string GetStmtSymbol(unsigned int stmtNumber);
     static std::vector<unsigned int> GetSymbolStmtNumbers(std::string symbol);
@@ -144,6 +151,7 @@ class PKB {
     static Table<unsigned int, std::string> constantTable_;                         /* map<index, constantValue> */
     static Table<unsigned int, std::string> variableTable_;                         /* map<index, variableName>  */
     static Table<unsigned int, std::string> procedureTable_;                        /* map<index, procedureName> */
+    static Table<unsigned int, std::string> controlVariableTable_;                  /* map<stmtNumber, variableName> */
     static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbol>   */
 
     static Table<unsigned int, std::string> expressionTable_;                       /* map<stmtNumber, exact expression> */

@@ -57,9 +57,10 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateConstantTable(constants_);
     PKB::GenerateVariableTable(variableNames_);
     PKB::GenerateProcedureTable(procedureNames_);
+    PKB::GenerateControlVariableTable(controlVariables_);
     PKB::GenerateStmtTable(stmts_);
 
-    /* Generate expressions for assign table. */
+    /* Generate expressions for expression tables. */
     for (const auto &pair : expressions_) {
         unsigned int stmtNumber = pair.first;
         queue<string> postfixExpression = Utils::GetPostfixExpression(pair.second);
@@ -273,6 +274,9 @@ TreeNode* FrontendParser::callWhileRecognizer() {
     /* For PKB variable table generation. */
     variableNames_.insert(controlVariableName);
 
+    /* For PKB control variable table generation. */
+    controlVariables_.insert(std::make_pair(stmtNumber, controlVariableName));
+
     /* For PKB uses table generation. */
     uses_[stmtNumber].insert(controlVariableName);
 
@@ -295,6 +299,9 @@ TreeNode* FrontendParser::callIfRecognizer() {
 
     /* For PKB variable table generation. */
     variableNames_.insert(controlVariableName);
+
+    /* For PKB control variable table generation. */
+    controlVariables_.insert(std::make_pair(stmtNumber, controlVariableName));
 
     /* For PKB uses table generation. */
     uses_[stmtNumber].insert(controlVariableName);
@@ -349,10 +356,15 @@ TreeNode* FrontendParser::callAssignRecognizer() {
     /* For PKB variable table generation. */
     variableNames_.insert(controlVariableName);
 
+    /* For PKB control variable table generation. */
+    controlVariables_.insert(std::make_pair(stmtNumber, controlVariableName));
+
     /* For PKB modifies table generation. */
     modifies_[stmtNumber].insert(controlVariableName);
 
     TreeNode* assignNode = PKB::CreateASTNode(ASSIGN, stmtNumber_++);
+    
+    /* Deprecated. */
     assigns_.insert(std::make_pair(stmtNumber, assignNode));
 
     assignNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
@@ -363,7 +375,7 @@ TreeNode* FrontendParser::callAssignRecognizer() {
 
     expect(CHAR_SYMBOL_SEMICOLON);
 
-    /* For PKB assign table generation. */
+    /* For PKB expression tables generation. */
     expressions_.insert(std::make_pair(stmtNumber, expression_));
     expression_.clear();
 

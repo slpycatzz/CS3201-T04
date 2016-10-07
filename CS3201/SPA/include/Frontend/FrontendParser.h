@@ -56,10 +56,6 @@ class FrontendParser {
 
     /* PKB tables helper variables. */
     std::string currentProcedureName_;
-    std::vector<std::string> expression_;
-    std::map<unsigned int, std::vector<std::string>> expressions_;
-    std::map<unsigned int, std::string> exactExpressions_;
-    std::map<unsigned int, std::set<std::string>> subExpressions_;
     unsigned int currentTreeLevel_;
     std::vector<unsigned int> stmtsLevels_;
     std::map<unsigned int, std::string> callStmtNumbers_;
@@ -70,8 +66,14 @@ class FrontendParser {
     std::set<std::string> constants_;
     std::set<std::string> variableNames_;
     std::set<std::string> procedureNames_;
+    std::map<unsigned int, std::string> controlVariables_;
     std::map<unsigned int, std::string> stmts_;
-    std::map<unsigned int, TreeNode*> assigns_;
+
+    /* For PKB expression tables generation. */
+    std::vector<std::string> expression_;
+    std::map<unsigned int, std::vector<std::string>> expressions_;
+    std::map<unsigned int, std::string> exactExpressions_;
+    std::map<unsigned int, std::set<std::string>> subExpressions_;
 
     /* For PKB design abstraction table generation. */
     std::map<std::string, std::set<std::string>> calls_;
@@ -81,4 +83,7 @@ class FrontendParser {
     std::map<std::string, std::set<std::string>> usesProcedure_;
     std::map<unsigned int, std::set<unsigned int>> parent_;
     std::map<unsigned int, unsigned int> follows_;
+
+    /* Deprecated. */
+    std::map<unsigned int, TreeNode*> assigns_;
 };
