@@ -60,6 +60,9 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateControlVariableTable(controlVariables_);
     PKB::GenerateStmtTable(stmts_);
 
+    /* Deprecated. */
+    PKB::GenerateAssignTable(assigns_);
+
     /* Generate expressions for expression tables. */
     for (const auto &pair : expressions_) {
         unsigned int stmtNumber = pair.first;
