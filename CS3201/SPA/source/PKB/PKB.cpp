@@ -285,6 +285,52 @@ void PKB::GenerateSubExpressionTable(map<unsigned int, set<string>> subExpressio
     }
 }
 
+bool PKB::IsExactPattern(unsigned int stmtNumber, string controlVariable, string expression) {
+    string stmtSymbol = GetStmtSymbol(stmtNumber);
+
+    if (stmtSymbol == SYMBOL_WHILE || stmtSymbol == SYMBOL_IF) {
+        return HasControlVariableAtStmtNumber(stmtNumber, controlVariable);
+    
+    } else if (stmtSymbol == SYMBOL_ASSIGN) {
+        if (HasControlVariableAtStmtNumber(stmtNumber, controlVariable)) {
+            return IsExactExpression(stmtNumber, expression);
+        }
+    }
+
+    return false;
+}
+
+bool PKB::IsSubPattern(unsigned int stmtNumber, string controlVariable, string subExpression) {
+    string stmtSymbol = GetStmtSymbol(stmtNumber);
+
+    if (stmtSymbol == SYMBOL_WHILE || stmtSymbol == SYMBOL_IF) {
+        return HasControlVariableAtStmtNumber(stmtNumber, controlVariable);
+
+    } else if (stmtSymbol == SYMBOL_ASSIGN) {
+        if (HasControlVariableAtStmtNumber(stmtNumber, controlVariable)) {
+            return IsSubExpression(stmtNumber, subExpression);
+        }
+    }
+
+    return false;
+}
+
+bool PKB::HasExactExpression(string expression) {
+    return expressionTable_.hasValue(expression);
+}
+
+bool PKB::HasSubExpression(string subExpression) {
+    return subExpressionTable_.hasValue(subExpression);
+}
+
+bool PKB::IsExactExpression(unsigned int stmtNumber, string expression) {
+    return expressionTable_.hasKeyToValue(stmtNumber, expression);
+}
+
+bool PKB::IsSubExpression(unsigned int stmtNumber, string subExpression) {
+    return subExpressionTable_.hasKeyToValue(stmtNumber, subExpression);
+}
+
 /* END   - Expression table functions */
 /* START - Calls table functions */
 

@@ -57,6 +57,12 @@ class PKB {
 
     static void GenerateExpressionTable(std::map<unsigned int, std::string> expressions);
     static void GenerateSubExpressionTable(std::map<unsigned int, std::set<std::string>> subExpressions);
+    static bool IsExactPattern(unsigned int stmtNumber, std::string controlVariable, std::string expression);
+    static bool IsSubPattern(unsigned int stmtNumber, std::string controlVariable, std::string subExpression);
+    static bool HasExactExpression(std::string expression);
+    static bool HasSubExpression(std::string subExpression);
+    static bool IsExactExpression(unsigned int stmtNumber, std::string expression);
+    static bool IsSubExpression(unsigned int stmtNumber, std::string subExpression);
 
     static void GenerateCallsTable(std::map<std::string, std::set<std::string>> calls);
     static bool IsCalls(std::string calling, std::string called);
