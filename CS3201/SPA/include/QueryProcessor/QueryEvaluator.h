@@ -65,7 +65,7 @@ class QueryEvaluator {
 	 PartialCombinationList mergeCombinationList(PartialCombinationList &combList1,
 		 PartialCombinationList &combList2);
 
-	 bool isBoolSelect(std::unordered_map<std::string, Symbol>& selectList);
+	 bool isBoolSelect(std::vector<std::string>& selectList);
 
 	 // evaluate a single clause to see if it is true
 	 bool evaluateClause(Clause &clause, CandidateCombination &candMap);

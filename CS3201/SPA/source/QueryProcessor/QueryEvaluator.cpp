@@ -234,18 +234,19 @@ bool QueryEvaluator::evaluateQuery(QueryTree &query)
 
 ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 {
-	std::vector<Clause> clauseList = query.getClauses("suchThat pattern");
+	std::vector<Clause> clauseList = query.getClauses();
 	TotalCombinationList allCandidates(getTotalCandidateList(query));
-	std::unordered_map<VarName, Symbol> selectMap = query.getSelect();
+	// std::unordered_map<VarName, Symbol> selectMap = query.getSelect();
 	std::vector<VarName> selectList;
-	for (auto kv : selectMap) selectList.push_back(kv.first);
+	//for (auto kv : selectMap) selectList.push_back(kv.first);
+    selectList = query.getResults();
 
 	bool hasMoreCandidates = false;
 	for (Clause clause : clauseList) {
 		hasMoreCandidates = selectClauseResults(clause, allCandidates);
 		if (!hasMoreCandidates) break;
 	}
-	if (isBoolSelect(selectMap)) {
+	if (isBoolSelect(selectList)) {
 		ResultList resultList;
 		if (hasMoreCandidates) {
 			resultList.push_back(SYMBOL_TRUE);
@@ -330,8 +331,8 @@ PartialCombinationList QueryEvaluator::mergeCombinationList(PartialCombinationLi
 	return result;
 }
 
-bool QueryEvaluator::isBoolSelect(std::unordered_map<std::string, Symbol> &selectList) {
-	if (selectList.size() == 1 && selectList.begin()->second == BOOLEAN) {
+bool QueryEvaluator::isBoolSelect(std::vector<std::string> &selectList) {
+	if (selectList.size() == 1 && selectList[0] == SYMBOL_BOOLEAN) {
 		return true;
 	}
 	else {
