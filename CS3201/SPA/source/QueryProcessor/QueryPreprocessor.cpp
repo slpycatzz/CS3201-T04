@@ -66,13 +66,12 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
     return true;
 }
 
-// wm TODO: case insensitive str_cmp
+// wm todo: case-insensitive compare
 bool QueryPreprocessor::processQuery(string query) {
     queryList = Utils::Split(Utils::TrimLeadingSpaces(query), ' ');
     cur = 0;
     /* Expecting first token to be Select (case-sensitive) */
     if (queryList[cur] != SYMBOL_SELECT) {
-        // std::cout << "no select found";
         throw QuerySyntaxErrorException("4");
     }
 
@@ -83,7 +82,7 @@ bool QueryPreprocessor::processQuery(string query) {
         return true;
     }
 
-    /* remaining string: ...[such that]...[pattern]...[with]...*/
+    /* remaining string: ...[such that]...and...[pattern]...and...[with]...and...*/
     Symbol prevClause = INVALID;
 
     /* continue parsing [such that... pattern...] clauses until end of query */
@@ -120,11 +119,13 @@ void QueryPreprocessor::parseSelect() {
     if (accept('<')) {
         while (accept('>') == 0) {
             if (accept(VARIABLE)) {
-                var.push_back(getVar());  // wm todo getVariable after validation for saving
+                var.push_back(getVar());
                 temp = peek();
                 queryList[cur] = temp.substr(getVar().size());
             } else if (accept(SYMBOL_BOOLEAN)) {
-                var.push_back(getVar());  // wm todo getVariable after validation for saving
+                // case: Select <BOOLEAN,BOOLEAN>
+                // wm todo: this may be an invalid case
+                var.push_back(SYMBOL_BOOLEAN);
                 temp = peek();
                 queryList[cur] = temp.substr(getVar().size());
             } else {
@@ -138,13 +139,17 @@ void QueryPreprocessor::parseSelect() {
             temp = peek();
             queryList[cur] = temp.substr(getVar().size());
         } else if (accept(SYMBOL_BOOLEAN)) {
-            var.push_back("BOOLEAN");
+            var.push_back(SYMBOL_BOOLEAN);
             temp = peek();
             queryList[cur] = temp.substr(getVar().size());
             varSymbolMap["BOOLEAN"] = BOOLEAN;
         } else {
             throw QuerySyntaxErrorException("6");
         }
+    }
+    if (var.size() < 1) {
+        // No QueryResult found
+        throw QuerySyntaxErrorException("01");
     }
     for (string v : var) {
         qt.insertSelect(v, Constants::SymbolToString(varSymbolMap[v]));
@@ -153,13 +158,18 @@ void QueryPreprocessor::parseSelect() {
 
 void QueryPreprocessor::parseSuchThat() {
     vector<string> argList;
-    string relation;
+    Symbol relation;
+    string relationString;
     expect("such");
     expect("that");
-    relation = peek();
-    relation = relation.substr(0, relation.find_first_of('('));
-    queryList[cur] = peek().substr(relation.size());
-    if (!r.isRelationValid(Constants::StringToSymbol(relation), SUCH_THAT)) {
+    relationString = peek().substr(0, peek().find_first_of('('));
+    relation = Constants::StringToSymbol(relationString);
+    if (relation == INVALID) {
+        throw QuerySyntaxErrorException("02");
+    }
+
+    queryList[cur] = peek().substr(relationString.size());
+    if (!r.isRelationValid(relation, SUCH_THAT)) {
         throw QuerySyntaxErrorException("I");
     }
     /* case: uses(a1,1)*/
@@ -167,14 +177,14 @@ void QueryPreprocessor::parseSuchThat() {
     int i = 0;
     while (i < 2) {
         if (accept(VARIABLE)) {
-            string varType;
-            varType = Constants::SymbolToString(varSymbolMap[getVar()]);
-            if (varType == "Invalid") {
-                varType = "variable";
+            Symbol varType;
+            varType = getVarType(getVar());
+            if (varType == INVALID) {
+                // case: var = "x" is not mapped to a varType
+                varType = VARIABLE;
             }
-
-            if (r.isArgValid(relation, varType, i)) {
-                argList.push_back(getVar());  // wm todo getVariable after validation for saving
+            if (r.isArgValid(relation, Constants::SymbolToString(varType), i)) {
+                argList.push_back(getVar());
             } else {
                 throw QuerySyntaxErrorException("7");
             }
@@ -186,6 +196,15 @@ void QueryPreprocessor::parseSuchThat() {
                 throw QuerySyntaxErrorException("8");
             }
             queryList[cur] = peek().substr(getVar().size());
+        } else if (accept(UNDERSCORE)) {
+        if (r.isArgValid(relation, "_", i)) {
+            argList.push_back("_");
+        } else {
+            throw QuerySyntaxErrorException("14");
+        }
+
+        queryList[cur] = peek().substr(getVar().size());
+
         } else {
             throw QuerySyntaxErrorException("9");
         }
@@ -193,7 +212,7 @@ void QueryPreprocessor::parseSuchThat() {
         i++;
     }
     expect(')');
-    qt.insertSuchThat(relation, argList);
+    qt.insertSuchThat(relationString, argList);
 }
 
 /* expects the following to be set:
@@ -202,11 +221,10 @@ void QueryPreprocessor::parseSuchThat() {
     int cur; // index of parsed queryList
 */
 void QueryPreprocessor::parsePattern() {
-    string relation, rRelation;
+    string relation;
     vector<string> argList;
 
     expect("pattern");
-    rRelation = "pattern";
     relation = peek();
     relation = relation.substr(0, relation.find_first_of('('));
 
@@ -224,28 +242,38 @@ void QueryPreprocessor::parsePattern() {
     do {
         // wm todo: constant variable type
         if (accept(VARIABLE)) {
-            string varType = Constants::SymbolToString(varSymbolMap[getVar()]);
-            if (varType == "Invalid") {
-                varType = "variable";
+            Symbol varType = varSymbolMap[getVar()];
+            if (varType == INVALID) {
+                // case: var = "a" is not mapped to a varType
+                varType = VARIABLE;
             }
-            if (r.isArgValid(Constants::SymbolToString(varSymbolMap[relation]), varType, i)) {
+            if (r.isArgValid(varSymbolMap[relation], Constants::SymbolToString(varType), i)) {
                 argList.push_back(getVar());
             } else {
                 throw QuerySyntaxErrorException("12");
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(CONSTANT)) {
-            if (r.isArgValid(relation, Constants::SymbolToString(CONSTANT), i)) {
+            if (r.isArgValid(varSymbolMap[relation], Constants::SymbolToString(CONSTANT), i)) {
                 argList.push_back(getVar());
             } else {
                 throw QuerySyntaxErrorException("13");
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(UNDERSCORE)) {
-            if (r.isArgValid(rRelation, "underscore", i)) {
-                argList.push_back("underscore");
+            if (r.isArgValid(varSymbolMap[relation], "_", i)) {
+                argList.push_back("_");
             } else {
                 throw QuerySyntaxErrorException("14");
+            }
+
+            queryList[cur] = peek().substr(getVar().size());
+        } else if (accept(PATTERN)) {
+            // case: pattern expression string e.g. _"a+1"_, "a+1"
+            if (r.isArgValid(Constants::StringToSymbol(relation), "pattern", i)) {
+                argList.push_back(getVar());
+            } else {
+                throw QuerySyntaxErrorException("14a");
             }
 
             queryList[cur] = peek().substr(getVar().size());
@@ -417,9 +445,9 @@ vector<string> QueryPreprocessor::getNextToken(vector<string> queryList) {
 }
 
 // todo: return symbol enum type
-string QueryPreprocessor::getVarType(string var) {
-    Symbol varType = varSymbolMap.find(var)->second;
-    return Constants::SymbolToString(varType);
+Symbol QueryPreprocessor::getVarType(string var) {
+    Symbol varType = varSymbolMap[var];
+    return varType;
 }
 
 QueryTree QueryPreprocessor::getQueryTree() {
@@ -458,7 +486,7 @@ int QueryPreprocessor::accept(char token) {
 
 // if(found) { cur.substr + remove Null; return 1 } else { return 0 }
 int QueryPreprocessor::accept(Symbol token) {
-    // token = VARIABLE/BOOLEAN
+    // token = VARIABLE/UNDERSCORE
 
     string var = getVar();
     if (var.size() < 1) {
@@ -469,21 +497,34 @@ int QueryPreprocessor::accept(Symbol token) {
     default:
         return 0;
     case VARIABLE:
-        /* validate for variable a1,"a+1+a", _"a"_ */
+        /* validate for variable a1,"a1" */
         if (isVarExist(var)) {
             return 1;
-        } else if (isConstantVar(var)) {
-                    return 1;
+        } else {
+            string varName = var.substr(1, var.size()-2);
+            if (isValidVarName(varName)) {
+                return 1;
+            }
         }
         break;
     case CONSTANT:
         /* validate for constant number 1,2,123 */
-        return 1;
-    case BOOLEAN:
+        if (Utils::IsNonNegativeNumeric(var)) {
+            return 1;
+        }
+        break;
+    case UNDERSCORE:
         /* validate for _ wildcard */
         if (var == "_") {
             return 1;
         }
+        break;
+    case PATTERN:
+        /* validate for pattern expr "a+1", _"a"_ */
+        if (isConstantVar(var)) {
+            return 1;
+        }
+        break;
     }
     return 0;
 }

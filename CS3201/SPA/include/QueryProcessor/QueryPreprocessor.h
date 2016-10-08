@@ -61,7 +61,7 @@ class QueryPreprocessor {
 
      std::vector<std::string> getNextToken(std::vector<std::string> queryList);
 
-     std::string getVarType(std::string var);
+     Symbol getVarType(std::string var);
 
      std::vector<std::string> queries;
      std::vector<std::string> queryList;
@@ -69,7 +69,6 @@ class QueryPreprocessor {
      Symbol prevRelation;
      int cur;
 
-     std::unordered_map<std::string, std::string> varMap;
      std::unordered_map<std::string, Symbol> varSymbolMap;
      RelationTable r;
      QueryTree qt;
