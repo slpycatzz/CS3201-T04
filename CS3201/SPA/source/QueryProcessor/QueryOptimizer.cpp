@@ -19,7 +19,9 @@ QueryTree QueryOptimizer::optimize(QueryTree qt) {
     vector<vector<Clause>> unselectedGroup;
     vector<vector<Clause>> selectedGroup;
 
-    vector<Clause> allClauses(queryTree.getClauses("suchThat pattern"));
+    vector<Symbol> clauseList = {SUCH_THAT, PATTERN};
+
+    vector<Clause> allClauses(queryTree.getClauses(clauseList));
 
     for (unsigned i = 0; i < allClauses.size(); i++) {
         Clause clause = allClauses.at(i);
