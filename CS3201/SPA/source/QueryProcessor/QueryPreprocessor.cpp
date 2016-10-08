@@ -151,9 +151,8 @@ void QueryPreprocessor::parseSelect() {
         // No QueryResult found
         throw QuerySyntaxErrorException("01");
     }
-    for (string v : var) {
-        qt.insertSelect(v, Constants::SymbolToString(varSymbolMap[v]));
-    }
+
+    qt.insert(QUERY_RESULT, "placeholder", var);
 }
 
 void QueryPreprocessor::parseSuchThat() {
@@ -212,7 +211,7 @@ void QueryPreprocessor::parseSuchThat() {
         i++;
     }
     expect(')');
-    qt.insertSuchThat(relationString, argList);
+    qt.insert(SUCH_THAT, relationString, argList);
 }
 
 /* expects the following to be set:
@@ -285,7 +284,7 @@ void QueryPreprocessor::parsePattern() {
     expect(')');
 
     argList.push_back(relation);
-    qt.insertPattern("pattern", argList);
+    qt.insert(PATTERN, "pattern", argList);
 }
 
 void QueryPreprocessor::parseAnd(Symbol prevClause) {

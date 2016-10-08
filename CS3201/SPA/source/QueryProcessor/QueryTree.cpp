@@ -11,70 +11,65 @@ QueryTree::QueryTree() {}
 
 QueryTree::~QueryTree() {}
 
-bool QueryTree::insertDeclaration(std::unordered_map<std::string, Symbol> varSymbolMap) {
-    for (std::pair<std::string, Symbol> pair : varSymbolMap) {
+bool QueryTree::insertDeclaration(std::unordered_map<std::string, Symbol> variableMap) {
+    for (std::pair<std::string, Symbol> pair : variableMap) {
         varMap.insert(pair);
     }
     return true;
 }
 
-/* should be insert to varList only, varSelectMap to be phased out */
-bool QueryTree::insertSelect(std::string varName, std::string varType) {
-    Symbol symbol = Constants::StringToSymbol(varType);
-    varSelectMap[varName] = symbol;
-    varList.push_back(varName);
-    return true;
-}
-
-// ClauseType(Uses,Parent...), ClauseArgList, ClauseArgCount
-bool QueryTree::insertSuchThat(std::string clauseName, std::vector<std::string> argList) {
+// argType = varType(ASSIGN,CALL,etc...)    [for Select]
+// argType = relation(uses,modifies,etc...) [for-suchthat]
+// argType = varName(a1,w,ifstmt, etc...)   [for-pattern]
+bool QueryTree::insert(Symbol type, std::string argType, std::vector<std::string> argList) {
     Clause clause;
-    clause.setClauseType(clauseName);
-    clause.setArg(argList);
+    switch (type) {
+    case QUERY_RESULT:
+        for (std::string var : argList) {
+            varList.push_back(var);
+        }
+        return true;
+    case SUCH_THAT:
+        clause.setClauseType(argType);
+        clause.setArg(argList);
 
-    suchThatList.push_back(clause);
+        suchThatList.push_back(clause);
+        return true;
+    case PATTERN:
+        clause.setClauseType(argType);
+        clause.setArg(argList);
 
-    return true;
-}
-// Varname(a,w1...), ClauseArgList, ClauseArgCount
-bool QueryTree::insertPattern(std::string varName, std::vector<std::string> argList) {
-    Clause clause;
-    clause.setClauseType(varName);
-    clause.setArg(argList);
-
-    patternList.push_back(clause);
-
-    return false;
-}
-
-
-// wm TODO: SELECT MAY BECOME <a1,a2> (A PAIR) SO VARMAP MAY BE UNSUITABLE AFTER ITERATION 1
-// considering change to varList probably?
-std::unordered_map<std::string, Symbol> QueryTree::getSelect() {
-    return varSelectMap;
+        patternList.push_back(clause);
+        return true;
+    default:
+        return false;
+    }
 }
 
 std::vector<std::string> QueryTree::getResults() {
     return varList;
 }
 
-std::vector<Clause> QueryTree::getSuchThat() {
-    return suchThatList;
-}
-std::vector<Clause> QueryTree::getPattern() {
-    return patternList;
+std::vector<Clause> QueryTree::getClauses() {
+    std::vector<Clause> result;
+    std::vector<Symbol> clauseList = { SUCH_THAT, PATTERN };
+    
+    result = getClauses(clauseList);
+    return result;
 }
 
-std::vector<Clause> QueryTree::getClauses(std::string clauseType) {
+std::vector<Clause> QueryTree::getClauses(std::vector<Symbol> clauseType) {
     std::vector<Clause> result;
-    std::vector<std::string> typeList = Utils::SplitAndIgnoreEmpty(clauseType, ' ');
-    for (std::string type : typeList) {
-        if (type == "pattern") {
-            std::vector<Clause> patternClauses = getPattern();
-            result.insert(result.end(), patternClauses.begin(), patternClauses.end());
-        } else {
-            std::vector<Clause> suchThatClauses = getSuchThat();
-            result.insert(result.end(), suchThatClauses.begin(), suchThatClauses.end());
+    std::vector<Clause> clauseList;
+
+    for (Symbol clauseName : clauseType) {
+        switch(clauseName) {
+        case PATTERN:
+            result.insert(result.end(), patternList.begin(), patternList.end());
+            break;
+        case SUCH_THAT:
+            result.insert(result.end(), suchThatList.begin(), suchThatList.end());
+            break;
         }
     }
     return result;

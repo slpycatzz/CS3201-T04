@@ -14,19 +14,14 @@ class QueryTree {
     /* returns: varMap[varName] = varType e.g. varMap[a1] = ASSIGN */
     std::unordered_map<std::string, Symbol> getVarMap();
     std::vector<std::string> getResults();
-    std::vector<Clause> getClauses(std::string ClauseType);
+    // returns all clauses (order: st->pattern->with)
+    std::vector<Clause> QueryTree::getClauses();
+    std::vector<Clause> QueryTree::getClauses(std::vector<Symbol> clauseType);
 
     bool insertDeclaration(std::unordered_map<std::string, Symbol>);
-    bool insertSelect(std::string, std::string);
-    bool insertSuchThat(std::string, std::vector<std::string>);
-    bool insertPattern(std::string, std::vector<std::string>);
+    bool insert(Symbol type, std::string argType, std::vector<std::string> argList);
+
     
-
-    // wm todo: unused methods, to be removed after testing
-    std::unordered_map<std::string, Symbol> getSelect();
-    std::vector<Clause> getPattern();
-    std::vector<Clause> getSuchThat();
-
     //Used by optimizer
     std::vector<Clause> getBooleanClauses();                    //List of clauses that have no synonyms
     std::vector<std::vector<Clause>> getUnselectedGroups();     //Groups of list of clauses that are not selected by query, length > 0 is sufficient when evaluting
@@ -37,9 +32,6 @@ class QueryTree {
     void printGroups();
 
  private:
-     // wm todo: varSelectMap redundant, only for support of 
-     //             SelectList which should be the correct container
-     std::unordered_map<std::string, Symbol> varSelectMap;
      /* container for list of declared variableMap to Symbol*/
      std::unordered_map<std::string, Symbol> varMap;
      std::vector<std::string> varList;
