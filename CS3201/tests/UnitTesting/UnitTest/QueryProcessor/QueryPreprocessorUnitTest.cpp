@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "stdafx.h"
 #include "targetver.h"
@@ -33,6 +34,36 @@ public:
         expected = "a ";
         for (unsigned int i = 0; i < varList.size(); i++) {
             actual += varList[i] + " ";
+        }
+        Assert::AreEqual(expected, actual);
+    }
+    TEST_METHOD(QueryParserWithAnd) {
+        std::string expected, actual, query;
+        QueryPreprocessor qp;
+        QueryTree qt;
+
+        query = "assign a,a1; stmt s; while w1,w2;Select a with a.stmt# = 1";
+        query += " and s.stmt# = a.stmt#";
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            actual = ex.what();
+        }
+        qt = qp.getQueryTree();
+        std::vector<std::string> varList;
+
+        varList = qt.getResults();
+        for (unsigned int i = 0; i < varList.size(); i++) {
+            actual += varList[i] + " ";
+        }
+        std::vector<Clause> clauseList = qt.getClauses();
+
+        expected = "a with a 1 with s a";
+        for (Clause c : clauseList) {
+            actual += c.getClauseType() + " ";
+            actual += c.getArg()[0] + " ";
+            actual += c.getArg()[1] + " ";
         }
         Assert::AreEqual(expected, actual);
     }
