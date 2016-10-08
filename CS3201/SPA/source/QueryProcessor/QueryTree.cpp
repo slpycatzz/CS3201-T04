@@ -21,6 +21,7 @@ bool QueryTree::insertDeclaration(std::unordered_map<std::string, Symbol> variab
 // argType = varType(ASSIGN,CALL,etc...)    [for Select]
 // argType = relation(uses,modifies,etc...) [for-suchthat]
 // argType = varName(a1,w,ifstmt, etc...)   [for-pattern]
+// argType = varName(p,c1,s,callstmt, stmt) [for-with]
 bool QueryTree::insert(Symbol type, std::string argType, std::vector<std::string> argList) {
     Clause clause;
     switch (type) {
@@ -41,6 +42,12 @@ bool QueryTree::insert(Symbol type, std::string argType, std::vector<std::string
 
         patternList.push_back(clause);
         return true;
+    case WITH:
+        clause.setClauseType(argType);
+        clause.setArg(argList);
+
+        withList.push_back(clause);
+        return true;
     default:
         return false;
     }
@@ -52,7 +59,7 @@ std::vector<std::string> QueryTree::getResults() {
 
 std::vector<Clause> QueryTree::getClauses() {
     std::vector<Clause> result;
-    std::vector<Symbol> clauseList = { SUCH_THAT, PATTERN };
+    std::vector<Symbol> clauseList = { SUCH_THAT, PATTERN, WITH };
     
     result = getClauses(clauseList);
     return result;
@@ -69,6 +76,9 @@ std::vector<Clause> QueryTree::getClauses(std::vector<Symbol> clauseType) {
             break;
         case SUCH_THAT:
             result.insert(result.end(), suchThatList.begin(), suchThatList.end());
+            break;
+        case WITH:
+            result.insert(result.end(), withList.begin(), withList.end());
             break;
         }
     }

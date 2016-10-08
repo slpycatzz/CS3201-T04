@@ -52,8 +52,8 @@ class QueryPreprocessor {
      void parseAnd(Symbol);
      void parseWith();
 
-     Symbol varAttributeToSymbol(std::string varAttr);
-
+     bool isAttributeValid(std::string var, std::string varAttr, bool isVarValue);
+     bool isAttributeValid(std::string var, std::string varAttr, std::string var2, std::string varAttr2);
      bool isVarExist(std::string var);
      bool isValidVarName(std::string varName);
      bool isValidVarType(std::string varName);

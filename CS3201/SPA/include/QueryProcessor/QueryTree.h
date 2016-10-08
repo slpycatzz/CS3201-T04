@@ -37,6 +37,7 @@ class QueryTree {
      std::vector<std::string> varList;
      std::vector<Clause> suchThatList;
      std::vector<Clause> patternList;
+     std::vector<Clause> withList;
      
      std::vector<Clause> booleanClauses;
      std::vector<std::vector<Clause>> unselectedGroups;

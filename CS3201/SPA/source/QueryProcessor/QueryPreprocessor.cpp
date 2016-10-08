@@ -101,6 +101,7 @@ bool QueryPreprocessor::processQuery(string query) {
             parseAnd(prevClause);
         } else if (queryList[cur].compare("with") == 0) {
             parseWith();
+            prevClause = WITH;
         } else {
             break;
         }
@@ -295,32 +296,99 @@ void QueryPreprocessor::parseAnd(Symbol prevClause) {
         queryList[--cur] = "such";
         parseSuchThat();
     case PATTERN:
-        queryList[--cur] = "such";
+        queryList[--cur] = "placeholder";
         parsePattern();
     case WITH:
-        throw QuerySyntaxErrorException("TODO: work in progress...");
+        queryList[--cur] = "with";
+        parseWith();
     }
 }
+
 void QueryPreprocessor::parseWith() {
-    string var, varAttribute;
+    string var, varAttribute, varValue;
     expect("with");
     var = getVar();
     queryList[cur] = peek().substr(var.size());
     expect('.');
-    varAttribute = peek();  // wm todo: need to validate?
+    varAttribute = peek();
     cur++;
     expect('=');
-    if (accept(varAttributeToSymbol(varAttribute))) {
-        // wm todoL insert to qt: [with] var.varAttr = value
+    varValue = peek();
+    if (varValue.find('.') != std::string::npos) {
+        // case: var1.varAttr = var2.varAttr
+        string var2, varAttribute2;
+        var2 = getVar();
+        queryList[cur] = peek().substr(var2.size());
+        expect('.');
+        varAttribute2 = peek();
+        if (isAttributeValid(var, varAttribute, var2, varAttribute2)) {
+            vector<string> varList = { var, var2 };
+            qt.insert(WITH, "with", varList);
+        } else {
+            throw QuerySyntaxErrorException("031");
+        }
+    } else {
+        // case: var1.varAttr = "varValue"
+        if (isAttributeValid(var, varAttribute, true)) {
+            vector<string> varList = { var, varValue };
+            qt.insert(WITH, "with", varList);
+        } else {
+            throw QuerySyntaxErrorException("041");
+        }
     }
+    cur++;
+}
+// case 2: var1.varAttr = var2.varAttr
+bool QueryPreprocessor::isAttributeValid(string var, string varAttr, string var2, string varAttr2) {
+    return isAttributeValid(var, varAttr, false) && isAttributeValid(var2, varAttr2, false);
 }
 
-// wm todo: incomplete
-Symbol QueryPreprocessor::varAttributeToSymbol(string varAttribute) {
-    if (varAttribute == "procName")
-        return PROCEDURE;
-    if (varAttribute == "stmtNumber")
-        return CONSTANT;
+// case 1: var1.varAttr = "varValue"
+// isVarValue = true [for-case1]
+bool QueryPreprocessor::isAttributeValid(string var, string varAttribute, bool isVarValue) {
+    Symbol varType = getVarType(var);
+
+    switch (varType) {
+    case PROCEDURE:
+    case CALL:
+        if (varAttribute == "procName") {
+            if (isVarValue) {
+                return accept(VARIABLE);
+            } else {
+                return true;
+            }
+        }
+    case VARIABLE:
+        if (varAttribute == "varName") {
+            if (isVarValue) {
+                return accept(VARIABLE);
+            } else {
+                return true;
+            }
+        }
+    case CONSTANT:
+        if (varAttribute == "value") {
+            if (isVarValue) {
+                return accept(CONSTANT);
+            } else {
+                return true;
+            }
+        }
+    case STMT:
+    case ASSIGN:
+    case WHILE:
+    case IF:
+        if (varAttribute == "stmt#") {
+            if (isVarValue) {
+                return accept(CONSTANT);
+            } else {
+                return true;
+            }
+        }
+    default:
+        return false;
+    }
+    return false;
 }
 string QueryPreprocessor::getVar() {
     string word = queryList[cur];
