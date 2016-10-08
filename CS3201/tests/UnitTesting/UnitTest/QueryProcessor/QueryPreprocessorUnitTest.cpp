@@ -53,7 +53,7 @@ public:
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
 
-        resList = qt.getSuchThat();
+        resList = qt.getClauses();
         expected = "Uses a1 x ";
         for (unsigned int i = 0; i < resList.size(); i++) {
             actual += resList[i].getClauseType() + " ";
@@ -80,7 +80,7 @@ public:
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
 
-        resList = qt.getPattern();
+        resList = qt.getClauses();
         expected = "pattern \"x\" _ a1 ";
         for (unsigned int i = 0; i < resList.size(); i++) {
             actual += resList[i].getClauseType() + " ";
@@ -107,7 +107,7 @@ public:
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
 
-        resList = qt.getSuchThat();
+        resList = qt.getClauses();
         expected = "Uses a1 \"x\" ";
         for (unsigned int i = 0; i < resList.size(); i++) {
             actual += resList[i].getClauseType() + " ";
@@ -134,7 +134,7 @@ public:
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
 
-        resList = qt.getSuchThat();
+        resList = qt.getClauses();
         expected = "Uses 1 x ";
         for (unsigned int i = 0; i < resList.size(); i++) {
             actual += resList[i].getClauseType() + " ";
@@ -203,7 +203,7 @@ public:
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
 
-        resList = qt.getSuchThat();
+        resList = qt.getClauses();
         expected = "Uses a1 x ";
         for (unsigned int i = 0; i < resList.size(); i++) {
             actual += resList[i].getClauseType() + " ";
@@ -229,7 +229,7 @@ public:
         qt = qp.getQueryTree();
         std::vector<Clause> resList;
 
-        resList = qt.getPattern();
+        resList = qt.getClauses();
         expected = "pattern \"x\" _ a1 ";
         for (unsigned int i = 0; i < resList.size(); i++) {
             actual += resList[i].getClauseType() + " ";
@@ -252,12 +252,12 @@ public:
             actual += Constants::SymbolToString(kv.second) + " " + kv.first + "; ";
         }
 
-        std::unordered_map<std::string, Symbol> selectMap = queryTree.getSelect();
-        for (auto kv : selectMap) {
-            actual += Constants::SymbolToString(kv.second) + " " + kv.first + "; ";
+        std::vector<std::string> selectList = queryTree.getResults();
+        for (auto varName : selectList) {
+            actual += Constants::SymbolToString(varMap[varName]) + " " + varName + "; ";
         }
 
-        std::vector<Clause> clauses = queryTree.getClauses("suchThat pattern");
+        std::vector<Clause> clauses = queryTree.getClauses();
         for (Clause c : clauses) {
             actual += c.getClauseType() + " ";
             for (int i = 0; i < c.getArgCount(); i++) {
@@ -266,7 +266,7 @@ public:
         }
 
         expected = "assign a; assign a; pattern \"a\" _ a ";  // declaration; select a; pattern
-        Assert::AreEqual(actual, expected);
+        Assert::AreEqual(expected, actual);
     }
     TEST_METHOD(ExtractQueryTreeTwoClauses) {
         std::string query = "assign a, a1; Select a pattern a(\"e\", _) such that Follows(a, a1)";
@@ -281,12 +281,12 @@ public:
             actual += Constants::SymbolToString(kv.second) + " " + kv.first + "; ";
         }
 
-        std::unordered_map<std::string, Symbol> selectMap = queryTree.getSelect();
-        for (auto kv : selectMap) {
-            actual += Constants::SymbolToString(kv.second) + " " + kv.first + "; ";
+        std::vector<std::string> selectList = queryTree.getResults();
+        for (auto varName : selectList) {
+            actual += Constants::SymbolToString(varMap[varName]) + " " + varName + "; ";
         }
 
-        std::vector<Clause> clauses = queryTree.getClauses("suchThat pattern");
+        std::vector<Clause> clauses = queryTree.getClauses();
         for (Clause c : clauses) {
             actual += c.getClauseType() + " ";
             for (int i = 0; i < c.getArgCount(); i++) {
