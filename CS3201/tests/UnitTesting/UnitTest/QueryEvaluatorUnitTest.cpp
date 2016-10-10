@@ -47,11 +47,11 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(TestFlatten) {
-		std::unordered_map<VarName, std::vector<Candidate>> map;
+		std::unordered_map<Synonym, std::vector<Candidate>> map;
 		map.insert_or_assign("a", std::vector<Candidate>({ "1", "2" }));
 		map.insert_or_assign("b", std::vector<Candidate>({ "3", "4", "5" }));
 		std::vector<std::vector<std::string>>
-			result(Utils::Flatten(map, std::vector<VarName>({ "a", "b" }), 0, 1));
+			result(Utils::Flatten(map, std::vector<Synonym>({ "a", "b" }), 0, 1));
 		std::string actual(Utils::VectorToString(Utils::VectorToStrings(result)));
 		std::string expected("<<1,3>,<1,4>,<1,5>,<2,3>,<2,4>,<2,5>>");
 		Assert::AreEqual(expected, actual);

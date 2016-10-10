@@ -87,6 +87,9 @@
     <ClInclude Include="include\QueryProcessor\QueryOptimizer.h">
       <Filter>Header Files\QueryProcessor</Filter>
     </ClInclude>
+    <ClInclude Include="include\QueryProcessor\TotalCombinationList.h">
+      <Filter>Header Files\QueryProcessor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Utils.cpp">
@@ -132,6 +135,9 @@
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
     <ClCompile Include="source\QueryProcessor\QueryOptimizer.cpp">
+      <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\TotalCombinationList.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
   </ItemGroup>

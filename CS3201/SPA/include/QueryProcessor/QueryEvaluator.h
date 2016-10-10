@@ -8,14 +8,7 @@
 #include "QueryProcessor/Clause.h"
 #include "QueryTree.h"
 #include "PKB/PKB.h"
-
-typedef std::vector<std::string> ResultList;
-typedef std::string Candidate;
-typedef std::string VarName;
-typedef int Cand;
-typedef std::unordered_map<VarName, Candidate> CandidateCombination;
-typedef std::vector<CandidateCombination> PartialCombinationList;
-typedef std::unordered_map<VarName, PartialCombinationList> TotalCombinationList;
+#include "TotalCombinationList.h"
 
 class QueryEvaluator {
  public:
@@ -26,7 +19,7 @@ class QueryEvaluator {
     ResultList selectQueryResults(QueryTree &query);
 
 	 // retrieve all possible candidates for a variable
-	 PartialCombinationList getCandidates(std::pair<VarName, Symbol> var);
+	 PartialCombinationList getCandidates(std::pair<Synonym, Symbol> var);
 
 	 TotalCombinationList getTotalCandidateList(QueryTree &query);
 
@@ -34,33 +27,33 @@ class QueryEvaluator {
 	 bool evaluateQuery(QueryTree &query);
 
 	 // use the clause to filter the tuple candidate list to its sublist
-	 bool selectClauseResults(Clause &clause, TotalCombinationList &totalCandMap);
+	 void filterByClause(Clause &clause, TotalCombinationList &totalCandMap);
 
-	 bool FilterNoVarPattern(VarName assignStmt, Candidate lhs, Candidate expr,
+	 void filterNoVarPattern(Synonym assignStmt, Candidate lhs, Candidate expr,
 		 TotalCombinationList &combinations);
 
-	 bool FilterOneVarPattern(VarName assignStmt, VarName lhs, Candidate expr,
+	 void filterOneVarPattern(Synonym assignStmt, Synonym lhs, Candidate expr,
 		 TotalCombinationList &combinations);
 
-	 bool FilterTwoVarsClause(std::string clauseType,
-		 VarName &var0, VarName &var1, TotalCombinationList &combinations);
+	 void filterTwoVarsClause(std::string clauseType,
+		 Synonym &var0, Synonym &var1, TotalCombinationList &combinations);
 
-	 bool FilterFirstVarClause(std::string clauseType, VarName var,
+	 void filterFirstVarClause(std::string clauseType, Synonym var,
 		 Candidate constant, TotalCombinationList &combinations);
 
-	 bool FilterSecondVarClause(std::string clauseType, Candidate constant,
-		 VarName var, TotalCombinationList &combinations);
+	 void filterSecondVarClause(std::string clauseType, Candidate constant,
+		 Synonym var, TotalCombinationList &combinations);
 
-	 bool FilterNoVarClause(std::string clauseType, Candidate const1,
+	 void filterNoVarClause(std::string clauseType, Candidate const1,
 		 Candidate const2, TotalCombinationList &combinations);
 
-	 void insertMap(std::vector<std::string> list, VarName var, PartialCombinationList &result);
+	 void insertMap(std::vector<std::string> list, Synonym var, PartialCombinationList &result);
 
 	 ResultList getResultsFromCombinationList(TotalCombinationList &combinations,
-		 std::vector<VarName> &selectList);
+		 std::vector<Synonym> &selectList);
 
 	 PartialCombinationList getSelectedCombinations(TotalCombinationList &cands,
-		 std::vector<VarName>& selectList);
+		 std::vector<Synonym>& selectList);
 
 	 PartialCombinationList mergeCombinationList(PartialCombinationList &combList1,
 		 PartialCombinationList &combList2);

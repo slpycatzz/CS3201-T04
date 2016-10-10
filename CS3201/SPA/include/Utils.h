@@ -21,6 +21,7 @@ class Utils {
 
     static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
     static bool VectorContains(std::vector<std::string> vec, std::string str);
+
     static std::string VectorToString(std::vector<std::string> &vec);
     static std::vector<std::string> VectorToStrings(std::vector<std::vector<std::string>> &vec);
 

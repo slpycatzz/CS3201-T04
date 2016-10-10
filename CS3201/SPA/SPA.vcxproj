@@ -34,6 +34,7 @@
     <ClInclude Include="include\QueryProcessor\QueryTree.h" />
     <ClInclude Include="include\QueryProcessor\QueryUtils.h" />
     <ClInclude Include="include\QueryProcessor\RelationTable.h" />
+    <ClInclude Include="include\QueryProcessor\TotalCombinationList.h" />
     <ClInclude Include="include\Tree.h" />
     <ClInclude Include="include\TreeNode.h" />
     <ClInclude Include="include\Utils.h" />
@@ -51,6 +52,7 @@
     <ClCompile Include="source\QueryProcessor\QueryTree.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryUtils.cpp" />
     <ClCompile Include="source\QueryProcessor\RelationTable.cpp" />
+    <ClCompile Include="source\QueryProcessor\TotalCombinationList.cpp" />
     <ClCompile Include="source\Tree.cpp" />
     <ClCompile Include="source\TreeNode.cpp" />
     <ClCompile Include="source\Utils.cpp" />

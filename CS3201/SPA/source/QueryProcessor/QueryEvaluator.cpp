@@ -14,7 +14,7 @@ QueryEvaluator::QueryEvaluator() {}
 
 QueryEvaluator::~QueryEvaluator() {}
 
-PartialCombinationList QueryEvaluator::getCandidates(std::pair<VarName, Symbol> var) {
+PartialCombinationList QueryEvaluator::getCandidates(std::pair<Synonym, Symbol> var) {
 	PartialCombinationList result;
 	switch (var.second) {
 		case VARIABLE:
@@ -41,68 +41,63 @@ TotalCombinationList QueryEvaluator::getTotalCandidateList(QueryTree &query) {
 	std::unordered_map<std::string, Symbol> varMap = query.getVarMap();
 	for (auto kv : varMap) {
 		PartialCombinationList candMapLst(getCandidates(kv));
-		totalCandLst.insert_or_assign(kv.first, candMapLst);
+		totalCandLst.addSynonym(kv.first, candMapLst);
 	}
 	return totalCandLst;
 }
 
-void QueryEvaluator::insertMap(std::vector<std::string> list, VarName var, PartialCombinationList &result)
+void QueryEvaluator::insertMap(std::vector<std::string> list, Synonym varName, PartialCombinationList &result)
 {
-	for (std::string varName : list) {
-		CandidateCombination candidate({ { var, varName } });
+	for (Candidate candidate : list) {
+		CandidateCombination candidate({ { varName, candidate } });
 		result.push_back(candidate);
 	}
 }
 
-bool QueryEvaluator::selectClauseResults(Clause &clause,
+void QueryEvaluator::filterByClause(Clause &clause,
 	TotalCombinationList &combinations)
 {
-	bool hasCandidates;
 	std::string type(clause.getClauseType());
 	if (type == SYMBOL_PATTERN) {
-		std::vector<VarName> args(clause.getArg());
-		VarName lhs(args[0]), rhs(args[1]), assignStmt(args[2]);
+		std::vector<Synonym> args(clause.getArg());
+		Synonym lhs(args[0]), rhs(args[1]), assignStmt(args[2]);
 		if (QueryUtils::IsStringLiteral(lhs)) {
-			hasCandidates = FilterNoVarPattern(assignStmt, QueryUtils::LiteralToCandidate(lhs), rhs, combinations);
+			filterNoVarPattern(assignStmt, QueryUtils::LiteralToCandidate(lhs), rhs, combinations);
 		}
 		else {
-			hasCandidates = FilterOneVarPattern(assignStmt, lhs, rhs, combinations);
+			filterOneVarPattern(assignStmt, lhs, rhs, combinations);
 		}
 	}
 	else {
-		std::vector<VarName> args(clause.getArg());
-		VarName var0(args[0]), var1(args[1]);
+		std::vector<Synonym> args(clause.getArg());
+		Synonym var0(args[0]), var1(args[1]);
 		if (QueryUtils::IsLiteral(var0)) {
 			if (QueryUtils::IsLiteral(var1)) {
-				hasCandidates = FilterNoVarClause(type, QueryUtils::LiteralToCandidate(var0),
-                    QueryUtils::LiteralToCandidate(var1), combinations);
+				filterNoVarClause(type, QueryUtils::LiteralToCandidate(var0), QueryUtils::LiteralToCandidate(var1), combinations);
 			}
 			else {
-				hasCandidates = FilterSecondVarClause(type,
-                    QueryUtils::LiteralToCandidate(var0), var1, combinations);
+				filterSecondVarClause(type, QueryUtils::LiteralToCandidate(var0), var1, combinations);
 			}
 		}
 		else {
 			if (QueryUtils::IsLiteral(var1)) {
-				hasCandidates = FilterFirstVarClause(type, var0,
-                    QueryUtils::LiteralToCandidate(var1), combinations);
+				filterFirstVarClause(type, var0, QueryUtils::LiteralToCandidate(var1), combinations);
 			}
 			else {
-				hasCandidates = FilterTwoVarsClause(type, var0, var1, combinations);
+				filterTwoVarsClause(type, var0, var1, combinations);
 			}
 		}
 	}
-	return hasCandidates;
 }
 
-bool QueryEvaluator::FilterNoVarPattern(VarName assignStmt, Candidate lhs,
+void QueryEvaluator::filterNoVarPattern(Synonym assignStmt, Candidate lhs,
 	Candidate expr, TotalCombinationList &combinations)
 {
 	PartialCombinationList candidateList(combinations[assignStmt]);
 	PartialCombinationList filteredList;
-	for (CandidateCombination tup : candidateList) {
-		if (evaluatePatternClause(tup[assignStmt], lhs, expr)) {
-			filteredList.push_back(tup);
+	for (CandidateCombination combination : candidateList) {
+		if (evaluatePatternClause(combination[assignStmt], lhs, expr)) {
+			filteredList.push_back(combination);
 		}
 	}
 	if (filteredList.empty()) return false;
@@ -114,7 +109,7 @@ bool QueryEvaluator::FilterNoVarPattern(VarName assignStmt, Candidate lhs,
 	return true;
 }
 
-bool QueryEvaluator::FilterOneVarPattern(VarName assignStmt, VarName lhs,
+bool QueryEvaluator::filterOneVarPattern(Synonym assignStmt, Synonym lhs,
 	Candidate expr, TotalCombinationList &combinations)
 {
 	PartialCombinationList candLst0(combinations[assignStmt]);
@@ -148,8 +143,8 @@ bool QueryEvaluator::FilterOneVarPattern(VarName assignStmt, VarName lhs,
 	return true;
 }
 
-bool QueryEvaluator::FilterTwoVarsClause(std::string clauseType,
-	VarName &var0, VarName &var1, TotalCombinationList &combinations)
+bool QueryEvaluator::filterTwoVarsClause(std::string clauseType,
+	Synonym &var0, Synonym &var1, TotalCombinationList &combinations)
 {
 	PartialCombinationList candLst0(combinations[var0]);
 	PartialCombinationList candLst1(combinations[var1]);
@@ -182,8 +177,8 @@ bool QueryEvaluator::FilterTwoVarsClause(std::string clauseType,
 	return true;
 }
 
-bool QueryEvaluator::FilterFirstVarClause(std::string clauseType,
- VarName var, Candidate constant, TotalCombinationList &combinations)
+bool QueryEvaluator::filterFirstVarClause(std::string clauseType,
+ Synonym var, Candidate constant, TotalCombinationList &combinations)
 {
 	PartialCombinationList candidateList(combinations[var]);
 	PartialCombinationList filteredList;
@@ -201,8 +196,8 @@ bool QueryEvaluator::FilterFirstVarClause(std::string clauseType,
 	return true;
 }
 
-bool QueryEvaluator::FilterSecondVarClause(std::string clauseType,
-	Candidate constant, VarName var, TotalCombinationList &combinations)
+bool QueryEvaluator::filterSecondVarClause(std::string clauseType,
+	Candidate constant, Synonym var, TotalCombinationList &combinations)
 {
 	PartialCombinationList candidateList(combinations[var]);
 	PartialCombinationList filteredList;
@@ -220,7 +215,7 @@ bool QueryEvaluator::FilterSecondVarClause(std::string clauseType,
 	return true;
 }
 
-bool QueryEvaluator::FilterNoVarClause(std::string clauseType,
+bool QueryEvaluator::filterNoVarClause(std::string clauseType,
 	Candidate const1, Candidate const2, TotalCombinationList &combinations)
 {
 	log.append(const1 + " " + const2);
@@ -236,13 +231,13 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 {
 	std::vector<Clause> clauseList = query.getClauses("suchThat pattern");
 	TotalCombinationList allCandidates(getTotalCandidateList(query));
-	std::unordered_map<VarName, Symbol> selectMap = query.getSelect();
-	std::vector<VarName> selectList;
+	std::unordered_map<Synonym, Symbol> selectMap = query.getSelect();
+	std::vector<Synonym> selectList;
 	for (auto kv : selectMap) selectList.push_back(kv.first);
 
 	bool hasMoreCandidates = false;
 	for (Clause clause : clauseList) {
-		hasMoreCandidates = selectClauseResults(clause, allCandidates);
+		hasMoreCandidates = filterByClause(clause, allCandidates);
 		if (!hasMoreCandidates) break;
 	}
 	if (isBoolSelect(selectMap)) {
@@ -267,7 +262,7 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 }
 
 ResultList QueryEvaluator::getResultsFromCombinationList
-(TotalCombinationList &combinations, std::vector<VarName> &selectList)
+(TotalCombinationList &combinations, std::vector<Synonym> &selectList)
 {
 	PartialCombinationList
 		selectedCombinations(getSelectedCombinations(combinations, selectList));
@@ -282,7 +277,7 @@ ResultList QueryEvaluator::getResultsFromCombinationList
 
 PartialCombinationList
 QueryEvaluator::getSelectedCombinations
-(TotalCombinationList &combinations, std::vector<VarName> &selectList)
+(TotalCombinationList &combinations, std::vector<Synonym> &selectList)
 {
 	/* Base case for recursion */
 	if (selectList.empty()) {
@@ -292,10 +287,10 @@ QueryEvaluator::getSelectedCombinations
 	}
 	
 	/* Extract the first section out */
-	VarName firstVar(*selectList.begin());
+	Synonym firstVar(*selectList.begin());
 	PartialCombinationList firstPartialList(combinations[firstVar]);
-	std::vector<VarName> firstVarSet;
-	std::vector<VarName>::iterator iter(selectList.begin());
+	std::vector<Synonym> firstVarSet;
+	std::vector<Synonym>::iterator iter(selectList.begin());
 	while (iter != selectList.end()) {
 		if (combinations[*iter] == firstPartialList) {
 			firstVarSet.push_back(*iter);
