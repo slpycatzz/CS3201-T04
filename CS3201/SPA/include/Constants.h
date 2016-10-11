@@ -21,18 +21,20 @@ const char SYMBOL_SUCH_THAT[] = "such that";
 const char SYMBOL_WITH[]      = "with";
 const char SYMBOL_PATTERN[]   = "pattern";
 
-const char SYMBOL_USES[]         = "Uses";
-const char SYMBOL_MODIFIES[]     = "Modifies";
-const char SYMBOL_PARENT[]       = "Parent";
-const char SYMBOL_PARENT_STAR[]  = "Parent*";
-const char SYMBOL_FOLLOWS[]      = "Follows";
-const char SYMBOL_FOLLOWS_STAR[] = "Follows*";
-const char SYMBOL_CALLS[]        = "Calls";
-const char SYMBOL_CALLS_STAR[]   = "Calls*";
-const char SYMBOL_NEXT[]         = "Next";
-const char SYMBOL_NEXT_STAR[]    = "Next*";
-const char SYMBOL_AFFECTS[]      = "Affects";
-const char SYMBOL_AFFECTS_STAR[] = "Affects*";
+const char SYMBOL_MODIFIES[]           = "Modifies";
+const char SYMBOL_MODIFIES_PROCEDURE[] = "ModifiesProcedure";
+const char SYMBOL_USES[]               = "Uses";
+const char SYMBOL_USES_PROCEDURE[]     = "UsesProcedure";
+const char SYMBOL_PARENT[]             = "Parent";
+const char SYMBOL_PARENT_TRANSITIVE[]  = "Parent*";
+const char SYMBOL_FOLLOWS[]            = "Follows";
+const char SYMBOL_FOLLOWS_TRANSITIVE[] = "Follows*";
+const char SYMBOL_CALLS[]              = "Calls";
+const char SYMBOL_CALLS_TRANSITIVE[]   = "Calls*";
+const char SYMBOL_NEXT[]               = "Next";
+const char SYMBOL_NEXT_TRANSITIVE[]    = "Next*";
+const char SYMBOL_AFFECTS[]            = "Affects";
+const char SYMBOL_AFFECTS_TRANSITIVE[] = "Affects*";
 
 const char SYMBOL_VARIABLE[]     = "variable";
 const char SYMBOL_CONSTANT[]     = "constant";
@@ -71,8 +73,9 @@ enum Symbol {
     QUERY_RESULT, SUCH_THAT, WITH, PATTERN,
     RELATION, ATTRIBUTE,
 
-    USES, MODIFIES, PARENT, PARENT_STAR, FOLLOWS, FOLLOWS_STAR,
-    CALLS, CALLS_STAR, NEXT, NEXT_STAR, AFFECTS, AFFECTS_STAR,
+    MODIFIES, MODIFIES_PROCEDURE, USES, USES_PROCEDURE,
+    PARENT, PARENT_TRANSITIVE, FOLLOWS, FOLLOWS_TRANSITIVE,
+    CALLS, CALLS_TRANSITIVE, NEXT, NEXT_TRANSITIVE, AFFECTS, AFFECTS_TRANSITIVE,
 
     VARIABLE, CONSTANT, BOOLEAN, PROGRAM_LINE, STMT,
 

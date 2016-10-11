@@ -19,13 +19,13 @@ bool RelationTable::isRelationValid(Symbol relation, Symbol clause) {
         case MODIFIES:
         case PARENT:
         case FOLLOWS:
-        case FOLLOWS_STAR:
+        case FOLLOWS_TRANSITIVE:
         case CALLS:
-        case CALLS_STAR:
+        case CALLS_TRANSITIVE:
         case NEXT:
-        case NEXT_STAR:
+        case NEXT_TRANSITIVE:
         case AFFECTS:
-        case AFFECTS_STAR:
+        case AFFECTS_TRANSITIVE:
             return true;
         default:
             return false;
@@ -102,8 +102,8 @@ void RelationTable::initTable() {
     clauseMap1[FOLLOWS] = arg1;
     clauseMap2[FOLLOWS] = arg2;
 
-    clauseMap1[FOLLOWS_STAR] = arg1;
-    clauseMap2[FOLLOWS_STAR] = arg2;
+    clauseMap1[FOLLOWS_TRANSITIVE] = arg1;
+    clauseMap2[FOLLOWS_TRANSITIVE] = arg2;
     arg1.clear();
     arg2.clear();
 
@@ -112,8 +112,8 @@ void RelationTable::initTable() {
     clauseMap1[PARENT] = arg1;
     clauseMap2[PARENT] = arg2;
 
-    clauseMap1[PARENT_STAR] = arg1;
-    clauseMap2[PARENT_STAR] = arg2;
+    clauseMap1[PARENT_TRANSITIVE] = arg1;
+    clauseMap2[PARENT_TRANSITIVE] = arg2;
     arg1.clear();
     arg2.clear();
 
@@ -141,8 +141,8 @@ void RelationTable::initTable() {
     clauseMap1[CALLS] = arg1;
     clauseMap2[CALLS] = arg2;
 
-    clauseMap1[CALLS_STAR] = arg1;
-    clauseMap2[CALLS_STAR] = arg2;
+    clauseMap1[CALLS_TRANSITIVE] = arg1;
+    clauseMap2[CALLS_TRANSITIVE] = arg2;
     arg1.clear();
     arg2.clear();
 }

@@ -432,7 +432,7 @@ set<string> Utils::GetSubExpressionsWithBrackets(queue<string> postfixExpression
             expression += string(1, CHAR_SYMBOL_CLOSEBRACKET);
 
             postfixExpression.pop();
-            
+
             result.push(expression);
             results.insert(expression);
 
@@ -452,7 +452,7 @@ bool Utils::IsOperator(string operator_) {
     if (operator_ == string(1, CHAR_SYMBOL_MINUS) || operator_ == string(1, CHAR_SYMBOL_PLUS)) {
         return true;
     }
-    
+
     if (operator_ == string(1, CHAR_SYMBOL_MULTIPLY)) {
         return true;
     }
@@ -463,8 +463,8 @@ bool Utils::IsOperator(string operator_) {
 unsigned int Utils::GetOperatorPrecedence(string operator_) {
     if (operator_ == string(1, CHAR_SYMBOL_MINUS) || operator_ == string(1, CHAR_SYMBOL_PLUS)) {
         return 1;
-    } 
-    
+    }
+
     if (operator_ == string(1, CHAR_SYMBOL_MULTIPLY)) {
         return 2;
     }

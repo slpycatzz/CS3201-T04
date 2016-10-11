@@ -33,19 +33,21 @@ string Constants::SymbolToString(Symbol symbol) {
         case SUCH_THAT:    return SYMBOL_SUCH_THAT;
         case WITH:         return SYMBOL_WITH;
         case PATTERN:      return SYMBOL_PATTERN;
-        
-        case USES:         return SYMBOL_USES;
-        case MODIFIES:     return SYMBOL_MODIFIES;
-        case PARENT:       return SYMBOL_PARENT;
-        case PARENT_STAR:  return SYMBOL_PARENT_STAR;
-        case FOLLOWS:      return SYMBOL_FOLLOWS;
-        case FOLLOWS_STAR: return SYMBOL_FOLLOWS_STAR;
-        case CALLS:        return SYMBOL_CALLS;
-        case CALLS_STAR:   return SYMBOL_CALLS_STAR;
-        case NEXT:         return SYMBOL_NEXT;
-        case NEXT_STAR:    return SYMBOL_NEXT_STAR;
-        case AFFECTS:      return SYMBOL_AFFECTS;
-        case AFFECTS_STAR: return SYMBOL_AFFECTS_STAR;
+
+        case MODIFIES:           return SYMBOL_MODIFIES;
+        case MODIFIES_PROCEDURE: return SYMBOL_MODIFIES_PROCEDURE;
+        case USES:               return SYMBOL_USES;
+        case USES_PROCEDURE:     return SYMBOL_USES_PROCEDURE;
+        case PARENT:             return SYMBOL_PARENT;
+        case PARENT_TRANSITIVE:  return SYMBOL_PARENT_TRANSITIVE;
+        case FOLLOWS:            return SYMBOL_FOLLOWS;
+        case FOLLOWS_TRANSITIVE: return SYMBOL_FOLLOWS_TRANSITIVE;
+        case CALLS:              return SYMBOL_CALLS;
+        case CALLS_TRANSITIVE:   return SYMBOL_CALLS_TRANSITIVE;
+        case NEXT:               return SYMBOL_NEXT;
+        case NEXT_TRANSITIVE:    return SYMBOL_NEXT_TRANSITIVE;
+        case AFFECTS:            return SYMBOL_AFFECTS;
+        case AFFECTS_TRANSITIVE: return SYMBOL_AFFECTS_TRANSITIVE;
 
         case VARIABLE:     return SYMBOL_VARIABLE;
         case CONSTANT:     return SYMBOL_CONSTANT;
@@ -83,18 +85,20 @@ Symbol Constants::StringToSymbol(string str) {
     if (str == SYMBOL_WITH)      return WITH;
     if (str == SYMBOL_PATTERN)   return PATTERN;
 
-    if (str == SYMBOL_USES)         return USES;
-    if (str == SYMBOL_MODIFIES)     return MODIFIES;
-    if (str == SYMBOL_PARENT)       return PARENT;
-    if (str == SYMBOL_PARENT_STAR)  return PARENT_STAR;
-    if (str == SYMBOL_FOLLOWS)      return FOLLOWS;
-    if (str == SYMBOL_FOLLOWS_STAR) return FOLLOWS_STAR;
-    if (str == SYMBOL_CALLS)        return CALLS;
-    if (str == SYMBOL_CALLS_STAR)   return CALLS_STAR;
-    if (str == SYMBOL_NEXT)         return NEXT;
-    if (str == SYMBOL_NEXT_STAR)    return NEXT_STAR;
-    if (str == SYMBOL_AFFECTS)      return AFFECTS;
-    if (str == SYMBOL_AFFECTS_STAR) return AFFECTS_STAR;
+    if (str == SYMBOL_MODIFIES)           return MODIFIES;
+    if (str == SYMBOL_MODIFIES_PROCEDURE) return MODIFIES_PROCEDURE;
+    if (str == SYMBOL_USES)               return USES;
+    if (str == SYMBOL_USES_PROCEDURE)     return USES_PROCEDURE;
+    if (str == SYMBOL_PARENT)             return PARENT;
+    if (str == SYMBOL_PARENT_TRANSITIVE)  return PARENT_TRANSITIVE;
+    if (str == SYMBOL_FOLLOWS)            return FOLLOWS;
+    if (str == SYMBOL_FOLLOWS_TRANSITIVE) return FOLLOWS_TRANSITIVE;
+    if (str == SYMBOL_CALLS)              return CALLS;
+    if (str == SYMBOL_CALLS_TRANSITIVE)   return CALLS_TRANSITIVE;
+    if (str == SYMBOL_NEXT)               return NEXT;
+    if (str == SYMBOL_NEXT_TRANSITIVE)    return NEXT_TRANSITIVE;
+    if (str == SYMBOL_AFFECTS)            return AFFECTS;
+    if (str == SYMBOL_AFFECTS_TRANSITIVE) return AFFECTS_TRANSITIVE;
 
     if (str == SYMBOL_VARIABLE)     return VARIABLE;
     if (str == SYMBOL_CONSTANT)     return CONSTANT;
