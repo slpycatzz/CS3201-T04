@@ -91,6 +91,9 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateUsesProcedureTable(usesProcedure_);
     PKB::GenerateParentTable(parent_);
     PKB::GenerateFollowsTable(follows_);
+
+    /* Set priority after all the design abstraction tables are generated. */
+    PKB::GeneratePriorityTable();
 }
 
 vector<string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream) {
@@ -366,7 +369,7 @@ TreeNode* FrontendParser::callAssignRecognizer() {
     modifies_[stmtNumber].insert(controlVariableName);
 
     TreeNode* assignNode = PKB::CreateASTNode(ASSIGN, stmtNumber_++);
-    
+
     /* Deprecated. */
     assigns_.insert(std::make_pair(stmtNumber, assignNode));
 

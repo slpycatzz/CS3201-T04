@@ -3,6 +3,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "Constants.h"
@@ -55,6 +56,10 @@ class PKB {
     static std::vector<unsigned int> GetSymbolStmtNumbers(Symbol symbol);
     static void PrintStmtTable();
 
+    static void GeneratePriorityTable();
+    static unsigned int GetPriority(Symbol symbol);
+    static void PrintPriorityTable();
+
     static void GenerateExpressionTable(std::map<unsigned int, std::string> expressions);
     static void GenerateSubExpressionTable(std::map<unsigned int, std::set<std::string>> subExpressions);
     static bool IsExactPattern(unsigned int stmtNumber, std::string controlVariable, std::string expression);
@@ -63,6 +68,8 @@ class PKB {
     static bool HasSubExpression(std::string subExpression);
     static bool IsExactExpression(unsigned int stmtNumber, std::string expression);
     static bool IsSubExpression(unsigned int stmtNumber, std::string subExpression);
+    static void PrintExactExpressionTable();
+    static void PrintSubExpressionTable();
 
     static void GenerateCallsTable(std::map<std::string, std::set<std::string>> calls);
     static bool IsCalls(std::string calling, std::string called);
@@ -148,6 +155,8 @@ class PKB {
     /* END - Deprecated */
 
  private:
+    static bool ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo);
+
     static unsigned int numberOfProcedure_;
     static unsigned int numberOfAssign_;
     static unsigned int numberOfWhile_;
@@ -158,7 +167,9 @@ class PKB {
     static Table<unsigned int, std::string> variableTable_;                         /* map<index, variableName>  */
     static Table<unsigned int, std::string> procedureTable_;                        /* map<index, procedureName> */
     static Table<unsigned int, std::string> controlVariableTable_;                  /* map<stmtNumber, variableName> */
-    static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbol>   */
+    static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbolString>   */
+
+    static Table<unsigned int, Symbol> priorityTable_;                              /* map<priority, symbol> */
 
     static Table<unsigned int, std::string> expressionTable_;                       /* map<stmtNumber, exact expression> */
     static Table<unsigned int, std::string> subExpressionTable_;                    /* map<stmtNumber, set(subExpressions)> */

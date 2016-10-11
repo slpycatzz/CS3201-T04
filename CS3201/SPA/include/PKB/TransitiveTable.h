@@ -91,6 +91,15 @@ class TransitiveTable {
         return keyToValueTransitiveMap[key];
     }
 
+    inline unsigned int getNumberOfValues() {
+        unsigned int numberOfValues = 0;
+        for (const auto &pair : keyToValueTransitiveMap) {
+            numberOfValues += pair.second.size();
+        }
+
+        return numberOfValues;
+    }
+
     inline bool hasKey(K key) {
         return (keyToValueTransitiveMap.count(key) == 1);
     }
