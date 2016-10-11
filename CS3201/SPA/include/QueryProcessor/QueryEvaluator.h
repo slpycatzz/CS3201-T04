@@ -23,9 +23,6 @@ class QueryEvaluator {
 
 	 TotalCombinationList getTotalCandidateList(QueryTree &query);
 
-	 // evaluate a single query to see if it is true
-	 bool evaluateQuery(QueryTree &query);
-
 	 // use the clause to filter the tuple candidate list to its sublist
 	 void filterByClause(Clause &clause, TotalCombinationList &combinations);
 

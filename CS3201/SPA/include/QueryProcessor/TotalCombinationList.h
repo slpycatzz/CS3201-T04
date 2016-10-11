@@ -2,7 +2,6 @@
 #include "QueryUtils.h"
 #include "QueryTree.h"
 
-typedef std::vector<std::string> ResultList;
 typedef std::string Candidate;
 typedef std::string Synonym;
 typedef int Cand;

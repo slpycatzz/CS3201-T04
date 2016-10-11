@@ -10,6 +10,8 @@
 #include "QueryProcessor/QueryUtils.h"
 #include "Utils.h"
 
+typedef std::unordered_map<std::vector<std::string>, std::vector<std::vector<Candidate>>> ResultList;
+
 QueryEvaluator::QueryEvaluator() {}
 
 QueryEvaluator::~QueryEvaluator() {}
@@ -147,7 +149,6 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 	TotalCombinationList allCandidates(getTotalCandidateList(query));
 	std::unordered_map<Synonym, Symbol> selectMap = query.getSelect();
 	std::vector<Synonym> selectList;
-	for (auto kv : selectMap) selectList.push_back(kv.first);
 
 	for (Clause clause : clauseList) {
 		filterByClause(clause, allCandidates);
@@ -155,17 +156,25 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 	}
 	if (isBoolSelect(selectMap)) {
 		ResultList resultList;
+		selectList.push_back("BOOLEAN");
+		std::string resultBoolean;
 		if (!allCandidates.isEmpty()) {
-			resultList.push_back(SYMBOL_TRUE);
+			resultBoolean += SYMBOL_TRUE;
 		}
 		else {
-			resultList.push_back(SYMBOL_FALSE);
+			resultBoolean += SYMBOL_FALSE;
 		}
+		std::vector<std::vector<std::string>> tupleList;
+		tupleList.push_back(std::vector<std::string>{resultBoolean});
+		resultList.insert_or_assign(selectList, tupleList);
 		return resultList;
 	}
 	else {
+		for (auto kv : selectMap) selectList.push_back(kv.first);
 		if (allCandidates.isEmpty()) {
-			return ResultList();
+			ResultList resultList;
+			resultList.insert_or_assign(selectList, std::vector<std::vector<std::string>>());
+			return resultList;
 		}
 		else {
 			ResultList resultList(getResultsFromCombinationList(allCandidates, selectList));
@@ -177,53 +186,18 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 ResultList QueryEvaluator::getResultsFromCombinationList
 (TotalCombinationList &combinations, std::vector<Synonym> &selectList)
 {
+	ResultList result;
 	PartialCombinationList
 		selectedCombinations(combinations.getCombinationList(selectList));
-	ResultList result;
-	
-	for (CandidateCombination comb : selectedCombinations) {
-		std::string item(Utils::MapToValueString(comb));
-		result.push_back(item);
-	}
-	return result;
-}
-
-/* DEPRECATED */
-PartialCombinationList
-QueryEvaluator::getSelectedCombinations
-(TotalCombinationList &combinations, std::vector<Synonym> &selectList)
-{
-	/* Base case for recursion */
-	if (selectList.empty()) {
-		PartialCombinationList baseResult;
-		baseResult.push_back(CandidateCombination());
-		return baseResult;
-	}
-	
-	/* Extract the first section out */
-	Synonym firstVar(*selectList.begin());
-	PartialCombinationList firstPartialList(combinations[firstVar]);
-	std::vector<Synonym> firstVarSet;
-	std::vector<Synonym>::iterator iter(selectList.begin());
-	while (iter != selectList.end()) {
-		if (combinations[*iter] == firstPartialList) {
-			firstVarSet.push_back(*iter);
-			iter = selectList.erase(iter);
+	std::vector<std::vector<Candidate>> selectedCombinationList;
+	for (CandidateCombination combi : selectedCombinations) {
+		std::vector<Candidate> candidateTuple;
+		for (Synonym syn : selectList) {
+			candidateTuple.push_back(combi[syn]);
 		}
-		else {
-			++iter;
-		}
+		selectedCombinationList.push_back(candidateTuple);
 	}
-	
-	/* TODO: Account for duplicates of sub-combinations */
-	PartialCombinationList reducedList;
-	for (CandidateCombination comb : firstPartialList) {
-		reducedList.push_back(Utils::ReduceMap(comb, firstVarSet));
-	}
-
-	/* Recursive step */
-	PartialCombinationList recursedList(getSelectedCombinations(combinations, selectList));
-	PartialCombinationList result = mergeCombinationList(reducedList, recursedList);
+	result.insert_or_assign(selectList, selectedCombinationList);
 	return result;
 }
 
