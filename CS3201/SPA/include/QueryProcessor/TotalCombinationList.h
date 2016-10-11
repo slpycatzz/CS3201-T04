@@ -20,13 +20,20 @@ public:
 
 	/* Content manipulation */
 
-	void addSynonym(Synonym &syn, PartialCombinationList &candidateList);
+	void addSynonym(const Synonym &syn, PartialCombinationList &candidateList);
 	void merge(Synonym &syn1, Synonym &syn2);
-	void filter(Synonym &syn, bool (*filterer)(CandidateCombination &combination));
-	void mergeAndFilter(Synonym &syn1, Synonym &syn2, bool(*filterer)(CandidateCombination &combination));
+
+	void filter(bool expression);
+
+	template<typename Filterer>
+	void filter(Synonym &syn, Filterer filterer);
+
+	template<typename Filterer>
+	void mergeAndFilter(Synonym &syn1, Synonym &syn2, Filterer filterer);
 	
 	/* Content accessors */
 
+	PartialCombinationList operator[](Synonym &syn);
 	bool isEmpty();
 	void reduceSingleFactor(std::vector<Synonym> &synList, PartialCombinationList &candidateList);
 	void reduceTotalContent(std::vector<Synonym> &synList);
@@ -36,10 +43,13 @@ public:
 private:
 	
 	/* Utillities on PartialCombinationList */
-	void filter(PartialCombinationList &list, bool(*filterer)(CandidateCombination &combination));
+	template<typename Filterer>
+	void filter(PartialCombinationList &list, Filterer filterer);
+
 	PartialCombinationList cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2);
-	PartialCombinationList cartesianProduct(PartialCombinationList &list1,
-		PartialCombinationList &list2, bool(*filterer)(CandidateCombination &combination));
+
+	template<typename Filterer>
+	PartialCombinationList cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2, Filterer filterer);
 
 	std::unordered_map<Synonym, PartialCombinationList> content;
 	std::set<PartialCombinationList*> factorList;

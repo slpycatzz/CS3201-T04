@@ -93,138 +93,52 @@ void QueryEvaluator::filterByClause(Clause &clause,
 void QueryEvaluator::filterNoVarPattern(Synonym assignStmt, Candidate lhs,
 	Candidate expr, TotalCombinationList &combinations)
 {
-	PartialCombinationList candidateList(combinations[assignStmt]);
-	PartialCombinationList filteredList;
-	for (CandidateCombination combination : candidateList) {
-		if (evaluatePatternClause(combination[assignStmt], lhs, expr)) {
-			filteredList.push_back(combination);
-		}
-	}
-	if (filteredList.empty()) return false;
-	for (auto kv : combinations) {
-		if (kv.second == candidateList) {
-			combinations.insert_or_assign(kv.first, filteredList);
-		}
-	}
-	return true;
+	auto matchPattern = [=](CandidateCombination &combi) -> bool {
+		return evaluatePatternClause(combi[assignStmt], lhs, expr);
+	};
+	combinations.filter(assignStmt, matchPattern);
 }
 
-bool QueryEvaluator::filterOneVarPattern(Synonym assignStmt, Synonym lhs,
+void QueryEvaluator::filterOneVarPattern(Synonym assignStmt, Synonym lhs,
 	Candidate expr, TotalCombinationList &combinations)
 {
-	PartialCombinationList candLst0(combinations[assignStmt]);
-	PartialCombinationList candLst1(combinations[lhs]);
-	PartialCombinationList filteredList;
-	if (&candLst0 == &candLst1) {
-		for (CandidateCombination tup : candLst0) {
-			Candidate stmtCand(tup[assignStmt]), lhsCand(tup[lhs]);
-			if (evaluatePatternClause(stmtCand, lhsCand, expr)) {
-				filteredList.push_back(tup);
-			}
-		}
-	}
-	else {
-		for (CandidateCombination tup0 : candLst0) {
-			Candidate stmtCand(tup0[assignStmt]);
-			for (CandidateCombination tup1 : candLst1) {
-				Candidate lhsCand(tup1[lhs]);
-				if (evaluatePatternClause(stmtCand, lhsCand, expr)) {
-					filteredList.push_back(Utils::MergeMap(tup0, tup1));
-				}
-			}
-		}
-	}
-	if (filteredList.empty()) return false;
-	for (auto kv : combinations) {
-		if (kv.second == candLst0 || kv.second == candLst1) {
-			combinations.insert_or_assign(kv.first, filteredList);
-		}
-	}
-	return true;
+	auto matchPattern = [=](CandidateCombination combi) -> bool {
+		return evaluatePatternClause(combi[assignStmt], combi[lhs], expr);
+	};
+	combinations.mergeAndFilter(assignStmt, lhs, matchPattern);
 }
 
-bool QueryEvaluator::filterTwoVarsClause(std::string clauseType,
+void QueryEvaluator::filterTwoVarsClause(std::string clauseType,
 	Synonym &var0, Synonym &var1, TotalCombinationList &combinations)
 {
-	PartialCombinationList candLst0(combinations[var0]);
-	PartialCombinationList candLst1(combinations[var1]);
-	PartialCombinationList filteredList;
-	if (&candLst0 == &candLst1) {
-		for (CandidateCombination tup : candLst0) {
-			Candidate arg0(tup[var0]), arg1(tup[var1]);
-			if (evaluateSuchThatClause(clauseType, arg0, arg1)) {
-				filteredList.push_back(tup);
-			}
-		}
-	}
-	else {
-		for (CandidateCombination tup0 : candLst0) {
-			Candidate arg0(tup0[var0]);
-			for (CandidateCombination tup1 : candLst1) {
-				Candidate arg1(tup1[var1]);
-				if (evaluateSuchThatClause(clauseType, arg0, arg1)) {
-					filteredList.push_back(Utils::MergeMap(tup0, tup1));
-				}
-			}
-		}
-	}
-	if (filteredList.empty()) return false;
-	for (auto kv : combinations) {
-		if (kv.second == candLst0 || kv.second == candLst1) {
-			combinations.insert_or_assign(kv.first, filteredList);
-		}
-	}
-	return true;
+	auto evaluateClause = [=](CandidateCombination combi) -> bool {
+		return evaluateSuchThatClause(clauseType, combi[var0], combi[var1]);
+	};
+	combinations.mergeAndFilter(var0, var1, evaluateClause);
 }
 
-bool QueryEvaluator::filterFirstVarClause(std::string clauseType,
+void QueryEvaluator::filterFirstVarClause(std::string clauseType,
  Synonym var, Candidate constant, TotalCombinationList &combinations)
 {
-	PartialCombinationList candidateList(combinations[var]);
-	PartialCombinationList filteredList;
-	for (CandidateCombination tup : candidateList) {
-		if (evaluateSuchThatClause(clauseType, tup[var], constant)) {
-			filteredList.push_back(tup);
-		}
-	}
-	if (filteredList.empty()) return false;
-	for (auto kv : combinations) {
-		if (kv.second == candidateList) {
-			combinations.insert_or_assign(kv.first, filteredList);
-		}
-	}
-	return true;
+	auto evaluateClause = [=](CandidateCombination combi) -> bool {
+		return evaluateSuchThatClause(clauseType, combi[var], constant);
+	};
+	combinations.filter(var, evaluateClause);
 }
 
-bool QueryEvaluator::filterSecondVarClause(std::string clauseType,
+void QueryEvaluator::filterSecondVarClause(std::string clauseType,
 	Candidate constant, Synonym var, TotalCombinationList &combinations)
 {
-	PartialCombinationList candidateList(combinations[var]);
-	PartialCombinationList filteredList;
-	for (CandidateCombination tup : candidateList) {
-		if (evaluateSuchThatClause(clauseType, constant, tup[var])) {
-			filteredList.push_back(tup);
-		}
-	}
-	if (filteredList.empty()) return false;
-	for (auto kv : combinations) {
-		if (kv.second == candidateList) {
-			combinations.insert_or_assign(kv.first, filteredList);
-		}
-	}
-	return true;
+	auto evaluateClause = [=](CandidateCombination combi) -> bool {
+		return evaluateSuchThatClause(clauseType, constant, combi[var]);
+	};
+	combinations.filter(var, evaluateClause);
 }
 
-bool QueryEvaluator::filterNoVarClause(std::string clauseType,
+void QueryEvaluator::filterNoVarClause(std::string clauseType,
 	Candidate const1, Candidate const2, TotalCombinationList &combinations)
 {
-	log.append(const1 + " " + const2);
-	return evaluateSuchThatClause(clauseType, const1, const2);
-}
-
-bool QueryEvaluator::evaluateQuery(QueryTree &query)
-{
-	return false;
+	combinations.filter(evaluateSuchThatClause(clauseType, const1, const2));
 }
 
 ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
@@ -235,14 +149,13 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 	std::vector<Synonym> selectList;
 	for (auto kv : selectMap) selectList.push_back(kv.first);
 
-	bool hasMoreCandidates = false;
 	for (Clause clause : clauseList) {
-		hasMoreCandidates = filterByClause(clause, allCandidates);
-		if (!hasMoreCandidates) break;
+		filterByClause(clause, allCandidates);
+		if (allCandidates.isEmpty()) break;
 	}
 	if (isBoolSelect(selectMap)) {
 		ResultList resultList;
-		if (hasMoreCandidates) {
+		if (!allCandidates.isEmpty()) {
 			resultList.push_back(SYMBOL_TRUE);
 		}
 		else {
@@ -251,7 +164,7 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 		return resultList;
 	}
 	else {
-		if (!hasMoreCandidates) {
+		if (allCandidates.isEmpty()) {
 			return ResultList();
 		}
 		else {
@@ -265,7 +178,7 @@ ResultList QueryEvaluator::getResultsFromCombinationList
 (TotalCombinationList &combinations, std::vector<Synonym> &selectList)
 {
 	PartialCombinationList
-		selectedCombinations(getSelectedCombinations(combinations, selectList));
+		selectedCombinations(combinations.getCombinationList(selectList));
 	ResultList result;
 	
 	for (CandidateCombination comb : selectedCombinations) {
@@ -275,6 +188,7 @@ ResultList QueryEvaluator::getResultsFromCombinationList
 	return result;
 }
 
+/* DEPRECATED */
 PartialCombinationList
 QueryEvaluator::getSelectedCombinations
 (TotalCombinationList &combinations, std::vector<Synonym> &selectList)
@@ -302,7 +216,7 @@ QueryEvaluator::getSelectedCombinations
 	}
 	
 	/* TODO: Account for duplicates of sub-combinations */
-	std::vector<CandidateCombination> reducedList;
+	PartialCombinationList reducedList;
 	for (CandidateCombination comb : firstPartialList) {
 		reducedList.push_back(Utils::ReduceMap(comb, firstVarSet));
 	}

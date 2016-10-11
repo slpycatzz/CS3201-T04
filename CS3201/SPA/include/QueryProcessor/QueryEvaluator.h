@@ -27,7 +27,7 @@ class QueryEvaluator {
 	 bool evaluateQuery(QueryTree &query);
 
 	 // use the clause to filter the tuple candidate list to its sublist
-	 void filterByClause(Clause &clause, TotalCombinationList &totalCandMap);
+	 void filterByClause(Clause &clause, TotalCombinationList &combinations);
 
 	 void filterNoVarPattern(Synonym assignStmt, Candidate lhs, Candidate expr,
 		 TotalCombinationList &combinations);

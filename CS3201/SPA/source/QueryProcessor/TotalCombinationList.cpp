@@ -2,13 +2,17 @@
 #include "QueryProcessor/TotalCombinationList.h"
 #include "Utils.h"
 
+/* Constructor */
 TotalCombinationList::TotalCombinationList() {
 	empty = true;
 }
 
+/* Destructor */
 TotalCombinationList::~TotalCombinationList() {}
 
-void TotalCombinationList::addSynonym(Synonym &syn, PartialCombinationList &candidateList) {
+/* Content Manipulation */
+
+void TotalCombinationList::addSynonym(const Synonym &syn, PartialCombinationList &candidateList) {
 	content.insert_or_assign(syn, candidateList);
 	factorList.insert(&candidateList);
 	empty = candidateList.empty();
@@ -33,7 +37,8 @@ void TotalCombinationList::merge(Synonym &syn1, Synonym &syn2) {
 	}
 }
 
-void TotalCombinationList::filter(PartialCombinationList &candidateList, bool(*filterer)(CandidateCombination &combination)) {
+template<typename Filterer>
+void TotalCombinationList::filter(PartialCombinationList &candidateList, Filterer filterer) {
 	PartialCombinationList::iterator iter = candidateList.begin();
 	while (iter != candidateList.end()) {
 		if (filterer(*iter)) {
@@ -46,12 +51,20 @@ void TotalCombinationList::filter(PartialCombinationList &candidateList, bool(*f
 	empty = candidateList.empty();
 }
 
-void TotalCombinationList::filter(Synonym &syn, bool(*filterer)(CandidateCombination &combination)) {
+void TotalCombinationList::filter(bool expression) {
+	if (!expression) {
+		empty = true;
+	}
+}
+
+template<typename Filterer>
+void TotalCombinationList::filter(Synonym &syn, Filterer filterer) {
 	PartialCombinationList &candidateList = content[syn];
 	filter(candidateList, filterer);
 }
 
-void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, bool(*filterer)(CandidateCombination &combination)) {
+template<typename Filterer>
+void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, Filterer filterer) {
 	PartialCombinationList &candidateList1 = content[syn1];
 	PartialCombinationList &candidateList2 = content[syn2];
 	if (&candidateList1 == &candidateList2) {
@@ -71,6 +84,12 @@ void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, bool(*fi
 	}
 }
 
+/* Contenet accessors */
+
+PartialCombinationList TotalCombinationList::operator[](Synonym &syn) {
+	return content[syn];
+}
+
 bool TotalCombinationList::isEmpty() {
 	return empty;
 }
@@ -83,7 +102,7 @@ void TotalCombinationList::reduceSingleFactor(std::vector<Synonym> &synList, Par
 	}
 	candidateList.clear();
 	for (CandidateCombination comb : resultSet) {
-		candidateList.insert(candidateList.end(), comb);
+		candidateList.push_back(comb);
 	}
 }
 
@@ -134,8 +153,9 @@ PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombination
 	}
 }
 
+template<typename Filterer>
 PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombinationList &list1,
-	PartialCombinationList &list2, bool(*filterer)(CandidateCombination &combination)) {
+	PartialCombinationList &list2, Filterer filterer) {
 	if (&list1 == &list2) {
 		filter(list1, filterer);
 		return list1;
