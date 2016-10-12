@@ -27,9 +27,11 @@ Table<unsigned int, string> PKB::constantTable_;
 Table<unsigned int, string> PKB::variableTable_;
 Table<unsigned int, string> PKB::procedureTable_;
 Table<unsigned int, string> PKB::controlVariableTable_;
+Table<unsigned int, string> PKB::callTable_;
 Table<unsigned int, string> PKB::stmtTable_;
+Table<unsigned int, string> PKB::stmtlistTable_;
 
-Table<unsigned int, Symbol> PKB::priorityTable_;
+Table<unsigned int, string> PKB::priorityTable_;
 
 Table<unsigned int, string> PKB::expressionTable_;
 Table<unsigned int, string> PKB::subExpressionTable_;
@@ -222,7 +224,24 @@ void PKB::PrintControlVariableTable() {
     controlVariableTable_.printTable();
 }
 
-/* END - Control variable table functions */
+/* END   - Control variable table functions */
+/* START - Call table functions */
+
+void PKB::GenerateCallTable(map<unsigned int, string> callStmtNumbers) {
+    for (auto &pair : callStmtNumbers) {
+        callTable_.insert(pair.first, pair.second);
+    }
+}
+
+string PKB::GetCallProcedureName(unsigned int stmtNumber) {
+    return (callTable_.hasKey(stmtNumber)) ? callTable_.getValue(stmtNumber) : "";
+}
+
+void PKB::PrintCallTable() {
+    callTable_.printTable();
+}
+
+/* END   - Call table functions */
 /* START - Stmt table functions */
 
 void PKB::GenerateStmtTable(map<unsigned int, string> stmts) {
@@ -274,23 +293,45 @@ void PKB::PrintStmtTable() {
 }
 
 /* END   - Stmt table functions */
+/* START - Stmtlist table functions */
+
+void PKB::GenerateStmtlistTable(map<unsigned int, string> stmtlists) {
+    for (auto &pair : stmtlists) {
+        stmtlistTable_.insert(pair.first, pair.second);
+    }
+}
+
+vector<unsigned int> PKB::GetAllStmtlistsStmtNumber() {
+    set<unsigned int> result = stmtlistTable_.getKeys();
+
+    vector<unsigned int> vec(result.size());
+    std::copy(result.begin(), result.end(), vec.begin());
+
+    return vec;
+}
+
+void PKB::PrintStmtlistTable() {
+    stmtlistTable_.printTable();
+}
+
+/* END   - Stmtlist table functions */
 /* START - Priority table functions */
 
 void PKB::GeneratePriorityTable() {
-    vector<std::pair<unsigned int, Symbol>> tablesSize;
+    vector<std::pair<unsigned int, string>> tablesSize;
 
-    tablesSize.push_back(std::make_pair(callsTable_.getNumberOfValues(),   CALLS));
-    tablesSize.push_back(std::make_pair(followsTable_.getNumberOfValues(), FOLLOWS));
-    tablesSize.push_back(std::make_pair(parentTable_.getNumberOfValues(),  PARENT));
+    tablesSize.push_back(std::make_pair(callsTable_.getNumberOfValues(),   SYMBOL_CALLS));
+    tablesSize.push_back(std::make_pair(followsTable_.getNumberOfValues(), SYMBOL_FOLLOWS));
+    tablesSize.push_back(std::make_pair(parentTable_.getNumberOfValues(),  SYMBOL_PARENT));
 
-    tablesSize.push_back(std::make_pair(callsTransitiveTable_.getNumberOfValues(),   CALLS_TRANSITIVE));
-    tablesSize.push_back(std::make_pair(followsTransitiveTable_.getNumberOfValues(), FOLLOWS_TRANSITIVE));
-    tablesSize.push_back(std::make_pair(parentTransitiveTable_.getNumberOfValues(),  PARENT_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(callsTransitiveTable_.getNumberOfValues(),   SYMBOL_CALLS_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(followsTransitiveTable_.getNumberOfValues(), SYMBOL_FOLLOWS_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(parentTransitiveTable_.getNumberOfValues(),  SYMBOL_PARENT_TRANSITIVE));
 
-    tablesSize.push_back(std::make_pair(modifiesTable_.getNumberOfValues(),          MODIFIES));
-    tablesSize.push_back(std::make_pair(modifiesProcedureTable_.getNumberOfValues(), MODIFIES_PROCEDURE));
-    tablesSize.push_back(std::make_pair(usesTable_.getNumberOfValues(),              USES));
-    tablesSize.push_back(std::make_pair(usesProcedureTable_.getNumberOfValues(),     USES_PROCEDURE));
+    tablesSize.push_back(std::make_pair(modifiesTable_.getNumberOfValues(),          SYMBOL_MODIFIES));
+    tablesSize.push_back(std::make_pair(modifiesProcedureTable_.getNumberOfValues(), SYMBOL_MODIFIES_PROCEDURE));
+    tablesSize.push_back(std::make_pair(usesTable_.getNumberOfValues(),              SYMBOL_USES));
+    tablesSize.push_back(std::make_pair(usesProcedureTable_.getNumberOfValues(),     SYMBOL_USES_PROCEDURE));
 
     /* Sort the size in ascending order to determine the priority. */
     std::sort(tablesSize.begin(), tablesSize.end(), ComparePairAscending);
@@ -300,35 +341,19 @@ void PKB::GeneratePriorityTable() {
     }
 }
 
-unsigned int PKB::GetPriority(Symbol symbol) {
+unsigned int PKB::GetPriority(string symbol) {
     return (priorityTable_.hasValue(symbol)) ? priorityTable_.getKey(symbol) : 0;
 }
 
-void PKB::PrintPriorityTable() {
-    for (const auto &pair : priorityTable_.getKeyToValuesMap()) {
-        std::cout << pair.first << " -> { ";
-
-        for (const auto &value : pair.second) {
-            std::cout << Constants::SymbolToString(value) << " ";
-        }
-
-        std::cout << "}" << std::endl;
-    }
-
-    std::cout << "=====================" << std::endl;
-
-    for (const auto &pair : priorityTable_.getValueToKeysMap()) {
-        std::cout << Constants::SymbolToString(pair.first) << " -> { ";
-
-        for (const auto &key : pair.second) {
-            std::cout << key << " ";
-        }
-
-        std::cout << "}" << std::endl;
-    }
+unsigned int PKB::GetPriority(Symbol symbol) {
+    return GetPriority(Constants::SymbolToString(symbol));
 }
 
-/* END - Priority table functions */
+void PKB::PrintPriorityTable() {
+    priorityTable_.printTable();
+}
+
+/* END   - Priority table functions */
 /* START - Expression table functions */
 
 void PKB::GenerateExpressionTable(map<unsigned int, string> expressions) {
@@ -719,7 +744,7 @@ void PKB::Clear() {
     followsTransitiveTable_.clear();
 }
 
-bool PKB::ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo) {
+bool PKB::ComparePairAscending(const std::pair<unsigned int, string> &pairOne, const std::pair<unsigned int, string> &pairTwo) {
     return pairOne.first < pairTwo.first;
 }
 

@@ -50,13 +50,22 @@ class PKB {
     static std::vector<std::string> GetAllControlVariables();
     static void PrintControlVariableTable();
 
+    static void GenerateCallTable(std::map<unsigned int, std::string> callStmtNumbers);
+    static std::string GetCallProcedureName(unsigned int stmtNumber);
+    static void PrintCallTable();
+
     static void GenerateStmtTable(std::map<unsigned int, std::string> stmts);
     static std::string GetStmtSymbol(unsigned int stmtNumber);
     static std::vector<unsigned int> GetSymbolStmtNumbers(std::string symbol);
     static std::vector<unsigned int> GetSymbolStmtNumbers(Symbol symbol);
     static void PrintStmtTable();
 
+    static void GenerateStmtlistTable(std::map<unsigned int, std::string> stmtlists);
+    static std::vector<unsigned int> GetAllStmtlistsStmtNumber();
+    static void PrintStmtlistTable();
+
     static void GeneratePriorityTable();
+    static unsigned int GetPriority(std::string symbol);
     static unsigned int GetPriority(Symbol symbol);
     static void PrintPriorityTable();
 
@@ -155,7 +164,7 @@ class PKB {
     /* END - Deprecated */
 
  private:
-    static bool ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo);
+    static bool ComparePairAscending(const std::pair<unsigned int, std::string> &pairOne, const std::pair<unsigned int, std::string> &pairTwo);
 
     static unsigned int numberOfProcedure_;
     static unsigned int numberOfAssign_;
@@ -167,9 +176,11 @@ class PKB {
     static Table<unsigned int, std::string> variableTable_;                         /* map<index, variableName>  */
     static Table<unsigned int, std::string> procedureTable_;                        /* map<index, procedureName> */
     static Table<unsigned int, std::string> controlVariableTable_;                  /* map<stmtNumber, variableName> */
-    static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbolString>   */
+    static Table<unsigned int, std::string> callTable_;                             /* map<stmtNumber, procedureName> */
+    static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbol string> */
+    static Table<unsigned int, std::string> stmtlistTable_;                         /* map<stmtNumber, symbol string> */
 
-    static Table<unsigned int, Symbol> priorityTable_;                              /* map<priority, symbol> */
+    static Table<unsigned int, std::string> priorityTable_;                         /* map<priority, symbol string> */
 
     static Table<unsigned int, std::string> expressionTable_;                       /* map<stmtNumber, exact expression> */
     static Table<unsigned int, std::string> subExpressionTable_;                    /* map<stmtNumber, set(subExpressions)> */
@@ -177,10 +188,10 @@ class PKB {
     static Table<std::string, std::string> callsTable_;                             /* map<procedureName, set(procedureNames)> */
     static TransitiveTable<std::string, std::string> callsTransitiveTable_;         /* map<procedureName, set(procedureNames)> */
 
-    static Table<unsigned int, std::string> modifiesTable_;                         /* map<stmtNumber, set(variableName)>    */
+    static Table<unsigned int, std::string> modifiesTable_;                         /* map<stmtNumber, set(variableName)> */
     static Table<std::string, std::string> modifiesProcedureTable_;                 /* map<procedureName, set(variableName)> */
 
-    static Table<unsigned int, std::string> usesTable_;                             /* map<stmtNumber, set(variableName)>    */
+    static Table<unsigned int, std::string> usesTable_;                             /* map<stmtNumber, set(variableName)> */
     static Table<std::string, std::string> usesProcedureTable_;                     /* map<procedureName, set(variableName)> */
 
     static Table<unsigned int, unsigned int> parentTable_;                          /* map<stmtNumber, set(stmtNumber)> */
