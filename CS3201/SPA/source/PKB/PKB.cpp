@@ -337,7 +337,7 @@ void PKB::GeneratePriorityTable() {
     std::sort(tablesSize.begin(), tablesSize.end(), ComparePairAscending);
 
     for (unsigned int i = 0; i < tablesSize.size(); i++) {
-        priorityTable_.insert(i + 1, tablesSize[i].second);
+        priorityTable_.insert((i + 1) * 10, tablesSize[i].second);
     }
 }
 
