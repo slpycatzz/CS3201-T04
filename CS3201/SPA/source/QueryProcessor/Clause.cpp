@@ -28,27 +28,18 @@ int Clause::getArgCount() {
     return argList.size();
 }
 std::string Clause::toString() {
-    std::string sb = getClauseType() + " ";
+    std::string sb = getClauseType() + "(";
     
+    int i = 0;
     for (std::string arg : getArg()) {
-        sb += arg + " ";
-        if (Utils::IsNonNegativeNumeric(arg)) {
-            sb += "constant ";
-        }
-        else if (arg == "_") {
-            sb += "underscore ";
-        }
-        else if (Utils::StartsWith(arg, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(arg, CHAR_SYMBOL_DOUBLEQUOTES)) {
-            sb += "constant ";
-        }
-        else if (Utils::StartsWith(arg, CHAR_SYMBOL_UNDERSCORE) && Utils::EndsWith(arg, CHAR_SYMBOL_UNDERSCORE)) {
-            sb += "constant ";
-        }
-        else {
-            sb += "synonym ";
+        sb += arg;
+        i++;
+        if (i < getArg().size()) {
+            sb += ",";
         }
     }
-    sb += "\n";
+
+    sb += ")";
     
     return sb;
 }

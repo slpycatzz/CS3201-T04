@@ -126,7 +126,7 @@ void QueryTree::printGroups() {
 
     output << "boolean clauses \n" << "-------------" << "\n";
     for (Clause clause : getBooleanClauses()) {
-        output << clause.toString();
+        output << clause.toString() << "\n";
     }
     output << "\n";
 
@@ -135,7 +135,7 @@ void QueryTree::printGroups() {
         output << "unselected group " << i << "\n" << "-------------" << "\n";
         i++;
         for (Clause clause : group) {
-            output << clause.toString();
+            output << clause.toString() << "\n";
         }
         output << "\n";
     }
@@ -145,7 +145,7 @@ void QueryTree::printGroups() {
         output << "selected group " << j << "\n" << "-------------" << "\n";
         j++;
         for (Clause clause : group) {
-            output << clause.toString();
+            output << clause.toString() << "\n";
         }
         output << "\n";
     }

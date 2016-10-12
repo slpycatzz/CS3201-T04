@@ -46,7 +46,7 @@
     </ClCompile>
     <ClCompile Include="QueryEvaluatorUnitTest.cpp">
       <Filter>Source Files\QueryEvaluator</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="PKB\PKBUnitTest.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
