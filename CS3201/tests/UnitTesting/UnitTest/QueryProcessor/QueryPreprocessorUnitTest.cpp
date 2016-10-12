@@ -37,13 +37,15 @@ public:
         }
         Assert::AreEqual(expected, actual);
     }
-    TEST_METHOD(QueryParserWithAnd) {
+    TEST_METHOD(QueryParserMultipleAnd) {
         std::string expected, actual, query;
         QueryPreprocessor qp;
         QueryTree qt;
 
-        query = "assign a,a1; stmt s; while w1,w2;Select a with a.stmt# = 1";
-        query += " and s.stmt# = a.stmt#";
+        query = "assign a1,a2,a3; stmt s1,s2,s3; variable v1,v2,v3;";
+        query += "Select <s1,s2,v2> such that Uses(s3,v1) and Modifies(s3,\"x\") and ";
+        query += "Follows(s1,s2) and Parent(s3,s1) such that Uses(s2,v1) and Uses(5,\"y\") and ";
+        query += "Follows(3,4) pattern a1(v2,\"x+y\") and a3(\"z\",_) such that Modifies(a3,v3)";
         try {
             qp.preprocessQuery(query);
         }
@@ -59,7 +61,10 @@ public:
         }
         std::vector<Clause> clauseList = qt.getClauses();
 
-        expected = "a with a 1 with s a";
+        expected = "s1 s2 v2 ";
+        expected += "Uses s3 v1 Modifies s3 \"x\" Follows s1 s2 Parent s3 s1 Uses s2 v1 Uses 5 \"y\" ";
+        expected += "Follows 3 4 Modifies a3 v3 ";
+        expected += "pattern a1 v2 pattern a3 \"z\" ";
         for (Clause c : clauseList) {
             actual += c.getClauseType() + " ";
             actual += c.getArg()[0] + " ";
@@ -112,7 +117,7 @@ public:
         std::vector<Clause> resList;
 
         resList = qt.getClauses();
-        expected = "pattern \"x\" _ a1 ";
+        expected = "pattern a1 \"x\" _ ";
         for (unsigned int i = 0; i < resList.size(); i++) {
             actual += resList[i].getClauseType() + " ";
             for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
@@ -261,7 +266,7 @@ public:
         std::vector<Clause> resList;
 
         resList = qt.getClauses();
-        expected = "pattern \"x\" _ a1 ";
+        expected = "pattern a1 \"x\" _ ";
         for (unsigned int i = 0; i < resList.size(); i++) {
             actual += resList[i].getClauseType() + " ";
             for (unsigned int j = 0; j < resList[i].getArg().size(); j++) {
@@ -296,7 +301,7 @@ public:
             }
         }
 
-        expected = "assign a; assign a; pattern \"a\" _ a ";  // declaration; select a; pattern
+        expected = "assign a; assign a; pattern a \"a\" _ ";  // declaration; select a; pattern
         Assert::AreEqual(expected, actual);
     }
     TEST_METHOD(ExtractQueryTreeTwoClauses) {
@@ -325,7 +330,7 @@ public:
             }
         }
 
-        expected = "assign a; assign a1; assign a; Follows a a1 pattern \"e\" _ a ";  // declaration; select a; Follows
+        expected = "assign a; assign a1; assign a; Follows a a1 pattern a \"e\" _ ";  // declaration; select a; Follows
         Assert::AreEqual(actual, expected);
     }
     };

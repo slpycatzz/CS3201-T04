@@ -150,7 +150,7 @@ void QueryPreprocessor::parseSelect() {
     }
     if (var.size() < 1) {
         // No QueryResult found
-        throw QuerySyntaxErrorException("01");
+        throw QuerySyntaxErrorException("7");
     }
 
     qt.insert(QUERY_RESULT, "placeholder", var);
@@ -165,12 +165,12 @@ void QueryPreprocessor::parseSuchThat() {
     relationString = peek().substr(0, peek().find_first_of('('));
     relation = Constants::StringToSymbol(relationString);
     if (relation == INVALID) {
-        throw QuerySyntaxErrorException("02");
+        throw QuerySyntaxErrorException("8");
     }
 
     queryList[cur] = peek().substr(relationString.size());
     if (!r.isRelationValid(relation, SUCH_THAT)) {
-        throw QuerySyntaxErrorException("I");
+        throw QuerySyntaxErrorException("9");
     }
     /* case: uses(a1,1)*/
     expect('(');
@@ -186,27 +186,27 @@ void QueryPreprocessor::parseSuchThat() {
             if (r.isArgValid(relation, Constants::SymbolToString(varType), i)) {
                 argList.push_back(getVar());
             } else {
-                throw QuerySyntaxErrorException("7");
+                throw QuerySyntaxErrorException("10");
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(CONSTANT)) {
             if (r.isArgValid(relation, Constants::SymbolToString(CONSTANT), i)) {
                 argList.push_back(getVar());  // wm todo getVariable after validation for saving
             } else {
-                throw QuerySyntaxErrorException("8");
+                throw QuerySyntaxErrorException("11");
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(UNDERSCORE)) {
-        if (r.isArgValid(relation, "_", i)) {
-            argList.push_back("_");
-        } else {
-            throw QuerySyntaxErrorException("14");
-        }
+            if (r.isArgValid(relation, "_", i)) {
+                argList.push_back("_");
+            } else {
+                throw QuerySyntaxErrorException("12");
+            }
 
-        queryList[cur] = peek().substr(getVar().size());
+            queryList[cur] = peek().substr(getVar().size());
 
         } else {
-            throw QuerySyntaxErrorException("9");
+            throw QuerySyntaxErrorException("13");
         }
         accept(',');
         i++;
@@ -232,10 +232,10 @@ void QueryPreprocessor::parsePattern() {
 
     if (isValidVarName(relation)) {
         if (!r.isRelationValid(varSymbolMap[relation], PATTERN)) {
-            throw QuerySyntaxErrorException("1b");
+            throw QuerySyntaxErrorException("14");
         }
     } else {
-        throw QuerySyntaxErrorException("11");
+        throw QuerySyntaxErrorException("15");
     }
     expect('(');
     int i = 0;
@@ -250,41 +250,41 @@ void QueryPreprocessor::parsePattern() {
             if (r.isArgValid(varSymbolMap[relation], Constants::SymbolToString(varType), i)) {
                 argList.push_back(getVar());
             } else {
-                throw QuerySyntaxErrorException("12");
+                throw QuerySyntaxErrorException("16");
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(CONSTANT)) {
             if (r.isArgValid(varSymbolMap[relation], Constants::SymbolToString(CONSTANT), i)) {
                 argList.push_back(getVar());
             } else {
-                throw QuerySyntaxErrorException("13");
+                throw QuerySyntaxErrorException("17");
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(UNDERSCORE)) {
             if (r.isArgValid(varSymbolMap[relation], "_", i)) {
                 argList.push_back("_");
             } else {
-                throw QuerySyntaxErrorException("14");
+                throw QuerySyntaxErrorException("18");
             }
 
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(PATTERN)) {
             // case: pattern expression string e.g. _"a+1"_, "a+1"
-            if (r.isArgValid(Constants::StringToSymbol(relation), "pattern", i)) {
+            if (r.isArgValid(varSymbolMap[relation], "pattern", i)) {
                 argList.push_back(getVar());
             } else {
-                throw QuerySyntaxErrorException("14a");
+                throw QuerySyntaxErrorException("19");
             }
 
             queryList[cur] = peek().substr(getVar().size());
         } else {
-            throw QuerySyntaxErrorException("15");
+            throw QuerySyntaxErrorException("20");
         }
         i++;
     } while (accept(',') == 1 && i < 3);
     expect(')');
 
-    argList.push_back(relation);
+    argList.insert(argList.begin(),relation);
     qt.insert(PATTERN, "pattern", argList);
 }
 
@@ -295,9 +295,12 @@ void QueryPreprocessor::parseAnd(Symbol prevClause) {
         queryList[--cur] = "that";
         queryList[--cur] = "such";
         parseSuchThat();
+        break;
     case PATTERN:
-        queryList[--cur] = "placeholder";
+        out += queryList[cur-1];
+        queryList[--cur] = "pattern";
         parsePattern();
+        break;
     case WITH:
         queryList[--cur] = "with";
         parseWith();
@@ -325,7 +328,7 @@ void QueryPreprocessor::parseWith() {
             vector<string> varList = { var, var2 };
             qt.insert(WITH, "with", varList);
         } else {
-            throw QuerySyntaxErrorException("031");
+            throw QuerySyntaxErrorException("21");
         }
     } else {
         // case: var1.varAttr = "varValue"
@@ -333,57 +336,98 @@ void QueryPreprocessor::parseWith() {
             vector<string> varList = { var, varValue };
             qt.insert(WITH, "with", varList);
         } else {
-            throw QuerySyntaxErrorException("041");
+            throw QuerySyntaxErrorException("22");
         }
     }
     cur++;
 }
-// case 2: var1.varAttr = var2.varAttr
+
+// return only CONSTANT | VARIABLE | INVALID
+Symbol QueryPreprocessor::getAttributeType(string var) {
+    Symbol varType = getVarType(var);
+    switch (varType) {
+    case PROCEDURE:
+    case CALL:
+        return VARIABLE;
+    case VARIABLE:
+        return VARIABLE;
+    case CONSTANT:
+        return CONSTANT;
+    case STMT:
+    case ASSIGN:
+    case WHILE:
+    case IF:
+        return CONSTANT;
+    default:
+        return INVALID;
+    }
+
+    return INVALID;
+}
+// case: var1.varAttr = var2.varAttr
 bool QueryPreprocessor::isAttributeValid(string var, string varAttr, string var2, string varAttr2) {
-    return isAttributeValid(var, varAttr, false) && isAttributeValid(var2, varAttr2, false);
+    Symbol attrType1 = getAttributeType(var);
+    Symbol attrType2 = getAttributeType(var);
+    bool isValid;
+    // check same attrType e.g. CONSTANT == CONSTANT | VARIABLE == VARIABLE
+    isValid = isAttributeValid(var, varAttr, false) && isAttributeValid(var2, varAttr2, false);
+    // check var and attrType is valid e.g. proc == "procName"
+    isValid = (attrType1 == attrType2) && isValid;
+    return isValid;
 }
 
 // case 1: var1.varAttr = "varValue"
+// case 2: var1.varAttr = var2.varAttr
 // isVarValue = true [for-case1]
 bool QueryPreprocessor::isAttributeValid(string var, string varAttribute, bool isVarValue) {
     Symbol varType = getVarType(var);
+    bool isValid = false;
+
+    if (isVarValue) {
+        // check varValue type matches varAttribute
+        Symbol attrType = getAttributeType(var);
+        switch (attrType) {
+        case VARIABLE:
+            isValid = accept(VARIABLE);
+            break;
+        case CONSTANT:
+            isValid = accept(CONSTANT);
+            break;
+        default:
+            isValid = false;
+        }
+    } else {
+        isValid = true;
+    }
 
     switch (varType) {
     case PROCEDURE:
     case CALL:
         if (varAttribute == "procName") {
-            if (isVarValue) {
-                return accept(VARIABLE);
-            } else {
-                return true;
-            }
+            return isValid;
+        } else {
+            throw QuerySyntaxErrorException("23");
         }
     case VARIABLE:
         if (varAttribute == "varName") {
-            if (isVarValue) {
-                return accept(VARIABLE);
-            } else {
-                return true;
-            }
+            return isValid;
+        } else {
+            throw QuerySyntaxErrorException("24");
         }
     case CONSTANT:
         if (varAttribute == "value") {
-            if (isVarValue) {
-                return accept(CONSTANT);
-            } else {
-                return true;
-            }
+            return isValid;
+        } else {
+            throw QuerySyntaxErrorException("25");
         }
     case STMT:
     case ASSIGN:
     case WHILE:
     case IF:
         if (varAttribute == "stmt#") {
-            if (isVarValue) {
-                return accept(CONSTANT);
-            } else {
-                return true;
-            }
+            return isValid;
+        } else {
+            throw QuerySyntaxErrorException("26");
         }
     default:
         return false;
@@ -421,7 +465,7 @@ bool QueryPreprocessor::isConstantVar(string var) {
                 if (Utils::IsNonNegativeNumeric(removedWildcard)) {
                     return isDblWildcard;
                 } else {
-                    throw QuerySyntaxErrorException("16");
+                    throw QuerySyntaxErrorException("27");
                 }
             } else {
                 return isDblWildcard;
@@ -433,7 +477,7 @@ bool QueryPreprocessor::isConstantVar(string var) {
                 if (Utils::IsNonNegativeNumeric(removedQuotes)) {
                     return isSurroundWithDblQuotes;
                 } else {
-                    throw QuerySyntaxErrorException("17");
+                    throw QuerySyntaxErrorException("28");
                 }
             }
             return isSurroundWithDblQuotes;
@@ -601,7 +645,7 @@ void QueryPreprocessor::expect(string token) {
     if (toLower(queryList[cur]).compare(toLower(token)) == 0) {
         cur++;
     } else {
-        throw QuerySyntaxErrorException("18 (str)token is");
+        throw QuerySyntaxErrorException("29 (str)token is "+ queryList[cur] + token);
     }
 }
 
@@ -610,13 +654,13 @@ void QueryPreprocessor::expect(char token) {
     // peek to remove empty vector
     peek();
     // wm todo: check if end of query is valid
-    if (cur == queryList.size()) throw QuerySyntaxErrorException("19 expect(char)token: cur==size");
+    if (cur == queryList.size()) throw QuerySyntaxErrorException("30 expect(char)token: cur==size");
 
     if (queryList[cur][0] == token) {
         queryList[cur] = peek().substr(1);
         peek();
     } else {
-        throw QuerySyntaxErrorException("20");
+        throw QuerySyntaxErrorException("31");
     }
 }
 

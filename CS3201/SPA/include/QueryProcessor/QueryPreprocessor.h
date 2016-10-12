@@ -62,6 +62,7 @@ class QueryPreprocessor {
      std::vector<std::string> getNextToken(std::vector<std::string> queryList);
 
      Symbol getVarType(std::string var);
+     Symbol getAttributeType(std::string var);
 
      std::vector<std::string> queries;
      std::vector<std::string> queryList;
