@@ -284,7 +284,7 @@ void QueryPreprocessor::parsePattern() {
     } while (accept(',') == 1 && i < 3);
     expect(')');
 
-    argList.insert(argList.begin(),relation);
+    argList.insert(argList.begin(), relation);
     qt.insert(PATTERN, "pattern", argList);
 }
 
@@ -311,10 +311,11 @@ void QueryPreprocessor::parseWith() {
     string var, varAttribute, varValue;
     expect("with");
     var = getVar();
-    queryList[cur] = peek().substr(var.size());
+    queryList[cur] = peek().substr(getVar().size());
     expect('.');
-    varAttribute = peek();
-    cur++;
+    varAttribute = getVar();
+    queryList[cur] = peek().substr(getVar().size());
+    peek();
     expect('=');
     varValue = peek();
     if (varValue.find('.') != std::string::npos) {
@@ -436,10 +437,10 @@ bool QueryPreprocessor::isAttributeValid(string var, string varAttribute, bool i
 }
 string QueryPreprocessor::getVar() {
     string word = queryList[cur];
-    // delimiters: ,>;)
+    // delimiters: ,>;.=)
     int pos = 0;
     for (char c : word) {
-        if (c == ',' || c == '>' || c == ';' || c == ')' || c == '.') {
+        if (c == ',' || c == '>' || c == ';' || c == ')' || c == '.' || c == '=') {
             break;
         }
         pos++;

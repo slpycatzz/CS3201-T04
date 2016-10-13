@@ -20,14 +20,6 @@ class QueryPreprocessor {
     QueryTree getQueryTree();
     std::string testMethodOut();
 
-    // Temporarily made public to test the optimizer
-    /*
-    bool parseSuchThat(std::vector<std::string> suchThat);
-    bool parsePattern(std::vector<std::string> pattern);
-    bool parseSelect(std::vector<std::string> queryList);
-    bool parseRelation(std::string clauseType, std::string relType, std::vector<std::string>& varList);
-    */
-
     // usage: e.g. "Select <a,a1> such that Uses(a1,"x")"
     bool processDeclaration(std::string declaration);
 
@@ -60,10 +52,10 @@ class QueryPreprocessor {
      bool isConstantVar(std::string varName);
 
      std::vector<std::string> getNextToken(std::vector<std::string> queryList);
-
      Symbol getVarType(std::string var);
      Symbol getAttributeType(std::string var);
 
+     // global variables
      std::vector<std::string> queries;
      std::vector<std::string> queryList;
      Symbol prevClause;

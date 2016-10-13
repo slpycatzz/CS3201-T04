@@ -60,7 +60,7 @@ bool RelationTable::isArgValid(Symbol relation, std::string arg, int i) {
     case 1:
         argList = clauseMap2[relation]; return isArgFound(argList, argSymbol);
     case 2:
-        return (arg.size() == 1 && arg[0] == CHAR_SYMBOL_UNDERSCORE);
+        return (argSymbol == UNDERSCORE);
     default:
         return false;
     }
@@ -88,15 +88,25 @@ void RelationTable::initTable() {
     // procedure includes variable("procedureName")
     arg1 = { PROCEDURE, CALL, IF, STMT, ASSIGN, WHILE, VARIABLE, CONSTANT, PROGRAM_LINE};
     arg2 = { VARIABLE, UNDERSCORE };
-    clauseMap1[MODIFIES] = arg1;
-    clauseMap2[MODIFIES] = arg2;
-
     clauseMap1[USES] = arg1;
     clauseMap2[USES] = arg2;
+
+    clauseMap1[MODIFIES] = arg1;
+    clauseMap2[MODIFIES] = arg2;
     arg1.clear();
     arg2.clear();
 
     // stmt refers to all stmt types: stmt || assign while if call prog_line constant
+    arg1 = { STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg2 = { STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    clauseMap1[PARENT] = arg1;
+    clauseMap2[PARENT] = arg2;
+
+    clauseMap1[PARENT_TRANSITIVE] = arg1;
+    clauseMap2[PARENT_TRANSITIVE] = arg2;
+    arg1.clear();
+    arg2.clear();
+
     arg1 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE };
     arg2 = { STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
     clauseMap1[FOLLOWS] = arg1;
@@ -107,20 +117,42 @@ void RelationTable::initTable() {
     arg1.clear();
     arg2.clear();
 
-    arg1 = { STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE};
-    arg2 = { STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE};
-    clauseMap1[PARENT] = arg1;
-    clauseMap2[PARENT] = arg2;
+    // variable refers to "procedureName" only
+    arg1 = { PROCEDURE, VARIABLE, UNDERSCORE };
+    arg2 = { PROCEDURE, VARIABLE, UNDERSCORE };
+    clauseMap1[CALLS] = arg1;
+    clauseMap2[CALLS] = arg2;
 
-    clauseMap1[PARENT_TRANSITIVE] = arg1;
-    clauseMap2[PARENT_TRANSITIVE] = arg2;
+    clauseMap1[CALLS_TRANSITIVE] = arg1;
+    clauseMap2[CALLS_TRANSITIVE] = arg2;
+    arg1.clear();
+    arg2.clear();
+
+    // procedure includes variable("procedureName")
+    arg1 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg1 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    clauseMap1[NEXT] = arg1;
+    clauseMap2[NEXT] = arg2;
+
+    clauseMap1[NEXT_TRANSITIVE] = arg1;
+    clauseMap2[NEXT_TRANSITIVE] = arg2;
+    arg1.clear();
+    arg2.clear();
+
+    arg1 = { STMT, ASSIGN, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg2 = { STMT, ASSIGN, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    clauseMap1[AFFECTS] = arg1;
+    clauseMap2[AFFECTS] = arg2;
+
+    clauseMap1[AFFECTS_TRANSITIVE] = arg1;
+    clauseMap2[AFFECTS_TRANSITIVE] = arg2;
     arg1.clear();
     arg2.clear();
 
     // arg1: variable refers to "variableName" only
     // arg2: variable refers to "variableName" and _"expression"_
     // pattern refers to _"expression"_
-    arg1 = { VARIABLE, UNDERSCORE};
+    arg1 = { VARIABLE, UNDERSCORE };
     arg2 = { VARIABLE, UNDERSCORE, PATTERN };
     clauseMap1[ASSIGN] = arg1;
     clauseMap2[ASSIGN] = arg2;
@@ -135,14 +167,11 @@ void RelationTable::initTable() {
     arg1.clear();
     arg2.clear();
 
-    // variable refers to "procedureName" only
-    arg1 = { PROCEDURE, VARIABLE, UNDERSCORE };
-    arg2 = { PROCEDURE, VARIABLE, UNDERSCORE };
-    clauseMap1[CALLS] = arg1;
-    clauseMap2[CALLS] = arg2;
-
-    clauseMap1[CALLS_TRANSITIVE] = arg1;
-    clauseMap2[CALLS_TRANSITIVE] = arg2;
+    // variable refers to "variableName" only, exclude _"expression"_
+    arg1 = { VARIABLE, UNDERSCORE };
+    arg2 = { UNDERSCORE };
+    clauseMap1[IF] = arg1;
+    clauseMap2[IF] = arg2;
     arg1.clear();
     arg2.clear();
 }
