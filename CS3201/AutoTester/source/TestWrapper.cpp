@@ -71,7 +71,7 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
         PKB::PrintPriorityTable();
         */
     }
-    catch (std::exception& ex) {
+    catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;
         return;
     }
