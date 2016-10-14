@@ -17,7 +17,7 @@ using std::vector;
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTest {
+namespace UnitTesting {
   TEST_CLASS(PKBTest) {
     public:
       TEST_METHOD(AST_set_and_get_root) {
@@ -48,7 +48,7 @@ namespace UnitTest {
         string symbol_procedure("procedure");
         string symbol_while("while");
         string symbol_if("if");
-        string symbol_stmtlist("stmtlist");
+        string symbol_stmtlist("stmtLst");
         string symbol_call("call");
         string symbol_assign("assign");
         string symbol_plus("+");

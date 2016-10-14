@@ -12,7 +12,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTest {
+namespace UnitTesting {
     TEST_CLASS(QueryPreprocessorTest) {
 public:
     TEST_METHOD(QueryParserSelect) {
