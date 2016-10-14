@@ -520,12 +520,16 @@ bool QueryPreprocessor::isValidVarType(string varName) {
     Symbol varTypeSymbol = Constants::StringToSymbol(varName);
 
     switch (varTypeSymbol) {
+        case STMTLIST:
         case STMT:
         case ASSIGN:
         case WHILE:
         case VARIABLE:
         case CONSTANT:
         case PROGRAM_LINE:
+        case PROCEDURE:
+        case CALL:
+        case IF:
             return true;
         default:
             return false;
