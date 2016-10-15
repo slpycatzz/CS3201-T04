@@ -37,6 +37,16 @@ bool QueryUtils::IsLiteral(string str) {
     return (Utils::IsNonNegativeNumeric(str) || IsStringLiteral(str));
 }
 
+std::unordered_map<std::string, std::string>
+QueryUtils::GetSubMap(std::unordered_map<std::string, std::string>& map, const std::vector<std::string>& keyList)
+{
+	std::unordered_map<std::string, std::string> result;
+	for (std::string key : keyList) {
+		result.insert_or_assign(key, map[key]);
+	}
+	return result;
+}
+
 bool QueryUtils::IsStringLiteral(string str) {
     if (Utils::StartsWith(str, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(str, CHAR_SYMBOL_DOUBLEQUOTES)) {
         return true;

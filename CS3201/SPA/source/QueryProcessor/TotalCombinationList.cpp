@@ -37,8 +37,8 @@ void TotalCombinationList::merge(Synonym &syn1, Synonym &syn2) {
 	}
 }
 
-template<typename Filterer>
-void TotalCombinationList::filter(PartialCombinationList &candidateList, Filterer filterer) {
+//template<typename Filterer>
+void TotalCombinationList::filter(PartialCombinationList &candidateList, std::function<bool(CandidateCombination)> filterer) {
 	PartialCombinationList::iterator iter = candidateList.begin();
 	while (iter != candidateList.end()) {
 		if (filterer(*iter)) {
@@ -57,14 +57,14 @@ void TotalCombinationList::filter(bool expression) {
 	}
 }
 
-template<typename Filterer>
-void TotalCombinationList::filter(Synonym &syn, Filterer filterer) {
+//template<typename Filterer>
+void TotalCombinationList::filter(Synonym &syn, std::function<bool(CandidateCombination)> filterer) {
 	PartialCombinationList &candidateList = content[syn];
 	filter(candidateList, filterer);
 }
 
-template<typename Filterer>
-void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, Filterer filterer) {
+//template<typename Filterer>
+void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, std::function<bool(CandidateCombination)> filterer) {
 	PartialCombinationList &candidateList1 = content[syn1];
 	PartialCombinationList &candidateList2 = content[syn2];
 	if (&candidateList1 == &candidateList2) {
@@ -84,7 +84,7 @@ void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, Filterer
 	}
 }
 
-/* Contenet accessors */
+/* Content accessors */
 
 PartialCombinationList TotalCombinationList::operator[](Synonym &syn) {
 	return content[syn];
@@ -154,9 +154,9 @@ PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombination
 	}
 }
 
-template<typename Filterer>
+//template<typename Filterer>
 PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombinationList &list1,
-	PartialCombinationList &list2, Filterer filterer) {
+	PartialCombinationList &list2, std::function<bool(CandidateCombination)> filterer) {
 	if (&list1 == &list2) {
 		filter(list1, filterer);
 		return list1;

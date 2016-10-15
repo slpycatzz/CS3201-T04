@@ -1,6 +1,7 @@
 #pragma once
 #include "QueryUtils.h"
 #include "QueryTree.h"
+#include <functional>
 
 typedef std::string Candidate;
 typedef std::string Synonym;
@@ -24,11 +25,11 @@ public:
 
 	void filter(bool expression);
 
-	template<typename Filterer>
-	void filter(Synonym &syn, Filterer filterer);
+	//template<typename Filterer>
+	void filter(Synonym &syn, std::function<bool(CandidateCombination)> filterer);
 
-	template<typename Filterer>
-	void mergeAndFilter(Synonym &syn1, Synonym &syn2, Filterer filterer);
+	//template<typename Filterer>
+	void mergeAndFilter(Synonym &syn1, Synonym &syn2, std::function<bool(CandidateCombination)> filterer);
 	
 	/* Content accessors */
 
@@ -60,13 +61,13 @@ public:
 private:
 	
 	/* Utillities on PartialCombinationList */
-	template<typename Filterer>
-	void filter(PartialCombinationList &list, Filterer filterer);
+	//template<typename Filterer>
+	void filter(PartialCombinationList &list, std::function<bool(CandidateCombination)> filterer);
 
 	PartialCombinationList cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2);
 
-	template<typename Filterer>
-	PartialCombinationList cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2, Filterer filterer);
+	//template<typename Filterer>
+	PartialCombinationList cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2, std::function<bool(CandidateCombination)> filterer);
 
 	std::unordered_map<Synonym, PartialCombinationList> content;
 	std::set<PartialCombinationList*> factorList;
