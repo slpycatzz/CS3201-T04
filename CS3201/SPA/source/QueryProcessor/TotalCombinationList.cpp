@@ -38,8 +38,8 @@ void TotalCombinationList::merge(Synonym &syn1, Synonym &syn2) {
 	}
 }
 
-template<typename Filterer>
-void TotalCombinationList::filter(PartialCombinationList &candidateList, Filterer filterer) {
+//template<typename Filterer>
+void TotalCombinationList::filter(PartialCombinationList &candidateList, std::function<bool(CandidateCombination)> filterer) {
 	PartialCombinationList::iterator iter = candidateList.begin();
 	while (iter != candidateList.end()) {
 		if (filterer(*iter)) {
@@ -58,14 +58,14 @@ void TotalCombinationList::filter(bool expression) {
 	}
 }
 
-template<typename Filterer>
-void TotalCombinationList::filter(Synonym &syn, Filterer filterer) {
+//template<typename Filterer>
+void TotalCombinationList::filter(Synonym &syn, std::function<bool(CandidateCombination)> filterer) {
 	PartialCombinationList &candidateList = content[syn];
 	filter(candidateList, filterer);
 }
 
-template<typename Filterer>
-void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, Filterer filterer) {
+//template<typename Filterer>
+void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, std::function<bool(CandidateCombination)> filterer) {
 	PartialCombinationList &candidateList1 = content[syn1];
 	PartialCombinationList &candidateList2 = content[syn2];
 	if (&candidateList1 == &candidateList2) {
@@ -85,7 +85,7 @@ void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, Filterer
 	}
 }
 
-/* Contenet accessors */
+/* Content accessors */
 
 PartialCombinationList TotalCombinationList::operator[](Synonym &syn) {
 	return content[syn];
@@ -95,8 +95,9 @@ bool TotalCombinationList::isEmpty() {
 	return empty;
 }
 
-void TotalCombinationList::reduceSingleFactor(std::vector<Synonym> &synList, PartialCombinationList &candidateList) {
-	std::set<CandidateCombination> resultSet;
+void TotalCombinationList::reduceSingleFactor(const std::vector<Synonym> &synList, PartialCombinationList &candidateList) {
+	combinationComp comp(synList);
+	std::set<CandidateCombination, combinationComp> resultSet(comp);
 	for (CandidateCombination &combination : candidateList) {
 		CandidateCombination selectedCombi(QueryUtils::GetSubMap(combination, synList));
 		resultSet.insert(selectedCombi);
@@ -107,7 +108,7 @@ void TotalCombinationList::reduceSingleFactor(std::vector<Synonym> &synList, Par
 	}
 }
 
-void TotalCombinationList::reduceTotalContent(std::vector<Synonym> &synList) {
+void TotalCombinationList::reduceTotalContent(const std::vector<Synonym> &synList) {
 	for (PartialCombinationList* factorPointer : factorList) {
 		PartialCombinationList &combiList = *factorPointer;
 		std::vector<Synonym> subSynList;
@@ -121,12 +122,12 @@ void TotalCombinationList::reduceTotalContent(std::vector<Synonym> &synList) {
 }
 
 
-PartialCombinationList TotalCombinationList::getSingleFactor(std::vector<Synonym> &synList, PartialCombinationList &candidateList) {
+PartialCombinationList TotalCombinationList::getSingleFactor(const std::vector<Synonym> &synList, PartialCombinationList &candidateList) {
 	reduceSingleFactor(synList, candidateList);
 	return candidateList;
 }
 
-PartialCombinationList TotalCombinationList::getCombinationList(std::vector<Synonym> &synList) {
+PartialCombinationList TotalCombinationList::getCombinationList(const std::vector<Synonym> &synList) {
 	reduceTotalContent(synList);
 	PartialCombinationList result = *(*factorList.begin());
 	for (PartialCombinationList* factorPointer : factorList) {
@@ -154,9 +155,9 @@ PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombination
 	}
 }
 
-template<typename Filterer>
+//template<typename Filterer>
 PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombinationList &list1,
-	PartialCombinationList &list2, Filterer filterer) {
+	PartialCombinationList &list2, std::function<bool(CandidateCombination)> filterer) {
 	if (&list1 == &list2) {
 		filter(list1, filterer);
 		return list1;
