@@ -28,19 +28,35 @@ int Clause::getArgCount() {
     return argList.size();
 }
 std::string Clause::toString() {
-    std::string sb = getClauseType() + "(";
-    
-    int i = 0;
-    for (std::string arg : getArg()) {
-        sb += arg;
-        i++;
-        if (i < getArg().size()) {
-            sb += ",";
+    std::string sb;
+
+    if (Constants::StringToSymbol(getClauseType()) == PATTERN) {
+        sb += getClauseType() + " " + getArg()[0] + "(";
+
+        for (int i = 1; i < getArg().size(); i++) {
+            sb += getArg()[i];
+            if (i < getArg().size() - 1) {
+                sb += ",";
+            }
         }
+        sb += ")";
+    }
+    else if (Constants::StringToSymbol(getClauseType()) == WITH) {
+        sb += getClauseType() + " " + getArg()[0] + "=" + getArg()[1];
+    }
+    else {
+        sb += getClauseType() + "(";
+        int i = 0;
+        for (std::string arg : getArg()) {
+            sb += arg;
+            i++;
+            if (i < getArg().size()) {
+                sb += ",";
+            }
+        }
+        sb += ")";
     }
 
-    sb += ")";
-    
     return sb;
 }
 

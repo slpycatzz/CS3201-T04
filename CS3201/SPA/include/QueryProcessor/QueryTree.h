@@ -14,6 +14,7 @@ class QueryTree {
     /* returns: varMap[varName] = varType e.g. varMap[a1] = ASSIGN */
     std::unordered_map<std::string, Symbol> getVarMap();
     std::vector<std::string> getResults();
+    std::unordered_map<std::string, bool> getResultsInfo();
     // returns all clauses (order: st->pattern->with)
     std::vector<Clause> QueryTree::getClauses();
     std::vector<Clause> QueryTree::getClauses(std::vector<Symbol> clauseType);
@@ -34,6 +35,7 @@ class QueryTree {
  private:
      /* container for list of declared variableMap to Symbol*/
      std::unordered_map<std::string, Symbol> varMap;
+     std::unordered_map<std::string, bool> varAttrMap;      // true if varAttr is selected
      std::vector<std::string> varList;
      std::vector<Clause> suchThatList;
      std::vector<Clause> patternList;
