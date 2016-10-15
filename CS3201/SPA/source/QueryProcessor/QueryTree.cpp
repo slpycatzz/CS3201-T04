@@ -56,7 +56,9 @@ bool QueryTree::insert(Symbol type, std::string argType, std::vector<std::string
 std::vector<std::string> QueryTree::getResults() {
     return varList;
 }
-
+std::unordered_map<std::string,bool> QueryTree::getResultsInfo() {
+    return varAttrMap;
+}
 std::vector<Clause> QueryTree::getClauses() {
     std::vector<Clause> result;
     std::vector<Symbol> clauseList = { SUCH_THAT, PATTERN, WITH };
