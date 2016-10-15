@@ -45,19 +45,15 @@ public:
 		QueryTree qt(qp.getQueryTree());
 		return qt;
 	}
-
-	std::string printTotalCombinationList(TotalCombinationList total) {
-		std::string s("<");
-		for (auto kv : total) {
-			std::string s("<");
-			for (CandidateCombination comb : kv.second) {
-				s.append(Utils::MapToString(comb));
-				s.append(",");
-			}
-			s.append(">");
-			return s;
+	std::vector<std::string> resultToString(ResultList &result) {
+		std::vector<std::vector<std::string>> &list = (*result.begin()).second;
+		std::vector<std::string> res;
+		for (std::vector<std::string> combi : list) {
+			res.push_back(Utils::VectorToString(combi));
 		}
+		return res;
 	}
+
     TEST_METHOD(Integration_Parser_and_PKB) {
         getSampleProgram();
         Assert::AreEqual(42, int(PKB::GetNumberOfAssign()));
@@ -73,7 +69,7 @@ public:
 		QueryEvaluator qe;
 		//std::unordered_map<std::string, Symbol> map(qt.getSelect());
 
-		std::vector<std::string> result(qe.selectQueryResults(qt));
+		std::vector<std::string> result = resultToString(qe.selectQueryResults(qt));
 		Logger::WriteMessage(Utils::VectorToString(result).c_str());
 	}
 	TEST_METHOD(TestGetCandidates) {
@@ -82,7 +78,7 @@ public:
 		QueryEvaluator qe;
 
 		TotalCombinationList total(qe.getTotalCandidateList(qt));
-		Logger::WriteMessage(printTotalCombinationList(total).c_str());
+		Logger::WriteMessage(total.toString().c_str());
 		for (unsigned i : PKB::GetSymbolStmtNumbers(STMT)) {
 			Logger::WriteMessage(std::to_string(i).c_str());
 		}
@@ -98,7 +94,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; Select a such that Modifies(a, \"a\")"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
+		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
 		std::string expected("<<1>,<8>,<9>,<10>,<16>,<23>,<29>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -107,7 +103,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; while w; Select a such that Follows(a, w)"));
 		QueryEvaluator qe;
 		
-		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
+		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
 		std::string expected("<<5>,<11>,<29>,<32>,<34>,<37>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -116,7 +112,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; while w; Select w such that Follows(3, a)"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
+		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
 		std::string expected("<<6>,<7>,<12>,<30>,<33>,<35>,<38>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -125,7 +121,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select v such that Modifies(1, v)"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
+		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
 		std::string expected("<<a>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -134,7 +130,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a such that Uses(a, \"a\")"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
+		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
 		std::string expected("<<10>,<21>,<22>,<36>,<42>,<44>,<46>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -143,7 +139,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",\"c\")"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
+		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
 		std::string expected("<<2>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -152,7 +148,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_,\"c\")"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
+		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
 		std::string expected("<<2>,<16>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -161,7 +157,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",_)"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
+		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
 		std::string expected("<<2>,<3>,<5>,<24>,<26>,<41>,<48>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -170,7 +166,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_)"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
+		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
 		std::string expected("<<2>,<4>,<10>,<16>,<18>,<37>,<42>,<47>>");
 		Assert::AreEqual(expected, actual);
 	}

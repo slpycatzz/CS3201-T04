@@ -174,3 +174,15 @@ PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombination
 		return list1;
 	}
 }
+
+std::string TotalCombinationList::toString() {
+	for (auto kv : content) {
+		std::string s("<");
+		for (CandidateCombination comb : kv.second) {
+			s.append(Utils::MapToString(comb));
+			s.append(",");
+		}
+		s.append(">");
+		return s;
+	}
+}

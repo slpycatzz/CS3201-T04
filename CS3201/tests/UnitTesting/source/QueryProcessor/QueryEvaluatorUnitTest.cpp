@@ -68,16 +68,15 @@ public:
 
 		TotalCombinationList totalCombi;
 
-		totalCombi.insert_or_assign("a", partialCombi1);
-		totalCombi.insert_or_assign("b", partialCombi1);
-		totalCombi.insert_or_assign("c", partialCombi2);
+		totalCombi.addSynonym("a", partialCombi1);
+		totalCombi.addSynonym("b", partialCombi1);
+		totalCombi.addSynonym("c", partialCombi2);
 		std::vector<std::string> selectList{ "a", "b" , "c" };
 
-		QueryEvaluator qe = QueryEvaluator();
 		std::stringstream actual;
 		actual << "<";
 		PartialCombinationList
-			selectedCombs(qe.getSelectedCombinations(totalCombi, selectList));
+			selectedCombs(totalCombi.getCombinationList(selectList));
 		PartialCombinationList::iterator it(selectedCombs.begin());
 		while (true) {
 			std::string str = Utils::MapToString(*it);
@@ -96,21 +95,33 @@ public:
 		Assert::AreEqual(expected, actual.str());
 	}
     TEST_METHOD(TestGetResultsFromCombinationList) {
-		std::unordered_map<std::string, std::string> candidateCombi1({ { "a", "1" },{ "b", "2" } });
-		std::unordered_map<std::string, std::string> candidateCombi2({ { "a", "2" },{ "b", "3" } });
-		std::vector<std::unordered_map<std::string, std::string>> partialCombi{ candidateCombi1, candidateCombi2 };
-		std::unordered_map<std::string, std::vector<std::unordered_map<std::string, std::string>>> totalCombi;
-        totalCombi.insert_or_assign("a", partialCombi);
-        totalCombi.insert_or_assign("b", partialCombi);
-        totalCombi.insert_or_assign("c", partialCombi);
+		CandidateCombination candidateCombi1({ { "a", "1" },{ "b", "2" } });
+		CandidateCombination candidateCombi2({ { "a", "2" },{ "b", "3" } });
+		PartialCombinationList partialCombi{ candidateCombi1, candidateCombi2 };
+		TotalCombinationList totalCombi;
+        totalCombi.addSynonym("a", partialCombi);
+        totalCombi.addSynonym("b", partialCombi);
+        totalCombi.addSynonym("c", partialCombi);
         std::vector<std::string> selectList{ "a", "b" };
 
-        QueryEvaluator qe = QueryEvaluator();
-        std::vector<std::string> result(qe.getResultsFromCombinationList(totalCombi, selectList));
-        std::string actual = Utils::VectorToString(result);
-        Logger::WriteMessage(actual.c_str());
+        PartialCombinationList result(totalCombi.getCombinationList(selectList));
+		std::stringstream actual;
+		actual << "<";
+		PartialCombinationList::iterator it(result.begin());
+		while (true) {
+			std::string str = Utils::MapToString(*it);
+			actual << str;
+			it++;
+			if (it == result.end()) {
+				actual << ">";
+				break;
+			}
+			else {
+				actual << ",";
+			}
+		}
 		std::string expected("<<1,2>,<2,3>>");
-		Assert::AreEqual(expected, actual);
+		Assert::AreEqual(expected, actual.str());
     }
 	TEST_METHOD(TestIsLiteral) {
 		std::string s("\"x\"");

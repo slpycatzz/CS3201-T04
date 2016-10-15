@@ -10,8 +10,6 @@
 #include "QueryProcessor/QueryUtils.h"
 #include "Utils.h"
 
-typedef std::unordered_map<std::vector<std::string>, std::vector<std::vector<Candidate>>> ResultList;
-
 QueryEvaluator::QueryEvaluator() {}
 
 QueryEvaluator::~QueryEvaluator() {}

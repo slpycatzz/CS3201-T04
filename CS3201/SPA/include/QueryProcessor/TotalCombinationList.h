@@ -38,6 +38,7 @@ public:
 	void reduceTotalContent(std::vector<Synonym> &synList);
 	PartialCombinationList getSingleFactor(std::vector<Synonym> &synList, PartialCombinationList &candidateList);
 	PartialCombinationList getCombinationList(std::vector<Synonym> &synList);
+	std::string toString();
 
 private:
 	

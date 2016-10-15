@@ -10,13 +10,15 @@
 #include "PKB/PKB.h"
 #include "TotalCombinationList.h"
 
+typedef std::unordered_map<std::vector<std::string>, std::vector<std::vector<Candidate>>> ResultList;
+
 class QueryEvaluator {
  public:
     QueryEvaluator();
     ~QueryEvaluator();
 
-    // return the result list as a list of strings after evaluating the query
-    ResultList selectQueryResults(QueryTree &query);
+     // return the result list as a list of strings after evaluating the query
+     ResultList selectQueryResults(QueryTree &query);
 
 	 // retrieve all possible candidates for a variable
 	 PartialCombinationList getCandidates(std::pair<Synonym, Symbol> var);
@@ -48,9 +50,6 @@ class QueryEvaluator {
 
 	 ResultList getResultsFromCombinationList(TotalCombinationList &combinations,
 		 std::vector<Synonym> &selectList);
-
-	 PartialCombinationList getSelectedCombinations(TotalCombinationList &cands,
-		 std::vector<Synonym>& selectList);
 
 	 PartialCombinationList mergeCombinationList(PartialCombinationList &combList1,
 		 PartialCombinationList &combList2);

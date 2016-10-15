@@ -60,7 +60,7 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
         QueryTree queryTree = queryPreprocessor.getQueryTree();
         
         //Evaluator here.
-        std::vector<std::string> queryResult = queryEvaluator.selectQueryResults(queryTree);
+        ResultList queryResult = queryEvaluator.selectQueryResults(queryTree);
 
         // Projector here. Store answer into results. 
         results = queryProjector.formatResult(queryResult);
