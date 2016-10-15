@@ -94,8 +94,9 @@ bool TotalCombinationList::isEmpty() {
 	return empty;
 }
 
-void TotalCombinationList::reduceSingleFactor(std::vector<Synonym> &synList, PartialCombinationList &candidateList) {
-	std::set<CandidateCombination> resultSet;
+void TotalCombinationList::reduceSingleFactor(const std::vector<Synonym> &synList, PartialCombinationList &candidateList) {
+	combinationComp comp(synList);
+	std::set<CandidateCombination, combinationComp> resultSet(comp);
 	for (CandidateCombination &combination : candidateList) {
 		CandidateCombination selectedCombi(QueryUtils::GetSubMap(combination, synList));
 		resultSet.insert(selectedCombi);
@@ -106,7 +107,7 @@ void TotalCombinationList::reduceSingleFactor(std::vector<Synonym> &synList, Par
 	}
 }
 
-void TotalCombinationList::reduceTotalContent(std::vector<Synonym> &synList) {
+void TotalCombinationList::reduceTotalContent(const std::vector<Synonym> &synList) {
 	for (PartialCombinationList* factorPointer : factorList) {
 		PartialCombinationList &combiList = *factorPointer;
 		std::vector<Synonym> subSynList;
@@ -120,12 +121,12 @@ void TotalCombinationList::reduceTotalContent(std::vector<Synonym> &synList) {
 }
 
 
-PartialCombinationList TotalCombinationList::getSingleFactor(std::vector<Synonym> &synList, PartialCombinationList &candidateList) {
+PartialCombinationList TotalCombinationList::getSingleFactor(const std::vector<Synonym> &synList, PartialCombinationList &candidateList) {
 	reduceSingleFactor(synList, candidateList);
 	return candidateList;
 }
 
-PartialCombinationList TotalCombinationList::getCombinationList(std::vector<Synonym> &synList) {
+PartialCombinationList TotalCombinationList::getCombinationList(const std::vector<Synonym> &synList) {
 	reduceTotalContent(synList);
 	PartialCombinationList result = *(*factorList.begin());
 	for (PartialCombinationList* factorPointer : factorList) {

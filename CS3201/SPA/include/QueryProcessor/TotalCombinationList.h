@@ -34,11 +34,28 @@ public:
 
 	PartialCombinationList operator[](Synonym &syn);
 	bool isEmpty();
-	void reduceSingleFactor(std::vector<Synonym> &synList, PartialCombinationList &candidateList);
-	void reduceTotalContent(std::vector<Synonym> &synList);
-	PartialCombinationList getSingleFactor(std::vector<Synonym> &synList, PartialCombinationList &candidateList);
-	PartialCombinationList getCombinationList(std::vector<Synonym> &synList);
+	void reduceSingleFactor(const std::vector<Synonym> &synList, PartialCombinationList &candidateList);
+	void reduceTotalContent(const std::vector<Synonym> &synList);
+	PartialCombinationList getSingleFactor(const std::vector<Synonym> &synList, PartialCombinationList &candidateList);
+	PartialCombinationList getCombinationList(const std::vector<Synonym> &synList);
 	std::string toString();
+
+	/* Comparator for CandidateCombination */
+	struct combinationComp {
+	public:
+		combinationComp(const std::vector<Synonym> &synList) {
+			this->synList = synList;
+		}
+
+		bool operator() (const CandidateCombination &comb1, const CandidateCombination &comb2) {
+			for (Synonym syn: synList) {
+				if (comb1.at(syn) < comb2.at(syn)) return true;
+			}
+			return false;
+		}
+	private:
+		std::vector<Synonym> synList;
+	};
 
 private:
 	

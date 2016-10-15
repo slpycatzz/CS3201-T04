@@ -15,5 +15,5 @@ class QueryUtils {
     static bool IsLiteral(std::string str);
 
 	static std::unordered_map<std::string, std::string>
-		GetSubMap(std::unordered_map<std::string, std::string> &map, std::vector<std::string> &keyList);
+		GetSubMap(std::unordered_map<std::string, std::string> &map, const std::vector<std::string> &keyList);
 };
