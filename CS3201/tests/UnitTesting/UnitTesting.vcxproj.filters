@@ -22,33 +22,30 @@
     <Filter Include="Source Files\QueryProcessor">
       <UniqueIdentifier>{d9ed1a8f-e904-4666-97f9-5bc4eb3b0e11}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\QueryEvaluator">
-      <UniqueIdentifier>{47b82299-299d-4b54-8b6a-9568367225c4}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="source\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QueryProcessor\QueryPreprocessorUnitTest.cpp">
-      <Filter>Source Files\QueryProcessor</Filter>
-    </ClCompile>
-    <ClCompile Include="Frontend\FrontendParserUnitTest.cpp">
+    <ClCompile Include="source\Frontend\FrontendParserUnitTest.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
-    <ClCompile Include="QueryEvaluatorUnitTest.cpp">
-      <Filter>Source Files\QueryEvaluator</Filter>
-	</ClCompile>
-    <ClCompile Include="PKB\PKBUnitTest.cpp">
+    <ClCompile Include="source\PKB\PKBUnitTest.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="source\QueryProcessor\QueryEvaluatorUnitTest.cpp">
+      <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\QueryPreprocessorUnitTest.cpp">
+      <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

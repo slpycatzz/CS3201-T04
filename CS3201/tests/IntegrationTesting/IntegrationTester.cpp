@@ -11,6 +11,7 @@
 #include "QueryProcessor/QueryPreprocessor.h"
 #include "Constants.h"
 #include "QueryProcessor/QueryEvaluator.h"
+#include "QueryProcessor/QueryOptimizer.h"
 
 using std::string;
 using std::vector;
@@ -65,7 +66,7 @@ public:
         Assert::AreEqual(1, int(PKB::GetNumberOfProcedure()));
         Assert::AreEqual(7, int(PKB::GetNumberOfWhile()));
     }
-	TEST_METHOD(Integration_QE_GetCadidatesTest) {
+	TEST_METHOD(Integration_QE_GetCandidatesTest) {
 		getSampleProgram();
 		QueryTree qt(getQueryTree("variable v; Select v;"));
 		
@@ -201,6 +202,57 @@ public:
         QueryEvaluator qe;
 
         Assert::IsTrue(qe.evaluatePatternClause("25", "_", "\"42\""));
+    }
+    TEST_METHOD(QueryOptimizerTestOne) {
+        std::string query, expectedBooleanClauses, actualBooleanClauses;
+        std::string expectedUnselectedClauses, actualUnselectedClauses;
+        std::string expectedSelectedClauses, actualSelectedClauses;
+
+        string fileName = "..\\tests\\IntegrationTesting\\IntegrationTest-OptimizerSource.txt";
+        PKB::Clear();
+        parse(fileName);
+
+        QueryPreprocessor qp;
+        QueryOptimizer qo;
+        QueryTree qt;
+
+        query = "assign a1,a2,a3,a4; stmt s1,s2,s3,s4; variable v1,v2,v3,v4,v5;";
+        query += "Select <s1, s2, v2> such that Follows*(s1, s2) and Parent(s3, s1) and Uses(s2, v1) ";
+        query += "and Uses(s3, v1) such that Uses(5, \"y\") such that Follows(3, 4) such that Uses(a3, v4) ";
+        query += "such that Modifies(s3, \"x\") and Follows(s2, 3) pattern a1(v2, _\"x+y\"_) and a3(\"z\", _) ";
+        query += "such that Uses(s4, v3) and Uses(s4, v4) and Modifies(a3, v3)";
+
+        try {
+            qp.preprocessQuery(query);
+        }
+        catch (std::exception& ex) {
+            Logger::WriteMessage(ex.what());
+        }
+
+        qt = qo.optimize(qp.getQueryTree());
+
+        for (Clause c : qt.getBooleanClauses()) {
+            actualBooleanClauses += c.toString() + " ";
+        }
+
+        std::vector<Clause> unselectedGroup = qt.getUnselectedGroups().at(0);
+        for (Clause c : unselectedGroup) {
+            actualUnselectedClauses += c.toString() + " ";
+        }
+
+        //testing for group 1 only, ignore pattern(a1,v2,_"x+y"_) in group 2
+        std::vector<Clause> selectedGroup = qt.getSelectedGroups().at(0);
+        for (Clause c : selectedGroup) {
+            actualSelectedClauses += c.toString() + " ";
+        }
+
+        expectedBooleanClauses = "Uses(5,\"y\") Follows(3,4) ";
+        expectedUnselectedClauses = "pattern(a3,\"z\",_) Modifies(a3,v3) Uses(a3,v4) Uses(s4,v4) Uses(s4,v3) ";
+        expectedSelectedClauses = "Follows(s2,3) Modifies(s3,\"x\") Parent(s3,s1) Uses(s2,v1) Uses(s3,v1) Follows*(s1,s2) ";
+
+        Assert::AreEqual(expectedBooleanClauses, actualBooleanClauses);
+        Assert::AreEqual(expectedUnselectedClauses, actualUnselectedClauses);
+        Assert::AreEqual(expectedSelectedClauses, actualSelectedClauses);
     }
 	};
 }

@@ -1,0 +1,15 @@
+procedure x {
+    call y;
+}
+
+procedure y {
+    call z;
+}
+
+procedure z {
+    call a;
+}
+
+procedure a {
+    call y;
+}

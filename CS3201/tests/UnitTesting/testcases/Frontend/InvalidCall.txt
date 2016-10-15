@@ -1,0 +1,3 @@
+procedure x {		\\1
+    call y;		\\2
+}

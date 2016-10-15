@@ -92,6 +92,15 @@ class Table {
         return valueToKeysMap;
     }
 
+    inline unsigned int getNumberOfValues() {
+        unsigned int numberOfValues = 0;
+        for (const auto &pair : keyToValuesMap) {
+            numberOfValues += pair.second.size();
+        }
+
+        return numberOfValues;
+    }
+
     inline bool hasKey(K key) {
         return (keyToValuesMap.count(key) == 1);
     }

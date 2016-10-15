@@ -58,7 +58,9 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateVariableTable(variableNames_);
     PKB::GenerateProcedureTable(procedureNames_);
     PKB::GenerateControlVariableTable(controlVariables_);
+    PKB::GenerateCallTable(callStmtNumbers_);
     PKB::GenerateStmtTable(stmts_);
+    PKB::GenerateStmtlistTable(stmtlists_);
 
     /* Deprecated. */
     PKB::GenerateAssignTable(assigns_);
@@ -91,6 +93,9 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateUsesProcedureTable(usesProcedure_);
     PKB::GenerateParentTable(parent_);
     PKB::GenerateFollowsTable(follows_);
+
+    /* Set priority after all the design abstraction tables are generated. */
+    PKB::GeneratePriorityTable();
 }
 
 vector<string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream) {
@@ -199,6 +204,9 @@ TreeNode* FrontendParser::callProcedureRecognizer() {
 
     proceduresFirstStmt_.push_back(std::make_pair(stmtNumber_, currentProcedureName_));
 
+    /* For PKB stmtlist table generation. */
+    stmtlists_.insert(std::make_pair(stmtNumber_, SYMBOL_PROCEDURE));
+
     /* TreeNode generation. */
     TreeNode* procedureNode = PKB::CreateASTNode(PROCEDURE, currentProcedureName_);
     procedureNode->addChild(callStmtListRecognizer());
@@ -280,6 +288,9 @@ TreeNode* FrontendParser::callWhileRecognizer() {
     /* For PKB control variable table generation. */
     controlVariables_.insert(std::make_pair(stmtNumber, controlVariableName));
 
+    /* For PKB stmtlist table generation. */
+    stmtlists_.insert(std::make_pair(stmtNumber_, SYMBOL_WHILE));
+
     /* For PKB uses table generation. */
     uses_[stmtNumber].insert(controlVariableName);
 
@@ -313,11 +324,17 @@ TreeNode* FrontendParser::callIfRecognizer() {
 
     expect(SYMBOL_IF_THEN);
 
+    /* For PKB stmtlist table generation. */
+    stmtlists_.insert(std::make_pair(stmtNumber_, SYMBOL_IF_THEN));
+
     ifNode->addChild(callStmtListRecognizer());
 
-    thenLastStmt_.push_back(stmtNumber);
+    thenLastStmt_.push_back(stmtNumber_ - 1);
 
     expect(SYMBOL_IF_ELSE);
+
+    /* For PKB stmtlist table generation. */
+    stmtlists_.insert(std::make_pair(stmtNumber_, SYMBOL_IF_ELSE));
 
     ifNode->addChild(callStmtListRecognizer());
 
@@ -338,8 +355,10 @@ TreeNode* FrontendParser::callCallRecognizer() {
     /* For PKB calls table generation. */
     calls_[currentProcedureName_].insert(procedureName);
 
-    /* For PKB modifies and uses table generation. */
+    /* For PKB call table generation. */
     callStmtNumbers_.insert(std::make_pair(stmtNumber, procedureName));
+
+    /* For PKB modifies and uses table generation. */
     modifies_[stmtNumber] = uses_[stmtNumber] = {};
 
     expect(CHAR_SYMBOL_SEMICOLON);
@@ -366,7 +385,7 @@ TreeNode* FrontendParser::callAssignRecognizer() {
     modifies_[stmtNumber].insert(controlVariableName);
 
     TreeNode* assignNode = PKB::CreateASTNode(ASSIGN, stmtNumber_++);
-    
+
     /* Deprecated. */
     assigns_.insert(std::make_pair(stmtNumber, assignNode));
 

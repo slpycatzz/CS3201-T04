@@ -1,0 +1,4 @@
+procedure x {
+    while i {
+    }
+}

@@ -1,0 +1,15 @@
+procedure x {   	\\1
+    x = 5;		\\2
+    while i {		\\3
+        x = 6;		\\4
+    }
+}
+
+procedure y {
+    y = 4;
+    if x then {
+        call x;
+    } else {
+        z = y * x - 4;
+    }
+}

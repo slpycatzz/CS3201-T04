@@ -20,14 +20,6 @@ class QueryPreprocessor {
     QueryTree getQueryTree();
     std::string testMethodOut();
 
-    // Temporarily made public to test the optimizer
-    /*
-    bool parseSuchThat(std::vector<std::string> suchThat);
-    bool parsePattern(std::vector<std::string> pattern);
-    bool parseSelect(std::vector<std::string> queryList);
-    bool parseRelation(std::string clauseType, std::string relType, std::vector<std::string>& varList);
-    */
-
     // usage: e.g. "Select <a,a1> such that Uses(a1,"x")"
     bool processDeclaration(std::string declaration);
 
@@ -52,24 +44,24 @@ class QueryPreprocessor {
      void parseAnd(Symbol);
      void parseWith();
 
-     Symbol varAttributeToSymbol(std::string varAttr);
-
+     bool isAttributeValid(std::string var, std::string varAttr, bool isVarValue);
+     bool isAttributeValid(std::string var, std::string varAttr, std::string var2, std::string varAttr2);
      bool isVarExist(std::string var);
      bool isValidVarName(std::string varName);
      bool isValidVarType(std::string varName);
      bool isConstantVar(std::string varName);
 
      std::vector<std::string> getNextToken(std::vector<std::string> queryList);
+     Symbol getVarType(std::string var);
+     Symbol getAttributeType(std::string var);
 
-     std::string getVarType(std::string var);
-
+     // global variables
      std::vector<std::string> queries;
      std::vector<std::string> queryList;
      Symbol prevClause;
      Symbol prevRelation;
      int cur;
 
-     std::unordered_map<std::string, std::string> varMap;
      std::unordered_map<std::string, Symbol> varSymbolMap;
      RelationTable r;
      QueryTree qt;

@@ -145,16 +145,16 @@ void QueryEvaluator::filterNoVarClause(std::string clauseType,
 
 ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 {
-	std::vector<Clause> clauseList = query.getClauses("suchThat pattern");
+	std::vector<Clause> clauseList = query.getClauses();
 	TotalCombinationList allCandidates(getTotalCandidateList(query));
-	std::unordered_map<Synonym, Symbol> selectMap = query.getSelect();
 	std::vector<Synonym> selectList;
+    selectList = query.getResults();
 
 	for (Clause clause : clauseList) {
 		filterByClause(clause, allCandidates);
 		if (allCandidates.isEmpty()) break;
 	}
-	if (isBoolSelect(selectMap)) {
+	if (isBoolSelect(selectList)) {
 		ResultList resultList;
 		selectList.push_back("BOOLEAN");
 		std::string resultBoolean;
@@ -213,8 +213,8 @@ PartialCombinationList QueryEvaluator::mergeCombinationList(PartialCombinationLi
 	return result;
 }
 
-bool QueryEvaluator::isBoolSelect(std::unordered_map<std::string, Symbol> &selectList) {
-	if (selectList.size() == 1 && selectList.begin()->second == BOOLEAN) {
+bool QueryEvaluator::isBoolSelect(std::vector<std::string> &selectList) {
+	if (selectList.size() == 1 && selectList[0] == SYMBOL_BOOLEAN) {
 		return true;
 	}
 	else {

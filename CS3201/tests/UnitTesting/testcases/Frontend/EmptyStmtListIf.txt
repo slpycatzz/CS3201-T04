@@ -1,0 +1,6 @@
+procedure x {	
+    if x then {
+    } else {
+        x = 5;
+    }
+}

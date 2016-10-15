@@ -2,6 +2,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "Constants.h"
@@ -26,7 +27,11 @@ Table<unsigned int, string> PKB::constantTable_;
 Table<unsigned int, string> PKB::variableTable_;
 Table<unsigned int, string> PKB::procedureTable_;
 Table<unsigned int, string> PKB::controlVariableTable_;
+Table<unsigned int, string> PKB::callTable_;
 Table<unsigned int, string> PKB::stmtTable_;
+Table<unsigned int, string> PKB::stmtlistTable_;
+
+Table<unsigned int, string> PKB::priorityTable_;
 
 Table<unsigned int, string> PKB::expressionTable_;
 Table<unsigned int, string> PKB::subExpressionTable_;
@@ -219,7 +224,24 @@ void PKB::PrintControlVariableTable() {
     controlVariableTable_.printTable();
 }
 
-/* END - Control variable table functions */
+/* END   - Control variable table functions */
+/* START - Call table functions */
+
+void PKB::GenerateCallTable(map<unsigned int, string> callStmtNumbers) {
+    for (auto &pair : callStmtNumbers) {
+        callTable_.insert(pair.first, pair.second);
+    }
+}
+
+string PKB::GetCallProcedureName(unsigned int stmtNumber) {
+    return (callTable_.hasKey(stmtNumber)) ? callTable_.getValue(stmtNumber) : "";
+}
+
+void PKB::PrintCallTable() {
+    callTable_.printTable();
+}
+
+/* END   - Call table functions */
 /* START - Stmt table functions */
 
 void PKB::GenerateStmtTable(map<unsigned int, string> stmts) {
@@ -271,6 +293,67 @@ void PKB::PrintStmtTable() {
 }
 
 /* END   - Stmt table functions */
+/* START - Stmtlist table functions */
+
+void PKB::GenerateStmtlistTable(map<unsigned int, string> stmtlists) {
+    for (auto &pair : stmtlists) {
+        stmtlistTable_.insert(pair.first, pair.second);
+    }
+}
+
+vector<unsigned int> PKB::GetAllStmtlistsStmtNumber() {
+    set<unsigned int> result = stmtlistTable_.getKeys();
+
+    vector<unsigned int> vec(result.size());
+    std::copy(result.begin(), result.end(), vec.begin());
+
+    return vec;
+}
+
+void PKB::PrintStmtlistTable() {
+    stmtlistTable_.printTable();
+}
+
+/* END   - Stmtlist table functions */
+/* START - Priority table functions */
+
+void PKB::GeneratePriorityTable() {
+    vector<std::pair<unsigned int, string>> tablesSize;
+
+    tablesSize.push_back(std::make_pair(callsTable_.getNumberOfValues(),   SYMBOL_CALLS));
+    tablesSize.push_back(std::make_pair(followsTable_.getNumberOfValues(), SYMBOL_FOLLOWS));
+    tablesSize.push_back(std::make_pair(parentTable_.getNumberOfValues(),  SYMBOL_PARENT));
+
+    tablesSize.push_back(std::make_pair(callsTransitiveTable_.getNumberOfValues(),   SYMBOL_CALLS_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(followsTransitiveTable_.getNumberOfValues(), SYMBOL_FOLLOWS_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(parentTransitiveTable_.getNumberOfValues(),  SYMBOL_PARENT_TRANSITIVE));
+
+    tablesSize.push_back(std::make_pair(modifiesTable_.getNumberOfValues(),          SYMBOL_MODIFIES));
+    tablesSize.push_back(std::make_pair(modifiesProcedureTable_.getNumberOfValues(), SYMBOL_MODIFIES_PROCEDURE));
+    tablesSize.push_back(std::make_pair(usesTable_.getNumberOfValues(),              SYMBOL_USES));
+    tablesSize.push_back(std::make_pair(usesProcedureTable_.getNumberOfValues(),     SYMBOL_USES_PROCEDURE));
+
+    /* Sort the size in ascending order to determine the priority. */
+    std::sort(tablesSize.begin(), tablesSize.end(), ComparePairAscending);
+
+    for (unsigned int i = 0; i < tablesSize.size(); i++) {
+        priorityTable_.insert((i + 1) * 10, tablesSize[i].second);
+    }
+}
+
+unsigned int PKB::GetPriority(string symbol) {
+    return (priorityTable_.hasValue(symbol)) ? priorityTable_.getKey(symbol) : 0;
+}
+
+unsigned int PKB::GetPriority(Symbol symbol) {
+    return GetPriority(Constants::SymbolToString(symbol));
+}
+
+void PKB::PrintPriorityTable() {
+    priorityTable_.printTable();
+}
+
+/* END   - Priority table functions */
 /* START - Expression table functions */
 
 void PKB::GenerateExpressionTable(map<unsigned int, string> expressions) {
@@ -290,7 +373,7 @@ bool PKB::IsExactPattern(unsigned int stmtNumber, string controlVariable, string
 
     if (stmtSymbol == SYMBOL_WHILE || stmtSymbol == SYMBOL_IF) {
         return HasControlVariableAtStmtNumber(stmtNumber, controlVariable);
-    
+
     } else if (stmtSymbol == SYMBOL_ASSIGN) {
         if (HasControlVariableAtStmtNumber(stmtNumber, controlVariable)) {
             return IsExactExpression(stmtNumber, expression);
@@ -329,6 +412,14 @@ bool PKB::IsExactExpression(unsigned int stmtNumber, string expression) {
 
 bool PKB::IsSubExpression(unsigned int stmtNumber, string subExpression) {
     return subExpressionTable_.hasKeyToValue(stmtNumber, subExpression);
+}
+
+void PKB::PrintExactExpressionTable() {
+    expressionTable_.printTable();
+}
+
+void PKB::PrintSubExpressionTable() {
+    subExpressionTable_.printTable();
 }
 
 /* END   - Expression table functions */
@@ -651,6 +742,10 @@ void PKB::Clear() {
 
     followsTable_.clear();
     followsTransitiveTable_.clear();
+}
+
+bool PKB::ComparePairAscending(const std::pair<unsigned int, string> &pairOne, const std::pair<unsigned int, string> &pairTwo) {
+    return pairOne.first < pairTwo.first;
 }
 
 /* START - Miscellaneous functions */
