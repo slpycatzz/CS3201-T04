@@ -10,7 +10,7 @@
 #include "PKB/PKB.h"
 #include "TotalCombinationList.h"
 
-typedef std::unordered_map<std::vector<std::string>, std::vector<std::vector<Candidate>>> ResultList;
+typedef std::pair<std::vector<std::string>, std::vector<std::vector<Candidate>>> ResultList;
 
 class QueryEvaluator {
  public:

@@ -46,7 +46,7 @@ public:
 		return qt;
 	}
 	std::vector<std::string> resultToString(ResultList &result) {
-		std::vector<std::vector<std::string>> &list = (*result.begin()).second;
+		std::vector<std::vector<std::string>> &list = result.second;
 		std::vector<std::string> res;
 		for (std::vector<std::string> combi : list) {
 			res.push_back(Utils::VectorToString(combi));

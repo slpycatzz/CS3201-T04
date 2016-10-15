@@ -153,7 +153,6 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 		if (allCandidates.isEmpty()) break;
 	}
 	if (isBoolSelect(selectList)) {
-		ResultList resultList;
 		selectList.push_back("BOOLEAN");
 		std::string resultBoolean;
 		if (!allCandidates.isEmpty()) {
@@ -164,13 +163,12 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 		}
 		std::vector<std::vector<std::string>> tupleList;
 		tupleList.push_back(std::vector<std::string>{resultBoolean});
-		resultList.insert_or_assign(selectList, tupleList);
+		ResultList resultList{ selectList, tupleList };
 		return resultList;
 	}
 	else {
 		if (allCandidates.isEmpty()) {
-			ResultList resultList;
-			resultList.insert_or_assign(selectList, std::vector<std::vector<std::string>>());
+			ResultList resultList{ selectList, std::vector<std::vector<std::string>>() };
 			return resultList;
 		}
 		else {
@@ -183,7 +181,6 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 ResultList QueryEvaluator::getResultsFromCombinationList
 (TotalCombinationList &combinations, std::vector<Synonym> &selectList)
 {
-	ResultList result;
 	PartialCombinationList
 		selectedCombinations(combinations.getCombinationList(selectList));
 	std::vector<std::vector<Candidate>> selectedCombinationList;
@@ -194,7 +191,7 @@ ResultList QueryEvaluator::getResultsFromCombinationList
 		}
 		selectedCombinationList.push_back(candidateTuple);
 	}
-	result.insert_or_assign(selectList, selectedCombinationList);
+	ResultList result{ selectList, selectedCombinationList };
 	return result;
 }
 

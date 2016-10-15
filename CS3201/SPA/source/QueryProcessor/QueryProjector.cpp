@@ -11,7 +11,7 @@ QueryProjector::~QueryProjector() {}
 std::list<std::string> QueryProjector::formatResult(ResultList resultList) {
     std::list<std::string> result;
 
-    for (std::vector<std::string> v : (*resultList.begin()).second) {
+    for (std::vector<std::string> v : resultList.second) {
 		std::string s = Utils::VectorToString(v);
         result.emplace_back(s.substr(1, s.length() - 2));
     }
