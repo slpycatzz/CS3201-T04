@@ -170,7 +170,6 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 		return resultList;
 	}
 	else {
-		for (auto kv : selectMap) selectList.push_back(kv.first);
 		if (allCandidates.isEmpty()) {
 			ResultList resultList;
 			resultList.insert_or_assign(selectList, std::vector<std::vector<std::string>>());
