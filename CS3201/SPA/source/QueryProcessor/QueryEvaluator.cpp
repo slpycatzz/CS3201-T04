@@ -41,6 +41,78 @@ TotalCombinationList QueryEvaluator::getTotalCandidateList(QueryTree &query) {
 	return totalCandLst;
 }
 
+
+ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
+{
+	std::vector<Clause> clauseList = query.getClauses();
+	TotalCombinationList allCandidates(getTotalCandidateList(query));
+	std::vector<Synonym> selectList;
+	selectList = query.getResults();
+
+	for (Clause clause : clauseList) {
+		filterByClause(clause, allCandidates);
+		if (allCandidates.isEmpty()) break;
+	}
+	if (isBoolSelect(selectList)) {
+		selectList.push_back("BOOLEAN");
+		std::string resultBoolean;
+		if (!allCandidates.isEmpty()) {
+			resultBoolean += SYMBOL_TRUE;
+		}
+		else {
+			resultBoolean += SYMBOL_FALSE;
+		}
+		std::vector<std::vector<std::string>> tupleList;
+		tupleList.push_back(std::vector<std::string>{resultBoolean});
+		ResultList resultList{ selectList, tupleList };
+		return resultList;
+	}
+	else {
+		if (allCandidates.isEmpty()) {
+			ResultList resultList{ selectList, std::vector<std::vector<std::string>>() };
+			return resultList;
+		}
+		else {
+			ResultList resultList(getResultsFromCombinationList(allCandidates, selectList));
+			return resultList;
+		}
+	}
+}
+
+bool QueryEvaluator::getBooleanGroupResult(std::vector<Clause> &clauseGroup) {
+	for (Clause clause : clauseGroup) {
+		Candidate arg0(QueryUtils::LiteralToCandidate(clause.getArg[0]));
+		Candidate arg1(QueryUtils::LiteralToCandidate(clause.getArg[1]));
+		std::string clauseType(clause.getClauseType());
+		if (!evaluateSuchThatClause(clauseType, arg0, arg1)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool QueryEvaluator::getUnselectedGroupResult(std::vector<Clause> &clauseGroup) {
+	TotalCombinationList combinations;
+	for (Clause clause : clauseGroup) {
+		filterByClause(clause, combinations);
+		if (combinations.isEmpty()) {
+			return false;
+		}
+	}
+	return true;
+}
+
+TotalCombinationList QueryEvaluator::getSelectedGroupResult(std::vector<Clause> &clauseGroup) {
+	TotalCombinationList combinations;
+	for (Clause clause : clauseGroup) {
+		filterByClause(clause, combinations);
+		if (combinations.isEmpty()) {
+			return TotalCombinationList();
+		}
+	}
+	return combinations;
+}
+
 void QueryEvaluator::filterByClause(Clause &clause,
 	TotalCombinationList &combinations)
 {
@@ -126,43 +198,6 @@ void QueryEvaluator::filterNoVarClause(std::string clauseType,
 	Candidate const1, Candidate const2, TotalCombinationList &combinations)
 {
 	combinations.filter(evaluateSuchThatClause(clauseType, const1, const2));
-}
-
-ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
-{
-	std::vector<Clause> clauseList = query.getClauses();
-	TotalCombinationList allCandidates(getTotalCandidateList(query));
-	std::vector<Synonym> selectList;
-    selectList = query.getResults();
-
-	for (Clause clause : clauseList) {
-		filterByClause(clause, allCandidates);
-		if (allCandidates.isEmpty()) break;
-	}
-	if (isBoolSelect(selectList)) {
-		selectList.push_back("BOOLEAN");
-		std::string resultBoolean;
-		if (!allCandidates.isEmpty()) {
-			resultBoolean += SYMBOL_TRUE;
-		}
-		else {
-			resultBoolean += SYMBOL_FALSE;
-		}
-		std::vector<std::vector<std::string>> tupleList;
-		tupleList.push_back(std::vector<std::string>{resultBoolean});
-		ResultList resultList{ selectList, tupleList };
-		return resultList;
-	}
-	else {
-		if (allCandidates.isEmpty()) {
-			ResultList resultList{ selectList, std::vector<std::vector<std::string>>() };
-			return resultList;
-		}
-		else {
-			ResultList resultList(getResultsFromCombinationList(allCandidates, selectList));
-			return resultList;
-		}
-	}
 }
 
 ResultList QueryEvaluator::getResultsFromCombinationList

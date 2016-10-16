@@ -20,6 +20,15 @@ class QueryEvaluator {
      // return the result list as a list of strings after evaluating the query
      ResultList selectQueryResults(QueryTree &query);
 
+	 // get results for clauses of selected synonyms
+	 TotalCombinationList getSelectedGroupResult(std::vector<Clause> &clauseGroup);
+
+	 // get results for clauses of unselected synonyms
+	 bool getUnselectedGroupResult(std::vector<Clause> &clauseGroup);
+
+	 // get results for boolean clauses
+	 bool getBooleanGroupResult(std::vector<Clause> &clauseGroup);
+
 	 // retrieve all possible candidates for a variable
 	 std::vector<Candidate> getCandidates(std::pair<Synonym, Symbol> var);
 
