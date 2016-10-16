@@ -90,6 +90,9 @@
     <ClInclude Include="include\QueryProcessor\TotalCombinationList.h">
       <Filter>Header Files\QueryProcessor</Filter>
     </ClInclude>
+    <ClInclude Include="include\Frontend\DesignExtractor.h">
+      <Filter>Header Files\Frontend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Utils.cpp">
@@ -139,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="source\QueryProcessor\TotalCombinationList.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Frontend\DesignExtractor.cpp">
+      <Filter>Source Files\Frontend</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

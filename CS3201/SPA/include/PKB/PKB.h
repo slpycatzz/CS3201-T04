@@ -64,6 +64,10 @@ class PKB {
     static std::vector<unsigned int> GetAllStmtlistsStmtNumber();
     static void PrintStmtlistTable();
 
+    static void GenerateProcedureFirstStmtTable(std::map<unsigned int, std::string> procedureFirstStmts);
+    static std::unordered_map<unsigned int, std::set<std::string>> GetProcedureFirstStmtMap();
+    static void PrintProcedureFirstStmtTable();
+
     static void GeneratePriorityTable();
     static unsigned int GetPriority(std::string symbol);
     static unsigned int GetPriority(Symbol symbol);
@@ -143,12 +147,21 @@ class PKB {
     static void PrintFollowsTransitiveTable();
 
     static void GenerateNextTable(std::map<unsigned int, std::set<unsigned int>> next);
+    static void GenerateNextTransitiveTable();
     static void GenerateIfNextTable(std::map<unsigned int, std::set<unsigned int>> ifNext);
     static void GenerateWhileNextTable(std::map<unsigned int, std::set<unsigned int>> whileNext);
-    static bool IsNext(unsigned int previous, unsigned int next);
-    static std::set<unsigned int> GetNext(unsigned int previous);
+    static bool IsNext(unsigned int current, unsigned int next);
+    static bool IsNextTransitive(unsigned int current, unsigned int next);
+    static std::set<unsigned int> GetNext(unsigned int current);
     static std::set<unsigned int> GetPrevious(unsigned int next);
+    static std::set<unsigned int> GetNextTransitive(unsigned int current);
+    static std::set<unsigned int> GetPreviousTransitive(unsigned int next);
+    static std::unordered_map<unsigned int, std::set<unsigned int>> GetIfNextMap();
+    static std::unordered_map<unsigned int, std::set<unsigned int>> GetWhileNextMap();
     static void PrintNextTable();
+    static void PrintIfNextTable();
+    static void PrintWhileNextTable();
+    static void PrintNextTransitiveTable();
 
     static unsigned int GetNumberOfProcedure();
     static unsigned int GetNumberOfAssign();
@@ -187,6 +200,7 @@ class PKB {
     static Table<unsigned int, std::string> callTable_;                             /* map<stmtNumber, procedureName> */
     static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbol string> */
     static Table<unsigned int, std::string> stmtlistTable_;                         /* map<stmtNumber, symbol string> */
+    static Table<unsigned int, std::string> procedureFirstStmtTable_;               /* map<procedure first stmtNumber, procedureName> */
 
     static Table<unsigned int, std::string> priorityTable_;                         /* map<priority, symbol string>   */
 
@@ -209,6 +223,7 @@ class PKB {
     static TransitiveTable<unsigned int, unsigned int> followsTransitiveTable_;     /* map<stmtNumber, set(stmtNumber)> */
 
     static Table<unsigned int, unsigned int> nextTable_;                            /* map<stmtNumber, set(stmtNumber)> */
+    static TransitiveTable<unsigned int, unsigned int> nextTransitiveTable_;        /* map<stmtNumber, set(stmtNumber)> */
     static Table<unsigned int, unsigned int> ifNextTable_;                          /* map<stmtNumber, set(stmtNumber)> */
     static Table<unsigned int, unsigned int> whileNextTable_;                       /* map<stmtNumber, set(stmtNumber)> */
 

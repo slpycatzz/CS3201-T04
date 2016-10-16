@@ -61,7 +61,6 @@ class FrontendParser {
     std::string currentProcedureName_;
     unsigned int currentTreeLevel_;
     std::map<unsigned int, unsigned int> stmtsLevels_;                  /* map<stmtNumber, stmtLevel> */
-    std::map<unsigned int, std::string> proceduresFirstStmt_;
     std::map<unsigned int, std::string> proceduresLastStmt_;
     std::map<unsigned int, unsigned int> thenLastStmt_;                 /* map<if stmtNumber, thenLast stmtNumber> */
 
@@ -73,6 +72,7 @@ class FrontendParser {
     std::map<unsigned int, std::string> callStmtNumbers_;
     std::map<unsigned int, std::string> stmts_;
     std::map<unsigned int, std::string> stmtlists_;
+    std::map<unsigned int, std::string> proceduresFirstStmt_;
 
     /* For PKB expression tables generation. */
     std::vector<std::string> expression_;

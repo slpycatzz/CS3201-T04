@@ -1,8 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <map>
 #include <set>
+#include <unordered_map>
 #include <utility>
 
 template<typename K, typename V>
@@ -84,11 +84,11 @@ class Table {
         return keyToValuesMap[key];
     }
 
-    inline std::map<K, std::set<V>> getKeyToValuesMap() {
+    inline std::unordered_map<K, std::set<V>> getKeyToValuesMap() {
         return keyToValuesMap;
     }
 
-    inline std::map<V, std::set<K>> getValueToKeysMap() {
+    inline std::unordered_map<V, std::set<K>> getValueToKeysMap() {
         return valueToKeysMap;
     }
 
@@ -175,6 +175,6 @@ class Table {
     }
 
  private:
-    std::map<K, std::set<V>> keyToValuesMap;
-    std::map<V, std::set<K>> valueToKeysMap;
+    std::unordered_map<K, std::set<V>> keyToValuesMap;
+    std::unordered_map<V, std::set<K>> valueToKeysMap;
 };

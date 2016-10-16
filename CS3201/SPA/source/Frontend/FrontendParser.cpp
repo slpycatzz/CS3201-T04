@@ -61,6 +61,7 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateCallTable(callStmtNumbers_);
     PKB::GenerateStmtTable(stmts_);
     PKB::GenerateStmtlistTable(stmtlists_);
+    PKB::GenerateProcedureFirstStmtTable(proceduresFirstStmt_);
 
     /* Deprecated. */
     PKB::GenerateAssignTable(assigns_);
@@ -102,6 +103,12 @@ void FrontendParser::parseProgram(string filePath) {
 
     /* Set priority after all the design abstraction tables are generated. */
     PKB::GeneratePriorityTable();
+
+    PKB::GenerateNextTransitiveTable();
+
+   // PKB::PrintNextTransitiveTable();
+
+    //std::cout << PKB::IsNextTransitive()
 }
 
 vector<string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream) {
