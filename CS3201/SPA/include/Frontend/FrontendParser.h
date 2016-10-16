@@ -42,9 +42,12 @@ class FrontendParser {
     void setUses();
     void setParent();
     void setFollows();
+    void setNext();
 
     int getParentOfStmtNumber(unsigned int stmtNumber);
     int getFollowOfStmtNumber(unsigned int stmtNumber);
+    int getFollowingOfStmtNumber(unsigned int stmtNumber);
+    std::set<unsigned int> getNextStmtNumbers(unsigned int stmtNumber);
 
     void validateNonExistentCall();
     void validateRecursiveCall();
@@ -57,9 +60,9 @@ class FrontendParser {
     /* PKB tables helper variables. */
     std::string currentProcedureName_;
     unsigned int currentTreeLevel_;
-    std::vector<unsigned int> stmtsLevels_;
-    std::vector<std::pair<unsigned int, std::string>> proceduresFirstStmt_;
-    std::vector<unsigned int> thenLastStmt_;
+    std::map<unsigned int, unsigned int> stmtsLevels_;                  /* map<stmtNumber, stmtLevel> */
+    std::map<unsigned int, std::string> proceduresLastStmt_;
+    std::map<unsigned int, unsigned int> thenLastStmt_;                 /* map<if stmtNumber, thenLast stmtNumber> */
 
     /* For PKB generic table generation. */
     std::set<std::string> constants_;
@@ -69,6 +72,7 @@ class FrontendParser {
     std::map<unsigned int, std::string> callStmtNumbers_;
     std::map<unsigned int, std::string> stmts_;
     std::map<unsigned int, std::string> stmtlists_;
+    std::map<unsigned int, std::string> proceduresFirstStmt_;
 
     /* For PKB expression tables generation. */
     std::vector<std::string> expression_;
@@ -84,6 +88,11 @@ class FrontendParser {
     std::map<std::string, std::set<std::string>> usesProcedure_;
     std::map<unsigned int, std::set<unsigned int>> parent_;
     std::map<unsigned int, unsigned int> follows_;
+
+    /* For PKB next design abstraction tables generation. */
+    std::map<unsigned int, std::set<unsigned int>> next_;
+    std::map<unsigned int, std::set<unsigned int>> ifNext_;
+    std::map<unsigned int, std::set<unsigned int>> whileNext_;
 
     /* Deprecated. */
     std::map<unsigned int, TreeNode*> assigns_;

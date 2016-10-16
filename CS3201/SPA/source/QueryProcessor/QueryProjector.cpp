@@ -6,15 +6,38 @@ QueryProjector::QueryProjector() {}
 
 QueryProjector::~QueryProjector() {}
 
-//Expect a map of tuple of synonyms -> vector of tuples of string values from evaluator
+//ResultList type std::pair<std::vector<std::string>, std::vector<std::vector<std::string>>>
 
-std::list<std::string> QueryProjector::formatResult(ResultList resultList) {
-    std::list<std::string> result;
+void QueryProjector::projectResult(std::list<std::string>& results, std::unordered_map<std::string, bool> resultsInfo, ResultList resultList) {
+    results.clear();
 
-    for (std::vector<std::string> v : resultList.second) {
-		std::string s = Utils::VectorToString(v);
-        result.emplace_back(s.substr(1, s.length() - 2));
+    std::vector<std::string> selectList = resultList.first;
+    std::vector<std::vector<std::string>> tupleList = resultList.second;
+    std::string result;
+
+    if (selectList[0] == "BOOLEAN") {
+        result = tupleList[0][0];
+        for (int i = 0; i < result.length(); i++) {
+            result[i] = toupper(result[i]);
+        }
+        results.emplace_back(result);
     }
+    else {
+        for (std::vector<std::string> tuple : tupleList) {
+            result = "";
+            
+            //Check for call.procName in Selected synonyms and convert to procName if found
+            for (int i = 0; i < tuple.size(); i++) {
+                if (resultsInfo.find(selectList[i])->second == true) {
+                    result += PKB::GetCallProcedureName(stoi(tuple[i])) + " ";
+                }
+                else {
+                    result += tuple[i] + " ";
+                }
+            }
 
-    return result;
+            results.emplace_back(result.substr(0, result.length() - 1));
+        }
+        
+    }
 }

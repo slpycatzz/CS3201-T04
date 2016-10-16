@@ -120,30 +120,56 @@ void QueryPreprocessor::parseSelect() {
     if (accept('<')) {
         while (accept('>') == 0) {
             if (accept(VARIABLE)) {
-                var.push_back(getVar());
-                temp = peek();
-                queryList[cur] = temp.substr(getVar().size());
-            } else if (accept(SYMBOL_BOOLEAN)) {
-                // case: Select <BOOLEAN,BOOLEAN>
-                // wm todo: this may be an invalid case
-                var.push_back(SYMBOL_BOOLEAN);
-                temp = peek();
-                queryList[cur] = temp.substr(getVar().size());
+                string var1;
+                temp = getVar();
+                var.push_back(temp);
+                varAttrMap[temp] = false;
+                queryList[cur] = peek().substr(getVar().size());
+
+                if (accept('.')) {
+                    string varAttribute1;
+                    varAttribute1 = getVar();
+                    queryList[cur] = peek().substr(getVar().size());
+                    if (isAttributeValid(temp, varAttribute1, false)) {
+                        // only call needs to return true
+                        if (getVarType(temp) == CALL) {
+                            varAttrMap[temp] = true;
+                        }
+                    } else {
+                        throw QuerySyntaxErrorException("21a"+varAttribute1);
+                    }
+                }
             } else {
                 throw QuerySyntaxErrorException("5");
             }
             accept(',');
         }
     } else {
-        if (isValidVarName(peek())) {
+        if (isVarExist(peek())) {
             var.push_back(peek());
             temp = peek();
             queryList[cur] = temp.substr(getVar().size());
+
+            varAttrMap[temp] = false;
+
+            // case: <var1.varAttr, var2>
+            if (accept('.')) {
+                string varAttribute1;
+                varAttribute1 = getVar();
+                queryList[cur] = peek().substr(getVar().size());
+                if (isAttributeValid(temp, varAttribute1, false)) {
+                    // only call needs to return true
+                    if (getVarType(temp) == CALL) {
+                        varAttrMap[temp] = true;
+                    }
+                } else {
+                    throw QuerySyntaxErrorException("21b");
+                }
+            }
         } else if (accept(SYMBOL_BOOLEAN)) {
             var.push_back(SYMBOL_BOOLEAN);
-            temp = peek();
-            queryList[cur] = temp.substr(getVar().size());
-            varSymbolMap["BOOLEAN"] = BOOLEAN;
+            varSymbolMap[SYMBOL_BOOLEAN] = BOOLEAN;
+            varAttrMap[SYMBOL_BOOLEAN] = false;
         } else {
             throw QuerySyntaxErrorException("6");
         }
@@ -154,6 +180,7 @@ void QueryPreprocessor::parseSelect() {
     }
 
     qt.insert(QUERY_RESULT, "placeholder", var);
+    qt.insert(QUERY_RESULT, "placeholder", varAttrMap);
 }
 
 void QueryPreprocessor::parseSuchThat() {
@@ -237,6 +264,7 @@ void QueryPreprocessor::parsePattern() {
     } else {
         throw QuerySyntaxErrorException("15");
     }
+    mergeSeparatedClauses();
     expect('(');
     int i = 0;
     do {
@@ -379,7 +407,7 @@ bool QueryPreprocessor::isAttributeValid(string var, string varAttr, string var2
 
 // case 1: var1.varAttr = "varValue"
 // case 2: var1.varAttr = var2.varAttr
-// isVarValue = true [for-case1]
+// isVarValue = false [for-case2], compare varAttr valid for var1 only
 bool QueryPreprocessor::isAttributeValid(string var, string varAttribute, bool isVarValue) {
     Symbol varType = getVarType(var);
     bool isValid = false;
@@ -437,6 +465,8 @@ bool QueryPreprocessor::isAttributeValid(string var, string varAttribute, bool i
 }
 string QueryPreprocessor::getVar() {
     string word = queryList[cur];
+    bool isFound = false;
+
     // delimiters: ,>;.=)
     int pos = 0;
     for (char c : word) {
@@ -448,44 +478,104 @@ string QueryPreprocessor::getVar() {
     return word.substr(0, pos);
 }
 
-bool QueryPreprocessor::isConstantVar(string var) {
-    bool isSurroundWithDblQuotes = (var[0] == '"') && (var[var.length() - 1] == '"');
-    bool isUnderscoreExist = (var[0] == '_');
-    bool isSecondUnderscoreExist = (var[var.length() - 1] == '_');
-    bool isSurroundWithInnerDblQuotes;
+// for pattern expression only e.g. "axe12+1"
+string QueryPreprocessor::getVar(string word) {
+    bool isFound = false;
 
-    if (var.length() == 1) {
-        return isUnderscoreExist;
-    }
-    if (var.length() > 1) {
-        isSurroundWithInnerDblQuotes = (var[1] == '"') && (var[var.length() - 2] == '"');
-        bool isDblWildcard = isSurroundWithInnerDblQuotes && (isUnderscoreExist && isSecondUnderscoreExist);
-        if (isDblWildcard) {
-            if (isdigit(var[2])) {
-                std::string removedWildcard = var.substr(2, var.length() - 4);
-                if (Utils::IsNonNegativeNumeric(removedWildcard)) {
-                    return isDblWildcard;
-                } else {
-                    throw QuerySyntaxErrorException("27");
-                }
-            } else {
-                return isDblWildcard;
-            }
-        } else {
-            if (isSurroundWithDblQuotes && isdigit(var[1])) {
-                std::string removedQuotes = var.substr(1, var.length() - 3);
-
-                if (Utils::IsNonNegativeNumeric(removedQuotes)) {
-                    return isSurroundWithDblQuotes;
-                } else {
-                    throw QuerySyntaxErrorException("28");
-                }
-            }
-            return isSurroundWithDblQuotes;
+    // delimiters: ,>;.=)
+    int pos = 0;
+    for (char c : word) {
+        if (c == '+' || c == '-' || c == '*' || c == '"') {
+            break;
         }
+        pos++;
     }
+    return word.substr(0, pos);
+}
 
-    // wm todo: isValid pattern expr: "+5", "5-4x"
+bool QueryPreprocessor::isConstantVar(string var) {
+    // [accepted] case: "x+1", _"x+1"_
+    // [rejected] case: "x+1, _"x+"_
+    string varCopy = var;
+    bool isValid = false;
+    if (accept(var, '"')) {
+        while (accept(var, VARIABLE) || accept(var, CONSTANT)) {
+            if (accept(var, '+')) {
+                isValid = false;
+            } else if (accept(var, '-')) {
+                isValid = false;
+            } else if (accept(var, '*')) {
+                isValid = false;
+            } else {
+                isValid = true;
+            }
+        }
+        if (isValid == false) {
+            throw QuerySyntaxErrorException("Invalid pattern expression 1: "+ varCopy);
+        }
+        return expect(var, '"');
+    } else if (accept(var, '_')) {
+        expect(var, '"');
+
+        while (accept(var, VARIABLE) || accept(var, CONSTANT)) {
+            if (accept(var, '+')) {
+                isValid = false;
+            } else if (accept(var, '-')) {
+                isValid = false;
+            } else if (accept(var, '*')) {
+                isValid = false;
+            } else {
+                isValid = true;
+            }
+        }
+
+        if (isValid == false) {
+            throw QuerySyntaxErrorException("Invalid pattern expression 2: "+varCopy);
+        }
+
+        expect(var, '"');
+        return expect(var, '_');
+    }
+}
+
+bool QueryPreprocessor::accept(string &var, char token) {
+    if (var[0] == token) {
+        var = var.substr(1);
+        return true;
+    }
+    return false;
+}
+
+bool QueryPreprocessor::accept(string &var, Symbol token) {
+    string var1 = getVar(var);
+    if (var1.size() == 0) {
+        return false;
+    }
+    switch (token) {
+    case VARIABLE:
+        if (isValidVarName(var1)) {
+            var = var.substr(var1.size());
+            return true;
+        }
+        return false;
+    case CONSTANT:
+        if (Utils::IsNonNegativeNumeric(var1)) {
+            var = var.substr(var1.size());
+            return true;
+        }
+        return false;
+    default:
+        return false;
+    }
+}
+
+bool QueryPreprocessor::expect(string &var, char token) {
+    if (var[0] == token) {
+        var = var.substr(1);
+        return true;
+    } else {
+        throw QuerySyntaxErrorException("invalid pattern expression");
+    }
 }
 
 bool QueryPreprocessor::isVarExist(string var) {
@@ -583,7 +673,7 @@ string QueryPreprocessor::toLower(string data) {
 /* accept if string found, advance index */
 int QueryPreprocessor::accept(string token) {
     string var = getVar();
-    if (toLower(var).compare(token) == 0) {
+    if (var == token) {
         cur++;
         return 1;
     }
@@ -687,4 +777,17 @@ string QueryPreprocessor::peek() {
     }
 
     return emptyString;
+}
+
+void QueryPreprocessor::mergeSeparatedClauses() {
+    bool isFound = false;
+    while (cur < queryList.size() && !isFound) {
+        isFound = queryList[cur].find('(') != std::string::npos;
+        isFound = isFound && (queryList[cur].find(')') != std::string::npos);
+
+        if (isFound == false) {
+            queryList[cur + 1] = queryList[cur] + queryList[cur + 1];
+            cur++;
+        }
+    }
 }

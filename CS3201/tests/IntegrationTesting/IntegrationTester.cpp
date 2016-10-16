@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include "QueryProcessor/QueryEvaluator.h"
 #include "QueryProcessor/QueryOptimizer.h"
+#include "QueryProcessor/QueryProjector.h"
 
 using std::string;
 using std::vector;
@@ -212,7 +213,7 @@ public:
         QueryOptimizer qo;
         QueryTree qt;
 
-        query = "assign a1,a2,a3,a4; stmt s1,s2,s3,s4; variable v1,v2,v3,v4,v5;";
+        query = "assign a1,a2,a3; stmt s1,s2,s3,s4; variable v1,v2,v3,v4;";
         query += "Select <s1, s2, v2> such that Follows*(s1, s2) and Parent(s3, s1) and Uses(s2, v1) ";
         query += "and Uses(s3, v1) such that Uses(5, \"y\") such that Follows(3, 4) such that Uses(a3, v4) ";
         query += "such that Modifies(s3, \"x\") and Follows(s2, 3) pattern a1(v2, _\"x+y\"_) and a3(\"z\", _) ";
@@ -231,13 +232,13 @@ public:
             actualBooleanClauses += c.toString() + " ";
         }
 
-        std::vector<Clause> unselectedGroup = qt.getUnselectedGroups().at(0);
+        std::vector<Clause> unselectedGroup = qt.getUnselectedGroups().at(0).second;
         for (Clause c : unselectedGroup) {
             actualUnselectedClauses += c.toString() + " ";
         }
 
         //testing for group 1 only, ignore pattern a1(v2,_"x+y"_) in group 2
-        std::vector<Clause> selectedGroup = qt.getSelectedGroups().at(0);
+        std::vector<Clause> selectedGroup = qt.getSelectedGroups().at(0).second;
         for (Clause c : selectedGroup) {
             actualSelectedClauses += c.toString() + " ";
         }
@@ -249,6 +250,31 @@ public:
         Assert::AreEqual(expectedBooleanClauses, actualBooleanClauses);
         Assert::AreEqual(expectedUnselectedClauses, actualUnselectedClauses);
         Assert::AreEqual(expectedSelectedClauses, actualSelectedClauses);
+    }
+    TEST_METHOD(QueryProjectorSelectCallProcedureName) {
+        //Tests for Select <a,s,c.procName>
+        string fileName = "..\\tests\\IntegrationTesting\\IntegrationTest-QueryProjector.txt";
+        PKB::Clear();
+        parse(fileName);
+
+        QueryProjector projector;
+        std::string expected, actual;
+
+        std::list<std::string> results;
+        ResultList resultList({ { "a", "s", "c" },{ { "1","2","3" },{ "4","5","6" } } });
+
+        std::unordered_map<std::string, bool> varAttrMap({ { "c", true } });
+        
+        projector.projectResult(results, varAttrMap, resultList);
+
+        expected = "1 2 Projector2, 4 5 Projector3";
+
+        for (std::string s : results) {
+            actual += s + ", ";
+        }
+        actual = actual.substr(0, actual.length() - 2);
+
+        Assert::AreEqual(expected, actual);
     }
 	};
 }

@@ -29,11 +29,17 @@ class QueryPreprocessor {
      int accept(std::string word);
      int accept(char token);
 
+     bool QueryPreprocessor::accept(std::string &var, char token);
+     bool QueryPreprocessor::accept(std::string &var, Symbol token);
+
+     bool QueryPreprocessor::expect(std::string &var, char token);
+
      /* return 1 if token found, do nothing after */
      int accept(Symbol varType);
      std::string peek();
 
      std::string getVar();
+     std::string getVar(std::string word);
 
      // bool processDeclaration(std::string declaration);
      bool processQuery(std::string query);
@@ -55,6 +61,8 @@ class QueryPreprocessor {
      Symbol getVarType(std::string var);
      Symbol getAttributeType(std::string var);
 
+     void mergeSeparatedClauses();
+
      // global variables
      std::vector<std::string> queries;
      std::vector<std::string> queryList;
@@ -63,6 +71,8 @@ class QueryPreprocessor {
      int cur;
 
      std::unordered_map<std::string, Symbol> varSymbolMap;
+     std::unordered_map<std::string, bool> varAttrMap;
+
      RelationTable r;
      QueryTree qt;
 

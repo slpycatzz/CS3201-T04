@@ -61,6 +61,7 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateCallTable(callStmtNumbers_);
     PKB::GenerateStmtTable(stmts_);
     PKB::GenerateStmtlistTable(stmtlists_);
+    PKB::GenerateProcedureFirstStmtTable(proceduresFirstStmt_);
 
     /* Deprecated. */
     PKB::GenerateAssignTable(assigns_);
@@ -85,6 +86,7 @@ void FrontendParser::parseProgram(string filePath) {
     setUses();
     setParent();
     setFollows();
+    setNext();
 
     /* Design abstraction tables generation. */
     PKB::GenerateModifiesTable(modifies_);
@@ -94,8 +96,19 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateParentTable(parent_);
     PKB::GenerateFollowsTable(follows_);
 
+    /* Next design abstraction tables generation. */
+    PKB::GenerateNextTable(next_);
+    PKB::GenerateIfNextTable(ifNext_);
+    PKB::GenerateWhileNextTable(whileNext_);
+
     /* Set priority after all the design abstraction tables are generated. */
     PKB::GeneratePriorityTable();
+
+    PKB::GenerateNextTransitiveTable();
+
+   // PKB::PrintNextTransitiveTable();
+
+    //std::cout << PKB::IsNextTransitive()
 }
 
 vector<string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream) {
@@ -202,7 +215,7 @@ TreeNode* FrontendParser::callProcedureRecognizer() {
     /* For PKB procedure table generation. */
     procedureNames_.insert(currentProcedureName_);
 
-    proceduresFirstStmt_.push_back(std::make_pair(stmtNumber_, currentProcedureName_));
+    proceduresFirstStmt_.insert(std::make_pair(stmtNumber_, currentProcedureName_));
 
     /* For PKB stmtlist table generation. */
     stmtlists_.insert(std::make_pair(stmtNumber_, SYMBOL_PROCEDURE));
@@ -210,6 +223,8 @@ TreeNode* FrontendParser::callProcedureRecognizer() {
     /* TreeNode generation. */
     TreeNode* procedureNode = PKB::CreateASTNode(PROCEDURE, currentProcedureName_);
     procedureNode->addChild(callStmtListRecognizer());
+
+    proceduresLastStmt_.insert(std::make_pair(stmtNumber_ - 1, currentProcedureName_));
 
     return procedureNode;
 }
@@ -242,7 +257,7 @@ TreeNode* FrontendParser::callStmtRecognizer() {
     unsigned int stmtNumber = stmtNumber_;
 
     /* For PKB parent table generation. Preorder storing. */
-    stmtsLevels_.push_back(currentTreeLevel_);
+    stmtsLevels_.insert(std::make_pair(stmtNumber, currentTreeLevel_));
 
     /* To catch special cases of assign statement where the variable name is same as certain symbols. */
     if (peekForwardTokens(1) == string(1, CHAR_SYMBOL_EQUAL)) {
@@ -297,6 +312,15 @@ TreeNode* FrontendParser::callWhileRecognizer() {
     whileNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
     whileNode->addChild(callStmtListRecognizer());
 
+    unsigned int whileLastStmt = stmtNumber_ - 1;
+
+    /* For PKB whileNext table generation. */
+    for (unsigned int i = stmtNumber; i <= whileLastStmt; i++) {
+        for (unsigned int k = stmtNumber; k <= whileLastStmt; k++) {
+            whileNext_[i].insert(k);
+        }
+    }
+
     return whileNode;
 }
 
@@ -329,7 +353,7 @@ TreeNode* FrontendParser::callIfRecognizer() {
 
     ifNode->addChild(callStmtListRecognizer());
 
-    thenLastStmt_.push_back(stmtNumber_ - 1);
+    thenLastStmt_.insert(std::make_pair(stmtNumber, stmtNumber_ - 1));
 
     expect(SYMBOL_IF_ELSE);
 
@@ -337,6 +361,25 @@ TreeNode* FrontendParser::callIfRecognizer() {
     stmtlists_.insert(std::make_pair(stmtNumber_, SYMBOL_IF_ELSE));
 
     ifNode->addChild(callStmtListRecognizer());
+
+    unsigned int elseLastStmt = stmtNumber_ - 1;
+
+    /* For PKB ifNext table generation. */
+    for (unsigned int i = stmtNumber + 1; i <= elseLastStmt; i++) {
+        unsigned int begin, end;
+        if (i <= thenLastStmt_[stmtNumber]) {
+            begin = thenLastStmt_[stmtNumber] + 1;
+            end = elseLastStmt;
+
+        } else {
+            begin = stmtNumber + 1;
+            end = thenLastStmt_[stmtNumber];
+        }
+
+        for (unsigned int k = begin; k <= end; k++) {
+            ifNext_[i].insert(k);
+        }
+    }
 
     return ifNode;
 }
@@ -459,7 +502,7 @@ TreeNode* FrontendParser::callFactorRecognizer() {
 
         expression_.push_back(string(1, CHAR_SYMBOL_CLOSEBRACKET));
 
-    /* Variable. */
+        /* Variable. */
     } else if (Utils::IsValidNamingConvention(peekTokens())) {
         string variableName = getToken();
 
@@ -472,7 +515,7 @@ TreeNode* FrontendParser::callFactorRecognizer() {
         expression_.push_back(variableName);
         factorNode = PKB::CreateASTNode(VARIABLE, variableName);
 
-    /* Constant. */
+        /* Constant. */
     } else if (Utils::IsNonNegativeNumeric(peekTokens())) {
         string constant = getToken();
 
@@ -538,9 +581,9 @@ void FrontendParser::setModifies() {
     for (const auto &pair : modifies_) {
         set<string> variableNames = pair.second;
 
-        for (int i = proceduresFirstStmt_.size() - 1; i >= 0; i--) {
-            if (proceduresFirstStmt_[i].first <= pair.first) {
-                modifiesProcedure_[proceduresFirstStmt_[i].second].insert(variableNames.begin(), variableNames.end());
+        for (auto iter = proceduresFirstStmt_.rbegin(); iter != proceduresFirstStmt_.rend(); iter++) {
+            if (iter->first <= pair.first) {
+                modifiesProcedure_[iter->second].insert(variableNames.begin(), variableNames.end());
                 break;
             }
         }
@@ -588,7 +631,7 @@ void FrontendParser::setModifies() {
             variableNames = iter->second;
         }
 
-        if (stmtsLevels_.at(stmtNumber - 1) != 1) {
+        if (stmtsLevels_[stmtNumber] != 1) {
             unsigned int parentStmtNumber = getParentOfStmtNumber(stmtNumber);
 
             while (parentStmtNumber > 0) {
@@ -611,9 +654,9 @@ void FrontendParser::setUses() {
     for (const auto &pair : uses_) {
         set<string> variableNames = pair.second;
 
-        for (int i = proceduresFirstStmt_.size() - 1; i >= 0; i--) {
-            if (proceduresFirstStmt_[i].first <= pair.first) {
-                usesProcedure_[proceduresFirstStmt_[i].second].insert(variableNames.begin(), variableNames.end());
+        for (auto iter = proceduresFirstStmt_.rbegin(); iter != proceduresFirstStmt_.rend(); iter++) {
+            if (iter->first <= pair.first) {
+                usesProcedure_[iter->second].insert(variableNames.begin(), variableNames.end());
                 break;
             }
         }
@@ -660,7 +703,7 @@ void FrontendParser::setUses() {
             variableNames = iter->second;
         }
 
-        if (stmtsLevels_.at(stmtNumber - 1) != 1) {
+        if (stmtsLevels_[stmtNumber] != 1) {
             unsigned int parentStmtNumber = getParentOfStmtNumber(stmtNumber);
 
             while (parentStmtNumber > 0) {
@@ -679,21 +722,49 @@ void FrontendParser::setUses() {
 }
 
 void FrontendParser::setParent() {
-    for (unsigned int i = 0; i < stmtsLevels_.size(); i++) {
-        unsigned int parentStmtNumber = getParentOfStmtNumber(i + 1);
+    for (unsigned int i = 1; i <= stmtsLevels_.size(); i++) {
+        unsigned int parentStmtNumber = getParentOfStmtNumber(i);
 
         if (parentStmtNumber > 0) {
-            parent_[parentStmtNumber].insert(i + 1);
+            parent_[parentStmtNumber].insert(i);
         }
     }
 }
 
 void FrontendParser::setFollows() {
-    for (unsigned int i = 0; i < stmtsLevels_.size(); i++) {
-        unsigned int stmtNumber = getFollowOfStmtNumber(i + 1);
+    for (unsigned int i = 1; i <= stmtsLevels_.size(); i++) {
+        unsigned int stmtNumber = getFollowOfStmtNumber(i);
 
         if (stmtNumber > 0) {
-            follows_[stmtNumber] = (i + 1);
+            follows_[stmtNumber] = i;
+        }
+    }
+}
+
+void FrontendParser::setNext() {
+    set<unsigned int> visitedStmtNumbers;
+
+    for (auto &pair : proceduresFirstStmt_) {
+        queue<unsigned int> stmtNumbers;
+
+        visitedStmtNumbers.insert(pair.first);
+        stmtNumbers.push(pair.first);
+
+        while (!stmtNumbers.empty()) {
+            unsigned int stmtNumber = stmtNumbers.front();
+            stmtNumbers.pop();
+
+            set<unsigned int> nextStmtNumbers = getNextStmtNumbers(stmtNumber);
+
+            next_[stmtNumber].insert(nextStmtNumbers.begin(), nextStmtNumbers.end());
+
+            for (auto &next : nextStmtNumbers) {
+                if (visitedStmtNumbers.count(next) != 1) {
+                    stmtNumbers.push(next);
+                }
+            }
+
+            visitedStmtNumbers.insert(nextStmtNumbers.begin(), nextStmtNumbers.end());
         }
     }
 }
@@ -703,7 +774,7 @@ int FrontendParser::getParentOfStmtNumber(unsigned int stmtNumber) {
         return -1;
     }
 
-    unsigned int stmtLevel = stmtsLevels_.at(stmtNumber - 1);
+    unsigned int stmtLevel = stmtsLevels_[stmtNumber];
 
     /* Root node level, no parent. */
     if (stmtLevel == 1) {
@@ -711,10 +782,9 @@ int FrontendParser::getParentOfStmtNumber(unsigned int stmtNumber) {
     }
 
     /* Search for the nearest (stmtLevel - 1) value; that, will be the parent. */
-    unsigned int i = stmtNumber - 1;
-    while (i > 0, i--) {
-        if (stmtsLevels_.at(i) == (stmtLevel - 1)) {
-            return (i + 1);
+    for (unsigned int i = stmtNumber - 1; i > 0; i--) {
+        if (stmtsLevels_[i] == (stmtLevel - 1)) {
+            return i;
         }
     }
 
@@ -727,40 +797,128 @@ int FrontendParser::getFollowOfStmtNumber(unsigned int stmtNumber) {
     }
 
     /* Get stmtNumber's procedure's first statement position. */
-    unsigned int j;
-    for (int i = proceduresFirstStmt_.size() - 1; i >= 0; i--) {
-        unsigned int number = proceduresFirstStmt_[i].first;
+    unsigned int firstStmtNumber;
+    for (auto iter = proceduresFirstStmt_.rbegin(); iter != proceduresFirstStmt_.rend(); iter++) {
+        firstStmtNumber = iter->first;
 
         /* Nothing is before the first statement of a procedure. */
-        if (number == stmtNumber) {
+        if (firstStmtNumber == stmtNumber) {
             return 0;
         }
 
-        if (number < stmtNumber) {
-            j = number;
+        if (firstStmtNumber < stmtNumber) {
             break;
         }
     }
 
-    unsigned int stmtLevel = stmtsLevels_.at(stmtNumber - 1);
+    unsigned int stmtLevel = stmtsLevels_[stmtNumber];
 
-    unsigned int k = stmtNumber - 1;
-    while (k > j, k--) {
-        if (stmtsLevels_.at(k) == (stmtLevel - 1)) {
+    for (unsigned int i = stmtNumber - 1; i >= firstStmtNumber; i--) {
+        if (stmtsLevels_[i] == (stmtLevel - 1)) {
             return 0;
         }
 
-        /* Catch "if" statement being in same level but different statement list. */
-        if (Utils::VectorContains(thenLastStmt_, (k + 1))) {
-            return 0;
-        }
+        if (stmtsLevels_[i] == stmtLevel) {
+            /* Catch "if" statement being in same level but different statement list. */
+            for (auto &pair : thenLastStmt_) {
+                if (pair.second == i) {
+                    return 0;
+                }
+            }
 
-        if (stmtsLevels_.at(k) == stmtLevel) {
-            return (k + 1);
+            return i;
         }
     }
 
-    return -1;
+    return 0;
+}
+
+int FrontendParser::getFollowingOfStmtNumber(unsigned int stmtNumber) {
+    if (stmtNumber == 0) {
+        return -1;
+    }
+
+    /* Get stmtNumber's procedure's last statement position. */
+    unsigned int lastStmtNumber;
+    for (auto &pair : proceduresLastStmt_) {
+        lastStmtNumber = pair.first;
+
+        /* Nothing is after the last statement of a procedure. */
+        if (lastStmtNumber == stmtNumber) {
+            return 0;
+        }
+
+        if (stmtNumber < lastStmtNumber) {
+            break;
+        }
+    }
+
+    unsigned int stmtLevel = stmtsLevels_[stmtNumber];
+
+    for (unsigned int i = stmtNumber + 1; i <= lastStmtNumber; i++) {
+        if (stmtsLevels_[i] == (stmtLevel - 1)) {
+            return 0;
+        }
+
+        if (stmtsLevels_[i] == stmtLevel) {
+            /* Catch "if" statement being in same level but different statement list. */
+            for (auto &pair : thenLastStmt_) {
+                if (pair.second == (i - 1)) {
+                    return 0;
+                }
+            }
+
+            return i;
+        }
+    }
+
+    return 0;
+}
+
+set<unsigned int> FrontendParser::getNextStmtNumbers(unsigned int stmtNumber) {
+    set<unsigned int> stmtNumbers;
+    string symbol = stmts_[stmtNumber];
+
+    if (symbol == SYMBOL_WHILE) {
+        stmtNumbers.insert(stmtNumber + 1);
+
+    } else if (symbol == SYMBOL_IF) {
+        stmtNumbers.insert(stmtNumber + 1);
+        stmtNumbers.insert(thenLastStmt_[stmtNumber] + 1);
+
+        /* Don't need check for following or parent flow path. */
+        return stmtNumbers;
+    }
+
+    while (true) {
+        int followingStmtNumber = getFollowingOfStmtNumber(stmtNumber);
+
+        /* While, assign and call not at the end of flow path is caught here.*/
+        if (followingStmtNumber > 0) {
+            stmtNumbers.insert(followingStmtNumber);
+            break;
+        }
+
+        int parentStmtNumber = getParentOfStmtNumber(stmtNumber);
+
+        /* While, assign and call at root level is caught here. */
+        if (parentStmtNumber < 1) {
+            break;
+        }
+
+        /* While, assign and call at the end of flow path is caught here. */
+        symbol = stmts_[parentStmtNumber];
+        if (symbol == SYMBOL_WHILE) {
+            stmtNumbers.insert(parentStmtNumber);
+            break;
+
+        /* Loop up to parent to look for next flow path. */
+        } else if (symbol == SYMBOL_IF) {
+            stmtNumber = parentStmtNumber;
+        }
+    }
+
+    return stmtNumbers;
 }
 
 void FrontendParser::validateNonExistentCall() {

@@ -30,16 +30,29 @@ struct SortByPriority {
         switch (clauseSymbol) {
             case PATTERN:
             {
-                //Check if exact or sub-expression match.
-                string rhs = clause.getArg()[1];
-                if ((Utils::StartsWith(rhs, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(rhs, CHAR_SYMBOL_DOUBLEQUOTES))) {
-                    //Exact expression match
-                    return PKB::GetPriority(MODIFIES) + 1;
+                string patternType = clause.getArg()[0];
+                if (varMap.find(patternType)->second == ASSIGN) {
+                    //Pattern is of type ASSIGN
+                    //Check if exact or sub-expression match.
+                    string rhs = clause.getArg()[2];
+                    if ((Utils::StartsWith(rhs, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(rhs, CHAR_SYMBOL_DOUBLEQUOTES))) {
+                        //Exact expression match
+                        return PKB::GetPriority(MODIFIES) - 1;
+                    }
+                    else if (rhs.length() > 1 && (Utils::StartsWith(rhs, CHAR_SYMBOL_UNDERSCORE) && Utils::EndsWith(rhs, CHAR_SYMBOL_UNDERSCORE))) {
+                        //Sub-expression match
+                        return PKB::GetPriority(MODIFIES) + 2;
+                    }
+                    else {
+                        //Underscore on the right side
+                        return PKB::GetPriority(MODIFIES) + 1;
+                    }
                 }
-                else if ((Utils::StartsWith(rhs, CHAR_SYMBOL_UNDERSCORE) && Utils::EndsWith(rhs, CHAR_SYMBOL_UNDERSCORE))) {
-                    //Sub-expression match
-                    return PKB::GetPriority(MODIFIES) + 2;
+                else {
+                    //Pattern is of type IF/WHILE
+                    return PKB::GetPriority(PARENT) - 1;
                 }
+
                 break;
             }
             case MODIFIES:
@@ -94,6 +107,8 @@ QueryTree QueryOptimizer::optimize(QueryTree qt) {
     vector<Clause> booleanClauses;
     vector<vector<Clause>> genericGroups;
     vector<vector<Clause>> selectedGroups;
+    std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> unselectedPairs;
+    std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> selectedPairs;
 
     vector<Clause> allClauses(queryTree.getClauses());
 
@@ -236,22 +251,24 @@ QueryTree QueryOptimizer::optimize(QueryTree qt) {
     
     //Sort clauses within groups
     for (vector<vector<Clause>>::iterator it = genericGroups.begin(); it != genericGroups.end(); ++it) {
-        *it = sortGroup(*it);
+        std::pair<std::vector<std::string>, std::vector<Clause>> synonymsClausesPair = sortGroup(*it);
+        unselectedPairs.push_back(synonymsClausesPair);
     }
 
     for (vector<vector<Clause>>::iterator it = selectedGroups.begin(); it != selectedGroups.end(); ++it) {
-        *it = sortGroup(*it);
+        std::pair<std::vector<std::string>, std::vector<Clause>> synonymsClausesPair = sortGroup(*it);
+        selectedPairs.push_back(synonymsClausesPair);
     }
     
     //Groups that remain in genericGroups are unselectedGroups
     queryTree.setBooleanClauses(booleanClauses);
-    queryTree.setUnselectedGroups(genericGroups);
-    queryTree.setSelectedGroups(selectedGroups);
+    queryTree.setUnselectedGroups(unselectedPairs);
+    queryTree.setSelectedGroups(selectedPairs);
 
     return queryTree;
 }
 
-std::vector<Clause> QueryOptimizer::sortGroup(std::vector<Clause> group) {
+std::pair<std::vector<std::string>, std::vector<Clause>> QueryOptimizer::sortGroup(std::vector<Clause> group) {
     //Sort according to number of synonyms
     std::sort(group.begin(), group.end(), SortByNumOfSynonyms());
 
@@ -316,11 +333,18 @@ std::vector<Clause> QueryOptimizer::sortGroup(std::vector<Clause> group) {
             //Sort group, then remove all clauses from group and insert into sortedGroup
             std::sort(group.begin(), group.end(), SortByPriority(queryTree.getVarMap()));
             for (Clause c : group) {
+                for (string synonym : c.getSynonyms()) {
+                    evaluatedSynonyms.insert(synonym);
+                }
                 sortedGroup.push_back(c);
             }
             group.clear();
         }
     }
 
-    return sortedGroup;
+    std::vector<std::string> synonymsInGroup;
+    synonymsInGroup.assign(evaluatedSynonyms.begin(), evaluatedSynonyms.end());
+    std::pair<std::vector<std::string>, std::vector<Clause>> pair({ synonymsInGroup,sortedGroup });
+    
+    return pair;
 }

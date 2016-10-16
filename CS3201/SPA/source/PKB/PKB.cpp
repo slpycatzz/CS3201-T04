@@ -2,10 +2,12 @@
 #include <map>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "Constants.h"
+#include "Frontend/DesignExtractor.h"
 #include "PKB/AST.h"
 #include "PKB/PKB.h"
 #include "PKB/Table.h"
@@ -16,6 +18,7 @@ using std::map;
 using std::set;
 using std::string;
 using std::vector;
+using std::unordered_map;
 
 unsigned int PKB::numberOfProcedure_ = 0;
 unsigned int PKB::numberOfAssign_    = 0;
@@ -30,6 +33,7 @@ Table<unsigned int, string> PKB::controlVariableTable_;
 Table<unsigned int, string> PKB::callTable_;
 Table<unsigned int, string> PKB::stmtTable_;
 Table<unsigned int, string> PKB::stmtlistTable_;
+Table<unsigned int, string> PKB::procedureFirstStmtTable_;
 
 Table<unsigned int, string> PKB::priorityTable_;
 
@@ -53,6 +57,11 @@ TransitiveTable<unsigned int, unsigned int> PKB::parentTransitiveTable_;
 
 Table<unsigned int, unsigned int> PKB::followsTable_;
 TransitiveTable<unsigned int, unsigned int> PKB::followsTransitiveTable_;
+
+Table<unsigned int, unsigned int> PKB::nextTable_;
+TransitiveTable<unsigned int, unsigned int> PKB::nextTransitiveTable_;
+Table<unsigned int, unsigned int> PKB::ifNextTable_;
+Table<unsigned int, unsigned int> PKB::whileNextTable_;
 
 /* START - AST functions */
 
@@ -315,6 +324,23 @@ void PKB::PrintStmtlistTable() {
 }
 
 /* END   - Stmtlist table functions */
+/* START - Procedure first stmt table functions */
+
+void PKB::GenerateProcedureFirstStmtTable(map<unsigned int, string> procedureFirstStmts) {
+    for (auto &pair : procedureFirstStmts) {
+        procedureFirstStmtTable_.insert(pair.first, pair.second);
+    }
+}
+
+unordered_map<unsigned int, set<string>> PKB::GetProcedureFirstStmtMap() {
+    return procedureFirstStmtTable_.getKeyToValuesMap();
+}
+
+void PKB::PrintProcedureFirstStmtTable() {
+    procedureFirstStmtTable_.printTable();
+}
+
+/* END   - Procedure first stmt table functions */
 /* START - Priority table functions */
 
 void PKB::GeneratePriorityTable() {
@@ -689,6 +715,81 @@ void PKB::PrintFollowsTransitiveTable() {
 }
 
 /* END   - Follows table functions */
+/* START - Next table functions */
+
+void PKB::GenerateNextTable(map<unsigned int, set<unsigned int>> next) {
+    for (auto &pair : next) {
+        nextTable_.insert(pair.first, pair.second);
+    }
+}
+
+void PKB::GenerateNextTransitiveTable() {
+    nextTransitiveTable_.generateKeyToValueTransitiveMap(nextTable_);
+    nextTransitiveTable_.generateValueToKeyTransitiveMap(nextTable_);
+}
+
+void PKB::GenerateIfNextTable(map<unsigned int, set<unsigned int>> ifNext) {
+    for (auto &pair : ifNext) {
+        ifNextTable_.insert(pair.first, pair.second);
+    }
+}
+
+void PKB::GenerateWhileNextTable(map<unsigned int, set<unsigned int>> whileNext) {
+    for (auto &pair : whileNext) {
+        whileNextTable_.insert(pair.first, pair.second);
+    }
+}
+
+bool PKB::IsNext(unsigned int current, unsigned int next) {
+    return nextTable_.hasKeyToValue(current, next);
+}
+
+bool PKB::IsNextTransitive(unsigned int current, unsigned int next) {
+    return nextTransitiveTable_.hasKeyToValue(current, next);
+}
+
+set<unsigned int> PKB::GetNext(unsigned int current) {
+    return nextTable_.getValues(current);
+}
+
+set<unsigned int> PKB::GetPrevious(unsigned int next) {
+    return nextTable_.getKeys(next);
+}
+
+set<unsigned int> PKB::GetNextTransitive(unsigned int current) {
+    return nextTransitiveTable_.getValues(current);
+}
+
+/* WARNING - DOES NOT WORK. */
+set<unsigned int> PKB::GetPreviousTransitive(unsigned int next) {
+    return nextTransitiveTable_.getKeys(next);
+}
+
+unordered_map<unsigned int, set<unsigned int>> PKB::GetIfNextMap() {
+    return ifNextTable_.getKeyToValuesMap();
+}
+
+unordered_map<unsigned int, set<unsigned int>> PKB::GetWhileNextMap() {
+    return whileNextTable_.getKeyToValuesMap();
+}
+
+void PKB::PrintNextTable() {
+    nextTable_.printTable();
+}
+
+void PKB::PrintIfNextTable() {
+    ifNextTable_.printTable();
+}
+
+void PKB::PrintWhileNextTable() {
+    whileNextTable_.printTable();
+}
+
+void PKB::PrintNextTransitiveTable() {
+    nextTransitiveTable_.printTable();
+}
+
+/* END   - Next table functions */
 /* START - Miscellaneous functions */
 
 unsigned int PKB::GetNumberOfProcedure() {

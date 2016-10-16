@@ -1,9 +1,9 @@
 #pragma once
 
 #include <iostream>
-#include <map>
 #include <set>
 #include <stack>
+#include <unordered_map>
 
 template<typename K, typename V>
 class TransitiveTable {
@@ -23,6 +23,7 @@ class TransitiveTable {
             std::stack<K> keyStack;
             keyStack.push(key);
 
+            std::set<K> visited;
             while (!keyStack.empty()) {
                 std::set<V> values = table.getValues(keyStack.top());
 
@@ -36,7 +37,10 @@ class TransitiveTable {
                 keyToValueTransitiveMap[key].insert(values.begin(), values.end());
 
                 for (const auto &value : values) {
-                    keyStack.push(value);
+                    if (visited.count(value) != 1) {
+                        keyStack.push(value);
+                        visited.insert(value);
+                    }
                 }
             }
         }
@@ -51,11 +55,12 @@ class TransitiveTable {
 
         /* Perform DFS on the table to get transitive table. */
         for (const auto &value : values) {
-            std::stack<K> valueStack;
+            std::stack<V> valueStack;
             valueStack.push(value);
 
+            std::set<V> visited;
             while (!valueStack.empty()) {
-                std::set<V> keys = table.getKeys(valueStack.top());
+                std::set<K> keys = table.getKeys(valueStack.top());
 
                 valueStack.pop();
 
@@ -67,7 +72,10 @@ class TransitiveTable {
                 valueToKeyTransitiveMap[value].insert(keys.begin(), keys.end());
 
                 for (const auto &key : keys) {
-                    valueStack.push(key);
+                    if (visited.count(key) != 1) {
+                        valueStack.push(key);
+                        visited.insert(key);
+                    }
                 }
             }
         }
@@ -174,6 +182,6 @@ class TransitiveTable {
     }
 
  private:
-    std::map<K, std::set<V>> keyToValueTransitiveMap;
-    std::map<V, std::set<K>> valueToKeyTransitiveMap;
+    std::unordered_map<K, std::set<V>> keyToValueTransitiveMap;
+    std::unordered_map<V, std::set<K>> valueToKeyTransitiveMap;
 };

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="include\Constants.h" />
     <ClInclude Include="include\Exceptions.h" />
+    <ClInclude Include="include\Frontend\DesignExtractor.h" />
     <ClInclude Include="include\frontend\FrontendParser.h" />
     <ClInclude Include="include\PKB\AST.h" />
     <ClInclude Include="include\PKB\Table.h" />
@@ -41,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Constants.cpp" />
+    <ClCompile Include="source\Frontend\DesignExtractor.cpp" />
     <ClCompile Include="source\frontend\FrontendParser.cpp" />
     <ClCompile Include="source\PKB\AST.cpp" />
     <ClCompile Include="source\PKB\PKB.cpp" />

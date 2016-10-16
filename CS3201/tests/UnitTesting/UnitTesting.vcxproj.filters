@@ -39,6 +39,9 @@
     <ClCompile Include="source\QueryProcessor\QueryPreprocessorUnitTest.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
+    <ClCompile Include="QueryProjectorUnitTest.cpp">
+      <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stdafx.h">

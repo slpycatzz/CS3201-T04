@@ -9,7 +9,7 @@ class QueryProjector {
 public:
     QueryProjector();
     ~QueryProjector();
-    std::list<std::string> formatResult(ResultList resultList);
+    void projectResult(std::list<std::string>& results, std::unordered_map<std::string, bool> resultsInfo, ResultList resultList);
 
 private:
 };
