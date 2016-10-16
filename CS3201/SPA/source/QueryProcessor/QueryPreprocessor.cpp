@@ -675,7 +675,7 @@ string QueryPreprocessor::toLower(string data) {
 /* accept if string found, advance index */
 int QueryPreprocessor::accept(string token) {
     string var = getVar();
-    if (toLower(var).compare(token) == 0) {
+    if (var.compare(token) == 0) {
         cur++;
         return 1;
     }
