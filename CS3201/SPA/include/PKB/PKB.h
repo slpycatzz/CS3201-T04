@@ -143,6 +143,8 @@ class PKB {
     static void PrintFollowsTransitiveTable();
 
     static void GenerateNextTable(std::map<unsigned int, std::set<unsigned int>> next);
+    static void GenerateIfNextTable(std::map<unsigned int, std::set<unsigned int>> ifNext);
+    static void GenerateWhileNextTable(std::map<unsigned int, std::set<unsigned int>> whileNext);
     static bool IsNext(unsigned int previous, unsigned int next);
     static std::set<unsigned int> GetNext(unsigned int previous);
     static std::set<unsigned int> GetPrevious(unsigned int next);
@@ -207,6 +209,8 @@ class PKB {
     static TransitiveTable<unsigned int, unsigned int> followsTransitiveTable_;     /* map<stmtNumber, set(stmtNumber)> */
 
     static Table<unsigned int, unsigned int> nextTable_;                            /* map<stmtNumber, set(stmtNumber)> */
+    static Table<unsigned int, unsigned int> ifNextTable_;                          /* map<stmtNumber, set(stmtNumber)> */
+    static Table<unsigned int, unsigned int> whileNextTable_;                       /* map<stmtNumber, set(stmtNumber)> */
 
     /* Deprecated. */
     static Table<unsigned int, TreeNode*> assignTable_;                             /* map<stmtNumber, expression string> */

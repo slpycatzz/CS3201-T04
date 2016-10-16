@@ -55,6 +55,8 @@ Table<unsigned int, unsigned int> PKB::followsTable_;
 TransitiveTable<unsigned int, unsigned int> PKB::followsTransitiveTable_;
 
 Table<unsigned int, unsigned int> PKB::nextTable_;
+Table<unsigned int, unsigned int> PKB::ifNextTable_;
+Table<unsigned int, unsigned int> PKB::whileNextTable_;
 
 /* START - AST functions */
 
@@ -696,6 +698,18 @@ void PKB::PrintFollowsTransitiveTable() {
 void PKB::GenerateNextTable(map<unsigned int, set<unsigned int>> next) {
     for (auto &pair : next) {
         nextTable_.insert(pair.first, pair.second);
+    }
+}
+
+void PKB::GenerateIfNextTable(map<unsigned int, set<unsigned int>> ifNext) {
+    for (auto &pair : ifNext) {
+        ifNextTable_.insert(pair.first, pair.second);
+    }
+}
+
+void PKB::GenerateWhileNextTable(map<unsigned int, set<unsigned int>> whileNext) {
+    for (auto &pair : whileNext) {
+        whileNextTable_.insert(pair.first, pair.second);
     }
 }
 

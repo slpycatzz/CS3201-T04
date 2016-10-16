@@ -94,7 +94,11 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateUsesProcedureTable(usesProcedure_);
     PKB::GenerateParentTable(parent_);
     PKB::GenerateFollowsTable(follows_);
+
+    /* Next design abstraction tables generation. */
     PKB::GenerateNextTable(next_);
+    PKB::GenerateIfNextTable(ifNext_);
+    PKB::GenerateWhileNextTable(whileNext_);
 
     /* Set priority after all the design abstraction tables are generated. */
     PKB::GeneratePriorityTable();
@@ -301,6 +305,15 @@ TreeNode* FrontendParser::callWhileRecognizer() {
     whileNode->addChild(PKB::CreateASTNode(VARIABLE, controlVariableName));
     whileNode->addChild(callStmtListRecognizer());
 
+    unsigned int whileLastStmt = stmtNumber_ - 1;
+
+    /* For PKB whileNext table generation. */
+    for (unsigned int i = stmtNumber; i <= whileLastStmt; i++) {
+        for (unsigned int k = stmtNumber; k <= whileLastStmt; k++) {
+            whileNext_[i].insert(k);
+        }
+    }
+
     return whileNode;
 }
 
@@ -341,6 +354,25 @@ TreeNode* FrontendParser::callIfRecognizer() {
     stmtlists_.insert(std::make_pair(stmtNumber_, SYMBOL_IF_ELSE));
 
     ifNode->addChild(callStmtListRecognizer());
+
+    unsigned int elseLastStmt = stmtNumber_ - 1;
+
+    /* For PKB ifNext table generation. */
+    for (unsigned int i = stmtNumber + 1; i <= elseLastStmt; i++) {
+        unsigned int begin, end;
+        if (i <= thenLastStmt_[stmtNumber]) {
+            begin = thenLastStmt_[stmtNumber] + 1;
+            end = elseLastStmt;
+
+        } else {
+            begin = stmtNumber + 1;
+            end = thenLastStmt_[stmtNumber];
+        }
+
+        for (unsigned int k = begin; k <= end; k++) {
+            ifNext_[i].insert(k);
+        }
+    }
 
     return ifNode;
 }

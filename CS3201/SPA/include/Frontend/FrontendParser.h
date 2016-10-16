@@ -88,7 +88,11 @@ class FrontendParser {
     std::map<std::string, std::set<std::string>> usesProcedure_;
     std::map<unsigned int, std::set<unsigned int>> parent_;
     std::map<unsigned int, unsigned int> follows_;
+
+    /* For PKB next design abstraction tables generation. */
     std::map<unsigned int, std::set<unsigned int>> next_;
+    std::map<unsigned int, std::set<unsigned int>> ifNext_;
+    std::map<unsigned int, std::set<unsigned int>> whileNext_;
 
     /* Deprecated. */
     std::map<unsigned int, TreeNode*> assigns_;
