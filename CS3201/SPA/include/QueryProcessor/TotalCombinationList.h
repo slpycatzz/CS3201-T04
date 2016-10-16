@@ -20,7 +20,10 @@ public:
 
 	/* Content manipulation */
 
-	void addSynonym(const Synonym &syn, PartialCombinationList &candidateList);
+	void addSynonym(const Synonym &syn, std::vector<Candidate> &candidateList);
+	
+	void addSynonym(const Synonym &syn, PartialCombinationList &partList);
+	
 	void merge(Synonym &syn1, Synonym &syn2);
 
 	void filter(bool expression);
@@ -67,7 +70,10 @@ private:
 	PartialCombinationList cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2);
 
 	//template<typename Filterer>
-	PartialCombinationList cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2, std::function<bool(CandidateCombination)> filterer);
+	PartialCombinationList cartesianProduct(PartialCombinationList &list1,
+		PartialCombinationList &list2, std::function<bool(CandidateCombination)> filterer);
+
+	PartialCombinationList makePartialCombiList(Synonym syn, std::vector<Candidate> &vec);
 
 	std::unordered_map<Synonym, PartialCombinationList> content;
 	std::set<PartialCombinationList*> factorList;

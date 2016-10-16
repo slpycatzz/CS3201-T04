@@ -14,44 +14,31 @@ QueryEvaluator::QueryEvaluator() {}
 
 QueryEvaluator::~QueryEvaluator() {}
 
-PartialCombinationList QueryEvaluator::getCandidates(std::pair<Synonym, Symbol> var) {
-	PartialCombinationList result;
+std::vector<Candidate> QueryEvaluator::getCandidates(std::pair<Synonym, Symbol> var) {
 	switch (var.second) {
 		case VARIABLE:
-			insertMap(PKB::GetAllVariableNames(), var.first, result);
-			break;
+			return PKB::GetAllVariableNames();
 		case PROCEDURE:
-			insertMap(PKB::GetAllProcedures(), var.first, result);
-			break;
+			return PKB::GetAllProcedures();
 		case PROGRAM_LINE:
 		case STMT:
 		case ASSIGN:
 		case IF:
 		case WHILE:
-			insertMap(Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(var.second)), var.first, result);
-			break;
+			return Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(var.second));
 		default:
-			break;
+			return std::vector<Candidate>();
 	}
-	return result;
 }
 
 TotalCombinationList QueryEvaluator::getTotalCandidateList(QueryTree &query) {
 	TotalCombinationList totalCandLst;
 	std::unordered_map<std::string, Symbol> varMap = query.getVarMap();
 	for (auto kv : varMap) {
-		PartialCombinationList candMapLst(getCandidates(kv));
+		std::vector<Candidate> candMapLst(getCandidates(kv));
 		totalCandLst.addSynonym(kv.first, candMapLst);
 	}
 	return totalCandLst;
-}
-
-void QueryEvaluator::insertMap(std::vector<std::string> list, Synonym varName, PartialCombinationList &result)
-{
-	for (Candidate candidate : list) {
-		CandidateCombination candidate({ { varName, candidate } });
-		result.push_back(candidate);
-	}
 }
 
 void QueryEvaluator::filterByClause(Clause &clause,

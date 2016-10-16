@@ -12,10 +12,15 @@ TotalCombinationList::~TotalCombinationList() {}
 
 /* Content Manipulation */
 
-void TotalCombinationList::addSynonym(const Synonym &syn, PartialCombinationList &candidateList) {
-	content.insert_or_assign(syn, candidateList);
-	factorList.insert(&candidateList);
-	empty = candidateList.empty();
+void TotalCombinationList::addSynonym(const Synonym &syn, std::vector<Candidate> &candidateList) {
+	PartialCombinationList partList(makePartialCombiList(syn, candidateList));
+	addSynonym(syn, partList);
+}
+
+void TotalCombinationList::addSynonym(const Synonym &syn, PartialCombinationList &partList) {
+	content.insert_or_assign(syn, partList);
+	factorList.insert(&partList);
+	empty = partList.empty();
 }
 
 void TotalCombinationList::merge(Synonym &syn1, Synonym &syn2) {
@@ -174,6 +179,15 @@ PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombination
 		}
 		return list1;
 	}
+}
+
+PartialCombinationList TotalCombinationList::makePartialCombiList(Synonym syn, std::vector<Candidate> &vec) {
+	PartialCombinationList result;
+	for (Candidate &cand : vec) {
+		CandidateCombination combi{ { syn, cand } };
+		result.push_back(combi);
+	}
+	return result;
 }
 
 std::string TotalCombinationList::toString() {

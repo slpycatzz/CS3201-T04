@@ -21,7 +21,7 @@ class QueryEvaluator {
      ResultList selectQueryResults(QueryTree &query);
 
 	 // retrieve all possible candidates for a variable
-	 PartialCombinationList getCandidates(std::pair<Synonym, Symbol> var);
+	 std::vector<Candidate> getCandidates(std::pair<Synonym, Symbol> var);
 
 	 TotalCombinationList getTotalCandidateList(QueryTree &query);
 
@@ -45,8 +45,6 @@ class QueryEvaluator {
 
 	 void filterNoVarClause(std::string clauseType, Candidate const1,
 		 Candidate const2, TotalCombinationList &combinations);
-
-	 void insertMap(std::vector<std::string> list, Synonym var, PartialCombinationList &result);
 
 	 ResultList getResultsFromCombinationList(TotalCombinationList &combinations,
 		 std::vector<Synonym> &selectList);
