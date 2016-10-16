@@ -131,7 +131,10 @@ void QueryPreprocessor::parseSelect() {
                     varAttribute1 = getVar();
                     queryList[cur] = peek().substr(getVar().size());
                     if (isAttributeValid(temp, varAttribute1, false)) {
-                        varAttrMap[temp] = true;
+                        // only call needs to return true
+                        if (getVarType(temp) == CALL) {
+                            varAttrMap[temp] = true;
+                        }
                     } else {
                         throw QuerySyntaxErrorException("21a"+varAttribute1);
                     }
@@ -155,7 +158,10 @@ void QueryPreprocessor::parseSelect() {
                 varAttribute1 = getVar();
                 queryList[cur] = peek().substr(getVar().size());
                 if (isAttributeValid(temp, varAttribute1, false)) {
-                    varAttrMap[temp] = true;
+                    // only call needs to return true
+                    if (getVarType(temp) == CALL) {
+                        varAttrMap[temp] = true;
+                    }
                 } else {
                     throw QuerySyntaxErrorException("21b");
                 }
