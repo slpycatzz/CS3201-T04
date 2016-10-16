@@ -126,16 +126,14 @@ void QueryPreprocessor::parseSelect() {
                 varAttrMap[temp] = false;
                 queryList[cur] = peek().substr(getVar().size());
 
-                // case: <var1.varAttr, var2>
-                if (peek().find('.') != std::string::npos) {
+                if (accept('.')) {
                     string varAttribute1;
                     varAttribute1 = getVar();
-                    expect('.');
                     queryList[cur] = peek().substr(getVar().size());
-                    if (isAttributeValid(temp, varAttribute1, true)) {
+                    if (isAttributeValid(temp, varAttribute1, false)) {
                         varAttrMap[temp] = true;
                     } else {
-                        throw QuerySyntaxErrorException("21a");
+                        throw QuerySyntaxErrorException("21a"+varAttribute1);
                     }
                 }
             } else {
@@ -152,12 +150,11 @@ void QueryPreprocessor::parseSelect() {
             varAttrMap[temp] = false;
 
             // case: <var1.varAttr, var2>
-            if (peek().find('.') != std::string::npos) {
+            if (accept('.')) {
                 string varAttribute1;
                 varAttribute1 = getVar();
-                expect('.');
                 queryList[cur] = peek().substr(getVar().size());
-                if (isAttributeValid(temp, varAttribute1, true)) {
+                if (isAttributeValid(temp, varAttribute1, false)) {
                     varAttrMap[temp] = true;
                 } else {
                     throw QuerySyntaxErrorException("21b");
@@ -406,7 +403,7 @@ bool QueryPreprocessor::isAttributeValid(string var, string varAttr, string var2
 
 // case 1: var1.varAttr = "varValue"
 // case 2: var1.varAttr = var2.varAttr
-// isVarValue = true [for-case1]
+// isVarValue = false [for-case2], compare varAttr valid for var1 only
 bool QueryPreprocessor::isAttributeValid(string var, string varAttribute, bool isVarValue) {
     Symbol varType = getVarType(var);
     bool isValid = false;
