@@ -30,16 +30,25 @@ struct SortByPriority {
         switch (clauseSymbol) {
             case PATTERN:
             {
-                //Check if exact or sub-expression match.
-                string rhs = clause.getArg()[1];
-                if ((Utils::StartsWith(rhs, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(rhs, CHAR_SYMBOL_DOUBLEQUOTES))) {
-                    //Exact expression match
-                    return PKB::GetPriority(MODIFIES) + 1;
+                string patternType = clause.getArg()[0];
+                if (varMap.find(patternType)->second == ASSIGN) {
+                    //Pattern is of type ASSIGN
+                    //Check if exact or sub-expression match.
+                    string rhs = clause.getArg()[1];
+                    if ((Utils::StartsWith(rhs, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(rhs, CHAR_SYMBOL_DOUBLEQUOTES))) {
+                        //Exact expression match
+                        return PKB::GetPriority(MODIFIES) + 1;
+                    }
+                    else if ((Utils::StartsWith(rhs, CHAR_SYMBOL_UNDERSCORE) && Utils::EndsWith(rhs, CHAR_SYMBOL_UNDERSCORE))) {
+                        //Sub-expression match
+                        return PKB::GetPriority(MODIFIES) + 2;
+                    }
                 }
-                else if ((Utils::StartsWith(rhs, CHAR_SYMBOL_UNDERSCORE) && Utils::EndsWith(rhs, CHAR_SYMBOL_UNDERSCORE))) {
-                    //Sub-expression match
-                    return PKB::GetPriority(MODIFIES) + 2;
+                else {
+                    //Pattern is of type IF/WHILE
+                    return PKB::GetPriority(PARENT) - 1;
                 }
+
                 break;
             }
             case MODIFIES:
