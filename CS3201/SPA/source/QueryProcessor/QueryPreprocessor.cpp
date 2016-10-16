@@ -168,8 +168,6 @@ void QueryPreprocessor::parseSelect() {
             }
         } else if (accept(SYMBOL_BOOLEAN)) {
             var.push_back(SYMBOL_BOOLEAN);
-            temp = peek();
-            queryList[cur] = temp.substr(getVar().size());
             varSymbolMap[SYMBOL_BOOLEAN] = BOOLEAN;
             varAttrMap[SYMBOL_BOOLEAN] = false;
         } else {
