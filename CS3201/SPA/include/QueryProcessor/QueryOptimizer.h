@@ -12,7 +12,7 @@ class QueryOptimizer {
  private:
      QueryTree queryTree;
 
-     std::vector<Clause> sortGroup(std::vector<Clause> group);
+     std::pair<std::vector<std::string>, std::vector<Clause>> sortGroup(std::vector<Clause> group);
      
 };
 

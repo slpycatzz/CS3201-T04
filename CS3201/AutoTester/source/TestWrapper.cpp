@@ -71,6 +71,11 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
         QueryTree queryTree = optimizer.optimize(queryPreprocessor.getQueryTree());
         //ResultList queryResult = queryEvaluator.selectQueryResults(queryTree);
         queryProjector.projectResult(results, queryTree.getResultsInfo(), queryResult);*/
+
+        queryPreprocessor.preprocessQuery(query);
+        QueryTree queryTree = optimizer.optimize(queryPreprocessor.getQueryTree());
+        queryProjector.projectResult(results, queryTree.getResultsInfo(), { { "a1", "s1", "c1", "v1" },{ { "1","2","3","1" },{ "4","5","6","4" } } });
+        queryTree.printGroups();
     }
     catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;

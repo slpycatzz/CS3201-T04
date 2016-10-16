@@ -25,11 +25,11 @@ class QueryTree {
 
     // Used by optimizer
     std::vector<Clause> getBooleanClauses();                    // List of clauses that have no synonyms
-    std::vector<std::vector<Clause>> getUnselectedGroups();     // Groups of list of clauses that are not selected by query, length > 0 is sufficient when evaluting
-    std::vector<std::vector<Clause>> getSelectedGroups();       // Groups of list of clauses that are selected by query
+    std::vector<std::pair<std::vector<std::string>,std::vector<Clause>>> getUnselectedGroups();     // Groups of list of clauses that are not selected by query, length > 0 is sufficient when evaluting
+    std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> getSelectedGroups();       // Groups of list of clauses that are selected by query
     void setBooleanClauses(std::vector<Clause> booleanClauses);
-    void setUnselectedGroups(std::vector<std::vector<Clause>> unselectedGroups);
-    void setSelectedGroups(std::vector<std::vector<Clause>> selectedGroups);
+    void setUnselectedGroups(std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> unselectedGroups);
+    void setSelectedGroups(std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> selectedGroups);
     void printGroups();
 
  private:
@@ -42,6 +42,6 @@ class QueryTree {
      std::vector<Clause> withList;
 
      std::vector<Clause> booleanClauses;
-     std::vector<std::vector<Clause>> unselectedGroups;
-     std::vector<std::vector<Clause>> selectedGroups;
+     std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> unselectedGroups;
+     std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> selectedGroups;
 };

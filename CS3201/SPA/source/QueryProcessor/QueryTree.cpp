@@ -111,11 +111,11 @@ std::vector<Clause> QueryTree::getBooleanClauses() {
     return booleanClauses;
 }
 
-std::vector<std::vector<Clause>> QueryTree::getUnselectedGroups() {
+std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> QueryTree::getUnselectedGroups() {
     return unselectedGroups;
 }
 
-std::vector<std::vector<Clause>> QueryTree::getSelectedGroups() {
+std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> QueryTree::getSelectedGroups() {
     return selectedGroups;
 }
 
@@ -123,11 +123,11 @@ void QueryTree::setBooleanClauses(std::vector<Clause> bc) {
     booleanClauses = bc;
 }
 
-void QueryTree::setUnselectedGroups(std::vector<std::vector<Clause>> ug) {
+void QueryTree::setUnselectedGroups(std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> ug) {
     unselectedGroups = ug;
 }
 
-void QueryTree::setSelectedGroups(std::vector<std::vector<Clause>> sg) {
+void QueryTree::setSelectedGroups(std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> sg) {
     selectedGroups = sg;
 }
 
@@ -154,20 +154,30 @@ void QueryTree::printGroups() {
     output << "\n";
 
     int i = 1;
-    for (std::vector<Clause> group : getUnselectedGroups()) {
+    for (std::pair<std::vector<std::string>, std::vector<Clause>> pair : getUnselectedGroups()) {
         output << "unselected group " << i << "\n" << "-------------" << "\n";
+
+        for (std::string synonym : pair.first) {
+            output << synonym << " ";
+        }
+        output << "\n";
         i++;
-        for (Clause clause : group) {
+        for (Clause clause : pair.second) {
             output << clause.toString() << "\n";
         }
         output << "\n";
     }
 
     int j = 1;
-    for (std::vector<Clause> group : getSelectedGroups()) {
+    for (std::pair<std::vector<std::string>, std::vector<Clause>> pair : getSelectedGroups()) {
         output << "selected group " << j << "\n" << "-------------" << "\n";
+
+        for (std::string synonym : pair.first) {
+            output << synonym << " ";
+        }
+        output << "\n";
         j++;
-        for (Clause clause : group) {
+        for (Clause clause : pair.second) {
             output << clause.toString() << "\n";
         }
         output << "\n";

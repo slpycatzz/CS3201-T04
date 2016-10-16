@@ -232,13 +232,13 @@ public:
             actualBooleanClauses += c.toString() + " ";
         }
 
-        std::vector<Clause> unselectedGroup = qt.getUnselectedGroups().at(0);
+        std::vector<Clause> unselectedGroup = qt.getUnselectedGroups().at(0).second;
         for (Clause c : unselectedGroup) {
             actualUnselectedClauses += c.toString() + " ";
         }
 
         //testing for group 1 only, ignore pattern a1(v2,_"x+y"_) in group 2
-        std::vector<Clause> selectedGroup = qt.getSelectedGroups().at(0);
+        std::vector<Clause> selectedGroup = qt.getSelectedGroups().at(0).second;
         for (Clause c : selectedGroup) {
             actualSelectedClauses += c.toString() + " ";
         }
