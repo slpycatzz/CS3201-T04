@@ -212,7 +212,7 @@ public:
         QueryOptimizer qo;
         QueryTree qt;
 
-        query = "assign a1,a2,a3,a4; stmt s1,s2,s3,s4; variable v1,v2,v3,v4,v5;";
+        query = "assign a1,a2,a3; stmt s1,s2,s3,s4; variable v1,v2,v3,v4;";
         query += "Select <s1, s2, v2> such that Follows*(s1, s2) and Parent(s3, s1) and Uses(s2, v1) ";
         query += "and Uses(s3, v1) such that Uses(5, \"y\") such that Follows(3, 4) such that Uses(a3, v4) ";
         query += "such that Modifies(s3, \"x\") and Follows(s2, 3) pattern a1(v2, _\"x+y\"_) and a3(\"z\", _) ";

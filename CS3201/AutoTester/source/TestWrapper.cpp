@@ -65,11 +65,13 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
         // Projector here. Store answer into results. 
         results = queryProjector.formatResult(queryResult);
         
-        /* 
-        OPTIMIZER TESTS
+         
+        //OPTIMIZER TESTS
+        /*queryPreprocessor.preprocessQuery(query);
+        QueryTree queryTree = optimizer.optimize(queryPreprocessor.getQueryTree());
+        queryTree.printGroups();
+        PKB::PrintPriorityTable();*/
         
-        PKB::PrintPriorityTable();
-        */
     }
     catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;

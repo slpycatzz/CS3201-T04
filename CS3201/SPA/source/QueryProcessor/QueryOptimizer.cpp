@@ -34,14 +34,18 @@ struct SortByPriority {
                 if (varMap.find(patternType)->second == ASSIGN) {
                     //Pattern is of type ASSIGN
                     //Check if exact or sub-expression match.
-                    string rhs = clause.getArg()[1];
+                    string rhs = clause.getArg()[2];
                     if ((Utils::StartsWith(rhs, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(rhs, CHAR_SYMBOL_DOUBLEQUOTES))) {
                         //Exact expression match
-                        return PKB::GetPriority(MODIFIES) + 1;
+                        return PKB::GetPriority(MODIFIES) - 1;
                     }
-                    else if ((Utils::StartsWith(rhs, CHAR_SYMBOL_UNDERSCORE) && Utils::EndsWith(rhs, CHAR_SYMBOL_UNDERSCORE))) {
+                    else if (rhs.length() > 1 && (Utils::StartsWith(rhs, CHAR_SYMBOL_UNDERSCORE) && Utils::EndsWith(rhs, CHAR_SYMBOL_UNDERSCORE))) {
                         //Sub-expression match
                         return PKB::GetPriority(MODIFIES) + 2;
+                    }
+                    else {
+                        //Underscore on the right side
+                        return PKB::GetPriority(MODIFIES) + 1;
                     }
                 }
                 else {

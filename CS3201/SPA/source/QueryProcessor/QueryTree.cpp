@@ -135,6 +135,12 @@ void QueryTree::printGroups() {
     std::ofstream output;
     output.open("tests/output.txt");
 
+    output << "declared variables \n" << "-------------" << "\n";
+    for (auto s : getVarMap()) {
+        output << s.first << " " << Constants::SymbolToString(s.second) << "\n";
+    }
+    output << "\n\n";
+
     output << "selected variables \n" << "-------------" << "\n";
     for (std::string s : getResults()) {
         output << s << " ";
