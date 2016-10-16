@@ -79,6 +79,26 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 	}
 }
 
+TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
+	if (!getBooleanGroupResult(query.getBooleanClauses())) {
+		return TotalCombinationList();
+	}
+	else {
+		std::vector<std::vector<Clause>> unselectedGroups(query.getUnselectedGroups());
+		for (std::vector<Clause> &group : unselectedGroups) {
+			if (!getUnselectedGroupResult(group)) {
+				return TotalCombinationList();
+			}
+		}
+		TotalCombinationList result;
+		std::vector<std::vector<Clause>> selectedGroups(query.getSelectedGroups());
+		for (std::vector<Clause> &group : selectedGroups) {
+
+		}
+		return result;
+	}
+}
+
 bool QueryEvaluator::getBooleanGroupResult(std::vector<Clause> &clauseGroup) {
 	for (Clause clause : clauseGroup) {
 		Candidate arg0(QueryUtils::LiteralToCandidate(clause.getArg[0]));
@@ -102,7 +122,7 @@ bool QueryEvaluator::getUnselectedGroupResult(std::vector<Clause> &clauseGroup) 
 	return true;
 }
 
-TotalCombinationList QueryEvaluator::getSelectedGroupResult(std::vector<Clause> &clauseGroup) {
+TotalCombinationList QueryEvaluator::getSelectedGroupResult(std::vector<Clause> &clauseGroup, std::vector<Synonym> &selectList) {
 	TotalCombinationList combinations;
 	for (Clause clause : clauseGroup) {
 		filterByClause(clause, combinations);
@@ -110,6 +130,7 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult(std::vector<Clause> 
 			return TotalCombinationList();
 		}
 	}
+	combinations.reduceTotalContent(selectList);
 	return combinations;
 }
 

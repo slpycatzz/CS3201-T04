@@ -17,11 +17,14 @@ class QueryEvaluator {
     QueryEvaluator();
     ~QueryEvaluator();
 
-     // return the result list as a list of strings after evaluating the query
+     // return the result list as a ResultList after evaluating the query
      ResultList selectQueryResults(QueryTree &query);
 
+	 // return the result list as a ResultList after evaluating the query
+	 TotalCombinationList getQueryResults(QueryTree &query);
+
 	 // get results for clauses of selected synonyms
-	 TotalCombinationList getSelectedGroupResult(std::vector<Clause> &clauseGroup);
+	 TotalCombinationList getSelectedGroupResult(std::vector<Clause> &clauseGroup, std::vector<Synonym> &selectList);
 
 	 // get results for clauses of unselected synonyms
 	 bool getUnselectedGroupResult(std::vector<Clause> &clauseGroup);
