@@ -54,6 +54,8 @@ TransitiveTable<unsigned int, unsigned int> PKB::parentTransitiveTable_;
 Table<unsigned int, unsigned int> PKB::followsTable_;
 TransitiveTable<unsigned int, unsigned int> PKB::followsTransitiveTable_;
 
+Table<unsigned int, unsigned int> PKB::nextTable_;
+
 /* START - AST functions */
 
 void PKB::SetASTRoot(TreeNode *root) {
@@ -689,6 +691,31 @@ void PKB::PrintFollowsTransitiveTable() {
 }
 
 /* END   - Follows table functions */
+/* START - Next table functions */
+
+void PKB::GenerateNextTable(map<unsigned int, set<unsigned int>> next) {
+    for (auto &pair : next) {
+        nextTable_.insert(pair.first, pair.second);
+    }
+}
+
+bool PKB::IsNext(unsigned int previous, unsigned int next) {
+    return nextTable_.hasKeyToValue(previous, next);
+}
+
+set<unsigned int> PKB::GetNext(unsigned int previous) {
+    return nextTable_.getValues(previous);
+}
+
+set<unsigned int> PKB::GetPrevious(unsigned int next) {
+    return nextTable_.getKeys(next);
+}
+
+void PKB::PrintNextTable() {
+    nextTable_.printTable();
+}
+
+/* END   - Next table functions */
 /* START - Miscellaneous functions */
 
 unsigned int PKB::GetNumberOfProcedure() {

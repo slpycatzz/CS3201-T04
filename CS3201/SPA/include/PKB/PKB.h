@@ -142,6 +142,12 @@ class PKB {
     static void PrintFollowsTable();
     static void PrintFollowsTransitiveTable();
 
+    static void GenerateNextTable(std::map<unsigned int, std::set<unsigned int>> next);
+    static bool IsNext(unsigned int previous, unsigned int next);
+    static std::set<unsigned int> GetNext(unsigned int previous);
+    static std::set<unsigned int> GetPrevious(unsigned int next);
+    static void PrintNextTable();
+
     static unsigned int GetNumberOfProcedure();
     static unsigned int GetNumberOfAssign();
     static unsigned int GetNumberOfWhile();
@@ -172,26 +178,26 @@ class PKB {
     static unsigned int numberOfIf_;
     static unsigned int numberOfCall_;
 
-    static Table<unsigned int, std::string> constantTable_;                         /* map<index, constantValue> */
-    static Table<unsigned int, std::string> variableTable_;                         /* map<index, variableName>  */
-    static Table<unsigned int, std::string> procedureTable_;                        /* map<index, procedureName> */
-    static Table<unsigned int, std::string> controlVariableTable_;                  /* map<stmtNumber, variableName> */
+    static Table<unsigned int, std::string> constantTable_;                         /* map<index, constantValue>      */
+    static Table<unsigned int, std::string> variableTable_;                         /* map<index, variableName>       */
+    static Table<unsigned int, std::string> procedureTable_;                        /* map<index, procedureName>      */
+    static Table<unsigned int, std::string> controlVariableTable_;                  /* map<stmtNumber, variableName>  */
     static Table<unsigned int, std::string> callTable_;                             /* map<stmtNumber, procedureName> */
     static Table<unsigned int, std::string> stmtTable_;                             /* map<stmtNumber, symbol string> */
     static Table<unsigned int, std::string> stmtlistTable_;                         /* map<stmtNumber, symbol string> */
 
-    static Table<unsigned int, std::string> priorityTable_;                         /* map<priority, symbol string> */
+    static Table<unsigned int, std::string> priorityTable_;                         /* map<priority, symbol string>   */
 
-    static Table<unsigned int, std::string> expressionTable_;                       /* map<stmtNumber, exact expression> */
+    static Table<unsigned int, std::string> expressionTable_;                       /* map<stmtNumber, exact expression>    */
     static Table<unsigned int, std::string> subExpressionTable_;                    /* map<stmtNumber, set(subExpressions)> */
 
     static Table<std::string, std::string> callsTable_;                             /* map<procedureName, set(procedureNames)> */
     static TransitiveTable<std::string, std::string> callsTransitiveTable_;         /* map<procedureName, set(procedureNames)> */
 
-    static Table<unsigned int, std::string> modifiesTable_;                         /* map<stmtNumber, set(variableName)> */
+    static Table<unsigned int, std::string> modifiesTable_;                         /* map<stmtNumber, set(variableName)>    */
     static Table<std::string, std::string> modifiesProcedureTable_;                 /* map<procedureName, set(variableName)> */
 
-    static Table<unsigned int, std::string> usesTable_;                             /* map<stmtNumber, set(variableName)> */
+    static Table<unsigned int, std::string> usesTable_;                             /* map<stmtNumber, set(variableName)>    */
     static Table<std::string, std::string> usesProcedureTable_;                     /* map<procedureName, set(variableName)> */
 
     static Table<unsigned int, unsigned int> parentTable_;                          /* map<stmtNumber, set(stmtNumber)> */
@@ -199,6 +205,8 @@ class PKB {
 
     static Table<unsigned int, unsigned int> followsTable_;                         /* map<stmtNumber, set(stmtNumber)> */
     static TransitiveTable<unsigned int, unsigned int> followsTransitiveTable_;     /* map<stmtNumber, set(stmtNumber)> */
+
+    static Table<unsigned int, unsigned int> nextTable_;                            /* map<stmtNumber, set(stmtNumber)> */
 
     /* Deprecated. */
     static Table<unsigned int, TreeNode*> assignTable_;                             /* map<stmtNumber, expression string> */
