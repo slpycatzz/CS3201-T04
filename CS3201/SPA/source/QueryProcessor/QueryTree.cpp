@@ -18,6 +18,19 @@ bool QueryTree::insertDeclaration(std::unordered_map<std::string, Symbol> variab
     return true;
 }
 
+// inserts varAttrMap to check whether varAttribute is required by query projector
+// true: varAttribute is required, false: otherwise
+bool QueryTree::insert(Symbol type, std::string argType, std::unordered_map<std::string, bool> argList) {
+    if (type != QUERY_RESULT) {
+        return false;
+    }
+
+    for (std::pair<std::string, bool> pair : argList) {
+        varAttrMap.insert(pair);
+    }
+    return true;
+}
+
 // argType = varType(ASSIGN,CALL,etc...)    [for Select]
 // argType = relation(uses,modifies,etc...) [for-suchthat]
 // argType = varName(a1,w,ifstmt, etc...)   [for-pattern]
@@ -56,13 +69,15 @@ bool QueryTree::insert(Symbol type, std::string argType, std::vector<std::string
 std::vector<std::string> QueryTree::getResults() {
     return varList;
 }
-std::unordered_map<std::string,bool> QueryTree::getResultsInfo() {
+
+std::unordered_map<std::string, bool> QueryTree::getResultsInfo() {
     return varAttrMap;
 }
+
 std::vector<Clause> QueryTree::getClauses() {
     std::vector<Clause> result;
     std::vector<Symbol> clauseList = { SUCH_THAT, PATTERN, WITH };
-    
+
     result = getClauses(clauseList);
     return result;
 }
@@ -72,7 +87,7 @@ std::vector<Clause> QueryTree::getClauses(std::vector<Symbol> clauseType) {
     std::vector<Clause> clauseList;
 
     for (Symbol clauseName : clauseType) {
-        switch(clauseName) {
+        switch (clauseName) {
         case PATTERN:
             result.insert(result.end(), patternList.begin(), patternList.end());
             break;

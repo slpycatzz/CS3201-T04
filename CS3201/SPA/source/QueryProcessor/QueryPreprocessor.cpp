@@ -120,15 +120,24 @@ void QueryPreprocessor::parseSelect() {
     if (accept('<')) {
         while (accept('>') == 0) {
             if (accept(VARIABLE)) {
-                var.push_back(getVar());
-                temp = peek();
-                queryList[cur] = temp.substr(getVar().size());
-            } else if (accept(SYMBOL_BOOLEAN)) {
-                // case: Select <BOOLEAN,BOOLEAN>
-                // wm todo: this may be an invalid case
-                var.push_back(SYMBOL_BOOLEAN);
-                temp = peek();
-                queryList[cur] = temp.substr(getVar().size());
+                string var1;
+                temp = getVar();
+                var.push_back(temp);
+                varAttrMap[temp] = false;
+                queryList[cur] = peek().substr(getVar().size());
+
+                // case: <var1.varAttr, var2>
+                if (peek().find('.') != std::string::npos) {
+                    string varAttribute1;
+                    varAttribute1 = getVar();
+                    expect('.');
+                    queryList[cur] = peek().substr(getVar().size());
+                    if (isAttributeValid(temp, varAttribute1, true)) {
+                        varAttrMap[temp] = true;
+                    } else {
+                        throw QuerySyntaxErrorException("21a");
+                    }
+                }
             } else {
                 throw QuerySyntaxErrorException("5");
             }
@@ -139,11 +148,27 @@ void QueryPreprocessor::parseSelect() {
             var.push_back(peek());
             temp = peek();
             queryList[cur] = temp.substr(getVar().size());
+
+            varAttrMap[temp] = false;
+
+            // case: <var1.varAttr, var2>
+            if (peek().find('.') != std::string::npos) {
+                string varAttribute1;
+                varAttribute1 = getVar();
+                expect('.');
+                queryList[cur] = peek().substr(getVar().size());
+                if (isAttributeValid(temp, varAttribute1, true)) {
+                    varAttrMap[temp] = true;
+                } else {
+                    throw QuerySyntaxErrorException("21b");
+                }
+            }
         } else if (accept(SYMBOL_BOOLEAN)) {
             var.push_back(SYMBOL_BOOLEAN);
             temp = peek();
             queryList[cur] = temp.substr(getVar().size());
-            varSymbolMap["BOOLEAN"] = BOOLEAN;
+            varSymbolMap[SYMBOL_BOOLEAN] = BOOLEAN;
+            varAttrMap[SYMBOL_BOOLEAN] = false;
         } else {
             throw QuerySyntaxErrorException("6");
         }
@@ -154,6 +179,7 @@ void QueryPreprocessor::parseSelect() {
     }
 
     qt.insert(QUERY_RESULT, "placeholder", var);
+    qt.insert(QUERY_RESULT, "placeholder", varAttrMap);
 }
 
 void QueryPreprocessor::parseSuchThat() {

@@ -63,6 +63,8 @@ class QueryPreprocessor {
      int cur;
 
      std::unordered_map<std::string, Symbol> varSymbolMap;
+     std::unordered_map<std::string, bool> varAttrMap;
+
      RelationTable r;
      QueryTree qt;
 
