@@ -56,22 +56,21 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
 
     try {
         // Iteration 1
-        queryPreprocessor.preprocessQuery(query);
+        /*queryPreprocessor.preprocessQuery(query);
         QueryTree queryTree = queryPreprocessor.getQueryTree();
         
         //Evaluator here.
         ResultList queryResult = queryEvaluator.selectQueryResults(queryTree);
 
         // Projector here. Store answer into results. 
-        results = queryProjector.formatResult(queryResult);
+        results = queryProjector.formatResult(queryResult);*/
         
          
-        //OPTIMIZER TESTS
+        // Iteration 2
         /*queryPreprocessor.preprocessQuery(query);
         QueryTree queryTree = optimizer.optimize(queryPreprocessor.getQueryTree());
-        queryTree.printGroups();
-        PKB::PrintPriorityTable();*/
-        
+        //ResultList queryResult = queryEvaluator.selectQueryResults(queryTree);
+        queryProjector.projectResult(results, queryTree.getResultsInfo(), queryResult);*/
     }
     catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;

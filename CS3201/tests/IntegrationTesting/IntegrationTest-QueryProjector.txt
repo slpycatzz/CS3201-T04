@@ -1,0 +1,15 @@
+procedure Projector1 {
+    a = b + 97 + 68;                        \\1
+    c = c;                                  \\2
+    call Projector2;                        \\3
+}
+
+procedure Projector2 {
+    d = 85 + c + 51;                        \\4
+    c = e + f;                              \\5
+    call Projector3;						\\6
+}
+
+procedure Projector3  {
+	a = a;									\\7
+}

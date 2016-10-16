@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include "QueryProcessor/QueryEvaluator.h"
 #include "QueryProcessor/QueryOptimizer.h"
+#include "QueryProcessor/QueryProjector.h"
 
 using std::string;
 using std::vector;
@@ -249,6 +250,31 @@ public:
         Assert::AreEqual(expectedBooleanClauses, actualBooleanClauses);
         Assert::AreEqual(expectedUnselectedClauses, actualUnselectedClauses);
         Assert::AreEqual(expectedSelectedClauses, actualSelectedClauses);
+    }
+    TEST_METHOD(QueryProjectorSelectCallProcedureName) {
+        //Tests for Select <a,s,c.procName>
+        string fileName = "..\\tests\\IntegrationTesting\\IntegrationTest-QueryProjector.txt";
+        PKB::Clear();
+        parse(fileName);
+
+        QueryProjector projector;
+        std::string expected, actual;
+
+        std::list<std::string> results;
+        ResultList resultList({ { "a", "s", "c" },{ { "1","2","3" },{ "4","5","6" } } });
+
+        std::unordered_map<std::string, bool> varAttrMap({ { "c", true } });
+        
+        projector.projectResult(results, varAttrMap, resultList);
+
+        expected = "1 2 Projector2, 4 5 Projector3";
+
+        for (std::string s : results) {
+            actual += s + ", ";
+        }
+        actual = actual.substr(0, actual.length() - 2);
+
+        Assert::AreEqual(expected, actual);
     }
 	};
 }
