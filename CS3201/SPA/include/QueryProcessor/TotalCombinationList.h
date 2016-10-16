@@ -28,6 +28,8 @@ public:
 
 	void filter(bool expression);
 
+	void combine(TotalCombinationList &combiList);
+
 	//template<typename Filterer>
 	void filter(Synonym &syn, std::function<bool(CandidateCombination)> filterer);
 
@@ -36,7 +38,8 @@ public:
 	
 	/* Content accessors */
 
-	PartialCombinationList operator[](Synonym &syn);
+	const std::unordered_map<Synonym, PartialCombinationList> getContent();
+	const PartialCombinationList operator[](Synonym &syn);
 	bool isEmpty();
 	void reduceSingleFactor(const std::vector<Synonym> &synList, PartialCombinationList &candidateList);
 	void reduceTotalContent(const std::vector<Synonym> &synList);

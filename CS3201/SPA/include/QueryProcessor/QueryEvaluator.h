@@ -24,18 +24,23 @@ class QueryEvaluator {
 	 TotalCombinationList getQueryResults(QueryTree &query);
 
 	 // get results for clauses of selected synonyms
-	 TotalCombinationList getSelectedGroupResult(std::vector<Clause> &clauseGroup, std::vector<Synonym> &selectList);
+	 TotalCombinationList getSelectedGroupResult(std::vector<Synonym> &synList,
+		 std::unordered_map<Synonym, Symbol> &varMap,
+		 std::vector<Clause> &clauseGroup,
+		 std::vector<Synonym> &selectList);
 
 	 // get results for clauses of unselected synonyms
-	 bool getUnselectedGroupResult(std::vector<Clause> &clauseGroup);
+	 bool getUnselectedGroupResult(std::vector<Synonym> &synList,
+		 std::unordered_map<Synonym, Symbol> &varMap,
+		 std::vector<Clause> &clauseGroup);
 
 	 // get results for boolean clauses
 	 bool getBooleanGroupResult(std::vector<Clause> &clauseGroup);
 
 	 // retrieve all possible candidates for a variable
-	 std::vector<Candidate> getCandidates(std::pair<Synonym, Symbol> var);
+	 std::vector<Candidate> getCandidates(Symbol &synType);
 
-	 TotalCombinationList getTotalCandidateList(QueryTree &query);
+	 TotalCombinationList getTotalCandidateList(std::unordered_map<std::string, Symbol> &varMap, std::vector<Synonym> &synList);
 
 	 // use the clause to filter the tuple candidate list to its sublist
 	 void filterByClause(Clause &clause, TotalCombinationList &combinations);

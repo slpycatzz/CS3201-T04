@@ -78,7 +78,7 @@ public:
 		QueryTree qt(getQueryTree("stmt a; Select a such that Modifies(a, \"a\")"));
 		QueryEvaluator qe;
 
-		TotalCombinationList total(qe.getTotalCandidateList(qt));
+		TotalCombinationList total(qe.getTotalCandidateList(qt.getVarMap(), qt.getResults()));
 		Logger::WriteMessage(total.toString().c_str());
 		for (unsigned i : PKB::GetSymbolStmtNumbers(STMT)) {
 			Logger::WriteMessage(std::to_string(i).c_str());

@@ -43,6 +43,13 @@ void TotalCombinationList::merge(Synonym &syn1, Synonym &syn2) {
 	}
 }
 
+void TotalCombinationList::combine(TotalCombinationList &combiList) {
+	std::unordered_map<Synonym, PartialCombinationList> combiListContent(combiList.getContent());
+	for (auto kv : combiListContent) {
+		addSynonym(kv.first, kv.second);
+	}
+}
+
 //template<typename Filterer>
 void TotalCombinationList::filter(PartialCombinationList &candidateList, std::function<bool(CandidateCombination)> filterer) {
 	PartialCombinationList::iterator iter = candidateList.begin();
@@ -92,7 +99,11 @@ void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, std::fun
 
 /* Content accessors */
 
-PartialCombinationList TotalCombinationList::operator[](Synonym &syn) {
+const std::unordered_map<Synonym, PartialCombinationList> TotalCombinationList::getContent() {
+	return content;
+}
+
+const PartialCombinationList TotalCombinationList::operator[](Synonym &syn) {
 	return content[syn];
 }
 

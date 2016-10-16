@@ -14,8 +14,8 @@ QueryEvaluator::QueryEvaluator() {}
 
 QueryEvaluator::~QueryEvaluator() {}
 
-std::vector<Candidate> QueryEvaluator::getCandidates(std::pair<Synonym, Symbol> var) {
-	switch (var.second) {
+std::vector<Candidate> QueryEvaluator::getCandidates(Symbol &synType) {
+	switch (synType) {
 		case VARIABLE:
 			return PKB::GetAllVariableNames();
 		case PROCEDURE:
@@ -25,18 +25,19 @@ std::vector<Candidate> QueryEvaluator::getCandidates(std::pair<Synonym, Symbol> 
 		case ASSIGN:
 		case IF:
 		case WHILE:
-			return Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(var.second));
+			return Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(synType));
 		default:
 			return std::vector<Candidate>();
 	}
 }
 
-TotalCombinationList QueryEvaluator::getTotalCandidateList(QueryTree &query) {
+TotalCombinationList QueryEvaluator::getTotalCandidateList
+(std::unordered_map<std::string, Symbol> &varMap, std::vector<Synonym> &synList)
+{
 	TotalCombinationList totalCandLst;
-	std::unordered_map<std::string, Symbol> varMap = query.getVarMap();
-	for (auto kv : varMap) {
-		std::vector<Candidate> candMapLst(getCandidates(kv));
-		totalCandLst.addSynonym(kv.first, candMapLst);
+	for (Synonym &syn : synList) {
+		std::vector<Candidate> candLst(getCandidates(varMap[syn]));
+		totalCandLst.addSynonym(syn, candLst);
 	}
 	return totalCandLst;
 }
@@ -44,19 +45,11 @@ TotalCombinationList QueryEvaluator::getTotalCandidateList(QueryTree &query) {
 
 ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 {
-	std::vector<Clause> clauseList = query.getClauses();
-	TotalCombinationList allCandidates(getTotalCandidateList(query));
-	std::vector<Synonym> selectList;
-	selectList = query.getResults();
-
-	for (Clause clause : clauseList) {
-		filterByClause(clause, allCandidates);
-		if (allCandidates.isEmpty()) break;
-	}
+	std::vector<Synonym> selectList(query.getResults());
+	TotalCombinationList queryResults(getQueryResults(query));
 	if (isBoolSelect(selectList)) {
-		selectList.push_back("BOOLEAN");
 		std::string resultBoolean;
-		if (!allCandidates.isEmpty()) {
+		if (!queryResults.isEmpty()) {
 			resultBoolean += SYMBOL_TRUE;
 		}
 		else {
@@ -68,12 +61,12 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 		return resultList;
 	}
 	else {
-		if (allCandidates.isEmpty()) {
+		if (queryResults.isEmpty()) {
 			ResultList resultList{ selectList, std::vector<std::vector<std::string>>() };
 			return resultList;
 		}
 		else {
-			ResultList resultList(getResultsFromCombinationList(allCandidates, selectList));
+			ResultList resultList(getResultsFromCombinationList(queryResults, selectList));
 			return resultList;
 		}
 	}
@@ -84,16 +77,23 @@ TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
 		return TotalCombinationList();
 	}
 	else {
-		std::vector<std::vector<Clause>> unselectedGroups(query.getUnselectedGroups());
-		for (std::vector<Clause> &group : unselectedGroups) {
-			if (!getUnselectedGroupResult(group)) {
+		
+		std::vector<std::pair<std::vector<Synonym>, std::vector<Clause>>> unselectedGroups(query.getUnselectedGroups());
+		std::unordered_map<Synonym, Symbol> varMap(query.getVarMap());
+		
+		for (auto &pair : unselectedGroups) {
+			if (!getUnselectedGroupResult(pair.first, varMap, pair.second)) {
 				return TotalCombinationList();
 			}
 		}
-		TotalCombinationList result;
-		std::vector<std::vector<Clause>> selectedGroups(query.getSelectedGroups());
-		for (std::vector<Clause> &group : selectedGroups) {
 
+		TotalCombinationList result;
+		std::vector<Synonym> selectList(query.getResults());
+		std::vector<std::pair<std::vector<Synonym>, std::vector<Clause>>> selectedGroups(query.getSelectedGroups());
+		
+		for (auto &pair : selectedGroups) {
+			TotalCombinationList tempCombiList(getSelectedGroupResult(pair.first, varMap, pair.second, selectList));
+			result.combine(tempCombiList);
 		}
 		return result;
 	}
@@ -101,8 +101,8 @@ TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
 
 bool QueryEvaluator::getBooleanGroupResult(std::vector<Clause> &clauseGroup) {
 	for (Clause clause : clauseGroup) {
-		Candidate arg0(QueryUtils::LiteralToCandidate(clause.getArg[0]));
-		Candidate arg1(QueryUtils::LiteralToCandidate(clause.getArg[1]));
+		Candidate arg0(QueryUtils::LiteralToCandidate(clause.getArg()[0]));
+		Candidate arg1(QueryUtils::LiteralToCandidate(clause.getArg()[1]));
 		std::string clauseType(clause.getClauseType());
 		if (!evaluateSuchThatClause(clauseType, arg0, arg1)) {
 			return false;
@@ -111,8 +111,12 @@ bool QueryEvaluator::getBooleanGroupResult(std::vector<Clause> &clauseGroup) {
 	return true;
 }
 
-bool QueryEvaluator::getUnselectedGroupResult(std::vector<Clause> &clauseGroup) {
-	TotalCombinationList combinations;
+bool QueryEvaluator::getUnselectedGroupResult
+(std::vector<Synonym> &synList,
+	std::unordered_map<Synonym, Symbol> &varMap,
+	std::vector<Clause> &clauseGroup)
+{
+	TotalCombinationList combinations(getTotalCandidateList(varMap, synList));
 	for (Clause clause : clauseGroup) {
 		filterByClause(clause, combinations);
 		if (combinations.isEmpty()) {
@@ -122,8 +126,13 @@ bool QueryEvaluator::getUnselectedGroupResult(std::vector<Clause> &clauseGroup) 
 	return true;
 }
 
-TotalCombinationList QueryEvaluator::getSelectedGroupResult(std::vector<Clause> &clauseGroup, std::vector<Synonym> &selectList) {
-	TotalCombinationList combinations;
+TotalCombinationList QueryEvaluator::getSelectedGroupResult
+(std::vector<Synonym> &synList,
+	std::unordered_map<Synonym, Symbol> &varMap,
+	std::vector<Clause> &clauseGroup,
+	std::vector<Synonym> &selectList)
+{
+	TotalCombinationList combinations(getTotalCandidateList(varMap, synList));
 	for (Clause clause : clauseGroup) {
 		filterByClause(clause, combinations);
 		if (combinations.isEmpty()) {
