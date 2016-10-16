@@ -130,7 +130,7 @@ void RelationTable::initTable() {
 
     // procedure includes variable("procedureName")
     arg1 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
-    arg1 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg2 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
     clauseMap1[NEXT] = arg1;
     clauseMap2[NEXT] = arg2;
 
