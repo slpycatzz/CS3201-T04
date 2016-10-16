@@ -145,7 +145,7 @@ void QueryPreprocessor::parseSelect() {
             accept(',');
         }
     } else {
-        if (isValidVarName(peek())) {
+        if (isVarExist(peek())) {
             var.push_back(peek());
             temp = peek();
             queryList[cur] = temp.substr(getVar().size());
@@ -673,7 +673,7 @@ string QueryPreprocessor::toLower(string data) {
 /* accept if string found, advance index */
 int QueryPreprocessor::accept(string token) {
     string var = getVar();
-    if (var.compare(token) == 0) {
+    if (var == token) {
         cur++;
         return 1;
     }
