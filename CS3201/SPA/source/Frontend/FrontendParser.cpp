@@ -53,6 +53,8 @@ void FrontendParser::parseProgram(string filePath) {
     /* Validate no recursive call in program. */
     validateRecursiveCall();
 
+    PKB::SetTableMaximumSize(stmtNumber_);
+
     /* Generic tables generation. */
     PKB::GenerateConstantTable(constants_);
     PKB::GenerateVariableTable(variableNames_);
@@ -61,7 +63,6 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateCallTable(callStmtNumbers_);
     PKB::GenerateStmtTable(stmts_);
     PKB::GenerateStmtlistTable(stmtlists_);
-    PKB::GenerateProcedureFirstStmtTable(proceduresFirstStmt_);
 
     /* Deprecated. */
     PKB::GenerateAssignTable(assigns_);
@@ -97,18 +98,11 @@ void FrontendParser::parseProgram(string filePath) {
     PKB::GenerateFollowsTable(follows_);
 
     /* Next design abstraction tables generation. */
+    PKB::SetControlFlowGraphs(controlFlowGraphs_);
     PKB::GenerateNextTable(next_);
-    PKB::GenerateIfNextTable(ifNext_);
-    PKB::GenerateWhileNextTable(whileNext_);
 
     /* Set priority after all the design abstraction tables are generated. */
     PKB::GeneratePriorityTable();
-
-    PKB::GenerateNextTransitiveTable();
-
-   // PKB::PrintNextTransitiveTable();
-
-    //std::cout << PKB::IsNextTransitive()
 }
 
 vector<string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream) {
@@ -743,29 +737,52 @@ void FrontendParser::setFollows() {
 
 void FrontendParser::setNext() {
     set<unsigned int> visitedStmtNumbers;
+    set<TreeNode*> visitedNodes;
 
     for (auto &pair : proceduresFirstStmt_) {
-        queue<unsigned int> stmtNumbers;
+        queue<TreeNode*> queue;
+
+        TreeNode* rootNode = new TreeNode(pair.first);
+        queue.push(rootNode);
 
         visitedStmtNumbers.insert(pair.first);
-        stmtNumbers.push(pair.first);
+        visitedNodes.insert(rootNode);
 
-        while (!stmtNumbers.empty()) {
-            unsigned int stmtNumber = stmtNumbers.front();
-            stmtNumbers.pop();
+        while (!queue.empty()) {
+            TreeNode* currentNode = queue.front();
+            queue.pop();
 
-            set<unsigned int> nextStmtNumbers = getNextStmtNumbers(stmtNumber);
+            set<TreeNode*> nextNodes;
+            set<unsigned int> nextStmtNumbers = getNextStmtNumbers(currentNode->getStmtNumber());
 
-            next_[stmtNumber].insert(nextStmtNumbers.begin(), nextStmtNumbers.end());
+            next_[currentNode->getStmtNumber()].insert(nextStmtNumbers.begin(), nextStmtNumbers.end());
 
             for (auto &next : nextStmtNumbers) {
-                if (visitedStmtNumbers.count(next) != 1) {
-                    stmtNumbers.push(next);
+                TreeNode* newNode;
+
+                if (visitedStmtNumbers.count(next) == 1) {
+                    for (TreeNode* visitedNode : visitedNodes) {
+                        if (visitedNode->getStmtNumber() == next) {
+                            newNode = visitedNode;
+                            break;
+                        }
+                    }
+
+                } else {
+                    newNode = new TreeNode(next);
+
+                    queue.push(newNode);
+                    nextNodes.insert(newNode);
                 }
+
+                currentNode->addChild(newNode);
             }
 
             visitedStmtNumbers.insert(nextStmtNumbers.begin(), nextStmtNumbers.end());
+            visitedNodes.insert(nextNodes.begin(), nextNodes.end());
         }
+
+        controlFlowGraphs_.push_back(rootNode);
     }
 }
 

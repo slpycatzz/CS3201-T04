@@ -1,5 +1,7 @@
 #include <algorithm>
+#include <iostream>
 #include <map>
+#include <queue>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -15,6 +17,7 @@
 #include "TreeNode.h"
 
 using std::map;
+using std::queue;
 using std::set;
 using std::string;
 using std::vector;
@@ -26,6 +29,11 @@ unsigned int PKB::numberOfWhile_     = 0;
 unsigned int PKB::numberOfIf_        = 0;
 unsigned int PKB::numberOfCall_      = 0;
 
+unsigned int PKB::tableMaximumSize_  = 0;
+
+vector<TreeNode*> PKB::controlFlowGraphs_;
+vector<vector<TreeNode*>> PKB::controlFlowGraphsNodes_;
+
 Table<unsigned int, string> PKB::constantTable_;
 Table<unsigned int, string> PKB::variableTable_;
 Table<unsigned int, string> PKB::procedureTable_;
@@ -33,7 +41,6 @@ Table<unsigned int, string> PKB::controlVariableTable_;
 Table<unsigned int, string> PKB::callTable_;
 Table<unsigned int, string> PKB::stmtTable_;
 Table<unsigned int, string> PKB::stmtlistTable_;
-Table<unsigned int, string> PKB::procedureFirstStmtTable_;
 
 Table<unsigned int, string> PKB::priorityTable_;
 
@@ -59,9 +66,7 @@ Table<unsigned int, unsigned int> PKB::followsTable_;
 TransitiveTable<unsigned int, unsigned int> PKB::followsTransitiveTable_;
 
 Table<unsigned int, unsigned int> PKB::nextTable_;
-TransitiveTable<unsigned int, unsigned int> PKB::nextTransitiveTable_;
-Table<unsigned int, unsigned int> PKB::ifNextTable_;
-Table<unsigned int, unsigned int> PKB::whileNextTable_;
+vector<vector<unsigned int>> PKB::nextTransitiveTable_;
 
 /* START - AST functions */
 
@@ -324,23 +329,6 @@ void PKB::PrintStmtlistTable() {
 }
 
 /* END   - Stmtlist table functions */
-/* START - Procedure first stmt table functions */
-
-void PKB::GenerateProcedureFirstStmtTable(map<unsigned int, string> procedureFirstStmts) {
-    for (auto &pair : procedureFirstStmts) {
-        procedureFirstStmtTable_.insert(pair.first, pair.second);
-    }
-}
-
-unordered_map<unsigned int, set<string>> PKB::GetProcedureFirstStmtMap() {
-    return procedureFirstStmtTable_.getKeyToValuesMap();
-}
-
-void PKB::PrintProcedureFirstStmtTable() {
-    procedureFirstStmtTable_.printTable();
-}
-
-/* END   - Procedure first stmt table functions */
 /* START - Priority table functions */
 
 void PKB::GeneratePriorityTable() {
@@ -717,27 +705,82 @@ void PKB::PrintFollowsTransitiveTable() {
 /* END   - Follows table functions */
 /* START - Next table functions */
 
+void PKB::SetControlFlowGraphs(vector<TreeNode*> controlFlowGraphs) {
+    controlFlowGraphs_ = controlFlowGraphs;
+
+    /* Get all the nodes in the control flow graphs. */
+    for (TreeNode* rootNode : controlFlowGraphs_) {
+        set<TreeNode*> visitedNodes;
+
+        rootNode->setVisited(true);
+        visitedNodes.insert(rootNode);
+
+        queue<TreeNode*> queue;
+        queue.push(rootNode);
+
+        while (!queue.empty()) {
+            vector<TreeNode*> children = queue.front()->getChildren();
+            queue.pop();
+
+            for (TreeNode* child : children) {
+                if (!child->isVisited()) {
+                    queue.push(child);
+
+                    child->setVisited(true);
+                    visitedNodes.insert(child);
+                }
+            }
+        }
+
+        for (TreeNode* node : visitedNodes) {
+            node->setVisited(false);
+        }
+
+        controlFlowGraphsNodes_.push_back(vector<TreeNode*>(visitedNodes.begin(), visitedNodes.end()));
+    }
+}
+
 void PKB::GenerateNextTable(map<unsigned int, set<unsigned int>> next) {
     for (auto &pair : next) {
         nextTable_.insert(pair.first, pair.second);
     }
+
+    /* Initialize next transitive table space. */
+    nextTransitiveTable_.resize(tableMaximumSize_, vector<unsigned int>(tableMaximumSize_, 0));
 }
 
 void PKB::GenerateNextTransitiveTable() {
-    nextTransitiveTable_.generateKeyToValueTransitiveMap(nextTable_);
-    nextTransitiveTable_.generateValueToKeyTransitiveMap(nextTable_);
-}
+    for (vector<TreeNode*> treeNodes : controlFlowGraphsNodes_) {
+        /* DFS all the nodes in the control flow graph. */
+        for (TreeNode* node : treeNodes) {
+            vector<TreeNode*> visitedNodes;
+            queue<TreeNode*> queue;
 
-void PKB::GenerateIfNextTable(map<unsigned int, set<unsigned int>> ifNext) {
-    for (auto &pair : ifNext) {
-        ifNextTable_.insert(pair.first, pair.second);
-    }
-}
+            queue.push(node);
+            while (!queue.empty()) {
+                TreeNode* currentNode = queue.front();
+                vector<TreeNode*> children = currentNode->getChildren();
 
-void PKB::GenerateWhileNextTable(map<unsigned int, set<unsigned int>> whileNext) {
-    for (auto &pair : whileNext) {
-        whileNextTable_.insert(pair.first, pair.second);
+                queue.pop();
+
+                for (TreeNode* child : children) {
+                    if (!child->isVisited()) {
+                        child->setVisited(true);
+
+                        nextTransitiveTable_[node->getStmtNumber()][child->getStmtNumber()] = 1;
+                        visitedNodes.push_back(child);
+                        queue.push(child);
+                    }
+                }
+            }
+
+            for (TreeNode* visited : visitedNodes) {
+                visited->setVisited(false);
+            }
+        }
     }
+
+    PKB::PrintNextTransitiveTable();
 }
 
 bool PKB::IsNext(unsigned int current, unsigned int next) {
@@ -745,7 +788,16 @@ bool PKB::IsNext(unsigned int current, unsigned int next) {
 }
 
 bool PKB::IsNextTransitive(unsigned int current, unsigned int next) {
-    return nextTransitiveTable_.hasKeyToValue(current, next);
+    if (current > tableMaximumSize_ || current <= 0) {
+        return false;
+    }
+
+    if (next > tableMaximumSize_ || next <= 0) {
+        return false;
+    }
+
+    /* Worst case is O(1) time complexity. */
+    return (nextTransitiveTable_[current][next] == 1);
 }
 
 set<unsigned int> PKB::GetNext(unsigned int current) {
@@ -757,36 +809,65 @@ set<unsigned int> PKB::GetPrevious(unsigned int next) {
 }
 
 set<unsigned int> PKB::GetNextTransitive(unsigned int current) {
-    return nextTransitiveTable_.getValues(current);
+    if (current > tableMaximumSize_ || current <= 0) {
+        return set<unsigned int>();
+    }
+
+    set<unsigned int> nexts;
+
+    /* Worst case is O(V) time complexity. */
+    for (unsigned int i = 1; i < nextTransitiveTable_[current].size(); i++) {
+        if (nextTransitiveTable_[current][i] == 1) {
+            nexts.insert(i);
+        }
+    }
+
+    return nexts;
 }
 
-/* WARNING - DOES NOT WORK. */
 set<unsigned int> PKB::GetPreviousTransitive(unsigned int next) {
-    return nextTransitiveTable_.getKeys(next);
-}
+    if (next > tableMaximumSize_ || next <= 0) {
+        return set<unsigned int>();
+    }
 
-unordered_map<unsigned int, set<unsigned int>> PKB::GetIfNextMap() {
-    return ifNextTable_.getKeyToValuesMap();
-}
+    set<unsigned int> previouses;
 
-unordered_map<unsigned int, set<unsigned int>> PKB::GetWhileNextMap() {
-    return whileNextTable_.getKeyToValuesMap();
+    /* Worst case is O(V) time complexity. */
+    for (unsigned int i = 1; i < nextTransitiveTable_.size(); i++) {
+        if (nextTransitiveTable_[i][next] == 1) {
+            previouses.insert(i);
+        }
+    }
+
+    return previouses;
 }
 
 void PKB::PrintNextTable() {
     nextTable_.printTable();
 }
 
-void PKB::PrintIfNextTable() {
-    ifNextTable_.printTable();
-}
-
-void PKB::PrintWhileNextTable() {
-    whileNextTable_.printTable();
-}
-
 void PKB::PrintNextTransitiveTable() {
-    nextTransitiveTable_.printTable();
+    for (unsigned int i = 1; i < nextTransitiveTable_.size(); i++) {
+        for (unsigned int k = 1; k < nextTransitiveTable_[i].size(); k++) {
+            std::cout << nextTransitiveTable_[i][k];
+        }
+
+        std::cout << std::endl;
+    }
+
+    std::cout << "=====================" << std::endl;
+
+    for (unsigned int i = 1; i < nextTransitiveTable_.size(); i++) {
+
+        std::cout << i << "-> { ";
+        for (unsigned int k = 1; k < nextTransitiveTable_[i].size(); k++) {
+            if (nextTransitiveTable_[i][k] == 1) {
+                std::cout << k << " ";
+            }
+        }
+
+        std::cout << "}" << std::endl;
+    }
 }
 
 /* END   - Next table functions */
@@ -814,6 +895,10 @@ unsigned int PKB::GetNumberOfCall() {
 
 unsigned int PKB::GetNumberOfContainerStmt() {
     return (numberOfWhile_ + numberOfIf_);
+}
+
+void PKB::SetTableMaximumSize(unsigned int tableMaximumSize) {
+    tableMaximumSize_ = tableMaximumSize;
 }
 
 void PKB::Clear() {

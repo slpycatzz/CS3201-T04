@@ -93,6 +93,7 @@ class FrontendParser {
     std::map<unsigned int, std::set<unsigned int>> next_;
     std::map<unsigned int, std::set<unsigned int>> ifNext_;
     std::map<unsigned int, std::set<unsigned int>> whileNext_;
+    std::vector<TreeNode*> controlFlowGraphs_;
 
     /* Deprecated. */
     std::map<unsigned int, TreeNode*> assigns_;

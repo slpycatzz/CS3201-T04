@@ -23,7 +23,6 @@ class TransitiveTable {
             std::stack<K> keyStack;
             keyStack.push(key);
 
-            std::set<K> visited;
             while (!keyStack.empty()) {
                 std::set<V> values = table.getValues(keyStack.top());
 
@@ -37,10 +36,7 @@ class TransitiveTable {
                 keyToValueTransitiveMap[key].insert(values.begin(), values.end());
 
                 for (const auto &value : values) {
-                    if (visited.count(value) != 1) {
-                        keyStack.push(value);
-                        visited.insert(value);
-                    }
+                    keyStack.push(value);
                 }
             }
         }
@@ -58,7 +54,6 @@ class TransitiveTable {
             std::stack<V> valueStack;
             valueStack.push(value);
 
-            std::set<V> visited;
             while (!valueStack.empty()) {
                 std::set<K> keys = table.getKeys(valueStack.top());
 
@@ -72,10 +67,7 @@ class TransitiveTable {
                 valueToKeyTransitiveMap[value].insert(keys.begin(), keys.end());
 
                 for (const auto &key : keys) {
-                    if (visited.count(key) != 1) {
-                        valueStack.push(key);
-                        visited.insert(key);
-                    }
+                    valueStack.push(key);
                 }
             }
         }
