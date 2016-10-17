@@ -97,14 +97,14 @@ namespace IntegrationTesting {
 			Assert::IsFalse(PKB::IsFollows(9, 15));
 			Assert::IsFalse(PKB::IsFollows(25, 38));
 
-			//EP: invalid cases
-			Assert::IsFalse(PKB::IsFollows(25, 39)); //indirect and same stmtLst
+			//EP: invalid cases. indirect and same stmtLst
+			Assert::IsFalse(PKB::IsFollows(25, 39)); 
+			Assert::IsFalse(PKB::IsFollows(9, 24));
 
-													 //EP: valid cases
+			//EP: valid cases
 			Assert::IsTrue(PKB::IsFollows(1, 7));
 			Assert::IsTrue(PKB::IsFollows(2, 6));
-			Assert::IsTrue(PKB::IsFollows(9, 24));
-			//Assert::IsTrue(PKB::IsFollows(25, 26));
+			Assert::IsTrue(PKB::IsFollows(25, 26));
 		}
 		TEST_METHOD(Integration_Parser_PKB_Is_Follows_Transitive_Valid) {
 			string fileName = "Follows.txt";
