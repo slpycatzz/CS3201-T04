@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -8,7 +9,6 @@
 
 #include "Constants.h"
 #include "PKB/PKB.h"
-#include "TreeNode.h"
 
 using std::map;
 using std::set;
@@ -18,371 +18,178 @@ using std::vector;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-  TEST_CLASS(PKBTest) {
-    public:
-      TEST_METHOD(AST_set_and_get_root) {
-        PKB::Clear();
-        TreeNode * rootNode = PKB::CreateASTNode(PROCEDURE);
-        string expected = rootNode->getValue();
-        PKB::SetASTRoot(rootNode);
-        string actual = PKB::GetASTRoot()->getValue();
-        Assert::AreEqual(expected, actual);
-      }
-      TEST_METHOD(AST_create_node_for_every_symbol) {
-        // TODO(pixelducky): Update this test case to cover all symbols
-        PKB::Clear();
-        TreeNode * programNode = PKB::CreateASTNode(PROGRAM);
-        TreeNode * procNode = PKB::CreateASTNode(PROCEDURE);
-        TreeNode * whileNode = PKB::CreateASTNode(WHILE, 10);
-        TreeNode * ifNode = PKB::CreateASTNode(IF, 20);
-        TreeNode * stmtListNode = PKB::CreateASTNode(STMTLIST);
-        TreeNode * callNode = PKB::CreateASTNode(CALL, 30, "Panda");
-        TreeNode * assignNode = PKB::CreateASTNode(ASSIGN, 40);
-        TreeNode * plusNode = PKB::CreateASTNode(PLUS);
-        TreeNode * minusNode = PKB::CreateASTNode(MINUS);
-        TreeNode * multiplyNode = PKB::CreateASTNode(MULTIPLY);
-        TreeNode * varNode = PKB::CreateASTNode(VARIABLE, "x");
-        TreeNode * constNode = PKB::CreateASTNode(CONSTANT, "1337");
+    TEST_CLASS(PKBUnitTest) {
+     public:
+        TEST_METHOD_INITIALIZE(Initialize) {
+            PKB::Clear();
+        }
 
-        string symbol_program("program");
-        string symbol_procedure("procedure");
-        string symbol_while("while");
-        string symbol_if("if");
-        string symbol_stmtlist("stmtLst");
-        string symbol_call("call");
-        string symbol_assign("assign");
-        string symbol_plus("+");
-        string symbol_minus("-");
-        string symbol_multiply("*");
-        string symbol_variable("variable");
-        string symbol_constant("constant");
+        TEST_METHOD(PKB_ConstantTable) {
+            set<string> constants;
 
-        Assert::AreEqual(symbol_program, Constants::SymbolToString(programNode->getSymbol()));
-        Assert::AreEqual(symbol_procedure, Constants::SymbolToString(procNode->getSymbol()));
-        Assert::AreEqual(symbol_while, Constants::SymbolToString(whileNode->getSymbol()));
-        Assert::AreEqual(symbol_if, Constants::SymbolToString(ifNode->getSymbol()));
-        Assert::AreEqual(symbol_stmtlist, Constants::SymbolToString(stmtListNode->getSymbol()));
-        Assert::AreEqual(symbol_call, Constants::SymbolToString(callNode->getSymbol()));
-        Assert::AreEqual(symbol_assign, Constants::SymbolToString(assignNode->getSymbol()));
-        Assert::AreEqual(symbol_plus, Constants::SymbolToString(plusNode->getSymbol()));
-        Assert::AreEqual(symbol_minus, Constants::SymbolToString(minusNode->getSymbol()));
-        Assert::AreEqual(symbol_multiply, Constants::SymbolToString(multiplyNode->getSymbol()));
-        Assert::AreEqual(symbol_variable, Constants::SymbolToString(varNode->getSymbol()));
-        Assert::AreEqual(symbol_constant, Constants::SymbolToString(constNode->getSymbol()));
-      }
-      TEST_METHOD(AST_create_node_for_every_symbol_with_value) {
-        // TODO(pixelducky): Update this test case to cover all symbols
-        PKB::Clear();
-        TreeNode * procNode = PKB::CreateASTNode(PROCEDURE, "Cat");
-        TreeNode * whileNode = PKB::CreateASTNode(WHILE, 10);
-        TreeNode * ifNode = PKB::CreateASTNode(IF, 20);
-        TreeNode * callNode = PKB::CreateASTNode(CALL, 30, "Panda");
-        TreeNode * assignNode = PKB::CreateASTNode(ASSIGN, 40);
-        TreeNode * varNode = PKB::CreateASTNode(VARIABLE, "x");
-        TreeNode * constNode = PKB::CreateASTNode(CONSTANT, "1337");
+            constants.insert("1");
+            constants.insert("10");
+            constants.insert("100");
 
-        Assert::AreEqual(static_cast<unsigned int>(10), whileNode->getStmtNumber());
-        Assert::AreEqual(static_cast<unsigned int>(20), ifNode->getStmtNumber());
-        Assert::AreEqual(static_cast<unsigned int>(30), callNode->getStmtNumber());
-        Assert::AreEqual(static_cast<unsigned int>(40), assignNode->getStmtNumber());
+            PKB::GenerateConstantTable(constants);
 
-        Assert::AreEqual(string("Cat"), procNode->getValue());
-        Assert::AreEqual(string("Panda"), callNode->getValue());
-        Assert::AreEqual(string("x"), varNode->getValue());
-        Assert::AreEqual(string("1337"), constNode->getValue());
-      }
-      TEST_METHOD(AST_check_if_tree_is_valid) {
-        // TODO(pixelducky): this test case may be redudant.
-        PKB::Clear();
-        TreeNode * programNode = PKB::CreateASTNode(PROGRAM);
-        TreeNode * procNode = PKB::CreateASTNode(PROCEDURE, "Cat");
-        TreeNode * stmtListNodeProc = PKB::CreateASTNode(STMTLIST);
-        TreeNode * stmtListNodeWhile = PKB::CreateASTNode(STMTLIST);
-        TreeNode * stmtListNodeIf = PKB::CreateASTNode(STMTLIST);
-        TreeNode * stmtListNodeElse = PKB::CreateASTNode(STMTLIST);
-        TreeNode * whileNode = PKB::CreateASTNode(WHILE, 10);
-        TreeNode * ifNode = PKB::CreateASTNode(IF, 20);
-        TreeNode * callNode = PKB::CreateASTNode(CALL, 30, "Panda");
-        TreeNode * assignNode1 = PKB::CreateASTNode(ASSIGN, 40);
-        TreeNode * assignNode2 = PKB::CreateASTNode(ASSIGN, 41);
+            unsigned int index = PKB::GetConstantIndex("1");
 
-        TreeNode * plusNode = PKB::CreateASTNode(PLUS);
-        TreeNode * minusNode = PKB::CreateASTNode(MINUS);
-        TreeNode * multiplyNode = PKB::CreateASTNode(MULTIPLY);
-        TreeNode * varNodeX = PKB::CreateASTNode(VARIABLE, "x");
-        TreeNode * varNodeY = PKB::CreateASTNode(VARIABLE, "y");
-        TreeNode * constNode1 = PKB::CreateASTNode(CONSTANT, "1337");
-        TreeNode * constNode2 = PKB::CreateASTNode(CONSTANT, "2337");
-        TreeNode * constNode3 = PKB::CreateASTNode(CONSTANT, "3337");
+            Assert::IsTrue(PKB::HasConstant("10"));
+            Assert::IsFalse(PKB::HasConstant("1000"));
 
-        programNode->addChild(procNode);
-        procNode->addChild(stmtListNodeProc);
+            Assert::AreNotEqual(index, static_cast<unsigned int>(0));
+            Assert::AreEqual(PKB::GetConstantValue(index), string("1"));
+            Assert::AreEqual(PKB::GetConstantIndex("2000"), static_cast<unsigned int>(0));
 
-        stmtListNodeProc->addChild(whileNode);
-        stmtListNodeProc->addChild(ifNode);
-        stmtListNodeProc->addChild(callNode);
-        stmtListNodeProc->addChild(assignNode1);
+            vector<string> vec = PKB::GetAllConstantValues();
+            set<string> tableConstants(vec.begin(), vec.end());
 
-        whileNode->addChild(varNodeX);
-        whileNode->addChild(stmtListNodeWhile);
+            Assert::IsTrue(constants == tableConstants);
+        }
 
-        ifNode->addChild(varNodeX);
-        ifNode->addChild(stmtListNodeIf);
+        TEST_METHOD(PKB_VariableTable) {
+            set<string> variables;
 
-        assignNode1->addChild(varNodeX);
-        assignNode1->addChild(constNode1);
+            variables.insert("x");
+            variables.insert("xyz");
+            variables.insert("xyz12345");
 
-        assignNode2->addChild(varNodeY);
-        assignNode2->addChild(plusNode);
-        plusNode->addChild(constNode2);
-        plusNode->addChild(constNode3);
+            PKB::GenerateVariableTable(variables);
 
-        PKB::SetASTRoot(programNode);
-        PKB::PrintASTTree();
-      }
-      TEST_METHOD(ProcTable_set_and_get_procedures) {
-        // TODO(pixelducky): can be more exhaustive - check if proc names exist
-        PKB::Clear();
+            unsigned int index = PKB::GetVariableIndex("xyz");
 
-        set<string> procedureNames;
+            Assert::IsTrue(PKB::HasVariable("x"));
+            Assert::IsFalse(PKB::HasVariable("Xyz"));
 
-        procedureNames.insert(string("Panda"));
-        procedureNames.insert(string("Cat"));
-        procedureNames.insert(string("Giraffe"));
-        procedureNames.insert(string("Tyson"));
-        PKB::GenerateProcedureTable(procedureNames);
+            Assert::AreNotEqual(index, static_cast<unsigned int>(0));
+            Assert::AreEqual(PKB::GetVariableName(index), string("xyz"));
+            Assert::AreEqual(PKB::GetVariableIndex("xyz1234"), static_cast<unsigned int>(0));
 
-        Assert::IsTrue(PKB::HasProcedure("Panda"));
-        Assert::IsTrue(PKB::HasProcedure("Cat"));
-        Assert::IsTrue(PKB::HasProcedure("Giraffe"));
-        Assert::IsTrue(PKB::HasProcedure("Tyson"));
-        Assert::IsFalse(PKB::HasProcedure("Bevin"));
+            vector<string> vec = PKB::GetAllVariableNames();
+            set<string> tableVariables(vec.begin(), vec.end());
 
-        // (YH) Commented this. Changed to set so now this test cases won't work.
-        // Assert::AreEqual(string("Tyson"), PKB::GetProcedureName(4));
-        // Assert::AreEqual(unsigned int(2), PKB::GetProcedureIndex(string("Cat")));
-      }
-      TEST_METHOD(StmtTable_set_and_get_stmtSymbol) {
-          PKB::Clear();
-          map<unsigned int, string> stmts;
-          stmts.emplace(10, "call");
-          stmts.emplace(11, "assign");
-          stmts.emplace(12, "assign");
-          stmts.emplace(13, "if");
-          stmts.emplace(14, "while");
+            Assert::IsTrue(variables == tableVariables);
+        }
 
-          PKB::GenerateStmtTable(stmts);
-          Assert::AreEqual(string("call"), PKB::GetStmtSymbol(10));
-          Assert::AreEqual(string("assign"), PKB::GetStmtSymbol(11));
-          Assert::AreEqual(string("assign"), PKB::GetStmtSymbol(12));
-          Assert::AreEqual(string("if"), PKB::GetStmtSymbol(13));
-          Assert::AreEqual(string("while"), PKB::GetStmtSymbol(14));
-      }
-      TEST_METHOD(StmtTable_GetSymbolsStmtNos) {
-          PKB::Clear();
-          map<unsigned int, string> testStmtTable;
+        TEST_METHOD(PKB_ProcedureTable) {
+            set<string> procedures;
 
-          testStmtTable[static_cast<unsigned int>(1)] = string("y = x + 3;");
-          testStmtTable[static_cast<unsigned int>(2)] = string("x++;");
-          PKB::GenerateStmtTable(testStmtTable);
+            procedures.insert("Apple");
+            procedures.insert("Pineapple");
+            procedures.insert("Pen");
+            procedures.insert("Kangaroo");
 
-          vector<unsigned int> stmts;
-          stmts.push_back(1);
-          stmts.push_back(2);
+            PKB::GenerateProcedureTable(procedures);
 
-          // Assert::AreEqual(PKB::GetSymbolStmtNumbers("+"), stmts);
-          // Assert::AreNotEqual(PKB::GetSymbolStmtNumbers("*"), stmts);
+            unsigned int index = PKB::GetProcedureIndex("Pineapple");
 
-          // Assert::AreEqual(PKB::GetSymbolStmtNumbers(PLUS), stmts);
-          // Assert::AreNotEqual(PKB::GetSymbolStmtNumbers(MINUS), stmts);
-      }
-      TEST_METHOD(AssignTableTest_set_and_get) {
-          PKB::Clear();
-          map<unsigned int, TreeNode*> assignments;
-          TreeNode * assignNode1 = PKB::CreateASTNode(ASSIGN, 40);
-          TreeNode * assignNode2 = PKB::CreateASTNode(ASSIGN, 41);
-          assignments.insert(std::make_pair(assignNode1->getStmtNumber(), assignNode1));
-          assignments.insert(std::make_pair(assignNode2->getStmtNumber(), assignNode2));
+            Assert::IsTrue(PKB::HasProcedure("Apple"));
+            Assert::IsFalse(PKB::HasProcedure("apple"));
 
-          PKB::GenerateAssignTable(assignments);
-          Assert::AreEqual(assignNode1->getStmtNumber(), PKB::GetAssignTreeNode(40)->getStmtNumber());
-          Assert::AreEqual(assignNode2->getStmtNumber(), PKB::GetAssignTreeNode(41)->getStmtNumber());
-      }
-      TEST_METHOD(ModifiesTable_set_and_get) {
-          // sample line
-          // 22 PANDA {
-          // 23 y = x - 5;
-          // 24 x++;
-          // 25 ...
-          // }
-          PKB::Clear();
-          map<unsigned int, set<string>> testModTable;
-          set<string> testSet, testSet1;
-          testSet.insert(string("y"));
-          testModTable[static_cast<unsigned int>(23)] = testSet;
-          testSet1.insert(string("x"));
-          testModTable[static_cast<unsigned int>(24)] = testSet1;
+            Assert::AreNotEqual(index, static_cast<unsigned int>(0));
+            Assert::AreEqual(PKB::GetProcedureName(index), string("Pineapple"));
+            Assert::AreEqual(PKB::GetProcedureIndex("angaroo"), static_cast<unsigned int>(0));
 
-          PKB::GenerateModifiesTable(testModTable);
+            vector<string> vec = PKB::GetAllProcedures();
+            set<string> tableProcedures(vec.begin(), vec.end());
 
-          Assert::IsTrue(PKB::IsModifies(static_cast<unsigned int>(23), string("y")));
-          Assert::IsFalse(PKB::IsModifies(static_cast<unsigned int>(23), string("x")));
-          Assert::IsTrue(PKB::IsModifies(static_cast<unsigned int>(24), string("x")));
-      }
-      TEST_METHOD(ModifiesProcedureTable_set_and_get) {
-          // sample line
-          // 22 PANDA {
-          // 23 y = x - 5;
-          // 24 x++;
-          // }
-          // 25 TIGER {
-          // 26 z = y * 6;
-          // 27 y--;
-          PKB::Clear();
-          map<string, set<string>> testModProcTable;
-          set<string> testSet, testSet1, testSet2;
-          testSet.insert(string("y"));
-          testSet1.insert(string("x"));
-          testModProcTable[string("PANDA")] = testSet;
-          testModProcTable[string("TIGER")] = testSet1;
+            Assert::IsTrue(procedures == tableProcedures);
+        }
 
-          PKB::GenerateModifiesProcedureTable(testModProcTable);
+        TEST_METHOD(PKB_ControlVariableTable) {
+            vector<string> controlVariables;
+            map<unsigned int, string> controlVariablesMap;
 
-          Assert::IsTrue(PKB::IsModifiesProcedure(string("PANDA"), string("y")));
-          Assert::IsTrue(PKB::IsModifiesProcedure(string("TIGER"), string("x")));
-          Assert::IsFalse(PKB::IsModifiesProcedure(string("TIGER"), string("z")));
-          Assert::AreEqual(1, int(PKB::GetProceduresNameModifying("y").size()));
-      }
-      TEST_METHOD(UsesTable_set_and_get) {
-          // sample line
-          // 22 PANDA {
-          // 23 y = x - 5;
-          // 24 x++;
-          // }
-          // 25 TIGER {
-          // 26 z = (x - y) * 6;
-          // 27 y--;
-          PKB::Clear();
-          map<unsigned int, set<string>> testUsesTable;
-          set<string> testSet23, testSet26;
+            controlVariables.push_back("zyx");
+            controlVariables.push_back("zzzzz");
+            controlVariables.push_back("sleepy");
 
-          testSet23.insert(string("x"));
-          testUsesTable[static_cast<unsigned int>(23)] = testSet23;
+            controlVariablesMap[10] = "zyx";
+            controlVariablesMap[11] = "zzzzz";
+            controlVariablesMap[12] = "sleepy";
 
-          testSet26.insert(string("x"));
-          testSet26.insert(string("y"));
-          testUsesTable[static_cast<unsigned int>(26)] = testSet26;
+            PKB::GenerateControlVariableTable(controlVariablesMap);
 
-          PKB::GenerateUsesTable(testUsesTable);
+            Assert::IsTrue(PKB::HasControlVariable("zzzzz"));
+            Assert::IsFalse(PKB::HasControlVariable("sleEpy"));
 
-          Assert::AreEqual(testUsesTable.size(), static_cast<unsigned int>(2));
+            Assert::IsTrue(PKB::HasControlVariableAtStmtNumber(11, "zzzzz"));
+            Assert::IsFalse(PKB::HasControlVariableAtStmtNumber(12, "sleep"));
+            Assert::IsFalse(PKB::HasControlVariableAtStmtNumber(10, "sleepy"));
 
-          Assert::IsTrue(PKB::IsUses(23, "x"));
-          Assert::IsFalse(PKB::IsUses(24, "x"));
+            Assert::AreEqual(PKB::GetControlVariable(10), string("zyx"));
+            Assert::AreEqual(PKB::GetControlVariable(13), string(""));
 
-          // Assert::AreEqual(PKB::GetUsedVariables(26), testSet26);
+            vector<string> vec = PKB::GetAllControlVariables();
+            
+            std::sort(vec.begin(), vec.end());
+            std::sort(controlVariables.begin(), controlVariables.end());
 
-          set<unsigned int> testSet2326;
-          testSet2326.insert(23);
-          testSet2326.insert(26);
-          // Assert::AreEqual(PKB::GetStmtNumberUsing("x"), testSet2326);
-      }
-      TEST_METHOD(UsesProcedureTable_set_and_get) {
-          // sample line
-          // 22 PANDA {
-          // 23 y = x - 5;
-          // 24 x++;
-          // }
-          // 25 TIGER {
-          // 26 z = (x - y) * 6;
-          // 27 y--;
-          PKB::Clear();
-          map<string, set<string>> testUsesProcTable;
-          set<string> testSetPanda, testSetTiger;
+            Assert::IsTrue(vec == controlVariables);
+        }
 
-          testSetPanda.insert("x");
-          testSetTiger.insert("x");
-          testSetTiger.insert("y");
+        TEST_METHOD(PKB_CallTable) {
+            map<unsigned int, string> callMap;
 
-          testUsesProcTable["PANDA"] = testSetPanda;
-          testUsesProcTable["TIGER"] = testSetTiger;
-          PKB::GenerateUsesProcedureTable(testUsesProcTable);
+            callMap[10] = "abc";
+            callMap[11] = "def";
+            callMap[12] = "abcd";
 
-          Assert::AreEqual(testUsesProcTable.size(), static_cast<unsigned int>(2));
+            PKB::GenerateCallTable(callMap);
 
-          Assert::IsTrue(PKB::IsUsesProcedure("PANDA", "x"));
-          Assert::IsFalse(PKB::IsUsesProcedure("PANDA", "y"));
+            Assert::AreEqual(PKB::GetCallProcedureName(10), string("abc"));
+            Assert::AreEqual(PKB::GetCallProcedureName(11), string("def"));
+            Assert::AreEqual(PKB::GetCallProcedureName(12), string("abcd"));
+            Assert::AreEqual(PKB::GetCallProcedureName(13), string(""));
+        }
 
-          // Assert::AreEqual(PKB::GetProcedureUsedVariables("TIGER"), testSetTiger);
+        TEST_METHOD(PKB_StmtTable) {
+            vector<unsigned int> stmtNumbers;
+            map<unsigned int, string> stmtsMap;
 
-          set<string> testProcSet;
-          testProcSet.insert("PANDA");
-          testProcSet.insert("TIGER");
-          // Assert::AreEqual(PKB::GetProceduresNameUsing("x"), testProcSet);
-      }
-      TEST_METHOD(ParentTable_set_and_get) {
-          // sample line
-          // 22 PANDA {
-          // 23     while(i){
-          // 24         y = x - 5;
-          // 25         if y then {
-          // 26             Call TIGER;
-          // 27              x++; }
-          // 28         i--;}
-          //    }
-          PKB::Clear();
-          map<unsigned int, set<unsigned int>> testParentTable;  // <parent, child>
-          set<unsigned int> testSet23, testSet25;
-          testSet23.insert(24);
-          testSet23.insert(25);
-          testSet23.insert(28);
-          testSet25.insert(26);
-          testSet25.insert(27);
+            stmtNumbers.push_back(11);
+            stmtNumbers.push_back(12);
 
-          testParentTable[23] = testSet23;
-          testParentTable[25] = testSet25;
-          PKB::GenerateParentTable(testParentTable);
+            stmtsMap[10] = SYMBOL_CALL;
+            stmtsMap[11] = SYMBOL_ASSIGN;
+            stmtsMap[12] = SYMBOL_ASSIGN;
+            stmtsMap[13] = SYMBOL_IF;
 
-          Assert::IsTrue(PKB::IsParent(23, 24));
-          Assert::IsFalse(PKB::IsParent(24, 23));
-          Assert::IsTrue(PKB::IsParent(25, 26));
-          Assert::IsFalse(PKB::IsParent(23, 26));
-          Assert::IsFalse(PKB::IsParent(25, 25)); 
+            PKB::GenerateStmtTable(stmtsMap);
 
-          Assert::IsTrue(PKB::IsParentTransitive(23, 25));
-      }
-      TEST_METHOD(FollowsTable_set_and_get) {
-          // sample line
-          // 22 PANDA {
-          // 23     while(i){
-          // 24         y = x - 5;
-          // 25         if y then {
-          // 26             Call TIGER;
-          // 27              x++; }
-          // 28         i--;
-          // 29         y--;}
-          //    }
-          PKB::Clear();
-          map<unsigned int, unsigned int> testFollowsTable;  // <before, after>
-          testFollowsTable[24] = 25;
-          testFollowsTable[26] = 27;
-          testFollowsTable[25] = 28;
-          testFollowsTable[28] = 29;
+            Assert::AreEqual(PKB::GetStmtSymbol(10), string(SYMBOL_CALL));
+            Assert::AreEqual(PKB::GetStmtSymbol(13), string(SYMBOL_IF));
 
-          PKB::GenerateFollowsTable(testFollowsTable);
-          Assert::IsTrue(PKB::IsFollows(24, 25));   // follows immediately
-          Assert::IsTrue(PKB::IsFollows(25, 28));   // same nesting level, and same stmtList
-          Assert::IsFalse(PKB::IsFollows(25, 24));  // not the reverse
-          //new test case for Follows (s,s), should assert false
-          Assert::IsFalse(PKB::IsFollows(25, 25));
-          Assert::IsFalse(PKB::IsFollows(24, 26));  // different nesting level
-          Assert::IsFalse(PKB::IsFollows(24, 28));  // not immediately after
-          Assert::IsTrue(PKB::IsFollowsTransitive(24, 28));
-          Assert::IsTrue(PKB::IsFollowsTransitive(28, 29));
-          Assert::AreEqual(unsigned int(25), PKB::GetFollowing(24));
-          Assert::AreEqual(unsigned int(0), PKB::GetFollowing(29));
+            vector<unsigned int> vec = PKB::GetSymbolStmtNumbers(ASSIGN);
 
-          Assert::AreEqual(unsigned int(0), PKB::GetFollows(10));
-      }
+            std::sort(vec.begin(), vec.end());
+            std::sort(stmtNumbers.begin(), stmtNumbers.end());
+
+            Assert::IsTrue(vec == stmtNumbers);
+            Assert::IsTrue(vector<unsigned int>() == PKB::GetSymbolStmtNumbers(WHILE));
+        }
+
+        TEST_METHOD(PKB_StmtlistTable) {
+            vector<unsigned int> stmtNumbers;
+            map<unsigned int, string> stmtlistsMap;
+
+            stmtNumbers.push_back(10);
+            stmtNumbers.push_back(11);
+            stmtNumbers.push_back(12);
+
+            stmtlistsMap[10] = SYMBOL_PROCEDURE;
+            stmtlistsMap[11] = SYMBOL_WHILE;
+            stmtlistsMap[12] = SYMBOL_WHILE;
+
+            PKB::GenerateStmtlistTable(stmtlistsMap);
+
+            vector<unsigned int> vec = PKB::GetAllStmtlistsStmtNumber();
+
+            std::sort(vec.begin(), vec.end());
+            std::sort(stmtNumbers.begin(), stmtNumbers.end());
+
+            Assert::IsTrue(vec == stmtNumbers);
+        }
   };
-}  // namespace UnitTest
+}
