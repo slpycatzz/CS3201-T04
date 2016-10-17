@@ -1,0 +1,74 @@
+procedure Test {
+    while x {			            \\1
+        while y {		            \\2
+            while z {		        \\3
+                x = 5;		        \\4
+            }
+        }
+    }
+}
+
+procedure Test1 {
+    a = 1;			                \\5
+    b = ((a + a)) * b * c;	        \\6
+    while c {			            \\7
+        d = 1;			            \\8
+        e = 2;			            \\9
+        call Test2;	                \\10
+        while x {		            \\11
+            x = 5;		            \\12
+            while y {		        \\13
+                y = 5;		        \\14
+                if y then {	        \\15
+                    y = 5;	        \\16
+                    z = 10;	        \\17
+                } else {	
+                    z = 5;	        \\18
+                    x = y;	        \\19
+                    z = x + 5;	    \\20
+                }
+                while z {	        \\21
+                    z = 5;	        \\22
+                }
+            }
+        }
+    }
+    x = 5;			                \\23
+}
+
+procedure Test2 {
+    g = 2;			                \\24
+    h = j * k;			            \\25
+    if x then {			            \\26
+        y = 5;			            \\27
+        if x then {		            \\28
+            x = 5;		            \\29
+            if y then {		        \\30
+                if z then {	        \\31
+                    x = 5;	        \\32
+                } else {
+                    z = 5;	        \\33
+                    y = 5;	        \\34
+                }
+                x = 10;		        \\35
+            } else {
+                z = 10;		        \\36
+            }
+            x = 15;		            \\37
+        } else {
+            z = 5;		            \\38
+        }
+    } else {
+        if x then {		            \\39
+            x = 5;          		\\40
+        } else {
+            z = 5;		            \\41
+        }
+    }
+    x = 5;			                \\42
+}
+
+procedure Test3 {
+    f = 2;			                \\43
+    p = y * z + i;		            \\44
+}
