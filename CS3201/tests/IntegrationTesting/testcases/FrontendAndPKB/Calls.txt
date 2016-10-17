@@ -1,0 +1,36 @@
+procedure Test {
+    call Test1;
+    call Test2;
+    call Test3;
+}
+
+procedure Test1 {
+    call Test4;
+    call Test2;
+    call Test6;
+}
+
+procedure Test2 {
+    call Test5;
+}
+
+procedure Test3 {
+    call Test1;
+    call Test7;
+}
+
+procedure Test4 {
+    y = 5;
+}
+
+procedure Test5 {
+    call Test7;
+}
+
+procedure Test6 {
+    call Test2;
+}
+
+procedure Test7 {
+    x = 5;
+}

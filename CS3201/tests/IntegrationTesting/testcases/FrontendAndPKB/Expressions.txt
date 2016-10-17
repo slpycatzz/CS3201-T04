@@ -1,0 +1,21 @@
+procedure Test {
+    \\Test whitespace
+    a = 10*5;
+    b = 5+eabc;
+
+    \\Test simple expression.
+    a = b + c + d;
+    a = d - b * c;
+    b = b * c + d;
+    c = b + c * d + e;
+    d = b + c - d * e + f;
+    
+    \\Test brackets.
+    a = (b + c) * c;
+    b = c + (b + c);
+    c = b + (c + d) + d;
+    d = (((b + e))) - 5;
+    e = ((a + (b + e)) - 5) * 10 + 5;
+    f = (10 - (a + (5 * b)) * 10) - (10 * 10 * c - 5);
+    g = (b) + (e) - ((f)) * 10;
+}

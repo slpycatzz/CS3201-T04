@@ -1,0 +1,57 @@
+\\local:  a b c d e f g h i
+\\global: j k l m n o p q r s t u v w x y z
+procedure Test {
+    j = b;                                  \\1
+    j = a + 5;                              \\2
+    while c {                               \\3
+        j = d;                              \\4
+        while e {                           \\5
+            j = f + g;                      \\6
+        }
+        k = g;                              \\7
+    }
+    
+    if h then {                             \\8
+        k = i;                              \\9
+    } else {
+        k = g;                              \\10
+    }
+    
+    call Test2;                             \\11
+}
+
+\\local:  j k l m n o p q
+\\global: u v w
+procedure Test1 {
+    if j then {                             \\12
+        if k then {                         \\13
+            a = l - 1;                      \\14
+        } else {
+            a = m * 10;                     \\15
+        }
+    } else {
+        a = n - 1 * 2;                      \\16
+    }
+
+    a = o + p + q;                          \\17
+    call Test3;                             \\18
+}
+
+\\local:  r s t
+\\global: j k l m n o p q u v w x y z
+procedure Test2 {
+    call Test4;                             \\19
+    a = r - s * t;                          \\20
+}
+
+\\local: u v w
+procedure Test3 {
+    b = u + v - w;                          \\21
+}
+
+\\local:  x y z
+\\global: j k l m n o p q u v w
+procedure Test4 {
+    c = x * y * z;                          \\22
+    call Test1;                             \\23
+}
