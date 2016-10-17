@@ -783,8 +783,6 @@ void PKB::GenerateNextTransitiveTable() {
             }
         }
     }
-
-    PKB::PrintNextTransitiveTable();
 }
 
 bool PKB::IsNext(unsigned int current, unsigned int next) {
