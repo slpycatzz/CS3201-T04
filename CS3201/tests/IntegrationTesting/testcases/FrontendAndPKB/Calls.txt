@@ -1,36 +1,36 @@
 procedure Test {
-    call Test1;
-    call Test2;
-    call Test3;
+    call Test1;         \\1
+    call Test2;         \\2
+    call Test3;         \\3
 }
 
 procedure Test1 {
-    call Test4;
-    call Test2;
-    call Test6;
+    call Test4;         \\4
+    call Test2;         \\5
+    call Test6;         \\6
 }
 
 procedure Test2 {
-    call Test5;
+    call Test5;         \\7
 }
 
 procedure Test3 {
-    call Test1;
-    call Test7;
+    call Test1;         \\8
+    call Test7;         \\9
 }
 
 procedure Test4 {
-    y = 5;
+    y = 5;              \\10
 }
 
 procedure Test5 {
-    call Test7;
+    call Test7;         \\11
 }
 
 procedure Test6 {
-    call Test2;
+    call Test2;         \\12
 }
 
 procedure Test7 {
-    x = 5;
+    x = 5;              \\13
 }
