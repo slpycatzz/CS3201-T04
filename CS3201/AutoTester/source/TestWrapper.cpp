@@ -1,17 +1,10 @@
 #include <exception>
-#include <iostream>
-#include <fstream>
-#include <list>
-#include <string>
-#include <vector>
 
-#include "Exceptions.h"
 #include "Frontend/FrontendParser.h"
-#include "QueryProcessor/QueryPreprocessor.h"
-#include "QueryProcessor/QueryEvaluator.h"
-#include "QueryProcessor/QueryOptimizer.h"
-#include "QueryProcessor/QueryProjector.h"
+#include "QueryProcessor/QueryProcessor.h"
 #include "TestWrapper.h"
+
+QueryProcessor queryProcessor = QueryProcessor();
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -33,7 +26,6 @@ void TestWrapper::parse(std::string filePath) {
 
     try {
         frontendParser.parseProgram(filePath);
-
     } catch (std::exception& ex) {
         std::cout << ex.what() << std::endl;
         exit(EXIT_FAILURE);
@@ -49,33 +41,8 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
         return;
     }
 
-    QueryPreprocessor queryPreprocessor = QueryPreprocessor();
-    QueryEvaluator queryEvaluator = QueryEvaluator();
-    QueryProjector queryProjector = QueryProjector();
-    QueryOptimizer optimizer = QueryOptimizer();
-
     try {
-        // Iteration 1
-        /*queryPreprocessor.preprocessQuery(query);
-        QueryTree queryTree = queryPreprocessor.getQueryTree();
-        
-        //Evaluator here.
-        ResultList queryResult = queryEvaluator.selectQueryResults(queryTree);
-
-        // Projector here. Store answer into results. 
-        results = queryProjector.formatResult(queryResult);*/
-        
-         
-        // Iteration 2
-        /*queryPreprocessor.preprocessQuery(query);
-        QueryTree queryTree = optimizer.optimize(queryPreprocessor.getQueryTree());
-        //ResultList queryResult = queryEvaluator.selectQueryResults(queryTree);
-        queryProjector.projectResult(results, queryTree.getResultsInfo(), queryResult);*/
-
-        queryPreprocessor.preprocessQuery(query);
-        QueryTree queryTree = optimizer.optimize(queryPreprocessor.getQueryTree());
-        queryProjector.projectResult(results, queryTree.getResultsInfo(), { { "a1", "s1", "c1", "v1" },{ { "1","2","3","1" },{ "4","5","6","4" } } });
-        queryTree.printGroups();
+        queryProcessor.process(query, results);
     }
     catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;

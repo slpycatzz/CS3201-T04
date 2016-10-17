@@ -93,6 +93,9 @@
     <ClInclude Include="include\Frontend\DesignExtractor.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
+    <ClInclude Include="include\QueryProcessor\QueryProcessor.h">
+      <Filter>Header Files\QueryProcessor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Utils.cpp">
@@ -145,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="source\Frontend\DesignExtractor.cpp">
       <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QueryProcessor\QueryProcessor.cpp">
+      <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
