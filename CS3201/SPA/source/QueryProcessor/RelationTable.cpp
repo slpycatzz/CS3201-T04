@@ -18,6 +18,7 @@ bool RelationTable::isRelationValid(Symbol relation, Symbol clause) {
         case USES:
         case MODIFIES:
         case PARENT:
+        case PARENT_TRANSITIVE:
         case FOLLOWS:
         case FOLLOWS_TRANSITIVE:
         case CALLS:
