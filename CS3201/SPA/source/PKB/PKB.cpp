@@ -862,8 +862,8 @@ void PKB::PrintNextTransitiveTable() {
     std::cout << "=====================" << std::endl;
 
     for (unsigned int i = 1; i < nextTransitiveTable_.size(); i++) {
-
         std::cout << i << "-> { ";
+
         for (unsigned int k = 1; k < nextTransitiveTable_[i].size(); k++) {
             if (nextTransitiveTable_[i][k] == 1) {
                 std::cout << k << " ";
@@ -915,7 +915,15 @@ void PKB::Clear() {
     constantTable_.clear();
     variableTable_.clear();
     procedureTable_.clear();
+    controlVariableTable_.clear();
+    callsTable_.clear();
     stmtTable_.clear();
+    stmtlistTable_.clear();
+
+    expressionTable_.clear();
+    subExpressionTable_.clear();
+
+    /* Deprecated. */
     assignTable_.clear();
 
     callsTable_.clear();
@@ -932,6 +940,9 @@ void PKB::Clear() {
 
     followsTable_.clear();
     followsTransitiveTable_.clear();
+
+    nextTable_.clear();
+    nextTransitiveTable_.clear();
 }
 
 bool PKB::ComparePairAscending(const std::pair<unsigned int, string> &pairOne, const std::pair<unsigned int, string> &pairTwo) {
