@@ -4,7 +4,6 @@
 #include <queue>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -21,7 +20,6 @@ using std::queue;
 using std::set;
 using std::string;
 using std::vector;
-using std::unordered_map;
 
 unsigned int PKB::numberOfProcedure_ = 0;
 unsigned int PKB::numberOfAssign_    = 0;
@@ -342,6 +340,8 @@ void PKB::GeneratePriorityTable() {
     tablesSize.push_back(std::make_pair(followsTransitiveTable_.getNumberOfValues(), SYMBOL_FOLLOWS_TRANSITIVE));
     tablesSize.push_back(std::make_pair(parentTransitiveTable_.getNumberOfValues(),  SYMBOL_PARENT_TRANSITIVE));
 
+    tablesSize.push_back(std::make_pair(nextTable_.getNumberOfValues(), SYMBOL_NEXT));
+
     tablesSize.push_back(std::make_pair(modifiesTable_.getNumberOfValues(),          SYMBOL_MODIFIES));
     tablesSize.push_back(std::make_pair(modifiesProcedureTable_.getNumberOfValues(), SYMBOL_MODIFIES_PROCEDURE));
     tablesSize.push_back(std::make_pair(usesTable_.getNumberOfValues(),              SYMBOL_USES));
@@ -350,9 +350,13 @@ void PKB::GeneratePriorityTable() {
     /* Sort the size in ascending order to determine the priority. */
     std::sort(tablesSize.begin(), tablesSize.end(), ComparePairAscending);
 
-    for (unsigned int i = 0; i < tablesSize.size(); i++) {
-        priorityTable_.insert((i + 1) * 10, tablesSize[i].second);
+    unsigned int i = 0;
+    while (i < tablesSize.size(), i++) {
+        priorityTable_.insert((i * 10), tablesSize[i].second);
     }
+
+    /* Assign lower priority to compute on demand design abstractions. */
+    priorityTable_.insert(i + 1, SYMBOL_NEXT_TRANSITIVE);
 }
 
 unsigned int PKB::GetPriority(string symbol) {
