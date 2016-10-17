@@ -29,8 +29,8 @@ unsigned int PKB::numberOfCall_      = 0;
 
 unsigned int PKB::tableMaximumSize_  = 0;
 
-vector<TreeNode*> PKB::controlFlowGraphs_;
-vector<vector<TreeNode*>> PKB::controlFlowGraphsNodes_;
+vector<CFGNode> PKB::controlFlowGraphs_;
+vector<vector<CFGNode>> PKB::controlFlowGraphsNodes_;
 
 Table<Index, ConstantValue> PKB::constantTable_;
 Table<Index, VariableName>  PKB::variableTable_;
@@ -710,24 +710,24 @@ void PKB::PrintFollowsTransitiveTable() {
 /* END   - Follows table functions */
 /* START - Next table functions */
 
-void PKB::SetControlFlowGraphs(vector<TreeNode*> controlFlowGraphs) {
+void PKB::SetControlFlowGraphs(vector<CFGNode> controlFlowGraphs) {
     controlFlowGraphs_ = controlFlowGraphs;
 
     /* Get all the nodes in the control flow graphs. */
-    for (TreeNode* rootNode : controlFlowGraphs_) {
-        set<TreeNode*> visitedNodes;
+    for (CFGNode rootNode : controlFlowGraphs_) {
+        set<CFGNode> visitedNodes;
 
         rootNode->setVisited(true);
         visitedNodes.insert(rootNode);
 
-        queue<TreeNode*> queue;
+        queue<CFGNode> queue;
         queue.push(rootNode);
 
         while (!queue.empty()) {
-            vector<TreeNode*> children = queue.front()->getChildren();
+            vector<CFGNode> children = queue.front()->getChildren();
             queue.pop();
 
-            for (TreeNode* child : children) {
+            for (CFGNode child : children) {
                 if (!child->isVisited()) {
                     queue.push(child);
 
@@ -737,11 +737,11 @@ void PKB::SetControlFlowGraphs(vector<TreeNode*> controlFlowGraphs) {
             }
         }
 
-        for (TreeNode* node : visitedNodes) {
+        for (CFGNode node : visitedNodes) {
             node->setVisited(false);
         }
 
-        controlFlowGraphsNodes_.push_back(vector<TreeNode*>(visitedNodes.begin(), visitedNodes.end()));
+        controlFlowGraphsNodes_.push_back(vector<CFGNode>(visitedNodes.begin(), visitedNodes.end()));
     }
 }
 
@@ -755,20 +755,20 @@ void PKB::GenerateNextTable(map<StmtNumber, set<StmtNumber>> next) {
 }
 
 void PKB::GenerateNextTransitiveTable() {
-    for (vector<TreeNode*> treeNodes : controlFlowGraphsNodes_) {
+    for (vector<CFGNode> treeNodes : controlFlowGraphsNodes_) {
         /* DFS all the nodes in the control flow graph. */
-        for (TreeNode* node : treeNodes) {
-            vector<TreeNode*> visitedNodes;
-            queue<TreeNode*> queue;
+        for (CFGNode node : treeNodes) {
+            vector<CFGNode> visitedNodes;
+            queue<CFGNode> queue;
 
             queue.push(node);
             while (!queue.empty()) {
-                TreeNode* currentNode = queue.front();
-                vector<TreeNode*> children = currentNode->getChildren();
+                CFGNode currentNode = queue.front();
+                vector<CFGNode> children = currentNode->getChildren();
 
                 queue.pop();
 
-                for (TreeNode* child : children) {
+                for (CFGNode child : children) {
                     if (!child->isVisited()) {
                         child->setVisited(true);
 
@@ -779,7 +779,7 @@ void PKB::GenerateNextTransitiveTable() {
                 }
             }
 
-            for (TreeNode* visited : visitedNodes) {
+            for (CFGNode visited : visitedNodes) {
                 visited->setVisited(false);
             }
         }

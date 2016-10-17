@@ -12,6 +12,7 @@
 #include "TreeNode.h"
 #include "Utils.h"
 
+typedef TreeNode*    CFGNode;
 typedef std::string  ConstantValue;
 typedef std::string  Expression;
 typedef std::string  SubExpressions;
@@ -199,8 +200,8 @@ class PKB {
 
     static unsigned int tableMaximumSize_;
 
-    static std::vector<TreeNode*> controlFlowGraphs_;
-    static std::vector<std::vector<TreeNode*>> controlFlowGraphsNodes_;
+    static std::vector<CFGNode> controlFlowGraphs_;
+    static std::vector<std::vector<CFGNode>> controlFlowGraphsNodes_;
 
     static Table<Index, ConstantValue> constantTable_;                              /* map<index, constantValue>      */
     static Table<Index, VariableName> variableTable_;                               /* map<index, variableName>       */
