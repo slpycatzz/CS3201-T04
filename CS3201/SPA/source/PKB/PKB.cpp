@@ -351,9 +351,9 @@ void PKB::GeneratePriorityTable() {
     /* Sort the size in ascending order to determine the priority. */
     std::sort(tablesSize.begin(), tablesSize.end(), ComparePairAscending);
 
-    unsigned int i = 0;
-    while (i < tablesSize.size(), i++) {
-        priorityTable_.insert((i * 10), tablesSize[i].second);
+    unsigned int i = 1;
+    for (; i < tablesSize.size(); i++) {
+        priorityTable_.insert((i * 10), tablesSize[i - 1].second);
     }
 
     /* Assign lower priority to compute on demand design abstractions. */
