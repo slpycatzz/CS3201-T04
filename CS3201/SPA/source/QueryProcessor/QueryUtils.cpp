@@ -42,7 +42,7 @@ QueryUtils::GetSubMap(std::unordered_map<std::string, std::string>& map, const s
 {
 	std::unordered_map<std::string, std::string> result;
 	for (std::string key : keyList) {
-		result.insert_or_assign(key, map[key]);
+		result.insert_or_assign(key, map.at(key));
 	}
 	return result;
 }

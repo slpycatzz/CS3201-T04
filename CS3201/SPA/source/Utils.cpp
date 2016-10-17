@@ -161,7 +161,7 @@ string Utils::MapToString(unordered_map<string, string> &map) {
     ss << "<";
 
     unordered_map<string, string>::iterator iter(map.begin());
-    while (true) {
+    while (iter != map.end()) {
         ss << (*iter).first << ":" << (*iter).second;
 
         iter++;

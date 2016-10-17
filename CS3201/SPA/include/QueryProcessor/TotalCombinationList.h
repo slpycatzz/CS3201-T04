@@ -20,9 +20,17 @@ public:
 
 	/* Content manipulation */
 
-	void addSynonym(const Synonym &syn, std::vector<Candidate> &candidateList);
+	void addSynonym(Synonym &syn, std::vector<Candidate> &candidateList);
+
+	void addSynonym(const char* &syn, std::vector<Candidate> &candidateList);
+
+	void addSynonym(const char syn[], std::vector<Candidate> &candidateList);
 	
-	void addSynonym(const Synonym &syn, PartialCombinationList &partList);
+	void addSynonym(Synonym &syn, PartialCombinationList &partList);
+
+	void addSynonym(const char* &syn, PartialCombinationList &partList);
+
+	void addSynonym(const char syn[], PartialCombinationList &partList);
 	
 	void merge(Synonym &syn1, Synonym &syn2);
 
@@ -38,13 +46,20 @@ public:
 	
 	/* Content accessors */
 
-	const std::unordered_map<Synonym, PartialCombinationList> getContent();
-	const PartialCombinationList operator[](Synonym &syn);
+	std::unordered_map<Synonym, PartialCombinationList>& getContent();
+	std::set<PartialCombinationList*>& getFactorList();
+	
+	PartialCombinationList& operator[](Synonym &syn);
+	PartialCombinationList& operator[](const char* &syn);
+	PartialCombinationList& operator[](const char syn[]);
+	
 	bool isEmpty();
+	
 	void reduceSingleFactor(const std::vector<Synonym> &synList, PartialCombinationList &candidateList);
 	void reduceTotalContent(const std::vector<Synonym> &synList);
-	PartialCombinationList getSingleFactor(const std::vector<Synonym> &synList, PartialCombinationList &candidateList);
-	PartialCombinationList getCombinationList(const std::vector<Synonym> &synList);
+	
+	PartialCombinationList& getSingleFactor(std::vector<Synonym> &synList, PartialCombinationList &candidateList);
+	PartialCombinationList& getCombinationList(std::vector<Synonym> &synList);
 	std::string toString();
 
 	/* Comparator for CandidateCombination */
@@ -64,13 +79,15 @@ public:
 		std::vector<Synonym> synList;
 	};
 
+	PartialCombinationList cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2);
+
 private:
 	
 	/* Utillities on PartialCombinationList */
 	//template<typename Filterer>
 	void filter(PartialCombinationList &list, std::function<bool(CandidateCombination)> filterer);
 
-	PartialCombinationList cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2);
+	/* TODO: Paste cartesianProduct back here after testing done */
 
 	//template<typename Filterer>
 	PartialCombinationList cartesianProduct(PartialCombinationList &list1,
