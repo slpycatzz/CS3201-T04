@@ -200,7 +200,7 @@ public:
 
         Assert::IsTrue(qe.evaluatePatternClause("25", "_", "\"42\""));
     }
-    TEST_METHOD(QueryOptimizerTestOne) {
+    TEST_METHOD(Integration_Optimizer_TestOne) {
         std::string query, expectedBooleanClauses, actualBooleanClauses;
         std::string expectedUnselectedClauses, actualUnselectedClauses;
         std::string expectedSelectedClauses, actualSelectedClauses;
@@ -251,7 +251,7 @@ public:
         Assert::AreEqual(expectedUnselectedClauses, actualUnselectedClauses);
         Assert::AreEqual(expectedSelectedClauses, actualSelectedClauses);
     }
-    TEST_METHOD(QueryProjectorSelectCallProcedureName) {
+    TEST_METHOD(Integration_Projector_SelectCallProcedureName) {
         //Tests for Select <a,s,c.procName>
         string fileName = "..\\tests\\IntegrationTesting\\IntegrationTest-QueryProjector.txt";
         PKB::Clear();

@@ -14,7 +14,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace UnitTesting {
     TEST_CLASS(QueryProjectorTest) {
 public:
-    TEST_METHOD(QueryProjectorResultListTupleOne) {
+    TEST_METHOD(QueryProjector_ResultListTuple) {
         QueryProjector projector;
         std::string expected, actual;
 
@@ -34,7 +34,7 @@ public:
 
         Assert::AreEqual(expected, actual);
     }
-    TEST_METHOD(QueryProjectorResultListBooleanTrue) {
+    TEST_METHOD(QueryProjector_ResultListBooleanTrue) {
         QueryProjector projector;
         std::string expected, actual;
 
@@ -54,7 +54,7 @@ public:
 
         Assert::AreEqual(expected, actual);
     }
-    TEST_METHOD(QueryProjectorResultListBooleanFalse) {
+    TEST_METHOD(QueryProjector_ResultListBooleanFalse) {
         QueryProjector projector;
         std::string expected, actual;
 
