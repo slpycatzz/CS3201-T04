@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="QueryProjectorUnitTest.cpp" />
+    <ClCompile Include="QueryUtilsUnitTest.cpp" />
     <ClCompile Include="TotalCombinationListUnitTest.cpp" />
     <ClCompile Include="source\Frontend\FrontendParserUnitTest.cpp" />
     <ClCompile Include="source\PKB\PKBUnitTest.cpp" />

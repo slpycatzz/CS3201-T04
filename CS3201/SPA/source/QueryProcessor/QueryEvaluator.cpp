@@ -50,10 +50,10 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query)
 	if (isBoolSelect(selectList)) {
 		std::string resultBoolean;
 		if (!queryResults.isEmpty()) {
-			resultBoolean += SYMBOL_TRUE;
+			resultBoolean.append(SYMBOL_TRUE);
 		}
 		else {
-			resultBoolean += SYMBOL_FALSE;
+			resultBoolean.append(SYMBOL_FALSE);
 		}
 		std::vector<std::vector<std::string>> tupleList;
 		tupleList.push_back(std::vector<std::string>{resultBoolean});

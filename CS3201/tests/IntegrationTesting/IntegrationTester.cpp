@@ -35,17 +35,20 @@ public:
 			exit(EXIT_FAILURE);
 		}
 	}
+
 	void getSampleProgram() {
 		string fileName = "..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt";
         PKB::Clear();
 		parse(fileName);
 	}
+
 	QueryTree getQueryTree(std::string query) {
 		QueryPreprocessor qp;
 		qp.preprocessQuery(query);
 		QueryTree qt(qp.getQueryTree());
 		return qt;
 	}
+
 	std::vector<std::string> resultToString(ResultList &result) {
 		std::vector<std::vector<std::string>> &list = result.second;
 		std::vector<std::string> res;
@@ -63,6 +66,7 @@ public:
         Assert::AreEqual(1, int(PKB::GetNumberOfProcedure()));
         Assert::AreEqual(7, int(PKB::GetNumberOfWhile()));
     }
+
 	TEST_METHOD(Integration_QE_GetCandidatesTest) {
 		getSampleProgram();
 		QueryTree qt(getQueryTree("variable v; Select v;"));
@@ -73,23 +77,7 @@ public:
 		std::vector<std::string> result = resultToString(qe.selectQueryResults(qt));
 		Logger::WriteMessage(Utils::VectorToString(result).c_str());
 	}
-	TEST_METHOD(TestGetCandidates) {
-		getSampleProgram();
-		QueryTree qt(getQueryTree("stmt a; Select a such that Modifies(a, \"a\")"));
-		QueryEvaluator qe;
 
-		TotalCombinationList total(qe.getTotalCandidateList(qt.getVarMap(), qt.getResults()));
-		Logger::WriteMessage(total.toString().c_str());
-		for (unsigned i : PKB::GetSymbolStmtNumbers(STMT)) {
-			Logger::WriteMessage(std::to_string(i).c_str());
-		}
-
-		/**
-		std::string actual(Utils::VectorToString(qe.selectQueryResults(qt)));
-		std::string expected("<<1>,<8>,<9>,<10>,<16>,<23>,<29>>");
-		**/
-		//Assert::AreEqual(expected, actual);
-	}
 	TEST_METHOD(TestEvaluateModifies) {
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; Select a such that Modifies(a, \"a\")"));

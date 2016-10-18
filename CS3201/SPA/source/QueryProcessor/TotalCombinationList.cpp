@@ -202,11 +202,11 @@ PartialCombinationList& TotalCombinationList::getSingleFactor(std::vector<Synony
 
 PartialCombinationList& TotalCombinationList::getCombinationList(std::vector<Synonym> &synList) {
 	reduceTotalContent(synList);
-	PartialCombinationList* result = &(*factorList.begin()).second;
+	PartialCombinationList &result = (*factorList.begin()).second;
 	for (auto &kv : factorList) {
-		result = &cartesianProduct(*result, kv.second);
+		result = cartesianProduct(result, kv.second);
 	}
-	return *result;
+	return result;
 }
 
 PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2) {

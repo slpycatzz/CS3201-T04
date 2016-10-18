@@ -68,16 +68,29 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 
-	TEST_METHOD(GetSelectCombinationsTest) {
+	TEST_METHOD(GetSelectCombinationsTest_1) {
 
 		TotalCombinationList totalCombi(getSampleList());
 		std::vector<std::string> selectList{ "a", "b" , "c" };
 
-		PartialCombinationList
-			selectedCombs(totalCombi.getCombinationList(selectList));
+		PartialCombinationList &selectedCombs(totalCombi.getCombinationList(selectList));
+
 		std::string actual(PartialToString(selectedCombs));
 
 		std::string expected("<<a:1,b:2,c:4>,<a:1,b:2,c:5>,<a:1,b:3,c:4>,<a:1,b:3,c:5>>");
+		Assert::AreEqual(expected, actual);
+	}
+
+	TEST_METHOD(GetSelectCombinationsTest_2) {
+
+		TotalCombinationList totalCombi(getSampleList());
+		std::vector<std::string> selectList{ "a", "c" };
+
+		PartialCombinationList &selectedCombs(totalCombi.getCombinationList(selectList));
+
+		std::string actual(PartialToString(selectedCombs));
+
+		std::string expected("<<a:1,c:4>,<a:1,c:5>>");
 		Assert::AreEqual(expected, actual);
 	}
 

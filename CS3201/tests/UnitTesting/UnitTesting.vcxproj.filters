@@ -45,6 +45,9 @@
     <ClCompile Include="TotalCombinationListUnitTest.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
+    <ClCompile Include="QueryUtilsUnitTest.cpp">
+      <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stdafx.h">
