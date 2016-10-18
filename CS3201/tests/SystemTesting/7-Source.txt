@@ -1,0 +1,49 @@
+procedure Papa {
+	a = 10;
+	c = a + 4;
+	i = 14 + a;
+	t = c * a + 5;
+	x = c + t * 12;
+	call Zehzeh;
+	x = x + a + c;
+	call Korkor;
+	b = x + a * c;
+	while i {
+		b = c - t;
+		if a then {
+			t = t + a;
+			i = t + 1;
+		} else {
+			c = t + a;
+			call Korkor;
+			i = i - 17;
+		}
+		c = t + a;
+	}
+	call Mama;
+}
+
+procedure Mama {
+	while i {
+		a = t * 3 + 2 * c;
+		call Zehzeh;
+	}
+	t = t + a + i;
+}
+
+procedure Korkor {
+	while x {
+		a = c + a;
+	}
+	c = a + c;
+}
+
+procedure Zehzeh {
+	while b {
+		if i then {
+			c = a + 80;
+		} else {
+			a = a * c + t + b * x;
+		}
+	}
+}

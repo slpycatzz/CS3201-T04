@@ -1,0 +1,58 @@
+procedure jhFW {
+	f = ZG5 + Xs;
+	cT = 12 + 42 + 33;
+	while SHdXs {
+		bOdi = 16 + cT;
+		while SHdXs {
+			cT = 46 + bOdi;
+			F = bOdi + SHdXs + D;
+			zL = 42;
+			while f {
+				while D {
+					cT = o + 13 + F;
+					F = zL + f + 7;
+					ZG5 = f + 24 + 39 + f;
+					F = o + 28 + F + zL + Xs;
+					cT = 40 + o + 42 + cT;
+				}
+				Xs = 42 + D + 8 + o;
+				F = o + cT + bOdi;
+				f = 5 + 46 + 7 + 23;
+				f = 22;
+			}
+			F = ZG5 + 8 + 11 + bOdi + 36;
+		}
+		while F {
+			F = 3 + SHdXs;
+			cT = F + 47 + 36 + 36 + bOdi;
+			cT = f;
+			ZG5 = 21 + cT;
+			F = o + cT + 27;
+		}
+	}
+	while SHdXs {
+		F = SHdXs + 49;
+		SHdXs = Xs;
+		ZG5 = ZG5 + ZG5 + 18 + 18;
+		SHdXs = zL + cT + 3;
+		SHdXs = Xs + bOdi + 49 + 22;
+	}
+	bOdi = 23 + 26 + 23 + 8;
+	o = ZG5 + f + SHdXs + F;
+	cT = cT + o;
+	D = zL + F + Xs + 2 + 46;
+	f = o + zL + 4;
+	bOdi = zL + 12 + f + 47;
+	while zL {
+		while ZG5 {
+			f = Xs + ZG5 + bOdi + 15 + F;
+		}
+		ZG5 = ZG5 + 50 + 6 + SHdXs + 6;
+		cT = 20 + 42 + cT + bOdi + cT;
+		o = 25 + 6;
+		SHdXs = 3 + 46 + 7;
+	}
+	zL = ZG5 + F + 6 + 42 + zL;
+	cT = ZG5;
+	cT = D;
+}
