@@ -1,0 +1,4 @@
+1 - test
+stmt a; assign a1; Select a such that Modifies(a, "a") and Uses(5, "c") and Modifies(a1, "a")
+1
+5000

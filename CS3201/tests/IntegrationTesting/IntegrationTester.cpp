@@ -46,7 +46,8 @@ public:
 		QueryPreprocessor qp;
 		qp.preprocessQuery(query);
 		QueryTree qt(qp.getQueryTree());
-		return qt;
+		QueryOptimizer qo;
+		return qo.optimize(qt);
 	}
 
 	std::vector<std::string> resultToString(ResultList &result) {

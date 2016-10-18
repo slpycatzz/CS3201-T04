@@ -139,18 +139,12 @@ QueryTree QueryOptimizer::optimize(QueryTree qt) {
             vector<Clause> group = *it2;
             for (Clause c : group) {
                 bool match = false;
-                vector<string> args = clause.getArg();
-                for (string arg : c.getArg()) {
-                    if (clause.getClauseType() == "pattern") {
-                        if (arg == args.at(0) || arg == args.at(1) || arg == args.at(2)) {
-                            match = true;
-                        }
-                    }
-                    else {
-                        if (arg == args.at(0) || arg == args.at(1)) {
-                            match = true;
-                        }
-                    }
+                for (string arg1 : clause.getSynonyms()) {
+					for (string arg2 : c.getSynonyms()) {
+						if (arg1 == arg2) {
+							match = true;
+						}
+					}
                 }
                 if (match) {
                     (*it2).push_back(clause);

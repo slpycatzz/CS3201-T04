@@ -60,7 +60,8 @@ public:
 		QueryPreprocessor qp;
 		qp.preprocessQuery(query);
 		QueryTree qt(qp.getQueryTree());
-		return qt;
+		QueryOptimizer qo;
+		return qo.optimize(qt);
 	}
 
 	std::vector<std::string> resultToString(ResultList &result) {
@@ -112,6 +113,16 @@ public:
 		Assert::IsTrue(res);
 	}
 
+	TEST_METHOD(GetClausesTest) {
+		getSampleProgram();
+		std::string sampleQuery("stmt s1,s2; assign a1; Select s1 such that Modifies(a1, \"a\") and Uses(5, \"c\") and Parent(s1, s2)");
+		QueryTree qt(getQueryTree(sampleQuery));
+		QueryEvaluator qe;
+
+		std::vector<Clause> clauses(qt.getClauses());
+		Assert::IsTrue(clauses.size() == 3);
+	}
+
 	TEST_METHOD(GetBooleanClausestTest) {
 		getSampleProgram();
 		std::string sampleQuery("stmt a; assign a1; Select a such that Modifies(a, \"a\") and Uses(5, \"c\") and Modifies(a1, \"a\")");
@@ -123,6 +134,8 @@ public:
 	}
 
 	TEST_METHOD(GetSelectedGroupsTest) {
+
+		PKB::Clear();
 		getSampleProgram();
 		std::string sampleQuery("stmt a; assign a1; Select a such that Modifies(a, \"a\") and Uses(5, \"c\") and Modifies(a1, \"a\")");
 		QueryTree qt(getQueryTree(sampleQuery));

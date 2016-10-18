@@ -1,0 +1,24 @@
+declared variables 
+-------------
+a stmt
+a1 assign
+
+
+selected variables 
+-------------
+a 
+
+boolean clauses 
+-------------
+Uses(5,"c")
+
+unselected group 1
+-------------
+a1 
+Modifies(a1,"a")
+
+selected group 1
+-------------
+a 
+Modifies(a,"a")
+
