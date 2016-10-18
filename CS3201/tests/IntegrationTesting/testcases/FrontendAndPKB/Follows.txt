@@ -47,13 +47,13 @@ procedure Test2 {
     while c {               \\26
         d = 1;              \\27
         e = 2;              \\28
-		if y then {         \\29
-		    y = 5;          \\30
-		    z = 10;         \\31
-		} else {	
-		    z = 5;          \\32
-		}
-	
+        if y then {         \\29
+            y = 5;          \\30
+            z = 10;         \\31
+        } else {	
+            z = 5;          \\32
+        }
+
         while x {           \\33
             x = 5;          \\34
             if y then {     \\35
