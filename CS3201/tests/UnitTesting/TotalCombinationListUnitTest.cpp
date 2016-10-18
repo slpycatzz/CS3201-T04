@@ -42,7 +42,7 @@ public:
 		TotalCombinationList totalCombi;
 
 		totalCombi.addSynonym("a", partialCombi1);
-		totalCombi.addSynonym("b", partialCombi1);
+		totalCombi.addSynonym("b", 0);
 		totalCombi.addSynonym("c", partialCombi2);
 
 		return totalCombi;
@@ -58,31 +58,47 @@ public:
 		Assert::AreEqual(expected, actual);
 	}
 
+	TEST_METHOD(CartesianProductTest) {
+
+		TotalCombinationList totalCombi(getSampleList());
+		PartialCombinationList product(totalCombi.cartesianProduct(totalCombi["a"], totalCombi["c"]));
+
+		std::string actual(PartialToString(product));
+		std::string expected("<<a:1,b:2,c:4>,<a:1,b:2,c:5>,<a:1,b:3,c:4>,<a:1,b:3,c:5>>");
+		Assert::AreEqual(expected, actual);
+	}
+
 	TEST_METHOD(GetSelectCombinationsTest) {
 
 		TotalCombinationList totalCombi(getSampleList());
 		std::vector<std::string> selectList{ "a", "b" , "c" };
 
-		std::stringstream actual;
-		actual << "<";
 		PartialCombinationList
 			selectedCombs(totalCombi.getCombinationList(selectList));
-		PartialCombinationList::iterator it(selectedCombs.begin());
-		while (true) {
-			std::string str = Utils::MapToString(*it);
-			actual << str;
-			it++;
-			if (it == selectedCombs.end()) {
-				actual << ">";
-				break;
-			}
-			else {
-				actual << ",";
-			}
-		}
+		std::string actual(PartialToString(selectedCombs));
 
-		std::string expected("<<a:1,b:2,c:4>,<a:1,b:2,c:5>,<a:2,b:3,c:4>,<a:2,b:3,c:5>>");
-		Assert::AreEqual(expected, actual.str());
+		std::string expected("<<a:1,b:2,c:4>,<a:1,b:2,c:5>,<a:1,b:3,c:4>,<a:1,b:3,c:5>>");
+		Assert::AreEqual(expected, actual);
+	}
+
+	TEST_METHOD(GetContentTest) {
+
+		TotalCombinationList totalCombi(getSampleList());
+		std::unordered_map<Synonym, unsigned> content(totalCombi.getContent());
+
+		std::stringstream ss;
+		ss << "<";
+		std::unordered_map<Synonym, unsigned>::iterator it(content.begin());
+		while (it != content.end()) {
+			ss << (*it).first << ":" << (*it).second;
+			it++;
+			if (it != content.end()) ss << ",";
+		}
+		ss << ">";
+
+		std::string actual(ss.str());
+		std::string expected("<a:0,b:0,c:1>");
+		Assert::AreEqual(expected, actual);
 	}
 
 	TEST_METHOD(OperatorLookupTest) {
@@ -99,17 +115,15 @@ public:
 		TotalCombinationList totalCombi(getSampleList());
 		std::vector<std::string> selectList{ "a", "b" };
 
-		std::set<PartialCombinationList*> factorList(totalCombi.getFactorList());
+		std::map<unsigned, PartialCombinationList> factorList(totalCombi.getFactorList());
 
-		std::string actual(PartialToString(totalCombi["b"]));
-
-		//std::string actual("{");
-		//for (PartialCombinationList* pointer : factorList) {
-		//	actual.append(PartialToString(*pointer));
-		//	actual.append(";");
-		//}
-		//actual.append("}");
-		std::string expected("<<a:1,b:2>,<a:1,b:3>>");
+		std::string actual("{");
+		for (auto kv : factorList) {
+			actual.append(PartialToString(kv.second));
+			actual.append(";");
+		}
+		actual.append("}");
+		std::string expected("{<<a:1,b:2>,<a:1,b:3>>;<<c:4>,<c:5>>;}");
 		Assert::AreEqual(expected, actual);
 	}
 
@@ -118,8 +132,7 @@ public:
 		std::vector<std::string> selectList{ "a", "b" };
 
 		totalCombi.reduceTotalContent(selectList);
-		//PartialCombinationList result(totalCombi["a"]);
-		PartialCombinationList result(*(*totalCombi.getFactorList().begin()));
+		PartialCombinationList result(totalCombi["a"]);
 		//result = totalCombi.cartesianProduct(result, result);
 		//PartialCombinationList result(totalCombi.getCombinationList(selectList));
 		//totalCombi.reduceSingleFactor(selectList, result);

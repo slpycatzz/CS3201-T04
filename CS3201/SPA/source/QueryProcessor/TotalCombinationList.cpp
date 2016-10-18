@@ -6,12 +6,27 @@
 /* Constructor */
 TotalCombinationList::TotalCombinationList() {
 	empty = true;
+	factorCounter = 0;
 }
 
 /* Destructor */
 TotalCombinationList::~TotalCombinationList() {}
 
 /* Content Manipulation */
+
+void TotalCombinationList::addSynonym(Synonym &syn, unsigned index) {
+	if (factorList.find(index) != factorList.end()) {
+		content.insert_or_assign(syn, index);
+	}
+}
+
+void TotalCombinationList::addSynonym(const char* &syn, unsigned index) {
+	addSynonym(std::string(syn), index);
+}
+
+void TotalCombinationList::addSynonym(const char syn[], unsigned index) {
+	addSynonym(std::string(syn), index);
+}
 
 void TotalCombinationList::addSynonym(Synonym &syn, std::vector<Candidate> &candidateList) {
 	PartialCombinationList partList(makePartialCombiList(syn, candidateList));
@@ -27,8 +42,9 @@ void TotalCombinationList::addSynonym(const char syn[], std::vector<Candidate> &
 }
 
 void TotalCombinationList::addSynonym(Synonym &syn, PartialCombinationList &partList) {
-	content.insert_or_assign(syn, partList);
-	factorList.insert(&partList);
+	factorList.insert_or_assign(factorCounter, partList);
+	content.insert_or_assign(syn, factorCounter);
+	factorCounter++;
 	empty = partList.empty();
 }
 
@@ -41,33 +57,40 @@ void TotalCombinationList::addSynonym(const char syn[], PartialCombinationList &
 }
 
 void TotalCombinationList::merge(Synonym &syn1, Synonym &syn2) {
-	PartialCombinationList candidateList1(content[syn1]);
-	PartialCombinationList candidateList2(content[syn2]);
-	if (&candidateList1 == &candidateList2) {
+	
+	unsigned index1(content[syn1]);
+	unsigned index2(content[syn2]);
+	if (index1 == index2) {
 		return;
 	}
 	else {
+		PartialCombinationList candidateList1(factorList[content[syn1]]);
+		PartialCombinationList candidateList2(factorList[content[syn2]]);
 		PartialCombinationList &mergedList = cartesianProduct(candidateList1, candidateList2);
+
+		factorList.erase(index1);
+		factorList.erase(index2);
+		factorList.insert_or_assign(factorCounter, mergedList);
+		factorCounter++;
+		
 		for (auto kv : content) {
-			if ((&content[kv.first] == &candidateList1) || (&content[kv.first] == &candidateList2)) {
-				content.insert_or_assign(kv.first, mergedList);
+			if ((kv.second == index1) || (kv.second == index2)) {
+				content.insert_or_assign(kv.first, factorCounter);
 			}
 		}
-		factorList.erase(&candidateList1);
-		factorList.erase(&candidateList2);
-		factorList.insert(&mergedList);
 	}
 }
 
 void TotalCombinationList::combine(TotalCombinationList &combiList) {
-	std::unordered_map<Synonym, PartialCombinationList> combiListContent(combiList.getContent());
-	for (auto kv : combiListContent) {
-		addSynonym(std::string(kv.first), kv.second);
+	std::unordered_map<Synonym, unsigned> combiListContent(combiList.getContent());
+	for (std::pair<Synonym, unsigned> kv : combiListContent) {
+		addSynonym(kv.first, combiList[kv.first]);
 	}
 }
 
 //template<typename Filterer>
 void TotalCombinationList::filter(PartialCombinationList &candidateList, std::function<bool(CandidateCombination)> filterer) {
+	
 	PartialCombinationList::iterator iter = candidateList.begin();
 	while (iter != candidateList.end()) {
 		if (filterer(*iter)) {
@@ -88,58 +111,65 @@ void TotalCombinationList::filter(bool expression) {
 
 //template<typename Filterer>
 void TotalCombinationList::filter(Synonym &syn, std::function<bool(CandidateCombination)> filterer) {
-	PartialCombinationList &candidateList(content[syn]);
+	PartialCombinationList &candidateList(factorList[content[syn]]);
 	filter(candidateList, filterer);
 }
 
 //template<typename Filterer>
 void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, std::function<bool(CandidateCombination)> filterer) {
-	PartialCombinationList &candidateList1(content[syn1]);
-	PartialCombinationList &candidateList2(content[syn2]);
-	if (&candidateList1 == &candidateList2) {
+	
+	unsigned index1(content[syn1]);
+	unsigned index2(content[syn2]);
+	if (index1 == index2) {
 		filter(syn1, filterer);
 	}
 	else {
+		PartialCombinationList &candidateList1(factorList[index1]);
+		PartialCombinationList &candidateList2(factorList[index2]);
 		PartialCombinationList &mergedList = cartesianProduct(candidateList1, candidateList2, filterer);
+
+		factorList.erase(index1);
+		factorList.erase(index2);
+		factorList.insert_or_assign(factorCounter, mergedList);
+		factorCounter++;
+
 		for (auto kv : content) {
-			if ((&content[kv.first] == &candidateList1) || (&content[kv.first] == &candidateList2)) {
-				content.insert_or_assign(kv.first, mergedList);
+			if ((kv.second == index1) || (kv.second == index2)) {
+				content.insert_or_assign(kv.first, factorCounter);
 			}
 		}
-		factorList.erase(&candidateList1);
-		factorList.erase(&candidateList2);
-		factorList.insert(&mergedList);
+
 		empty = mergedList.empty();
 	}
 }
 
 /* Content accessors */
 
-std::unordered_map<Synonym, PartialCombinationList>& TotalCombinationList::getContent() {
+std::unordered_map<Synonym, unsigned>& TotalCombinationList::getContent() {
 	return content;
 }
 
-std::set<PartialCombinationList*>& TotalCombinationList::getFactorList() {
+std::map<unsigned, PartialCombinationList>& TotalCombinationList::getFactorList() {
 	return factorList;
 }
 
 PartialCombinationList& TotalCombinationList::operator[](Synonym &syn) {
-	return content[syn];
+	return factorList[content[syn]];
 }
 
 PartialCombinationList& TotalCombinationList::operator[](const char* &syn) {
-	return content[std::string(syn)];
+	return factorList[content[std::string(syn)]];
 }
 
 PartialCombinationList& TotalCombinationList::operator[](const char syn[]) {
-	return content[std::string(syn)];
+	return factorList[content[std::string(syn)]];
 }
 
 bool TotalCombinationList::isEmpty() {
 	return empty;
 }
 
-void TotalCombinationList::reduceSingleFactor(const std::vector<Synonym> &synList, PartialCombinationList &candidateList) {
+void TotalCombinationList::reduceSingleFactor(std::vector<Synonym> &synList, PartialCombinationList &candidateList) {
 	combinationComp comp(synList);
 	std::set<CandidateCombination, combinationComp> resultSet(comp);
 	for (CandidateCombination &combination : candidateList) {
@@ -152,16 +182,15 @@ void TotalCombinationList::reduceSingleFactor(const std::vector<Synonym> &synLis
 	}
 }
 
-void TotalCombinationList::reduceTotalContent(const std::vector<Synonym> &synList) {
-	for (PartialCombinationList* factorPointer : factorList) {
-		PartialCombinationList &combiList(*factorPointer);
+void TotalCombinationList::reduceTotalContent(std::vector<Synonym> &synList) {
+	for (auto &kv : factorList) {
 		std::vector<Synonym> subSynList;
 		for (Synonym syn : synList) {
-			if (&content[syn] == factorPointer) {
+			if (content[syn] == kv.first) {
 				subSynList.push_back(syn);
 			}
 		}
-		reduceSingleFactor(subSynList, combiList);
+		reduceSingleFactor(subSynList, kv.second);
 	}
 }
 
@@ -173,12 +202,11 @@ PartialCombinationList& TotalCombinationList::getSingleFactor(std::vector<Synony
 
 PartialCombinationList& TotalCombinationList::getCombinationList(std::vector<Synonym> &synList) {
 	reduceTotalContent(synList);
-	PartialCombinationList result = *(*factorList.begin());
-	for (PartialCombinationList* factorPointer : factorList) {
-		PartialCombinationList factor = *factorPointer;
-		result = cartesianProduct(result, factor);
+	PartialCombinationList* result = &(*factorList.begin()).second;
+	for (auto &kv : factorList) {
+		result = &cartesianProduct(*result, kv.second);
 	}
-	return result;
+	return *result;
 }
 
 PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2) {
@@ -231,13 +259,12 @@ PartialCombinationList TotalCombinationList::makePartialCombiList(Synonym syn, s
 }
 
 std::string TotalCombinationList::toString() {
-    for (auto kv : content) {
-        std::string s("<");
+    for (auto kv : factorList) {
+		std::string s("<");
         for (CandidateCombination comb : kv.second) {
             s.append(Utils::MapToString(comb));
             s.append(",");
         }
         s.append(">");
-        return s;
     }
 }
