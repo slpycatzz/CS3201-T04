@@ -383,7 +383,7 @@ TreeNode* FrontendParser::callCallRecognizer() {
     string procedureName = getToken();
 
     /* Validate if procedure name follows naming convention. */
-    if (!Utils::IsValidNamingConvention(currentProcedureName_)) {
+    if (!Utils::IsValidNamingConvention(procedureName)) {
         throw ProgramSyntaxErrorException(MESSAGE_PROCEDURENAME_INVALID);
     }
 
