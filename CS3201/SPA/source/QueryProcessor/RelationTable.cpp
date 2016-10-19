@@ -108,7 +108,7 @@ void RelationTable::initTable() {
     arg1.clear();
     arg2.clear();
 
-    arg1 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE };
+    arg1 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
     arg2 = { STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
     clauseMap1[FOLLOWS] = arg1;
     clauseMap2[FOLLOWS] = arg2;
