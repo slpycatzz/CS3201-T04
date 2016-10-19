@@ -98,23 +98,33 @@ void RelationTable::initTable() {
     arg2.clear();
 
     // stmt refers to all stmt types: stmt || assign while if call prog_line constant
-    arg1 = { STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
-    arg2 = { STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg1 = { STMT,  WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg2 = { CALL, STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
     clauseMap1[PARENT] = arg1;
     clauseMap2[PARENT] = arg2;
 
     clauseMap1[PARENT_TRANSITIVE] = arg1;
     clauseMap2[PARENT_TRANSITIVE] = arg2;
     arg1.clear();
-    arg2.clear();
-
-    arg1 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
-    arg2 = { STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
-    clauseMap1[FOLLOWS] = arg1;
+	arg2.clear();
+	
+	arg1 = { CALL, STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg2 = { CALL, STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    
+	clauseMap1[FOLLOWS] = arg1;
     clauseMap2[FOLLOWS] = arg2;
 
     clauseMap1[FOLLOWS_TRANSITIVE] = arg1;
     clauseMap2[FOLLOWS_TRANSITIVE] = arg2;
+    arg1.clear();
+    arg2.clear();
+
+	// procedure includes variable("procedureName")
+    clauseMap1[NEXT] = arg1;
+    clauseMap2[NEXT] = arg2;
+
+    clauseMap1[NEXT_TRANSITIVE] = arg1;
+    clauseMap2[NEXT_TRANSITIVE] = arg2;
     arg1.clear();
     arg2.clear();
 
@@ -129,16 +139,6 @@ void RelationTable::initTable() {
     arg1.clear();
     arg2.clear();
 
-    // procedure includes variable("procedureName")
-    arg1 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
-    arg2 = { CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE, UNDERSCORE };
-    clauseMap1[NEXT] = arg1;
-    clauseMap2[NEXT] = arg2;
-
-    clauseMap1[NEXT_TRANSITIVE] = arg1;
-    clauseMap2[NEXT_TRANSITIVE] = arg2;
-    arg1.clear();
-    arg2.clear();
 
     arg1 = { STMT, ASSIGN, CONSTANT, PROGRAM_LINE, UNDERSCORE };
     arg2 = { STMT, ASSIGN, CONSTANT, PROGRAM_LINE, UNDERSCORE };
