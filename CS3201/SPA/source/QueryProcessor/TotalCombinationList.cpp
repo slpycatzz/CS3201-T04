@@ -276,4 +276,6 @@ std::string TotalCombinationList::toString() {
         }
         s.append(">");
     }
+
+    return s;
 }
