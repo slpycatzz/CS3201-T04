@@ -37,7 +37,9 @@ class Table {
             return NULL;
         }
 
-        return *(valueToKeysMap[value].begin());
+        for (auto key : valueToKeysMap[value]) {
+            return key;
+        }
     }
 
     inline std::set<K> getKeys() {
@@ -63,7 +65,9 @@ class Table {
             return NULL;
         }
 
-        return *(keyToValuesMap[key].begin());
+        for (auto value : keyToValuesMap[key]) {
+            return value;
+        }
     }
 
     inline std::set<V> getValues() {
@@ -175,6 +179,6 @@ class Table {
     }
 
  private:
-    std::unordered_map<K, std::set<V>> keyToValuesMap;
-    std::unordered_map<V, std::set<K>> valueToKeysMap;
+    std::map<K, std::set<V>> keyToValuesMap;
+    std::map<V, std::set<K>> valueToKeysMap;
 };
