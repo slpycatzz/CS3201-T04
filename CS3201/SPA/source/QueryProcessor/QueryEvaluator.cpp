@@ -166,8 +166,8 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
 void QueryEvaluator::filterByClause(Clause &clause,
 	TotalCombinationList &combinations, std::unordered_map<Synonym, Symbol> &varMap)
 {
-	std::string type(clause.getClauseType());
-	if (type == SYMBOL_PATTERN) {
+	std::string clauseType(clause.getClauseType());
+	if (clauseType == SYMBOL_PATTERN) {
 		std::vector<Synonym> args(clause.getArg());
 		Synonym lhs(args[1]), rhs(args[2]), assignStmt(args[0]);
 		if (QueryUtils::IsStringLiteral(lhs)) {
@@ -177,27 +177,7 @@ void QueryEvaluator::filterByClause(Clause &clause,
 			filterOneVarPattern(assignStmt, lhs, rhs, combinations);
 		}
 	}
-	else if (type == SYMBOL_SUCH_THAT) {
-		std::vector<Synonym> args(clause.getArg());
-		Synonym var0(args[0]), var1(args[1]);
-		if (QueryUtils::IsLiteral(var0)) {
-			if (QueryUtils::IsLiteral(var1)) {
-				filterNoVarClause(type, QueryUtils::LiteralToCandidate(var0), QueryUtils::LiteralToCandidate(var1), combinations);
-			}
-			else {
-				filterSecondVarClause(type, QueryUtils::LiteralToCandidate(var0), var1, combinations);
-			}
-		}
-		else {
-			if (QueryUtils::IsLiteral(var1)) {
-				filterFirstVarClause(type, var0, QueryUtils::LiteralToCandidate(var1), combinations);
-			}
-			else {
-				filterTwoVarsClause(type, var0, var1, combinations);
-			}
-		}
-	}
-	else if (type == SYMBOL_WITH) {
+	else if (clauseType == SYMBOL_WITH) {
 		std::vector<Synonym> args(clause.getArg());
 		Synonym var0(args[0]), var1(args[1]);
 		if (QueryUtils::IsLiteral(var0)) {
@@ -231,6 +211,26 @@ void QueryEvaluator::filterByClause(Clause &clause,
 			}
 			else {
 				filterTwoVarsWith(var0, var1, combinations);
+			}
+		}
+	}
+	else {
+		std::vector<Synonym> args(clause.getArg());
+		Synonym var0(args[0]), var1(args[1]);
+		if (QueryUtils::IsLiteral(var0)) {
+			if (QueryUtils::IsLiteral(var1)) {
+				filterNoVarClause(clauseType, QueryUtils::LiteralToCandidate(var0), QueryUtils::LiteralToCandidate(var1), combinations);
+			}
+			else {
+				filterSecondVarClause(clauseType, QueryUtils::LiteralToCandidate(var0), var1, combinations);
+			}
+		}
+		else {
+			if (QueryUtils::IsLiteral(var1)) {
+				filterFirstVarClause(clauseType, var0, QueryUtils::LiteralToCandidate(var1), combinations);
+			}
+			else {
+				filterTwoVarsClause(clauseType, var0, var1, combinations);
 			}
 		}
 	}
