@@ -779,6 +779,14 @@ string QueryPreprocessor::peek() {
     return emptyString;
 }
 
+string QueryPreprocessor::removeWhitespaces(string str) {
+    std::string::iterator end_pos = std::remove(str.begin(), str.end(), ' ');
+    str.erase(end_pos, str.end());
+    end_pos = std::remove(str.begin(), str.end(), '\t');
+    str.erase(end_pos, str.end());
+    return str;
+}
+
 void QueryPreprocessor::mergeSeparatedClauses() {
     bool isFound = false;
     while (cur < queryList.size() && !isFound) {
@@ -790,4 +798,5 @@ void QueryPreprocessor::mergeSeparatedClauses() {
             cur++;
         }
     }
+    queryList[cur] = removeWhitespaces(peek());
 }
