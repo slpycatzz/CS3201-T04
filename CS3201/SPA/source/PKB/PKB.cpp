@@ -911,6 +911,8 @@ void PKB::Clear() {
     numberOfIf_ = 0;
     numberOfCall_ = 0;
 
+    tableMaximumSize_ = 0;
+
     controlFlowGraphs_.clear();
     controlFlowGraphsNodes_.clear();
 
