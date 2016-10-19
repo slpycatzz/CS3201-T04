@@ -43,13 +43,17 @@ class QueryEvaluator {
 	 TotalCombinationList getTotalCandidateList(std::unordered_map<std::string, Symbol> &varMap, std::vector<Synonym> &synList);
 
 	 // use the clause to filter the tuple candidate list to its sublist
-	 void filterByClause(Clause &clause, TotalCombinationList &combinations);
+	 void filterByClause(Clause &clause, TotalCombinationList &combinations, std::unordered_map<Synonym, Symbol> &varMap);
+
+	 /* filter pattern clauses */
 
 	 void filterNoVarPattern(Synonym assignStmt, Candidate lhs, Candidate expr,
 		 TotalCombinationList &combinations);
 
 	 void filterOneVarPattern(Synonym assignStmt, Synonym lhs, Candidate expr,
 		 TotalCombinationList &combinations);
+
+	 /* filter such that clauses */
 
 	 void filterTwoVarsClause(std::string clauseType,
 		 Synonym &var0, Synonym &var1, TotalCombinationList &combinations);
@@ -62,6 +66,26 @@ class QueryEvaluator {
 
 	 void filterNoVarClause(std::string clauseType, Candidate const1,
 		 Candidate const2, TotalCombinationList &combinations);
+
+	 /* filter with clauses */
+
+	 void filterTwoVarsWith(Synonym &var1, Synonym &var2, TotalCombinationList &combinations);
+
+	 void filterFirstVarWith(Synonym &var, Candidate constant, TotalCombinationList &combinations);
+
+	 void filterSecondVarWith(Candidate constant, Synonym &var, TotalCombinationList &combinations);
+
+	 void filterNoVarWith(Candidate const1, Candidate const2, TotalCombinationList &combinations);
+
+	 /* filter with clauses with call */
+
+	 void filterTwoVarsCallWith(Synonym &call0, Synonym &call1, TotalCombinationList &combinations);
+
+	 void filterOneVarCallWith(Synonym &call, Synonym &var, TotalCombinationList &combinations);
+
+	 void filterNoVarCallWith(Synonym &call, Candidate constant, TotalCombinationList &combinations);
+
+	 /* get results methods */
 
 	 ResultList getResultsFromCombinationList(TotalCombinationList &combinations,
 		 std::vector<Synonym> &selectList);

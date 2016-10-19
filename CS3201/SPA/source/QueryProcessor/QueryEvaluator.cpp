@@ -138,7 +138,7 @@ bool QueryEvaluator::getUnselectedGroupResult
 {
 	TotalCombinationList &combinations(getTotalCandidateList(varMap, synList));
 	for (Clause clause : clauseGroup) {
-		filterByClause(clause, combinations);
+		filterByClause(clause, combinations, varMap);
 		if (combinations.isEmpty()) {
 			return false;
 		}
@@ -154,7 +154,7 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
 {
 	TotalCombinationList combinations(getTotalCandidateList(varMap, synList));
 	for (Clause clause : clauseGroup) {
-		filterByClause(clause, combinations);
+		filterByClause(clause, combinations, varMap);
 		if (combinations.isEmpty()) {
 			return TotalCombinationList();
 		}
@@ -164,7 +164,7 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
 }
 
 void QueryEvaluator::filterByClause(Clause &clause,
-	TotalCombinationList &combinations)
+	TotalCombinationList &combinations, std::unordered_map<Synonym, Symbol> &varMap)
 {
 	std::string type(clause.getClauseType());
 	if (type == SYMBOL_PATTERN) {
@@ -177,7 +177,7 @@ void QueryEvaluator::filterByClause(Clause &clause,
 			filterOneVarPattern(assignStmt, lhs, rhs, combinations);
 		}
 	}
-	else {
+	else if (type == SYMBOL_SUCH_THAT) {
 		std::vector<Synonym> args(clause.getArg());
 		Synonym var0(args[0]), var1(args[1]);
 		if (QueryUtils::IsLiteral(var0)) {
@@ -194,6 +194,43 @@ void QueryEvaluator::filterByClause(Clause &clause,
 			}
 			else {
 				filterTwoVarsClause(type, var0, var1, combinations);
+			}
+		}
+	}
+	else if (type == SYMBOL_WITH) {
+		std::vector<Synonym> args(clause.getArg());
+		Synonym var0(args[0]), var1(args[1]);
+		if (QueryUtils::IsLiteral(var0)) {
+			var0 = QueryUtils::LiteralToCandidate(var0);
+			if (QueryUtils::IsLiteral(var1)) {
+				filterNoVarWith(var0, QueryUtils::LiteralToCandidate(var1), combinations);
+			}
+			else if (varMap[var1] == CALL) {
+				filterNoVarCallWith(var1, var0, combinations);
+			}
+			else {
+				filterSecondVarWith(var0, var1, combinations);
+			}
+		}
+		else if (QueryUtils::IsLiteral(var1)) {
+			var1 = QueryUtils::LiteralToCandidate(var1);
+			if (varMap[var0] == CALL) {
+				filterNoVarCallWith(var0, var1, combinations);
+			}
+			else {
+				filterFirstVarWith(var0, var1, combinations);
+			}
+		}
+		else {
+			if (varMap[var0] == CALL) {
+				if (varMap[var1] == CALL) filterTwoVarsCallWith(var0, var1, combinations);
+				else filterOneVarCallWith(var0, var1, combinations);
+			}
+			else if (varMap[var1] == CALL) {
+				filterOneVarCallWith(var1, var0, combinations);
+			}
+			else {
+				filterTwoVarsWith(var0, var1, combinations);
 			}
 		}
 	}
@@ -248,6 +285,78 @@ void QueryEvaluator::filterNoVarClause(std::string clauseType,
 	Candidate const1, Candidate const2, TotalCombinationList &combinations)
 {
 	combinations.filter(evaluateSuchThatClause(clauseType, const1, const2));
+}
+
+void QueryEvaluator::filterTwoVarsWith(Synonym &var0, Synonym &var1, TotalCombinationList &combinations)
+{
+	auto evaluateClause = [=](CandidateCombination combi) -> bool {
+		return (combi[var0] == combi[var1]);
+	};
+	combinations.mergeAndFilter(var0, var1, evaluateClause);
+}
+
+void QueryEvaluator::filterFirstVarWith(Synonym &var, Candidate constant, TotalCombinationList &combinations)
+{
+	auto evaluateClause = [=](CandidateCombination combi) -> bool {
+		return (combi[var] == constant);
+	};
+	combinations.filter(var, evaluateClause);
+}
+
+void QueryEvaluator::filterSecondVarWith(Candidate constant, Synonym &var, TotalCombinationList &combinations)
+{
+	auto evaluateClause = [=](CandidateCombination combi) -> bool {
+		return (combi[var] == constant);
+	};
+	combinations.filter(var, evaluateClause);
+}
+
+void QueryEvaluator::filterNoVarWith(Candidate const1, Candidate const2, TotalCombinationList &combinations)
+{
+	combinations.filter(const1 == const2);
+}
+
+void QueryEvaluator::filterTwoVarsCallWith(Synonym & call0, Synonym & call1, TotalCombinationList & combinations)
+{
+}
+
+void QueryEvaluator::filterOneVarCallWith(Synonym & call, Synonym & var, TotalCombinationList & combinations)
+{
+	PartialCombinationList part(combinations[var]);
+	if (part.empty()) {
+		combinations.filter(false);
+	}
+	else {
+		Candidate cand(part.front()[var]);
+		if (Utils::IsNonNegativeNumeric(cand)) {
+			auto comp = [=](CandidateCombination combi) -> bool {
+				return (combi[call] == combi[var]);
+			};
+			combinations.mergeAndFilter(call, var, comp);
+		}
+		else {
+			auto comp = [=](CandidateCombination combi) -> bool {
+				return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call])) == combi[var]);
+			};
+			combinations.mergeAndFilter(call, var, comp);
+		}
+	}
+}
+
+void QueryEvaluator::filterNoVarCallWith(Synonym & call, Candidate cand, TotalCombinationList & combinations)
+{
+	if (Utils::IsNonNegativeNumeric(cand)) {
+		auto comp = [=](CandidateCombination combi) -> bool {
+			return (combi[call] == cand);
+		};
+		combinations.filter(call, comp);
+	}
+	else {
+		auto comp = [=](CandidateCombination combi) -> bool {
+			return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call])) == cand);
+		};
+		combinations.filter(call, comp);
+	}
 }
 
 ResultList QueryEvaluator::getResultsFromCombinationList
@@ -466,7 +575,13 @@ bool QueryEvaluator::evaluateFollows(Candidate stmt1, Candidate stmt2)
 {
 	if (stmt1 == "_") {
 		if (stmt2 == "_") {
-			return true; // TODO
+			std::vector<unsigned> vec(PKB::GetSymbolStmtNumbers(STMT));
+			for (unsigned cand1 : vec) {
+				for (unsigned cand2 : vec) {
+					if (PKB::IsFollows(cand1, cand2)) return true;
+				}
+			}
+			return false;
 		}
 		else {
 			int stmtNo2(Utils::StringToInt(stmt2));
@@ -489,7 +604,13 @@ bool QueryEvaluator::evaluateFollowsStar(Candidate stmt1, Candidate stmt2)
 {
 	if (stmt1 == "_") {
 		if (stmt2 == "_") {
-			return true; // TODO
+			std::vector<unsigned> vec(PKB::GetSymbolStmtNumbers(STMT));
+			for (unsigned cand1 : vec) {
+				for (unsigned cand2 : vec) {
+					if (PKB::IsFollowsTransitive(cand1, cand2)) return true;
+				}
+			}
+			return false;
 		}
 		else {
 			int stmtNo2(Utils::StringToInt(stmt2));
@@ -526,14 +647,12 @@ bool QueryEvaluator::evaluateNextStar(Candidate stmt1, Candidate stmt2)
 
 bool QueryEvaluator::evaluateCalls(Candidate proc1, Candidate proc2)
 {
-	//return PKB::IsCalls(proc1, proc2);
-	return false;
+	return PKB::IsCalls(proc1, proc2);
 }
 
 bool QueryEvaluator::evaluateCallsStar(Candidate proc1, Candidate proc2)
 {
-	//return PKB::IsCallsTransitive(proc1, proc2);
-	return false;
+	return PKB::IsCallsTransitive(proc1, proc2);
 }
 
 bool QueryEvaluator::evaluateAffects(Candidate assign1, Candidate assign2)
