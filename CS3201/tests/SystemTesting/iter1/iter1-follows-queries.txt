@@ -85,6 +85,6 @@ Select w such that Follows*(w,_)
 5000
 18 - follows* underscore 6
 while w;
-Select s such that Follows*(_,w)
+Select w such that Follows*(_,w)
 5, 7, 9
 5000

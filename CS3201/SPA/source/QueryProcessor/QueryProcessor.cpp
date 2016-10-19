@@ -20,7 +20,7 @@ void QueryProcessor::process(std::string query, std::list<std::string>& results)
     QueryTree queryTree = queryOptimizer.optimize(queryPreprocessor.getQueryTree());
     ResultList queryResult = queryEvaluator.selectQueryResults(queryTree);
     queryProjector.projectResult(results, queryTree.getResultsInfo(), queryResult);
-
+    
     // For testing
     /*queryPreprocessor.preprocessQuery(query);
     QueryTree queryTree = queryOptimizer.optimize(queryPreprocessor.getQueryTree());

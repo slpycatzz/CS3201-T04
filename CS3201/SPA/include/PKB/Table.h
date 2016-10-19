@@ -179,6 +179,6 @@ class Table {
     }
 
  private:
-    std::map<K, std::set<V>> keyToValuesMap;
-    std::map<V, std::set<K>> valueToKeysMap;
+    std::unordered_map<K, std::set<V>> keyToValuesMap;
+    std::unordered_map<V, std::set<K>> valueToKeysMap;
 };
