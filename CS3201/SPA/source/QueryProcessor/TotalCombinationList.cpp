@@ -268,8 +268,10 @@ PartialCombinationList TotalCombinationList::makePartialCombiList(Synonym syn, s
 }
 
 std::string TotalCombinationList::toString() {
+    std::string s("<");
+
     for (auto kv : factorList) {
-		std::string s("<");
+		s.append("<");
         for (CandidateCombination comb : kv.second) {
             s.append(Utils::MapToString(comb));
             s.append(",");
