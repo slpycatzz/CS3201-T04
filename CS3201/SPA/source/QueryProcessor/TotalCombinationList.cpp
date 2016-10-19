@@ -71,13 +71,13 @@ void TotalCombinationList::merge(Synonym &syn1, Synonym &syn2) {
 		factorList.erase(index1);
 		factorList.erase(index2);
 		factorList.insert_or_assign(factorCounter, mergedList);
-		factorCounter++;
 		
 		for (auto kv : content) {
 			if ((kv.second == index1) || (kv.second == index2)) {
 				content.insert_or_assign(kv.first, factorCounter);
 			}
 		}
+		factorCounter++;
 	}
 }
 
@@ -131,14 +131,13 @@ void TotalCombinationList::mergeAndFilter(Synonym &syn1, Synonym &syn2, std::fun
 		factorList.erase(index1);
 		factorList.erase(index2);
 		factorList.insert_or_assign(factorCounter, mergedList);
-		factorCounter++;
 
 		for (auto kv : content) {
 			if ((kv.second == index1) || (kv.second == index2)) {
 				content.insert_or_assign(kv.first, factorCounter);
 			}
 		}
-
+		factorCounter++;
 		empty = mergedList.empty();
 	}
 }
@@ -151,6 +150,16 @@ std::unordered_map<Synonym, unsigned>& TotalCombinationList::getContent() {
 
 std::map<unsigned, PartialCombinationList>& TotalCombinationList::getFactorList() {
 	return factorList;
+}
+
+bool TotalCombinationList::contains(Synonym &syn) {
+	return (content.find(syn) != content.end());
+}
+bool TotalCombinationList::contains(const char* &syn) {
+	return contains(std::string(syn));
+}
+bool TotalCombinationList::contains(const char syn[]) {
+	return contains(std::string(syn));
 }
 
 PartialCombinationList& TotalCombinationList::operator[](Synonym &syn) {

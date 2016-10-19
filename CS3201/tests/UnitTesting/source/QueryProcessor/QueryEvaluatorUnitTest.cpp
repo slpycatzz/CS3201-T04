@@ -75,14 +75,14 @@ public:
 
 	TEST_METHOD(GetCandidatesTest) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("stmt a; Select a such that Modifies(a, \"a\")"));
+		QueryTree qt(getQueryTree("assign a; while w; Select a such that Follows(a, w)"));
 		QueryEvaluator qe;
 
 		TotalCombinationList total(qe.getTotalCandidateList(qt.getVarMap(), qt.getResults()));
 		PartialCombinationList partial(total["a"]);
 		std::string actual(PartialToString(partial));
 		std::string expected;
-		for (unsigned i : PKB::GetSymbolStmtNumbers(STMT)) {
+		for (unsigned i : PKB::GetSymbolStmtNumbers(ASSIGN)) {
 			expected.append(std::to_string(i));
 			expected.append(",");
 		}
@@ -91,7 +91,7 @@ public:
 
 	TEST_METHOD(GetBooleanGroupResultTest) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("stmt a; Select a such that Modifies(a, \"a\")"));
+		QueryTree qt(getQueryTree("assign a; while w; Select a such that Follows(5, 6)"));
 		QueryEvaluator qe;
 
 		bool res(qe.getBooleanGroupResult(qt.getBooleanClauses()));
@@ -100,7 +100,7 @@ public:
 
 	TEST_METHOD(GetUnselectedGroupResultTest) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("stmt a; Select a such that Modifies(a, \"a\")"));
+		QueryTree qt(getQueryTree("assign s, a; while w; Select s such that Follows(a, w)"));
 		QueryEvaluator qe;
 
 		bool res = true;
@@ -157,27 +157,55 @@ public:
 
 	TEST_METHOD(GetSelectedGroupResultTest) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("stmt a; Select a such that Modifies(a, \"a\")"));
+		QueryTree qt(getQueryTree("assign a; variable v; while w; Select a such that Modifies(a, \"a\")"));
+		Logger::WriteMessage("1");
 		QueryEvaluator qe;
 		
 		std::vector<std::pair<std::vector<Synonym>, std::vector<Clause>>> selectedGroups(qt.getSelectedGroups());
-		Assert::IsFalse(selectedGroups.empty());
 
 		std::unordered_map<Synonym, Symbol> &varMap(qt.getVarMap());
 		std::vector<Clause> &clauseGroup(selectedGroups.at(0).second);
 		std::vector<Synonym> &selectList(qt.getResults());
 		std::vector<Synonym> &synList(selectedGroups.at(0).first);
-
 		TotalCombinationList total(qe.getSelectedGroupResult(synList, varMap, clauseGroup, selectList));
-		PartialCombinationList partial(total["a"]);
+		//Assert::IsTrue(total.isEmpty());
+		PartialCombinationList partial(total.getFactorList()[0]);
+		//Assert::IsTrue(partial.empty());
+		
 		std::string actual(PartialToString(partial));
 		std::string expected;
-		for (unsigned i : PKB::GetSymbolStmtNumbers(STMT)) {
-			expected.append(std::to_string(i));
-			expected.append(",");
-		}
+		
 		Assert::AreEqual(expected, actual);
 	}
 
+	TEST_METHOD(getQueryResultsTest) {
+		getSampleProgram();
+		QueryTree query(getQueryTree("assign a; variable v; while w; Select a such that Follows(3, 4)"));
+		Logger::WriteMessage("1");
+		QueryEvaluator qe;
+
+		Assert::IsTrue(qe.getBooleanGroupResult(query.getBooleanClauses()));
+
+		std::vector<std::pair<std::vector<Synonym>, std::vector<Clause>>> unselectedGroups(query.getUnselectedGroups());
+		std::unordered_map<Synonym, Symbol> varMap(query.getVarMap());
+
+		for (auto &pair : unselectedGroups) {
+			Assert::IsTrue(qe.getUnselectedGroupResult(pair.first, varMap, pair.second));
+			Logger::WriteMessage("2");
+		}
+
+		TotalCombinationList result;
+		std::vector<Synonym> selectList(query.getResults());
+		std::vector<std::pair<std::vector<Synonym>, std::vector<Clause>>> selectedGroups(query.getSelectedGroups());
+
+		for (auto &pair : selectedGroups) {
+			TotalCombinationList &tempCombiList(qe.getSelectedGroupResult(pair.first, varMap, pair.second, selectList));
+			Logger::WriteMessage("3");
+			Assert::IsFalse(tempCombiList.isEmpty());
+			result.combine(tempCombiList);
+		}
+		Logger::WriteMessage("4");
+		Assert::IsTrue(result.isEmpty());
+	}
 	};
 }

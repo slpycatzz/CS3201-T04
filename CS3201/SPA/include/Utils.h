@@ -15,9 +15,8 @@ class Utils {
 
     static std::vector<std::vector<std::string>> Zip(std::vector<std::string> list1, std::vector<std::string> list2);
 
-    static bool IsSubTree(TreeNode &tree, TreeNode &subTree);
-    static bool IsSameTree(TreeNode &tree1, TreeNode &tree2);
-    static bool IsSameTreeNode(TreeNode &node1, TreeNode &node2);
+	static bool IsSameTree(TreeNode &node1, TreeNode &node2);
+	static bool IsSubTree(TreeNode &node, TreeNode &root);
 
     static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
     static bool VectorContains(std::vector<std::string> vec, std::string str);

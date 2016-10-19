@@ -22,6 +22,33 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace SystemTesting {
 	TEST_CLASS(SystemTest) {
 public:
+	struct StringCompare {
+		bool operator() (const std::string &str1, const std::string &str2) {
+			if (Utils::IsNonNegativeNumeric(str1) && Utils::IsNonNegativeNumeric(str2)) {
+				return (std::stoi(str1) < std::stoi(str2));
+			}
+			else {
+				return (str1 < str2);
+			}
+		}
+	};
+
+	struct CombinationCompare {
+		bool operator() (const std::vector<Candidate> comb1, const std::vector<Candidate> comb2) {
+			StringCompare comp;
+			for (unsigned i=0; i < comb1.size(); i++) {
+				if (comp(comb1[i], comb2[i])) return true;
+			}
+			return false;
+		}
+	};
+
+	std::vector<std::vector<Candidate>>& sortResult(std::vector<std::vector<Candidate>> &combList) {
+		CombinationCompare comp;
+		std::sort(combList.begin(), combList.end(), comp);
+		return combList;
+	}
+
 	void parse(string filePath) {
 		FrontendParser frontendParser = FrontendParser();
 
@@ -50,13 +77,26 @@ public:
 		return qo.optimize(qt);
 	}
 
-	std::vector<std::string> resultToString(ResultList &result) {
-		std::vector<std::vector<std::string>> &list = result.second;
+	std::vector<std::string> resultToString(std::vector<std::vector<Candidate>> &list) {
 		std::vector<std::string> res;
 		for (std::vector<std::string> combi : list) {
 			res.push_back(Utils::VectorToString(combi));
 		}
 		return res;
+	}
+
+	std::string format(ResultList &resultList) {
+		return Utils::VectorToString(resultToString(sortResult(resultList.second)));
+	}
+
+	TEST_METHOD(StringCompareTest) {
+		StringCompare comp;
+		Assert::IsTrue(comp("8", "29"));
+	}
+
+	TEST_METHOD(CombinationCompareTest) {
+		CombinationCompare comp;
+		Assert::IsTrue(comp({ "8" }, { "29" }));
 	}
 
     TEST_METHOD(Integration_Parser_and_PKB) {
@@ -75,7 +115,7 @@ public:
 		QueryEvaluator qe;
 		//std::unordered_map<std::string, Symbol> map(qt.getSelect());
 
-		std::vector<std::string> result = resultToString(qe.selectQueryResults(qt));
+		std::vector<std::string> result = resultToString(qe.selectQueryResults(qt).second);
 		Logger::WriteMessage(Utils::VectorToString(result).c_str());
 	}
 
@@ -84,25 +124,27 @@ public:
 		QueryTree qt(getQueryTree("assign a; Select a such that Modifies(a, \"a\")"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
+		std::string actual(format(qe.selectQueryResults(qt)));
 		std::string expected("<<1>,<8>,<9>,<10>,<16>,<23>,<29>>");
 		Assert::AreEqual(expected, actual);
 	}
+
 	TEST_METHOD(TestEvaluateFollows) {
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; while w; Select a such that Follows(a, w)"));
 		QueryEvaluator qe;
 		
-		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
+		std::string actual(format(qe.selectQueryResults(qt)));
 		std::string expected("<<5>,<11>,<29>,<32>,<34>,<37>>");
 		Assert::AreEqual(expected, actual);
 	}
+
 	TEST_METHOD(TestEvaluateFollowsWithConst) {
 		getSampleProgram();
-		QueryTree qt(getQueryTree("assign a; while w; Select w such that Follows(3, a)"));
+		QueryTree qt(getQueryTree("assign a; while w; Select w such that Follows(3, 4)"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
+		std::string actual(format(qe.selectQueryResults(qt)));
 		std::string expected("<<6>,<7>,<12>,<30>,<33>,<35>,<38>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -111,7 +153,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select v such that Modifies(1, v)"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
+		std::string actual(format(qe.selectQueryResults(qt)));
 		std::string expected("<<a>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -120,7 +162,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a such that Uses(a, \"a\")"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
+		std::string actual(format(qe.selectQueryResults(qt)));
 		std::string expected("<<10>,<21>,<22>,<36>,<42>,<44>,<46>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -129,7 +171,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",\"c\")"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
+		std::string actual(format(qe.selectQueryResults(qt)));
 		std::string expected("<<2>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -138,7 +180,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_,\"c\")"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
+		std::string actual(format(qe.selectQueryResults(qt)));
 		std::string expected("<<2>,<16>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -147,7 +189,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",_)"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
+		std::string actual(format(qe.selectQueryResults(qt)));
 		std::string expected("<<2>,<3>,<5>,<24>,<26>,<41>,<48>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -156,7 +198,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_)"));
 		QueryEvaluator qe;
 
-		std::string actual(Utils::VectorToString(resultToString(qe.selectQueryResults(qt))));
+		std::string actual(format(qe.selectQueryResults(qt)));
 		std::string expected("<<2>,<4>,<10>,<16>,<18>,<37>,<42>,<47>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -173,7 +215,7 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_)"));
 		QueryEvaluator qe;
 
-		Assert::IsTrue(qe.evaluatePatternClause("37", "e", "_\"c\"_"));
+		Assert::IsTrue(qe.evaluatePatternClause("2", "c", "_\"c\"_"));
 	}
     TEST_METHOD(TestSubPatternConstant) {
         getSampleProgram();

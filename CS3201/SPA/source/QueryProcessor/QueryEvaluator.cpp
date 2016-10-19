@@ -92,9 +92,29 @@ TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
 		std::vector<std::pair<std::vector<Synonym>, std::vector<Clause>>> selectedGroups(query.getSelectedGroups());
 		
 		for (auto &pair : selectedGroups) {
-			TotalCombinationList tempCombiList(getSelectedGroupResult(pair.first, varMap, pair.second, selectList));
+			std::vector<Synonym> &synList(pair.first);
+			std::vector<Clause> &group(pair.second);
+			TotalCombinationList &tempCombiList(getSelectedGroupResult(synList, varMap, group, selectList));
 			result.combine(tempCombiList);
+
+			for (Synonym &syn : synList) {
+				std::vector<Synonym>::iterator it(selectList.begin());
+				while (it != selectList.end()) {
+					if (syn == (*it)) {
+						it = selectList.erase(it);
+					}
+					else {
+						++it;
+					}
+				}
+			}
 		}
+
+		for (Synonym &syn : selectList) {
+			std::vector<Candidate> candList(getCandidates(varMap[syn]));
+			result.addSynonym(syn, candList);
+		}
+
 		return result;
 	}
 }
@@ -116,7 +136,7 @@ bool QueryEvaluator::getUnselectedGroupResult
 	std::unordered_map<Synonym, Symbol> &varMap,
 	std::vector<Clause> &clauseGroup)
 {
-	TotalCombinationList combinations(getTotalCandidateList(varMap, synList));
+	TotalCombinationList &combinations(getTotalCandidateList(varMap, synList));
 	for (Clause clause : clauseGroup) {
 		filterByClause(clause, combinations);
 		if (combinations.isEmpty()) {
@@ -149,7 +169,7 @@ void QueryEvaluator::filterByClause(Clause &clause,
 	std::string type(clause.getClauseType());
 	if (type == SYMBOL_PATTERN) {
 		std::vector<Synonym> args(clause.getArg());
-		Synonym lhs(args[0]), rhs(args[1]), assignStmt(args[2]);
+		Synonym lhs(args[1]), rhs(args[2]), assignStmt(args[0]);
 		if (QueryUtils::IsStringLiteral(lhs)) {
 			filterNoVarPattern(assignStmt, QueryUtils::LiteralToCandidate(lhs), rhs, combinations);
 		}
@@ -287,30 +307,31 @@ bool QueryEvaluator::evaluateClause(Clause &clause, CandidateCombination &comb) 
 bool QueryEvaluator::evaluatePatternClause(Candidate assignStmt,
 	Candidate lhsVar, std::string expr)
 {
-	if (Utils::TrimSpaces(expr) == "_") {
+	unsigned assignNo(Utils::StringToInt(assignStmt));
+	std::string expression(QueryUtils::GetExpression(expr));
+	if (expression == "_") {
 		if (lhsVar == "_") {
-			unsigned assignNo(Utils::StringToInt(assignStmt));
-			return (PKB::GetAssignTreeNode(assignNo) != NULL);
+			return true;
 		}
 		else {
-			return PKB::IsModifies(Utils::StringToInt(assignStmt), lhsVar);
+			return PKB::IsModifies(assignNo, lhsVar);
 		}
 	}
-	if (lhsVar == "_") {
-		TreeNode* node(QueryUtils::BuildExpressionTree(expr));
-		if (expr.find_first_of('_') == std::string::npos) {
-			return PKB::IsExactRHS(Utils::StringToInt(assignStmt), node);
+	else if (Utils::StartsWith(expression, '_')) {
+		if (lhsVar == "_") {
+			return PKB::IsSubExpression(assignNo, QueryUtils::GetSubExpression(expression));
 		}
 		else {
-			return PKB::IsSubRHS(Utils::StringToInt(assignStmt), node);
+			return (PKB::IsSubExpression(assignNo, QueryUtils::GetSubExpression(expression)) && PKB::IsModifies(assignNo, lhsVar));
 		}
-	}
-	TreeNode* node(QueryUtils::BuildExpressionTree(expr));
-	if (expr.find_first_of('_') == std::string::npos) {
-		return PKB::IsExactPattern(Utils::StringToInt(assignStmt), lhsVar, node);
 	}
 	else {
-		return PKB::IsSubPattern(Utils::StringToInt(assignStmt), lhsVar, node);
+		if (lhsVar == "_") {
+			return PKB::IsExactExpression(assignNo, expression);
+		}
+		else {
+			return (PKB::IsExactExpression(assignNo, expression) && PKB::IsModifies(assignNo, lhsVar));
+		}
 	}
 }
 

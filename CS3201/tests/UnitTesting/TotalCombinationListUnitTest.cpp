@@ -30,7 +30,15 @@ public:
 		return actual;
 	}
 
-	TotalCombinationList getSampleList() {
+	TotalCombinationList getSampleList_1() {
+		TotalCombinationList totalCombi;
+		totalCombi.addSynonym("a", std::vector<Candidate>{ "1" });
+		totalCombi.addSynonym("b", std::vector<Candidate>{"2", "3"});
+		totalCombi.addSynonym("c", std::vector<Candidate>{"4", "5"});
+		return totalCombi;
+	}
+
+	TotalCombinationList getSampleList_2() {
 		CandidateCombination candidateCombi1({ { "a", "1" },{ "b", "2" } });
 		CandidateCombination candidateCombi2({ { "a", "1" },{ "b", "3" } });
 		PartialCombinationList partialCombi1{ candidateCombi1, candidateCombi2 };
@@ -49,7 +57,7 @@ public:
 	}
 	TEST_METHOD(ReduceSingleFactorTest) {
 
-		TotalCombinationList totalCombi(getSampleList());
+		TotalCombinationList totalCombi(getSampleList_2());
 		std::vector<Synonym> synList{ "a" };
 		totalCombi.reduceSingleFactor(synList, totalCombi["a"]);
 
@@ -60,7 +68,7 @@ public:
 
 	TEST_METHOD(CartesianProductTest) {
 
-		TotalCombinationList totalCombi(getSampleList());
+		TotalCombinationList totalCombi(getSampleList_2());
 		PartialCombinationList product(totalCombi.cartesianProduct(totalCombi["a"], totalCombi["c"]));
 
 		std::string actual(PartialToString(product));
@@ -70,7 +78,7 @@ public:
 
 	TEST_METHOD(GetSelectCombinationsTest_1) {
 
-		TotalCombinationList totalCombi(getSampleList());
+		TotalCombinationList totalCombi(getSampleList_2());
 		std::vector<std::string> selectList{ "a", "b" , "c" };
 
 		PartialCombinationList &selectedCombs(totalCombi.getCombinationList(selectList));
@@ -83,7 +91,7 @@ public:
 
 	TEST_METHOD(GetSelectCombinationsTest_2) {
 
-		TotalCombinationList totalCombi(getSampleList());
+		TotalCombinationList totalCombi(getSampleList_2());
 		std::vector<std::string> selectList{ "a", "c" };
 
 		PartialCombinationList &selectedCombs(totalCombi.getCombinationList(selectList));
@@ -96,7 +104,7 @@ public:
 
 	TEST_METHOD(GetContentTest) {
 
-		TotalCombinationList totalCombi(getSampleList());
+		TotalCombinationList totalCombi(getSampleList_2());
 		std::unordered_map<Synonym, unsigned> content(totalCombi.getContent());
 
 		std::stringstream ss;
@@ -116,7 +124,7 @@ public:
 
 	TEST_METHOD(OperatorLookupTest) {
 
-		TotalCombinationList totalCombi(getSampleList());
+		TotalCombinationList totalCombi(getSampleList_2());
 		PartialCombinationList factor(totalCombi["a"]);
 		std::string actual(PartialToString(factor));
 		std::string expected("<<a:1,b:2>,<a:1,b:3>>");
@@ -125,7 +133,7 @@ public:
 
 	TEST_METHOD(GetFactorListTest) {
 
-		TotalCombinationList totalCombi(getSampleList());
+		TotalCombinationList totalCombi(getSampleList_2());
 		std::vector<std::string> selectList{ "a", "b" };
 
 		std::map<unsigned, PartialCombinationList> factorList(totalCombi.getFactorList());
@@ -141,7 +149,7 @@ public:
 	}
 
 	TEST_METHOD(ReduceTotalContentTest) {
-		TotalCombinationList totalCombi(getSampleList());
+		TotalCombinationList totalCombi(getSampleList_2());
 		std::vector<std::string> selectList{ "a", "b" };
 
 		totalCombi.reduceTotalContent(selectList);
@@ -151,6 +159,22 @@ public:
 		//totalCombi.reduceSingleFactor(selectList, result);
 
 		std::string actual(PartialToString(result));
+		std::string expected("<<a:1,b:2>,<a:1,b:3>>");
+		Assert::AreEqual(expected, actual);
+	}
+
+	TEST_METHOD(MergeTest) {
+		TotalCombinationList totalCombi(getSampleList_1());
+		std::string actual;
+		
+		std::map<unsigned, PartialCombinationList>& factorList(totalCombi.getFactorList());
+		std::unordered_map<Synonym, unsigned>& content(totalCombi.getContent());
+		Synonym syn1("a"); unsigned index1(content[syn1]);
+		Synonym syn2("b"); unsigned index2(content[syn2]);
+		
+		totalCombi.merge(syn1, syn2);
+
+		actual = PartialToString(totalCombi[syn1]);
 		std::string expected("<<a:1,b:2>,<a:1,b:3>>");
 		Assert::AreEqual(expected, actual);
 	}

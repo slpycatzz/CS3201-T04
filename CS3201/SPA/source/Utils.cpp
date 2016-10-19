@@ -59,45 +59,14 @@ vector<vector<string>> Utils::Zip(vector<string> list1, vector<string> list2) {
     return result;
 }
 
-bool Utils::IsSubTree(TreeNode &tree, TreeNode &subTree) {
-    if (IsSameTree(tree, subTree)) {
-        return true;
-    }
-
-    vector<TreeNode*> children(tree.getChildren());
-
-    for (unsigned int i = 0; i < children.size(); i++) {
-        if (IsSubTree(*children[i], subTree)) {
-            return true;
-        }
-    }
-
-    return false;
+bool Utils::IsSameTree(TreeNode & node1, TreeNode & node2)
+{
+	return false;
 }
 
-bool Utils::IsSameTree(TreeNode &tree1, TreeNode &tree2) {
-    if (!IsSameTreeNode(tree1, tree2)) {
-        return false;
-    }
-
-    vector<TreeNode*> children1(tree1.getChildren());
-    vector<TreeNode*> children2(tree2.getChildren());
-
-    if (children1.size() != children2.size()) {
-        return false;
-    }
-
-    for (unsigned int i = 0; i < children1.size(); i++) {
-        if (!IsSameTree(*children1[i], *children2[i])) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool Utils::IsSameTreeNode(TreeNode &node1, TreeNode &node2) {
-    return ((node1.getSymbol() == node2.getSymbol()) && (node1.getValue() == (node2.getValue())));
+bool Utils::IsSubTree(TreeNode & node, TreeNode & root)
+{
+	return false;
 }
 
 bool Utils::VectorContains(vector<unsigned int> vec, unsigned int value) {

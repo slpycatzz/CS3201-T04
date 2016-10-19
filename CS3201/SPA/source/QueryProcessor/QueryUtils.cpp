@@ -37,6 +37,28 @@ bool QueryUtils::IsLiteral(string str) {
     return (Utils::IsNonNegativeNumeric(str) || IsStringLiteral(str));
 }
 
+std::string QueryUtils::GetExpression(std::string expr)
+{
+	std::stringstream res;
+	for (char c : expr) {
+		if ((c != ' ') && (c != '\"')) {
+			res << c;
+		}
+	}
+	return res.str();
+}
+
+std::string QueryUtils::GetSubExpression(std::string expr)
+{
+	std::stringstream res;
+	for (char c : expr) {
+		if ((c != ' ') && (c != '_') && (c != '\"')) {
+			res << c;
+		}
+	}
+	return res.str();
+}
+
 std::unordered_map<std::string, std::string>
 QueryUtils::GetSubMap(std::unordered_map<std::string, std::string>& map, const std::vector<std::string>& keyList)
 {

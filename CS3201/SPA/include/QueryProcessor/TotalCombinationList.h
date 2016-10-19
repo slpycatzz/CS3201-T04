@@ -53,6 +53,10 @@ public:
 
 	std::unordered_map<Synonym, unsigned>& getContent();
 	std::map<unsigned, PartialCombinationList>& getFactorList();
+
+	bool contains(Synonym &syn);
+	bool contains(const char* &syn);
+	bool contains(const char syn[]);
 	
 	PartialCombinationList& operator[](Synonym &syn);
 	PartialCombinationList& operator[](const char* &syn);
