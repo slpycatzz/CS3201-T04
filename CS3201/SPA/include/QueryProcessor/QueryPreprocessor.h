@@ -62,7 +62,7 @@ class QueryPreprocessor {
      Symbol getAttributeType(std::string var);
 
      void mergeSeparatedClauses();
-
+     std::string removeWhitespaces(std::string);
      // global variables
      std::vector<std::string> queries;
      std::vector<std::string> queryList;
