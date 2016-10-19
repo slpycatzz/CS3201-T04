@@ -1,0 +1,35 @@
+procedure Sxm {
+	hGLx = hGLx + zF3 + c + ft4Q25 + hGLx;
+	Jmh = 62;
+	while hWe1v {
+		Jmh = Jmh + 35 + jc31 + jc31;
+		jc31 = 47;
+	}
+	while hWe1v {
+		c = 85;
+		while ft4Q25 {
+			zF3 = Jmh + 21 + N6Jrat;
+			hGLx = hGLx + 15 + 27 + hWe1v + 41;
+			while hWe1v {
+				hGLx = 8 + Jmh;
+				jc31 = 77 + hGLx + 98 + Jmh;
+				hWe1v = 33;
+				hGLx = 4 + 92;
+			}
+		}
+		c = Jmh + ft4Q25;
+	}
+	N6Jrat = c + 20 + 47 + jc31;
+	jc31 = hGLx + 31 + 77 + jc31;
+	while c {
+		while Jmh {
+			N6Jrat = hWe1v + zF3 + N6Jrat;
+			Jmh = 62 + 17;
+			jc31 = hWe1v + jc31;
+		}
+		jc31 = hWe1v + Jmh + 49 + 80 + zF3;
+	}
+	jc31 = hWe1v;
+	N6Jrat = 55 + 45;
+	hGLx = hGLx + 63 + hWe1v;
+}
