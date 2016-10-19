@@ -69,6 +69,14 @@ Icon?
 # Project-specific files
 ========================
 local_tests/
+source.txt
+s.txt
+query.txt
+q.txt
+output.txt
+out.txt
+output.xml
+out.xml
 
 # User-specific files
 # ===================
