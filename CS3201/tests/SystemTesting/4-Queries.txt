@@ -136,47 +136,47 @@ Select s such that Modifies (s, "D")
 28 - System test
  
 Select BOOLEAN such that Modifies (36, "D")
-true
+TRUE
 5000
 29 - System test
  
 Select BOOLEAN such that Modifies (44, "cT")
-false
+FALSE
 5000
 30 - System test
 variable xyz; 
 Select BOOLEAN such that Modifies (19, xyz) 
-true
+TRUE
 5000
 31 - System test
 variable xyz; assign a; 
 Select BOOLEAN such that Modifies (a, "xyz")
-false
+FALSE
 5000
 32 - System test
 assign a; 
 Select BOOLEAN such that Modifies (a, "ZG5")
-true
+TRUE
 5000
 33 - System test
 variable v; 
 Select BOOLEAN such that Modifies (42, v) 
-true
+TRUE
 5000
 34 - System test
 variable v; 
 Select BOOLEAN such that Modifies (111, v) 
-false
+FALSE
 5000
 35 - System test
  
 Select BOOLEAN such that Modifies (42, _) 
-true
+TRUE
 5000
 36 - System test
  
 Select BOOLEAN such that Modifies (111, _) 
-false
+FALSE
 5000
 37 - System test
 while w; stmt s; variable v; 
@@ -286,57 +286,57 @@ Select s such that Uses(s, "Xs")
 58 - System test
  
 Select BOOLEAN such that Uses(25, "ZG5")
-false
+FALSE
 5000
 59 - System test
  
 Select BOOLEAN such that Uses(9, "D")
-true
+TRUE
 5000
 60 - System test
  
 Select BOOLEAN such that Uses(7, "f")
-false
+FALSE
 5000
 61 - System test
 variable abc; 
 Select BOOLEAN such that Uses(39, abc) 
-true
+TRUE
 5000
 62 - System test
 variable xyz; assign a; 
 Select BOOLEAN such that Uses(a, "xyz")
-false
+FALSE
 5000
 63 - System test
 assign a; 
 Select BOOLEAN such that Uses(a, "cT")
-true
+TRUE
 5000
 64 - System test
 assign a; 
 Select BOOLEAN such that Uses(a, "bOdi")
-true
+TRUE
 5000
 65 - System test
 variable v; 
 Select BOOLEAN such that Uses(31, v) 
-true
+TRUE
 5000
 66 - System test
 variable v; 
 Select BOOLEAN such that Uses(45, v) 
-false
+FALSE
 5000
 67 - System test
  
 Select BOOLEAN such that Uses(31, _) 
-true
+TRUE
 5000
 68 - System test
  
 Select BOOLEAN such that Uses(45, _) 
-false
+FALSE
 5000
 69 - System test
 stmt s, s1, s2; 
@@ -666,42 +666,42 @@ Select w such that Parent*(w,11)
 134 - System test
  
 Select BOOLEAN such that Parent (3, 23) 
-false
+FALSE
 5000
 135 - System test
  
 Select BOOLEAN such that Parent (5, 20) 
-true
+TRUE
 5000
 136 - System test
  
 Select BOOLEAN such that Parent* (3, 23) 
-true
+TRUE
 5000
 137 - System test
  
 Select BOOLEAN such that Parent* (5, 20) 
-true
+TRUE
 5000
 138 - System test
 
 Select BOOLEAN such that Parent (7, _) 
-false
+FALSE
 5000
 139 - System test
  
 Select BOOLEAN such that Parent* (22, _) 
-false
+FALSE
 5000
 140 - System test
    
 Select BOOLEAN such that Parent (_, 7) 
-true
+TRUE
 5000
 141 - System test
  
 Select BOOLEAN such that Parent* (_, 22) 
-true
+TRUE
 5000
 142 - System test
 assign a1, a2; 
@@ -1061,27 +1061,27 @@ Select s such that Follows*(_, s)
 213 - System test
 stmt s; 
 Select BOOLEAN such that Follows* (s, s) 
-false
+FALSE
 5000
 214 - System test
 assign a; 
 Select BOOLEAN such that Follows* (a, a) 
-false
+FALSE
 5000
 215 - System test
 while w; 
 Select BOOLEAN such that Follows* (w, w) 
-false
+FALSE
 5000
 216 - System test
 stmt s; 
 Select BOOLEAN such that Follows* (s, s) 
-false
+FALSE
 5000
 217 - System test
 prog_line n; 
 Select BOOLEAN such that Follows* (n, n) 
-false
+FALSE
 5000
 218 - System test
 stmt s; 
@@ -1106,42 +1106,42 @@ Select s such that Follows* (s, 7)
 222 - System test
  
 Select BOOLEAN such that Follows (12, 13) 
-true
+TRUE
 5000
 223 - System test
  
 Select BOOLEAN such that Follows (4, 21) 
-false
+FALSE
 5000
 224 - System test
  
 Select BOOLEAN such that Follows* (29, 28)
-false
+FALSE
 5000
 225 - System test
   
 Select BOOLEAN such that Follows* (4, 21) 
-true
+TRUE
 5000
 226 - System test
  
 Select BOOLEAN such that Follows (9, _) 
-true
+TRUE
 5000
 227 - System test
  
 Select BOOLEAN such that Follows* (20, _) 
-false
+FALSE
 5000
 228 - System test
  
 Select BOOLEAN such that Follows (_, 1) 
-false
+FALSE
 5000
 229 - System test
  
 Select BOOLEAN such that Follows* (_, 45) 
-true
+TRUE
 5000
 230 - System test
 assign a; variable v; 
@@ -1241,12 +1241,12 @@ Select w pattern w ("ZG5", _)
 249 - System test
 while w; 
 Select BOOLEAN pattern w ("bOdi", _) 
-false
+FALSE
 5000
 250 - System test
 assign a; 
 Select BOOLEAN pattern a ("F", _) 
-true
+TRUE
 5000
 251 - System test
 stmt s;
