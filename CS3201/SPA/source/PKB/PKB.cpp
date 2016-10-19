@@ -922,6 +922,8 @@ void PKB::Clear() {
     stmtTable_.clear();
     stmtlistTable_.clear();
 
+    priorityTable_.clear();
+
     expressionTable_.clear();
     subExpressionTable_.clear();
 
