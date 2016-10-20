@@ -113,10 +113,16 @@ TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
 			}
 		}
 
-		for (Synonym &syn : selectList) {
-			std::vector<Candidate> candList(getCandidates(varMap[syn]));
-			result.addSynonym(syn, candList);
-		}
+        if (selectList.size() == 1 && selectList[0] == "BOOLEAN") {
+            std::vector<Candidate> candList({ "TRUE" });
+            result.addSynonym("BOOLEAN", candList);
+        }
+        else {
+            for (Synonym &syn : selectList) {
+                std::vector<Candidate> candList(getCandidates(varMap[syn]));
+                result.addSynonym(syn, candList);
+            }
+        }
 
 		return result;
 	}
@@ -510,7 +516,10 @@ bool QueryEvaluator::evaluateUses(Candidate procOrStmtNo, Candidate varName)
 		}
 	}
 	else {
-		return PKB::IsUsesProcedure(procOrStmtNo, varName);
+        if (varName == "_") {
+            return (!PKB::GetProcedureUsedVariables(procOrStmtNo).empty());
+        }
+        return PKB::IsUsesProcedure(procOrStmtNo, varName);
 	}
 }
 
