@@ -555,7 +555,8 @@ void QueryPreprocessor::callFactorRecognizer(string &var) {
     } else if (var == "\"") {
 
     } else {
-        throw QuerySyntaxErrorException("invalid var or const");
+        var += "end";
+        throw QuerySyntaxErrorException("invalid var or const"+var);
     }
 }
 
@@ -565,7 +566,7 @@ void QueryPreprocessor::callTermRecognizer(string &var) {
     while (accept(var, CHAR_SYMBOL_MULTIPLY)) {
         patternList.push_back(string(1, CHAR_SYMBOL_MULTIPLY));
 
-        callFactorRecognizer(var);
+        // callFactorRecognizer(var);
 
     }
 }
