@@ -20,7 +20,10 @@ std::vector<Candidate> QueryEvaluator::getCandidates(Symbol &synType) {
 			return PKB::GetAllVariableNames();
 		case PROCEDURE:
 			return PKB::GetAllProcedures();
+        case CONSTANT:
+            return PKB::GetAllConstantValues();
 		case PROGRAM_LINE:
+            return Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(STMT));
 		case STMT:
 		case ASSIGN:
 		case IF:

@@ -27,4 +27,9 @@ void QueryProcessor::process(std::string query, std::list<std::string>& results)
     //queryProjector.projectResult(results, queryTree.getResultsInfo(), { { "a1", "s1", "c1" },{ { "1","2","3" },{ "4","5","6" } } });
     //queryTree.printGroups();
     //PKB::PrintPriorityTable();
+    /*std::cout << "\n";
+    for (std::string s : Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(PROGRAM_LINE))) {
+        std::cout << s << " ";
+    }
+    std::cout << "\n\n";*/
 }
