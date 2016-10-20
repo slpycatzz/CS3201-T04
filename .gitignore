@@ -117,3 +117,5 @@ ipch/
 *.vsp
 *.vspx
 *.sap
+CS3201/AutoTester/tests/
+CS3201/tests/SystemTesting/output/
