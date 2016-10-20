@@ -17,7 +17,6 @@ namespace IntegrationTesting {
         string testcasesDirectory = "..\\tests\\IntegrationTesting\\testcases\\FrontendAndPKB\\";
 
         TEST_METHOD_INITIALIZE(Initialize) {
-			Logger::WriteMessage("Initialize Parser and PKB");
             frontendParser = FrontendParser();
             PKB::Clear();
         }

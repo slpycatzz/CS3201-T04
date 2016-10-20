@@ -115,7 +115,7 @@ public:
 		//std::unordered_map<std::string, Symbol> map(qt.getSelect());
 
 		std::vector<std::string> result = resultToString(qe.selectQueryResults(qt).second);
-		Logger::WriteMessage(Utils::VectorToString(result).c_str());
+		//Logger::WriteMessage(Utils::VectorToString(result).c_str());
 	}
 
 	TEST_METHOD(TestEvaluateModifies) {

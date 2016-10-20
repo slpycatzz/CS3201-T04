@@ -82,10 +82,15 @@ public:
 		PartialCombinationList partial(total["a"]);
 		std::string actual(PartialToString(partial));
 		std::string expected;
+        expected.append("<");
 		for (unsigned i : PKB::GetSymbolStmtNumbers(ASSIGN)) {
+            expected.append("<a:");
 			expected.append(std::to_string(i));
+            expected.append(">");
 			expected.append(",");
 		}
+        expected = expected.substr(0, expected.length() - 1);
+        expected.append(">");
 		Assert::AreEqual(expected, actual);
 	}
 
@@ -158,7 +163,7 @@ public:
 	TEST_METHOD(GetSelectedGroupResultTest) {
 		getSampleProgram();
 		QueryTree qt(getQueryTree("assign a; variable v; while w; Select a such that Modifies(a, \"a\")"));
-		Logger::WriteMessage("1");
+		
 		QueryEvaluator qe;
 		
 		std::vector<std::pair<std::vector<Synonym>, std::vector<Clause>>> selectedGroups(qt.getSelectedGroups());
@@ -173,15 +178,14 @@ public:
 		//Assert::IsTrue(partial.empty());
 		
 		std::string actual(PartialToString(partial));
-		std::string expected;
+        std::string expected("<<a:1>,<a:10>,<a:16>,<a:23>,<a:29>,<a:8>,<a:9>>");
 		
 		Assert::AreEqual(expected, actual);
 	}
-
 	TEST_METHOD(getQueryResultsTest) {
 		getSampleProgram();
 		QueryTree query(getQueryTree("assign a; variable v; while w; Select a such that Follows(3, 4)"));
-		Logger::WriteMessage("1");
+		
 		QueryEvaluator qe;
 
 		Assert::IsTrue(qe.getBooleanGroupResult(query.getBooleanClauses()));
@@ -191,7 +195,6 @@ public:
 
 		for (auto &pair : unselectedGroups) {
 			Assert::IsTrue(qe.getUnselectedGroupResult(pair.first, varMap, pair.second));
-			Logger::WriteMessage("2");
 		}
 
 		TotalCombinationList result;
@@ -200,11 +203,10 @@ public:
 
 		for (auto &pair : selectedGroups) {
 			TotalCombinationList &tempCombiList(qe.getSelectedGroupResult(pair.first, varMap, pair.second, selectList));
-			Logger::WriteMessage("3");
 			Assert::IsFalse(tempCombiList.isEmpty());
 			result.combine(tempCombiList);
 		}
-		Logger::WriteMessage("4");
+		
 		Assert::IsTrue(result.isEmpty());
 	}
 	};
