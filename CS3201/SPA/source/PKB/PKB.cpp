@@ -111,12 +111,12 @@ bool PKB::HasConstant(ConstantValue constantValue) {
     return constantTable_.hasValue(constantValue);
 }
 
-ConstantValue PKB::GetConstantValue(Index index) {
-    return (constantTable_.hasKey(index)) ? constantTable_.getValue(index) : "";
+set<ConstantValue> PKB::GetConstantValue(Index index) {
+    return constantTable_.getValues(index);
 }
 
-Index PKB::GetConstantIndex(ConstantValue constantValue) {
-    return (constantTable_.hasValue(constantValue)) ? constantTable_.getKey(constantValue) : 0;
+set<Index> PKB::GetConstantIndex(ConstantValue constantValue) {
+    return constantTable_.getKeys(constantValue);
 }
 
 vector<ConstantValue> PKB::GetAllConstantValues() {
@@ -146,12 +146,12 @@ bool PKB::HasVariable(VariableName variableName) {
     return variableTable_.hasValue(variableName);
 }
 
-VariableName PKB::GetVariableName(Index index) {
-    return (variableTable_.hasKey(index)) ? variableTable_.getValue(index) : "";
+set<VariableName> PKB::GetVariableName(Index index) {
+    return variableTable_.getValues(index);
 }
 
-Index PKB::GetVariableIndex(VariableName variableName) {
-    return (variableTable_.hasValue(variableName)) ? variableTable_.getKey(variableName) : 0;
+set<Index> PKB::GetVariableIndex(VariableName variableName) {
+    return variableTable_.getKeys(variableName);
 }
 
 vector<VariableName> PKB::GetAllVariableNames() {
@@ -182,12 +182,12 @@ bool PKB::HasProcedure(ProcedureName procedureName) {
     return procedureTable_.hasValue(procedureName);
 }
 
-ProcedureName PKB::GetProcedureName(Index index) {
-    return (procedureTable_.hasKey(index)) ? procedureTable_.getValue(index) : "";
+set<ProcedureName> PKB::GetProcedureName(Index index) {
+    return procedureTable_.getValues(index);
 }
 
-Index PKB::GetProcedureIndex(ProcedureName procedureName) {
-    return (procedureTable_.hasValue(procedureName)) ? procedureTable_.getKey(procedureName) : 0;
+set<Index> PKB::GetProcedureIndex(ProcedureName procedureName) {
+    return procedureTable_.getKeys(procedureName);
 }
 
 vector<ProcedureName> PKB::GetAllProcedures() {
@@ -220,8 +220,8 @@ bool PKB::HasControlVariableAtStmtNumber(StmtNumber stmtNumber, VariableName con
     return controlVariableTable_.hasKeyToValue(stmtNumber, controlVariable);
 }
 
-VariableName PKB::GetControlVariable(StmtNumber stmtNumber) {
-    return (controlVariableTable_.hasKey(stmtNumber)) ? controlVariableTable_.getValue(stmtNumber) : "";
+set<VariableName> PKB::GetControlVariable(StmtNumber stmtNumber) {
+    return controlVariableTable_.getValues(stmtNumber);
 }
 
 vector<VariableName> PKB::GetAllControlVariables() {
@@ -387,14 +387,14 @@ void PKB::GenerateSubExpressionTable(map<StmtNumber, set<SubExpressions>> subExp
     }
 }
 
-bool PKB::IsExactPattern(StmtNumber stmtNumber, VariableName controlVariable, Expression expression) {
+bool PKB::IsExactPattern(StmtNumber stmtNumber, VariableName variableName, Expression expression) {
     string stmtSymbol = GetStmtSymbol(stmtNumber);
 
     if (stmtSymbol == SYMBOL_WHILE || stmtSymbol == SYMBOL_IF) {
-        return HasControlVariableAtStmtNumber(stmtNumber, controlVariable);
+        return HasControlVariableAtStmtNumber(stmtNumber, variableName);
 
     } else if (stmtSymbol == SYMBOL_ASSIGN) {
-        if (HasControlVariableAtStmtNumber(stmtNumber, controlVariable)) {
+        if (HasControlVariableAtStmtNumber(stmtNumber, variableName)) {
             return IsExactExpression(stmtNumber, expression);
         }
     }
@@ -402,14 +402,14 @@ bool PKB::IsExactPattern(StmtNumber stmtNumber, VariableName controlVariable, Ex
     return false;
 }
 
-bool PKB::IsSubPattern(StmtNumber stmtNumber, VariableName controlVariable, SubExpressions subExpression) {
+bool PKB::IsSubPattern(StmtNumber stmtNumber, VariableName variableName, SubExpressions subExpression) {
     string stmtSymbol = GetStmtSymbol(stmtNumber);
 
     if (stmtSymbol == SYMBOL_WHILE || stmtSymbol == SYMBOL_IF) {
-        return HasControlVariableAtStmtNumber(stmtNumber, controlVariable);
+        return HasControlVariableAtStmtNumber(stmtNumber, variableName);
 
     } else if (stmtSymbol == SYMBOL_ASSIGN) {
-        if (HasControlVariableAtStmtNumber(stmtNumber, controlVariable)) {
+        if (HasControlVariableAtStmtNumber(stmtNumber, variableName)) {
             return IsSubExpression(stmtNumber, subExpression);
         }
     }
@@ -469,8 +469,8 @@ bool PKB::IsCallsTransitive(ProcedureName calling, set<ProcedureName> called) {
     return callsTransitiveTable_.hasKeyToValues(calling, called);
 }
 
-ProcedureName PKB::GetCalling(ProcedureName called) {
-    return (callsTable_.hasValue(called)) ? callsTable_.getKey(called) : "";
+set<ProcedureName> PKB::GetCalling(ProcedureName called) {
+    return callsTable_.getKeys(called);
 }
 
 set<ProcedureName> PKB::GetCalled(ProcedureName calling) {
@@ -631,8 +631,8 @@ bool PKB::IsParentTransitive(StmtNumber parent, set<StmtNumber> children) {
     return parentTransitiveTable_.hasKeyToValues(parent, children);
 }
 
-StmtNumber PKB::GetParent(StmtNumber child) {
-    return (parentTable_.hasValue(child)) ? parentTable_.getKey(child) : 0;
+set<StmtNumber> PKB::GetParent(StmtNumber child) {
+    return parentTable_.getKeys(child);
 }
 
 set<StmtNumber> PKB::GetChildren(StmtNumber parent) {
@@ -683,8 +683,8 @@ bool PKB::IsFollowsTransitive(StmtNumber follows, set<StmtNumber> followings) {
     return followsTransitiveTable_.hasKeyToValues(follows, followings);
 }
 
-StmtNumber PKB::GetFollows(StmtNumber following) {
-    return (followsTable_.hasValue(following)) ? followsTable_.getKey(following) : 0;
+set<StmtNumber> PKB::GetFollows(StmtNumber following) {
+    return followsTable_.getKeys(following);
 }
 
 set<StmtNumber> PKB::GetFollowing(StmtNumber follows) {

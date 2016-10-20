@@ -33,14 +33,20 @@ namespace UnitTesting {
 
             PKB::GenerateConstantTable(constants);
 
-            unsigned int index = PKB::GetConstantIndex("1");
-
             Assert::IsTrue(PKB::HasConstant("10"));
             Assert::IsFalse(PKB::HasConstant("1000"));
 
-            Assert::AreNotEqual(index, static_cast<unsigned int>(0));
-            Assert::AreEqual(PKB::GetConstantValue(index), string("1"));
-            Assert::AreEqual(PKB::GetConstantIndex("2000"), static_cast<unsigned int>(0));
+            for (const auto &index : PKB::GetConstantIndex("1")) {
+                Assert::AreNotEqual(index, static_cast<unsigned int>(0));
+
+                for (const auto &constant : PKB::GetConstantValue(index)) {
+                    Assert::AreEqual(constant, string("1"));
+                }
+            }
+
+            for (const auto &index : PKB::GetConstantIndex("2000")) {
+                Assert::AreEqual(index, static_cast<unsigned int>(0));
+            }
 
             vector<string> vec = PKB::GetAllConstantValues();
             set<string> tableConstants(vec.begin(), vec.end());
@@ -57,14 +63,20 @@ namespace UnitTesting {
 
             PKB::GenerateVariableTable(variables);
 
-            unsigned int index = PKB::GetVariableIndex("xyz");
-
             Assert::IsTrue(PKB::HasVariable("x"));
             Assert::IsFalse(PKB::HasVariable("Xyz"));
 
-            Assert::AreNotEqual(index, static_cast<unsigned int>(0));
-            Assert::AreEqual(PKB::GetVariableName(index), string("xyz"));
-            Assert::AreEqual(PKB::GetVariableIndex("xyz1234"), static_cast<unsigned int>(0));
+            for (const auto &index : PKB::GetVariableIndex("xyz")) {
+                Assert::AreNotEqual(index, static_cast<unsigned int>(0));
+
+                for (const auto &variableName : PKB::GetVariableName(index)) {
+                    Assert::AreEqual(variableName, string("xyz"));
+                }
+            }
+
+            for (const auto &index : PKB::GetVariableIndex("xyz1234")) {
+                Assert::AreEqual(index, static_cast<unsigned int>(0));
+            }
 
             vector<string> vec = PKB::GetAllVariableNames();
             set<string> tableVariables(vec.begin(), vec.end());
@@ -82,14 +94,20 @@ namespace UnitTesting {
 
             PKB::GenerateProcedureTable(procedures);
 
-            unsigned int index = PKB::GetProcedureIndex("Pineapple");
-
             Assert::IsTrue(PKB::HasProcedure("Apple"));
             Assert::IsFalse(PKB::HasProcedure("apple"));
 
-            Assert::AreNotEqual(index, static_cast<unsigned int>(0));
-            Assert::AreEqual(PKB::GetProcedureName(index), string("Pineapple"));
-            Assert::AreEqual(PKB::GetProcedureIndex("angaroo"), static_cast<unsigned int>(0));
+            for (const auto &index : PKB::GetProcedureIndex("Pineapple")) {
+                Assert::AreNotEqual(index, static_cast<unsigned int>(0));
+
+                for (const auto &procedureName : PKB::GetProcedureName(index)) {
+                    Assert::AreEqual(procedureName, string("Pineapple"));
+                }
+            }
+
+            for (const auto &index : PKB::GetProcedureIndex("angaroo")) {
+                Assert::AreEqual(index, static_cast<unsigned int>(0));
+            }
 
             vector<string> vec = PKB::GetAllProcedures();
             set<string> tableProcedures(vec.begin(), vec.end());
@@ -118,8 +136,13 @@ namespace UnitTesting {
             Assert::IsFalse(PKB::HasControlVariableAtStmtNumber(12, "sleep"));
             Assert::IsFalse(PKB::HasControlVariableAtStmtNumber(10, "sleepy"));
 
-            Assert::AreEqual(PKB::GetControlVariable(10), string("zyx"));
-            Assert::AreEqual(PKB::GetControlVariable(13), string(""));
+            for (const auto &controlVariable : PKB::GetControlVariable(10)) {
+                Assert::AreEqual(controlVariable, string("zyx"));
+            }
+            
+            for (const auto &controlVariable : PKB::GetControlVariable(13)) {
+                Assert::AreEqual(controlVariable, string(""));
+            }
 
             vector<string> vec = PKB::GetAllControlVariables();
             

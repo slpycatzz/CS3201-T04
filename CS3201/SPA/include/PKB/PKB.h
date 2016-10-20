@@ -36,29 +36,29 @@ class PKB {
 
     static void GenerateConstantTable(std::set<ConstantValue> constants);
     static bool HasConstant(ConstantValue constantValue);
-    static std::string GetConstantValue(Index index);
-    static Index GetConstantIndex(ConstantValue constantValue);
+    static std::set<std::string> GetConstantValue(Index index);
+    static std::set<Index> GetConstantIndex(ConstantValue constantValue);
     static std::vector<std::string> GetAllConstantValues();
     static void PrintConstantTable();
 
     static void GenerateVariableTable(std::set<VariableName> variableNames);
     static bool HasVariable(VariableName variableName);
-    static VariableName GetVariableName(Index index);
-    static Index GetVariableIndex(VariableName variableName);
+    static std::set<VariableName> GetVariableName(Index index);
+    static std::set<Index> GetVariableIndex(VariableName variableName);
     static std::vector<VariableName> GetAllVariableNames();
     static void PrintVariableTable();
 
     static void GenerateProcedureTable(std::set<ProcedureName> procedureNames);
     static bool HasProcedure(ProcedureName procedureName);
-    static ProcedureName GetProcedureName(Index index);
-    static Index GetProcedureIndex(ProcedureName procedureName);
+    static std::set<ProcedureName> GetProcedureName(Index index);
+    static std::set<Index> GetProcedureIndex(ProcedureName procedureName);
     static std::vector<ProcedureName> GetAllProcedures();
     static void PrintProcedureTable();
 
     static void GenerateControlVariableTable(std::map<StmtNumber, VariableName> controlVariables);
     static bool HasControlVariable(VariableName controlVariable);
     static bool HasControlVariableAtStmtNumber(StmtNumber stmtNumber, VariableName controlVariable);
-    static VariableName GetControlVariable(StmtNumber stmtNumber);
+    static std::set<VariableName> GetControlVariable(StmtNumber stmtNumber);
     static std::vector<VariableName> GetAllControlVariables();
     static void PrintControlVariableTable();
 
@@ -83,8 +83,8 @@ class PKB {
 
     static void GenerateExpressionTable(std::map<StmtNumber, Expression> expressions);
     static void GenerateSubExpressionTable(std::map<StmtNumber, std::set<SubExpressions>> subExpressions);
-    static bool IsExactPattern(StmtNumber stmtNumber, VariableName controlVariable, Expression expression);
-    static bool IsSubPattern(StmtNumber stmtNumber, VariableName controlVariable, SubExpressions subExpression);
+    static bool IsExactPattern(StmtNumber stmtNumber, VariableName variableName, Expression expression);
+    static bool IsSubPattern(StmtNumber stmtNumber, VariableName variableName, SubExpressions subExpression);
     static bool HasExactExpression(Expression expression);
     static bool HasSubExpression(SubExpressions subExpression);
     static bool IsExactExpression(StmtNumber stmtNumber, Expression expression);
@@ -97,7 +97,7 @@ class PKB {
     static bool IsCalls(ProcedureName calling, std::set<ProcedureName> called);
     static bool IsCallsTransitive(ProcedureName calling, ProcedureName called);
     static bool IsCallsTransitive(ProcedureName calling, std::set<ProcedureName> called);
-    static ProcedureName GetCalling(ProcedureName called);
+    static std::set<ProcedureName> GetCalling(ProcedureName called);
     static std::set<ProcedureName> GetCalled(ProcedureName calling);
     static std::set<ProcedureName> GetCallingTransitive(ProcedureName called);
     static std::set<ProcedureName> GetCalledTransitive(ProcedureName calling);
@@ -135,7 +135,7 @@ class PKB {
     static bool IsParent(StmtNumber parent, std::set<StmtNumber> children);
     static bool IsParentTransitive(StmtNumber parent, StmtNumber child);
     static bool IsParentTransitive(StmtNumber parent, std::set<StmtNumber> children);
-    static StmtNumber GetParent(StmtNumber child);
+    static std::set<StmtNumber> GetParent(StmtNumber child);
     static std::set<StmtNumber> GetChildren(StmtNumber parent);
     static std::set<StmtNumber> GetParentsTransitive(StmtNumber child);
     static std::set<StmtNumber> GetChildrenTransitive(StmtNumber parent);
@@ -147,7 +147,7 @@ class PKB {
     static bool IsFollows(StmtNumber follows, std::set<StmtNumber> followings);
     static bool IsFollowsTransitive(StmtNumber follows, StmtNumber following);
     static bool IsFollowsTransitive(StmtNumber follows, std::set<StmtNumber> followings);
-    static StmtNumber GetFollows(StmtNumber following);
+    static std::set<StmtNumber> GetFollows(StmtNumber following);
     static std::set<StmtNumber> GetFollowing(StmtNumber follows);
     static std::set<StmtNumber> GetFollowsTransitive(StmtNumber following);
     static std::set<StmtNumber> GetFollowingTransitive(StmtNumber follows);
