@@ -34,10 +34,12 @@ class Table {
 
     inline K getKey(V value) {
         if (!hasValue(value)) {
-            return NULL;
+            return static_cast<K>(0);
         }
 
-        return *(valueToKeysMap[value].begin());
+        for (const auto &key : valueToKeysMap.at(value)) {
+            return key;
+        }
     }
 
     inline std::set<K> getKeys() {
@@ -55,15 +57,17 @@ class Table {
             return std::set<K>();
         }
 
-        return valueToKeysMap[value];
+        return valueToKeysMap.at(value);
     }
 
     inline V getValue(K key) {
         if (!hasKey(key)) {
-            return NULL;
+            return static_cast<V>(0);
         }
 
-        return *(keyToValuesMap[key].begin());
+        for (const auto &value : keyToValuesMap.at(key)) {
+            return value;
+        }
     }
 
     inline std::set<V> getValues() {
@@ -81,7 +85,7 @@ class Table {
             return std::set<V>();
         }
 
-        return keyToValuesMap[key];
+        return keyToValuesMap.at(key);
     }
 
     inline std::unordered_map<K, std::set<V>> getKeyToValuesMap() {
@@ -116,7 +120,7 @@ class Table {
     }
 
     inline bool hasKeyToValues(K key, std::set<V> subvalues) {
-        std::set<V> values = keyToValuesMap[key];
+        std::set<V> values = keyToValuesMap.at(key);
 
         for (auto &value : subvalues) {
             if (values.count(value) != 1) {
@@ -128,13 +132,13 @@ class Table {
     }
 
     inline bool hasValueToKey(K key, V value) {
-        std::set<K> keys = valueToKeysMap[value];
+        std::set<K> keys = valueToKeysMap.at(value);
 
         return (keys.count(key) == 1);
     }
 
     inline bool hasValueToKeys(std::set<K> subkeys, V value) {
-        std::set<K> keys = valueToKeysMap[value];
+        std::set<K> keys = valueToKeysMap.at(value);
 
         for (auto &key : subkeys) {
             if (keys.count(key) != 1) {

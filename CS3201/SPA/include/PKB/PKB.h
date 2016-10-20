@@ -148,7 +148,7 @@ class PKB {
     static bool IsFollowsTransitive(StmtNumber follows, StmtNumber following);
     static bool IsFollowsTransitive(StmtNumber follows, std::set<StmtNumber> followings);
     static StmtNumber GetFollows(StmtNumber following);
-    static StmtNumber GetFollowing(StmtNumber follows);
+    static std::set<StmtNumber> GetFollowing(StmtNumber follows);
     static std::set<StmtNumber> GetFollowsTransitive(StmtNumber following);
     static std::set<StmtNumber> GetFollowingTransitive(StmtNumber follows);
     static void PrintFollowsTable();

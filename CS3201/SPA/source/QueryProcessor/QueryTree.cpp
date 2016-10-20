@@ -147,11 +147,13 @@ void QueryTree::printGroups() {
     }
     output << "\n\n";
 
-    output << "boolean clauses \n" << "-------------" << "\n";
-    for (Clause clause : getBooleanClauses()) {
-        output << clause.toString() << "\n";
+    if (getBooleanClauses().size() > 0) {
+        output << "boolean clauses \n" << "-------------" << "\n";
+        for (Clause clause : getBooleanClauses()) {
+            output << clause.toString() << "\n";
+        }
+        output << "\n";
     }
-    output << "\n";
 
     int i = 1;
     for (std::pair<std::vector<std::string>, std::vector<Clause>> pair : getUnselectedGroups()) {

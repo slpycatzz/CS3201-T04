@@ -163,6 +163,8 @@ namespace IntegrationTesting {
 			string fileName = "Next.txt";
 			frontendParser.parseProgram(testcasesDirectory + fileName);
 
+			PKB::GenerateNextTransitiveTable();
+			
 			//EP: invalid line number
 			Assert::IsFalse(PKB::IsNextTransitive(0, 1));
 			Assert::IsFalse(PKB::IsNextTransitive(1, -1));

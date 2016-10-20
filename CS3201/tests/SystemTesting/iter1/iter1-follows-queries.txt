@@ -1,90 +1,60 @@
-1 - follows 1
-stmt s;
-Select s such that Follows(s,s)
-
-5000
-2 - follows 2
-assign a;
-Select a such that Follows(a,a)
-
-5000
-3 - follows 3
-while w;
-Select w such that Follows(w,w)
-
-5000
-4 - follows* 1
-stmt s;
-Select s such that Follows*(s,s)
-
-5000
-5 - follows* 2
-assign a;
-Select a such that Follows*(a,a)
-
-5000
-6 - follows* 3
-while w;
-Select w such that Follows*(w,w)
-
-5000
-7 - follows underscore 1
+1 - follows underscore 1
 stmt s;
 Select s such that Follows(s,_)
 1, 2, 3, 4, 5, 8, 9
 5000
-8 - follows underscore 2
+2 - follows underscore 2
 stmt s;
 Select s such that Follows(_,s)
 2, 3, 4, 5, 7, 9, 11
 5000
-9 - follows underscore 3
+3 - follows underscore 3
 assign a;
 Select a such that Follows(a,_)
 1, 2, 3, 4, 8
 5000
-10 - follows underscore 4
+4 - follows underscore 4
 assign a;
 Select a such that Follows(_,a)
 2, 3, 4, 11
 5000
-11 - follows underscore 5
+5 - follows underscore 5
 while w;
 Select w such that Follows(w,_)
 5, 9
 5000
-12 - follows underscore 6
+6 - follows underscore 6
 while w;
 Select w such that Follows(_,w)
 5, 7, 9
 5000
-13 - follows* underscore 1
+7 - follows* underscore 1
 stmt s;
 Select s such that Follows*(s,_)
 1, 2, 3, 4, 5, 7, 8, 9
 5000
-14 - follows* underscore 2
+8 - follows* underscore 2
 stmt s;
 Select s such that Follows*(_,s)
 2, 3, 4, 5, 7, 9, 11
 5000
-15 - follows* underscore 3
+9 - follows* underscore 3
 assign a;
 Select a such that Follows*(a,_)
 1, 2, 3, 4, 8
 5000
-16 - follows* underscore 4
+10 - follows* underscore 4
 assign a;
 Select a such that Follows*(_,a)
 2, 3, 4, 11
 5000
-17 - follows* underscore 5
+11 - follows* underscore 5
 while w;
 Select w such that Follows*(w,_)
 5, 9
 5000
-18 - follows* underscore 6
+12 - follows* underscore 6
 while w;
-Select s such that Follows*(_,w)
+Select w such that Follows*(_,w)
 5, 7, 9
 5000

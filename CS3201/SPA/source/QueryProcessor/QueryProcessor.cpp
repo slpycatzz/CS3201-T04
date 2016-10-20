@@ -20,11 +20,9 @@ void QueryProcessor::process(std::string query, std::list<std::string>& results)
     QueryTree queryTree = queryOptimizer.optimize(queryPreprocessor.getQueryTree());
     ResultList queryResult = queryEvaluator.selectQueryResults(queryTree);
     queryProjector.projectResult(results, queryTree.getResultsInfo(), queryResult);
-
+    
     // For testing
-    /*queryPreprocessor.preprocessQuery(query);
-    QueryTree queryTree = queryOptimizer.optimize(queryPreprocessor.getQueryTree());
-    queryProjector.projectResult(results, queryTree.getResultsInfo(), { { "a1", "s1", "c1" },{ { "1","2","3" },{ "4","5","6" } } });
-    queryTree.printGroups();
-    PKB::PrintPriorityTable();*/
+    //queryTree.printGroups();
+    //PKB::PrintPriorityTable();
+    //std::cout << "\n" << PKB::IsSubExpression(1, QueryUtils::GetSubExpression("_\"ZG5+Xs\"_")) << "\n\n";
 }

@@ -20,7 +20,10 @@ std::vector<Candidate> QueryEvaluator::getCandidates(Symbol &synType) {
 			return PKB::GetAllVariableNames();
 		case PROCEDURE:
 			return PKB::GetAllProcedures();
+        case CONSTANT:
+            return PKB::GetAllConstantValues();
 		case PROGRAM_LINE:
+            return Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(STMT));
 		case STMT:
 		case ASSIGN:
 		case IF:
@@ -110,10 +113,16 @@ TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
 			}
 		}
 
-		for (Synonym &syn : selectList) {
-			std::vector<Candidate> candList(getCandidates(varMap[syn]));
-			result.addSynonym(syn, candList);
-		}
+        if (selectList.size() == 1 && selectList[0] == "BOOLEAN") {
+            std::vector<Candidate> candList({ "TRUE" });
+            result.addSynonym("BOOLEAN", candList);
+        }
+        else {
+            for (Synonym &syn : selectList) {
+                std::vector<Candidate> candList(getCandidates(varMap[syn]));
+                result.addSynonym(syn, candList);
+            }
+        }
 
 		return result;
 	}
@@ -507,7 +516,10 @@ bool QueryEvaluator::evaluateUses(Candidate procOrStmtNo, Candidate varName)
 		}
 	}
 	else {
-		return PKB::IsUsesProcedure(procOrStmtNo, varName);
+        if (varName == "_") {
+            return (!PKB::GetProcedureUsedVariables(procOrStmtNo).empty());
+        }
+        return PKB::IsUsesProcedure(procOrStmtNo, varName);
 	}
 }
 
@@ -521,6 +533,9 @@ bool QueryEvaluator::evaluateModifies(Candidate procOrStmtNo, Candidate varName)
 		return PKB::IsModifies(stmtNo, varName);
 	}
 	else {
+        if (varName == "_") {
+            return (!PKB::GetProcedureModifiedVariables(procOrStmtNo).empty());
+        }
 		return PKB::IsModifiesProcedure(procOrStmtNo, varName);
 	}
 }
@@ -591,7 +606,7 @@ bool QueryEvaluator::evaluateFollows(Candidate stmt1, Candidate stmt2)
 	else {
 		int stmtNo1(Utils::StringToInt(stmt1));
 		if (stmt2 == "_") {
-			return (PKB::GetFollowing(stmtNo1) > 0);
+			return (!PKB::GetFollowing(stmtNo1).empty());
 		}
 		else {
 			int stmtNo2(Utils::StringToInt(stmt2));
@@ -620,7 +635,7 @@ bool QueryEvaluator::evaluateFollowsStar(Candidate stmt1, Candidate stmt2)
 	else {
 		int stmtNo1(Utils::StringToInt(stmt1));
 		if (stmt2 == "_") {
-			return (PKB::GetFollowing(stmtNo1) > 0);
+			return (!PKB::GetFollowing(stmtNo1).empty());
 		}
 		else {
 			int stmtNo2(Utils::StringToInt(stmt2));
