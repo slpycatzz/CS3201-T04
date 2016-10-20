@@ -24,5 +24,5 @@ void QueryProcessor::process(std::string query, std::list<std::string>& results)
     // For testing
     //queryTree.printGroups();
     //PKB::PrintPriorityTable();
-    //std::cout << "\n" << PKB::IsSubExpression(1, QueryUtils::GetSubExpression("_\"ZG5+Xs\"_")) << "\n\n";
+    //std::cout << "\n" << PKB::IsNext(1,2) << "\n\n";
 }

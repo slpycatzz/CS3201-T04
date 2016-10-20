@@ -422,33 +422,38 @@ bool QueryEvaluator::evaluateClause(Clause &clause, CandidateCombination &comb) 
 	}
 }
 
-bool QueryEvaluator::evaluatePatternClause(Candidate assignStmt,
+bool QueryEvaluator::evaluatePatternClause(Candidate stmt,
 	Candidate lhsVar, std::string expr)
 {
-	unsigned assignNo(Utils::StringToInt(assignStmt));
-	std::string expression(QueryUtils::GetExpression(expr));
+    //Preprocessor will do the following:
+    //expression _"x+y"_ should convert to a string of vectors <x, +, y>
+    //preprocessor will get (x+y) after calling Utils::GetPostfixExpression(<x, +, y>)
+    //in this method, expr = _"(x+y)"_
+
+	unsigned stmtNo(Utils::StringToInt(stmt));
+	std::string expression(QueryUtils::GetExpression(expr)); //remove space and quote
 	if (expression == "_") {
 		if (lhsVar == "_") {
 			return true;
 		}
 		else {
-			return PKB::IsModifies(assignNo, lhsVar);
+			return PKB::IsModifies(stmtNo, lhsVar);
 		}
 	}
 	else if (Utils::StartsWith(expression, '_')) {
 		if (lhsVar == "_") {
-			return PKB::IsSubExpression(assignNo, QueryUtils::GetSubExpression(expression));
+			return PKB::IsSubExpression(stmtNo, QueryUtils::GetSubExpression(expression));
 		}
 		else {
-			return (PKB::IsSubExpression(assignNo, QueryUtils::GetSubExpression(expression)) && PKB::IsModifies(assignNo, lhsVar));
+			return PKB::IsSubPattern(stmtNo, lhsVar, QueryUtils::GetSubExpression(expression));
 		}
 	}
 	else {
 		if (lhsVar == "_") {
-			return PKB::IsExactExpression(assignNo, expression);
+			return PKB::IsExactExpression(stmtNo, expression);
 		}
 		else {
-			return (PKB::IsExactExpression(assignNo, expression) && PKB::IsModifies(assignNo, lhsVar));
+			return PKB::IsExactPattern(stmtNo, lhsVar, expression);
 		}
 	}
 }
