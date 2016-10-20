@@ -206,7 +206,7 @@ class PKB {
     static Table<Index, ConstantValue> constantTable_;                              /* map<index, constantValue>      */
     static Table<Index, VariableName> variableTable_;                               /* map<index, variableName>       */
     static Table<Index, ProcedureName> procedureTable_;                             /* map<index, procedureName>      */
-    
+
     static Table<StmtNumber, VariableName> controlVariableTable_;                   /* map<stmtNumber, variableName>  */
     static Table<StmtNumber, ProcedureName> callTable_;                             /* map<stmtNumber, procedureName> */
     static Table<StmtNumber, StmtSymbol> stmtTable_;                                /* map<stmtNumber, symbol string> */
@@ -233,7 +233,7 @@ class PKB {
     static TransitiveTable<StmtNumber, StmtNumber> followsTransitiveTable_;         /* map<stmtNumber, set(stmtNumber)> */
 
     static Table<StmtNumber, StmtNumber> nextTable_;                                /* map<stmtNumber, set(stmtNumber)> */
-    static std::vector<std::vector<StmtNumber>> nextTransitiveTable_;               /* vector<vector(stmtNumber)> */
+    static TransitiveTable<StmtNumber, StmtNumber> nextTransitiveTable_;            /* map<stmtNumber, set(stmtNumber)> */
 
     /* Deprecated. */
     static Table<unsigned int, TreeNode*> assignTable_;                             /* map<stmtNumber, expression string> */

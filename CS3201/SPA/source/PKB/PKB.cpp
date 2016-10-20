@@ -65,7 +65,7 @@ Table<StmtNumber, StmtNumber> PKB::followsTable_;
 TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_;
 
 Table<StmtNumber, StmtNumber> PKB::nextTable_;
-vector<vector<StmtNumber>> PKB::nextTransitiveTable_;
+TransitiveTable<StmtNumber, StmtNumber> PKB::nextTransitiveTable_;
 
 /* START - AST functions */
 
@@ -749,9 +749,6 @@ void PKB::GenerateNextTable(map<StmtNumber, set<StmtNumber>> next) {
     for (auto &pair : next) {
         nextTable_.insert(pair.first, pair.second);
     }
-
-    /* Initialize next transitive table space. */
-    nextTransitiveTable_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
 }
 
 void PKB::GenerateNextTransitiveTable() {
@@ -772,7 +769,7 @@ void PKB::GenerateNextTransitiveTable() {
                     if (!child->isVisited()) {
                         child->setVisited(true);
 
-                        nextTransitiveTable_[node->getStmtNumber()][child->getStmtNumber()] = 1;
+                        nextTransitiveTable_.insert(node->getStmtNumber(), child->getStmtNumber());
                         visitedNodes.push_back(child);
                         queue.push(child);
                     }
@@ -791,16 +788,7 @@ bool PKB::IsNext(StmtNumber current, StmtNumber next) {
 }
 
 bool PKB::IsNextTransitive(StmtNumber current, StmtNumber next) {
-    if (current > tableMaximumSize_ || current <= 0) {
-        return false;
-    }
-
-    if (next > tableMaximumSize_ || next <= 0) {
-        return false;
-    }
-
-    /* Worst case is O(1) time complexity. */
-    return (nextTransitiveTable_[current][next] == 1);
+    return nextTransitiveTable_.hasKeyToValue(current, next);
 }
 
 set<StmtNumber> PKB::GetNext(StmtNumber current) {
@@ -812,37 +800,11 @@ set<StmtNumber> PKB::GetPrevious(StmtNumber next) {
 }
 
 set<StmtNumber> PKB::GetNextTransitive(StmtNumber current) {
-    if (current > tableMaximumSize_ || current <= 0) {
-        return set<StmtNumber>();
-    }
-
-    set<StmtNumber> nexts;
-
-    /* Worst case is O(V) time complexity. */
-    for (unsigned int i = 1; i < nextTransitiveTable_[current].size(); i++) {
-        if (nextTransitiveTable_[current][i] == 1) {
-            nexts.insert(i);
-        }
-    }
-
-    return nexts;
+    return nextTransitiveTable_.getValues(current);
 }
 
 set<StmtNumber> PKB::GetPreviousTransitive(StmtNumber next) {
-    if (next > tableMaximumSize_ || next <= 0) {
-        return set<StmtNumber>();
-    }
-
-    set<StmtNumber> previouses;
-
-    /* Worst case is O(V) time complexity. */
-    for (unsigned int i = 1; i < nextTransitiveTable_.size(); i++) {
-        if (nextTransitiveTable_[i][next] == 1) {
-            previouses.insert(i);
-        }
-    }
-
-    return previouses;
+    return nextTransitiveTable_.getKeys(next);
 }
 
 void PKB::PrintNextTable() {
@@ -850,27 +812,7 @@ void PKB::PrintNextTable() {
 }
 
 void PKB::PrintNextTransitiveTable() {
-    for (unsigned int i = 1; i < nextTransitiveTable_.size(); i++) {
-        for (unsigned int k = 1; k < nextTransitiveTable_[i].size(); k++) {
-            std::cout << nextTransitiveTable_[i][k];
-        }
-
-        std::cout << std::endl;
-    }
-
-    std::cout << "=====================" << std::endl;
-
-    for (unsigned int i = 1; i < nextTransitiveTable_.size(); i++) {
-        std::cout << i << "-> { ";
-
-        for (unsigned int k = 1; k < nextTransitiveTable_[i].size(); k++) {
-            if (nextTransitiveTable_[i][k] == 1) {
-                std::cout << k << " ";
-            }
-        }
-
-        std::cout << "}" << std::endl;
-    }
+    nextTransitiveTable_.printTable();
 }
 
 /* END   - Next table functions */
