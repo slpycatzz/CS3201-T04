@@ -15,7 +15,7 @@ void QueryProcessor::process(std::string query, std::list<std::string>& results)
     QueryEvaluator queryEvaluator = QueryEvaluator();
     QueryProjector queryProjector = QueryProjector();
     QueryOptimizer queryOptimizer = QueryOptimizer();
-
+    
     queryPreprocessor.preprocessQuery(query);
     QueryTree queryTree = queryOptimizer.optimize(queryPreprocessor.getQueryTree());
     ResultList queryResult = queryEvaluator.selectQueryResults(queryTree);
@@ -23,6 +23,5 @@ void QueryProcessor::process(std::string query, std::list<std::string>& results)
     
     // For testing
     //queryTree.printGroups();
-    //PKB::PrintPriorityTable();
-    //std::cout << "\n" << PKB::IsNext(1,2) << "\n\n";
+    //PKB::PrintPriorityTable();   
 }

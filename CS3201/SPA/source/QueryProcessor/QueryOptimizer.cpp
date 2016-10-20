@@ -112,14 +112,22 @@ QueryTree QueryOptimizer::optimize(QueryTree qt) {
 
     vector<Clause> allClauses(queryTree.getClauses());
 
+    bool hasNextTransitiveClause = false;
+
     for (unsigned i = 0; i < allClauses.size(); i++) {
         Clause clause = allClauses.at(i);
-        
+        if (clause.getClauseType() == Constants::SymbolToString(NEXT_TRANSITIVE)) {
+            hasNextTransitiveClause = true;
+        }
         if (clause.getSynonyms().size() == 0) {
             booleanClauses.push_back(clause);
             allClauses.erase(allClauses.begin() + i);
             i--;
         }
+    }
+
+    if (hasNextTransitiveClause) {
+        PKB::GenerateNextTransitiveTable();
     }
     
     //Insert first clause into group if group is empty

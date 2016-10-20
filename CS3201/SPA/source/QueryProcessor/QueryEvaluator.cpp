@@ -80,7 +80,6 @@ TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
 		return TotalCombinationList();
 	}
 	else {
-		
 		std::vector<std::pair<std::vector<Synonym>, std::vector<Clause>>> unselectedGroups(query.getUnselectedGroups());
 		std::unordered_map<Synonym, Symbol> varMap(query.getVarMap());
 		
@@ -431,7 +430,7 @@ bool QueryEvaluator::evaluatePatternClause(Candidate stmt,
     //in this method, expr = _"(x+y)"_
 
 	unsigned stmtNo(Utils::StringToInt(stmt));
-	std::string expression(QueryUtils::GetExpression(expr)); //remove space and quote
+	std::string expression(QueryUtils::GetExpression(expr));
 	if (expression == "_") {
 		if (lhsVar == "_") {
 			return true;
@@ -653,16 +652,14 @@ bool QueryEvaluator::evaluateNext(Candidate stmt1, Candidate stmt2)
 {
 	int stmtNo1(Utils::StringToInt(stmt1));
 	int stmtNo2(Utils::StringToInt(stmt2));
-	//return PKB::IsNext(stmtNo1, stmtNo2);
-	return false;
+	return PKB::IsNext(stmtNo1, stmtNo2);
 }
 
 bool QueryEvaluator::evaluateNextStar(Candidate stmt1, Candidate stmt2)
 {
 	int stmtNo1(Utils::StringToInt(stmt1));
 	int stmtNo2(Utils::StringToInt(stmt2));
-	//return PKB::IsNextTransitive(stmtNo1, stmtNo2);
-	return false;
+	return PKB::IsNextTransitive(stmtNo1, stmtNo2);
 }
 
 bool QueryEvaluator::evaluateCalls(Candidate proc1, Candidate proc2)
