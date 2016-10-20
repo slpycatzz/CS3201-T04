@@ -4,25 +4,12 @@
 
 #include "Constants.h"
 #include "QueryProcessor/QueryUtils.h"
-#include "TreeNode.h"
 #include "Utils.h"
 
 using std::string;
 using std::stringstream;
 using std::vector;
 using std::unordered_map;
-
-TreeNode* QueryUtils::BuildExpressionTree(string expr) {
-    unsigned i = expr.find_first_not_of(CHAR_SYMBOL_UNDERSCORE);
-    unsigned j = expr.find_last_not_of(CHAR_SYMBOL_UNDERSCORE);
-    string temp(LiteralToCandidate(expr.substr(i, j - i + 1)));
-
-    if (Utils::IsNonNegativeNumeric(temp)) {
-        return new TreeNode(CONSTANT, temp);
-    } else {
-        return new TreeNode(VARIABLE, temp);
-    }
-}
 
 string QueryUtils::LiteralToCandidate(string stringLiteral) {
     return (IsStringLiteral(stringLiteral)) ? GetValueFromStringLiteral(stringLiteral) : stringLiteral;

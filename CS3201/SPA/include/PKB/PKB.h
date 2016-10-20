@@ -177,18 +177,6 @@ class PKB {
 
     static void Clear();
 
-    /* START - Deprecated */
-    static void GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns);
-    static TreeNode* GetAssignTreeNode(unsigned int stmtNumber);
-    static std::vector<TreeNode*> GetAllAssignTreeNodes();
-    static bool IsExactPattern(unsigned int stmtNo, std::string varName, TreeNode* exprTree);
-    static bool IsSubPattern(unsigned int stmtNo, std::string varName, TreeNode* exprTree);
-    static bool IsExactRHS(unsigned int stmtNo, TreeNode* exprTree);
-    static bool IsSubRHS(unsigned int stmtNo, TreeNode* exprTree);
-    static bool HasExactPattern(TreeNode* exprTree);
-    static bool HasSubPattern(TreeNode* exprTree);
-    /* END - Deprecated */
-
  private:
     static bool ComparePairAscending(const std::pair<unsigned int, std::string> &pairOne, const std::pair<unsigned int, std::string> &pairTwo);
 
@@ -234,7 +222,4 @@ class PKB {
 
     static Table<StmtNumber, StmtNumber> nextTable_;                                /* map<stmtNumber, set(stmtNumber)> */
     static TransitiveTable<StmtNumber, StmtNumber> nextTransitiveTable_;            /* map<stmtNumber, set(stmtNumber)> */
-
-    /* Deprecated. */
-    static Table<unsigned int, TreeNode*> assignTable_;                             /* map<stmtNumber, expression string> */
 };

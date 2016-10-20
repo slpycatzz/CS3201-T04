@@ -46,9 +46,6 @@ Table<Priority, TableSymbol> PKB::priorityTable_;
 Table<StmtNumber, Expression> PKB::expressionTable_;
 Table<StmtNumber, SubExpressions> PKB::subExpressionTable_;
 
-/* Deprecated */
-Table<unsigned int, TreeNode*> PKB::assignTable_;
-
 Table<ProcedureName, ProcedureName> PKB::callsTable_;
 TransitiveTable<ProcedureName, ProcedureName> PKB::callsTransitiveTable_;
 
@@ -871,9 +868,6 @@ void PKB::Clear() {
     expressionTable_.clear();
     subExpressionTable_.clear();
 
-    /* Deprecated. */
-    assignTable_.clear();
-
     callsTable_.clear();
     callsTransitiveTable_.clear();
 
@@ -898,73 +892,3 @@ bool PKB::ComparePairAscending(const std::pair<unsigned int, string> &pairOne, c
 }
 
 /* START - Miscellaneous functions */
-/* START - Deprecated */
-
-void PKB::GenerateAssignTable(map<unsigned int, TreeNode*> assigns) {
-    for (auto &assign : assigns) {
-        assignTable_.insert(assign.first, assign.second);
-    }
-}
-
-TreeNode* PKB::GetAssignTreeNode(unsigned int stmtNumber) {
-    return (assignTable_.hasKey(stmtNumber)) ? assignTable_.getValue(stmtNumber) : nullptr;
-}
-
-vector<TreeNode*> PKB::GetAllAssignTreeNodes() {
-    set<TreeNode*> result = assignTable_.getValues();
-
-    vector<TreeNode*> vec(result.size());
-    std::copy(result.begin(), result.end(), vec.begin());
-
-    return vec;
-}
-
-bool PKB::IsExactPattern(unsigned int stmtNo, string varName, TreeNode* exprTree) {
-    TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo)->getChildren()[1]);
-
-    bool matchLHS(PKB::IsModifies(stmtNo, varName));
-    bool matchRHS(Utils::IsSameTree(*RHS, *exprTree));
-
-    return (matchLHS && matchRHS);
-}
-
-bool PKB::IsSubPattern(unsigned int stmtNo, string varName, TreeNode* exprTree) {
-    TreeNode* RHS(PKB::GetAssignTreeNode(stmtNo)->getChildren()[1]);
-
-    bool matchLHS(PKB::IsModifies(stmtNo, varName));
-    bool matchRHS(Utils::IsSubTree(*RHS, *exprTree));
-
-    return (matchLHS && matchRHS);
-}
-
-bool PKB::HasExactPattern(TreeNode* exprTree) {
-    for (TreeNode* node : GetAllAssignTreeNodes()) {
-        if (Utils::IsSameTree(*node->getChildren()[1], *exprTree)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool PKB::HasSubPattern(TreeNode* exprTree) {
-    for (TreeNode* node : GetAllAssignTreeNodes()) {
-        if (Utils::IsSubTree(*node->getChildren()[1], *exprTree)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool PKB::IsExactRHS(unsigned int stmtNo, TreeNode* exprTree) {
-    TreeNode* node(GetAssignTreeNode(stmtNo));
-    return Utils::IsSameTree(*node->getChildren()[1], *exprTree);
-}
-
-bool PKB::IsSubRHS(unsigned int stmtNo, TreeNode* exprTree) {
-    TreeNode* node(GetAssignTreeNode(stmtNo));
-    return Utils::IsSubTree(*node->getChildren()[1], *exprTree);
-}
-
-/* END - Deprecated */

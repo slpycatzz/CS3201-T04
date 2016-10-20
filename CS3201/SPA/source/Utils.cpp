@@ -59,14 +59,6 @@ vector<vector<string>> Utils::Zip(vector<string> list1, vector<string> list2) {
     return result;
 }
 
-bool Utils::IsSameTree(TreeNode & node1, TreeNode & node2) {
-    return false;
-}
-
-bool Utils::IsSubTree(TreeNode & node, TreeNode & root) {
-    return false;
-}
-
 bool Utils::VectorContains(vector<unsigned int> vec, unsigned int value) {
     return (std::find(vec.begin(), vec.end(), value) != vec.end());
 }
