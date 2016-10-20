@@ -224,8 +224,8 @@ void QueryPreprocessor::parseSuchThat() {
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(UNDERSCORE)) {
-            if (r.isArgValid(relation, "_", i)) {
-                argList.push_back("_");
+            if (r.isArgValid(relation, string(1, CHAR_SYMBOL_UNDERSCORE), i)) {
+                argList.push_back(string(1, CHAR_SYMBOL_UNDERSCORE));
             } else {
                 throw QuerySyntaxErrorException("12");
             }
@@ -289,8 +289,8 @@ void QueryPreprocessor::parsePattern() {
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(UNDERSCORE)) {
-            if (r.isArgValid(varSymbolMap[relation], "_", i)) {
-                argList.push_back("_");
+            if (r.isArgValid(varSymbolMap[relation], string(1, CHAR_SYMBOL_UNDERSCORE), i)) {
+                argList.push_back(string(1, CHAR_SYMBOL_UNDERSCORE));
             } else {
                 throw QuerySyntaxErrorException("18");
             }
@@ -721,7 +721,7 @@ int QueryPreprocessor::accept(Symbol token) {
         break;
     case UNDERSCORE:
         /* validate for _ wildcard */
-        if (var == "_") {
+        if (var == string(1, CHAR_SYMBOL_UNDERSCORE)) {
             return 1;
         }
         break;

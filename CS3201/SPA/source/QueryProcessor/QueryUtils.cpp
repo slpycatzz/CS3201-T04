@@ -1,4 +1,6 @@
 #include <string>
+#include <vector>
+#include <unordered_map>
 
 #include "Constants.h"
 #include "QueryProcessor/QueryUtils.h"
@@ -6,11 +8,14 @@
 #include "Utils.h"
 
 using std::string;
+using std::stringstream;
+using std::vector;
+using std::unordered_map;
 
-TreeNode* QueryUtils::BuildExpressionTree(std::string expr) {
+TreeNode* QueryUtils::BuildExpressionTree(string expr) {
     unsigned i = expr.find_first_not_of(CHAR_SYMBOL_UNDERSCORE);
     unsigned j = expr.find_last_not_of(CHAR_SYMBOL_UNDERSCORE);
-    std::string temp(LiteralToCandidate(expr.substr(i, j - i + 1)));
+    string temp(LiteralToCandidate(expr.substr(i, j - i + 1)));
 
     if (Utils::IsNonNegativeNumeric(temp)) {
         return new TreeNode(CONSTANT, temp);
@@ -20,7 +25,7 @@ TreeNode* QueryUtils::BuildExpressionTree(std::string expr) {
 }
 
 string QueryUtils::LiteralToCandidate(string stringLiteral) {
-     return (IsStringLiteral(stringLiteral)) ? GetValueFromStringLiteral(stringLiteral) : stringLiteral;
+    return (IsStringLiteral(stringLiteral)) ? GetValueFromStringLiteral(stringLiteral) : stringLiteral;
 }
 
 string QueryUtils::GetValueFromStringLiteral(string stringLiteral) {
@@ -37,36 +42,33 @@ bool QueryUtils::IsLiteral(string str) {
     return (Utils::IsNonNegativeNumeric(str) || IsStringLiteral(str));
 }
 
-std::string QueryUtils::GetExpression(std::string expr)
-{
-	std::stringstream res;
-	for (char c : expr) {
-		if ((c != ' ') && (c != '\"')) {
-			res << c;
-		}
-	}
-	return res.str();
+string QueryUtils::GetExpression(string expr) {
+    stringstream res;
+    for (char c : expr) {
+        if ((c != ' ') && (c != '\"')) {
+            res << c;
+        }
+    }
+    return res.str();
 }
 
-std::string QueryUtils::GetSubExpression(std::string expr)
-{
-	std::stringstream res;
-	for (char c : expr) {
-		if ((c != ' ') && (c != '_') && (c != '\"')) {
-			res << c;
-		}
-	}
-	return res.str();
+string QueryUtils::GetSubExpression(string expr) {
+    stringstream res;
+    for (char c : expr) {
+        if ((c != ' ') && (c != '_') && (c != '\"')) {
+            res << c;
+        }
+    }
+    return res.str();
 }
 
-std::unordered_map<std::string, std::string>
-QueryUtils::GetSubMap(std::unordered_map<std::string, std::string>& map, const std::vector<std::string>& keyList)
-{
-	std::unordered_map<std::string, std::string> result;
-	for (std::string key : keyList) {
-		result.insert_or_assign(key, map.at(key));
-	}
-	return result;
+unordered_map<string, string>
+QueryUtils::GetSubMap(unordered_map<string, string>& map, const vector<string>& keyList) {
+    unordered_map<string, string> result;
+    for (string key : keyList) {
+        result.insert_or_assign(key, map.at(key));
+    }
+    return result;
 }
 
 bool QueryUtils::IsStringLiteral(string str) {

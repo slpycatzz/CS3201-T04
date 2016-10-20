@@ -1,6 +1,7 @@
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
+
 #include "QueryProcessor/RelationTable.h"
 
 RelationTable::RelationTable() {
@@ -106,18 +107,18 @@ void RelationTable::initTable() {
     clauseMap1[PARENT_TRANSITIVE] = arg1;
     clauseMap2[PARENT_TRANSITIVE] = arg2;
     arg1.clear();
-	arg2.clear();
-	
-	arg1 = { CALL, STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg2.clear();
+
+    arg1 = { CALL, STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
     arg2 = { CALL, STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
-    
-	clauseMap1[FOLLOWS] = arg1;
+
+    clauseMap1[FOLLOWS] = arg1;
     clauseMap2[FOLLOWS] = arg2;
 
     clauseMap1[FOLLOWS_TRANSITIVE] = arg1;
     clauseMap2[FOLLOWS_TRANSITIVE] = arg2;
-    
-	// procedure includes variable("procedureName")
+
+    // procedure includes variable("procedureName")
     clauseMap1[NEXT] = arg1;
     clauseMap2[NEXT] = arg2;
 

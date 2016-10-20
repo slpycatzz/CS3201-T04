@@ -1,18 +1,23 @@
+#include <fstream>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
-#include <fstream>
 
 #include "Constants.h"
 #include "QueryProcessor/QueryTree.h"
 #include "Utils.h"
 
+using std::string;
+using std::unordered_map;
+using std::vector;
+
 QueryTree::QueryTree() {}
 
 QueryTree::~QueryTree() {}
 
-bool QueryTree::insertDeclaration(std::unordered_map<std::string, Symbol> variableMap) {
-    for (std::pair<std::string, Symbol> pair : variableMap) {
+bool QueryTree::insertDeclaration(unordered_map<string, Symbol> variableMap) {
+    for (std::pair<string, Symbol> pair : variableMap) {
         varMap.insert(pair);
     }
     return true;
@@ -20,12 +25,12 @@ bool QueryTree::insertDeclaration(std::unordered_map<std::string, Symbol> variab
 
 // inserts varAttrMap to check whether varAttribute is required by query projector
 // true: varAttribute is required, false: otherwise
-bool QueryTree::insert(Symbol type, std::string argType, std::unordered_map<std::string, bool> argList) {
+bool QueryTree::insert(Symbol type, string argType, unordered_map<string, bool> argList) {
     if (type != QUERY_RESULT) {
         return false;
     }
 
-    for (std::pair<std::string, bool> pair : argList) {
+    for (std::pair<string, bool> pair : argList) {
         varAttrMap.insert(pair);
     }
     return true;
@@ -35,11 +40,11 @@ bool QueryTree::insert(Symbol type, std::string argType, std::unordered_map<std:
 // argType = relation(uses,modifies,etc...) [for-suchthat]
 // argType = varName(a1,w,ifstmt, etc...)   [for-pattern]
 // argType = varName(p,c1,s,callstmt, stmt) [for-with]
-bool QueryTree::insert(Symbol type, std::string argType, std::vector<std::string> argList) {
+bool QueryTree::insert(Symbol type, string argType, vector<string> argList) {
     Clause clause;
     switch (type) {
     case QUERY_RESULT:
-        for (std::string var : argList) {
+        for (string var : argList) {
             varList.push_back(var);
         }
         return true;
@@ -66,25 +71,25 @@ bool QueryTree::insert(Symbol type, std::string argType, std::vector<std::string
     }
 }
 
-std::vector<std::string> QueryTree::getResults() {
+vector<string> QueryTree::getResults() {
     return varList;
 }
 
-std::unordered_map<std::string, bool> QueryTree::getResultsInfo() {
+unordered_map<string, bool> QueryTree::getResultsInfo() {
     return varAttrMap;
 }
 
-std::vector<Clause> QueryTree::getClauses() {
-    std::vector<Clause> result;
-    std::vector<Symbol> clauseList = { SUCH_THAT, PATTERN, WITH };
+vector<Clause> QueryTree::getClauses() {
+    vector<Clause> result;
+    vector<Symbol> clauseList = { SUCH_THAT, PATTERN, WITH };
 
     result = getClauses(clauseList);
     return result;
 }
 
-std::vector<Clause> QueryTree::getClauses(std::vector<Symbol> clauseType) {
-    std::vector<Clause> result;
-    std::vector<Clause> clauseList;
+vector<Clause> QueryTree::getClauses(vector<Symbol> clauseType) {
+    vector<Clause> result;
+    vector<Clause> clauseList;
 
     for (Symbol clauseName : clauseType) {
         switch (clauseName) {
@@ -103,31 +108,31 @@ std::vector<Clause> QueryTree::getClauses(std::vector<Symbol> clauseType) {
 }
 
 /* returns delcared Variable mapping */
-std::unordered_map<std::string, Symbol> QueryTree::getVarMap() {
+unordered_map<string, Symbol> QueryTree::getVarMap() {
     return varMap;
 }
 
-std::vector<Clause> QueryTree::getBooleanClauses() {
+vector<Clause> QueryTree::getBooleanClauses() {
     return booleanClauses;
 }
 
-std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> QueryTree::getUnselectedGroups() {
+vector<std::pair<vector<string>, vector<Clause>>> QueryTree::getUnselectedGroups() {
     return unselectedGroups;
 }
 
-std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> QueryTree::getSelectedGroups() {
+vector<std::pair<vector<string>, vector<Clause>>> QueryTree::getSelectedGroups() {
     return selectedGroups;
 }
 
-void QueryTree::setBooleanClauses(std::vector<Clause> bc) {
+void QueryTree::setBooleanClauses(vector<Clause> bc) {
     booleanClauses = bc;
 }
 
-void QueryTree::setUnselectedGroups(std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> ug) {
+void QueryTree::setUnselectedGroups(vector<std::pair<vector<string>, vector<Clause>>> ug) {
     unselectedGroups = ug;
 }
 
-void QueryTree::setSelectedGroups(std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> sg) {
+void QueryTree::setSelectedGroups(vector<std::pair<vector<string>, vector<Clause>>> sg) {
     selectedGroups = sg;
 }
 
@@ -142,7 +147,7 @@ void QueryTree::printGroups() {
     output << "\n\n";
 
     output << "selected variables \n" << "-------------" << "\n";
-    for (std::string s : getResults()) {
+    for (string s : getResults()) {
         output << s << " ";
     }
     output << "\n\n";
@@ -156,10 +161,10 @@ void QueryTree::printGroups() {
     }
 
     int i = 1;
-    for (std::pair<std::vector<std::string>, std::vector<Clause>> pair : getUnselectedGroups()) {
+    for (std::pair<vector<string>, vector<Clause>> pair : getUnselectedGroups()) {
         output << "unselected group " << i << "\n" << "-------------" << "\n";
 
-        for (std::string synonym : pair.first) {
+        for (string synonym : pair.first) {
             output << synonym << " ";
         }
         output << "\n";
@@ -171,10 +176,10 @@ void QueryTree::printGroups() {
     }
 
     int j = 1;
-    for (std::pair<std::vector<std::string>, std::vector<Clause>> pair : getSelectedGroups()) {
+    for (std::pair<vector<string>, vector<Clause>> pair : getSelectedGroups()) {
         output << "selected group " << j << "\n" << "-------------" << "\n";
 
-        for (std::string synonym : pair.first) {
+        for (string synonym : pair.first) {
             output << synonym << " ";
         }
         output << "\n";

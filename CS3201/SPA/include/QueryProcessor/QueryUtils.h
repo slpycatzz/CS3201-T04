@@ -1,8 +1,9 @@
 #pragma once
 
+#include <sstream>
 #include <string>
 #include <unordered_map>
-#include <sstream>
+
 #include "TreeNode.h"
 
 class QueryUtils {

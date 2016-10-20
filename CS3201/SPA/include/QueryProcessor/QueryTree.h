@@ -1,6 +1,8 @@
 #pragma once
+
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "Clause.h"
@@ -25,8 +27,13 @@ class QueryTree {
 
     // Used by optimizer
     std::vector<Clause> getBooleanClauses();                    // List of clauses that have no synonyms
-    std::vector<std::pair<std::vector<std::string>,std::vector<Clause>>> getUnselectedGroups();     // Groups of list of clauses that are not selected by query, length > 0 is sufficient when evaluting
-    std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> getSelectedGroups();       // Groups of list of clauses that are selected by query
+
+    // Groups of list of clauses that are not selected by query, length > 0 is sufficient when evaluating
+    std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> getUnselectedGroups();
+
+    // Groups of list of clauses that are selected by query
+    std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> getSelectedGroups();
+
     void setBooleanClauses(std::vector<Clause> booleanClauses);
     void setUnselectedGroups(std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> unselectedGroups);
     void setSelectedGroups(std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> selectedGroups);
