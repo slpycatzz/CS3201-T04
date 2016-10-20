@@ -299,12 +299,15 @@ void QueryPreprocessor::parsePattern() {
         } else if (accept(PATTERN)) {
             // case: pattern expression string e.g. _"a+1"_, "a+1"
             if (r.isArgValid(varSymbolMap[relation], "pattern", i)) {
-                argList.push_back(getVar());
+                string expressionWithBrackets;
+                expressionWithBrackets = Utils::GetExactExpressionWithBrackets(Utils::GetPostfixExpression(patternList));
+                argList.push_back(expressionWithBrackets);
+                patternList.clear();
             } else {
                 throw QuerySyntaxErrorException("19");
             }
 
-            queryList[cur] = peek().substr(getVar().size());
+            queryList[cur] = peek().substr(getPatternExpression().size());
         } else {
             throw QuerySyntaxErrorException("20");
         }
@@ -478,6 +481,12 @@ string QueryPreprocessor::getVar() {
     return word.substr(0, pos);
 }
 
+string QueryPreprocessor::getPatternExpression() {
+    string word = queryList[cur];
+    
+    return word.substr(0, word.find_last_of('"')+1);
+}
+
 // for pattern expression only e.g. "axe12+1"
 string QueryPreprocessor::getVar(string word) {
     bool isFound = false;
@@ -485,7 +494,7 @@ string QueryPreprocessor::getVar(string word) {
     // delimiters: ,>;.=)
     int pos = 0;
     for (char c : word) {
-        if (c == '+' || c == '-' || c == '*' || c == '"') {
+        if (c == '+' || c == '-' || c == '*' || c == '"' || c == ')' || c == '(') {
             break;
         }
         pos++;
@@ -497,45 +506,77 @@ bool QueryPreprocessor::isConstantVar(string var) {
     // [accepted] case: "x+1", _"x+1"_
     // [rejected] case: "x+1, _"x+"_
     string varCopy = var;
-    bool isValid = false;
     if (accept(var, '"')) {
-        while (accept(var, VARIABLE) || accept(var, CONSTANT)) {
-            if (accept(var, '+')) {
-                isValid = false;
-            } else if (accept(var, '-')) {
-                isValid = false;
-            } else if (accept(var, '*')) {
-                isValid = false;
-            } else {
-                isValid = true;
-            }
-        }
-        if (isValid == false) {
-            throw QuerySyntaxErrorException("Invalid pattern expression 1: "+ varCopy);
-        }
-        return expect(var, '"');
+        isConstantVarTerm(var);
+        expect(var, '"');
     } else if (accept(var, '_')) {
         expect(var, '"');
-
-        while (accept(var, VARIABLE) || accept(var, CONSTANT)) {
-            if (accept(var, '+')) {
-                isValid = false;
-            } else if (accept(var, '-')) {
-                isValid = false;
-            } else if (accept(var, '*')) {
-                isValid = false;
-            } else {
-                isValid = true;
-            }
-        }
-
-        if (isValid == false) {
-            throw QuerySyntaxErrorException("Invalid pattern expression 2: "+varCopy);
-        }
-
+        isConstantVarTerm(var);
         expect(var, '"');
         return expect(var, '_');
     }
+}
+
+
+void QueryPreprocessor::callFactorRecognizer(string &var) {
+    string name = getVar(var);
+
+    /* Higher precedence for expressions in (). */
+    if (accept(var, CHAR_SYMBOL_OPENBRACKET)) {
+        patternList.push_back(string(1, CHAR_SYMBOL_OPENBRACKET));
+
+        callExpressionRecognizer(var);
+
+        expect(var, CHAR_SYMBOL_CLOSEBRACKET);
+
+        patternList.push_back(string(1, CHAR_SYMBOL_CLOSEBRACKET));
+
+        /* Variable. */
+    } else if (accept(var, VARIABLE)) {
+        
+
+        patternList.push_back(name);
+        
+        /* Constant. */
+    } else if (accept(var, CONSTANT)) {
+        
+        patternList.push_back(name);
+
+    } else {
+        throw QuerySyntaxErrorException();
+    }
+}
+
+void QueryPreprocessor::callTermRecognizer(string &var) {
+    callFactorRecognizer(var);
+
+    while (accept(var, CHAR_SYMBOL_MULTIPLY)) {
+        patternList.push_back(string(1, CHAR_SYMBOL_MULTIPLY));
+
+        callFactorRecognizer(var);
+
+    }
+}
+
+void QueryPreprocessor::callExpressionRecognizer(string &var) {
+    callTermRecognizer(var);
+    while (true) {
+
+        if (accept(var, CHAR_SYMBOL_PLUS)) {
+            patternList.push_back(string(1, CHAR_SYMBOL_PLUS));
+        } else if (accept(var, CHAR_SYMBOL_MINUS)) {
+            patternList.push_back(string(1, CHAR_SYMBOL_MINUS));
+        } else {
+            break;
+        }
+    }    
+    callTermRecognizer(var);
+}
+
+bool QueryPreprocessor::isConstantVarTerm(string &var) {
+    bool isValid = false;
+    callExpressionRecognizer(var);
+    return true;
 }
 
 bool QueryPreprocessor::accept(string &var, char token) {
@@ -570,6 +611,7 @@ bool QueryPreprocessor::accept(string &var, Symbol token) {
 }
 
 bool QueryPreprocessor::expect(string &var, char token) {
+    peek();
     if (var[0] == token) {
         var = var.substr(1);
         return true;
@@ -727,6 +769,7 @@ int QueryPreprocessor::accept(Symbol token) {
         break;
     case PATTERN:
         /* validate for pattern expr "a+1", _"a"_ */
+        var = getPatternExpression();
         if (isConstantVar(var)) {
             return 1;
         }
@@ -789,10 +832,12 @@ string QueryPreprocessor::removeWhitespaces(string str) {
 
 void QueryPreprocessor::mergeSeparatedClauses() {
     bool isFound = false;
-    while (cur < queryList.size() && !isFound) {
-        isFound = queryList[cur].find('(') != std::string::npos;
-        isFound = isFound && (queryList[cur].find(')') != std::string::npos);
-
+    while (cur < queryList.size()-1 && !isFound) {
+        
+        isFound = ((queryList[cur+1].find("such") != std::string::npos)
+            || (queryList[cur+1].find("pattern") != std::string::npos)
+            || (queryList[cur+1].find("with") != std::string::npos)
+            || (queryList[cur+1].find("and") != std::string::npos));
         if (isFound == false) {
             queryList[cur + 1] = queryList[cur] + queryList[cur + 1];
             cur++;
