@@ -552,7 +552,9 @@ void QueryPreprocessor::callFactorRecognizer(string &var) {
         
         patternList.push_back(name);
 
-    } else if (var == "\"") {
+    } else if (var[0] == '\"') {
+
+    } else if (var[0] == ')') {
 
     } else {
         var += "end";
@@ -566,7 +568,7 @@ void QueryPreprocessor::callTermRecognizer(string &var) {
     while (accept(var, CHAR_SYMBOL_MULTIPLY)) {
         patternList.push_back(string(1, CHAR_SYMBOL_MULTIPLY));
 
-        // callFactorRecognizer(var);
+        callFactorRecognizer(var);
 
     }
 }
