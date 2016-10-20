@@ -24,6 +24,8 @@ vector<Candidate> QueryEvaluator::getCandidates(Symbol &synType) {
             return PKB::GetAllVariableNames();
         case PROCEDURE:
             return PKB::GetAllProcedures();
+		case BOOLEAN:
+			return vector<Candidate>{ SYMBOL_TRUE };
         case CONSTANT:
             return PKB::GetAllConstantValues();
         case PROGRAM_LINE:
@@ -80,54 +82,48 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query) {
 }
 
 TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
-    if (!getBooleanGroupResult(query.getBooleanClauses())) {
-        return TotalCombinationList();
+	if (!getBooleanGroupResult(query.getBooleanClauses())) {
+		return TotalCombinationList();
 
-    } else {
-        vector<std::pair<vector<Synonym>, vector<Clause>>> unselectedGroups(query.getUnselectedGroups());
-        unordered_map<Synonym, Symbol> varMap(query.getVarMap());
+	}
+	else {
+		vector<std::pair<vector<Synonym>, vector<Clause>>> unselectedGroups(query.getUnselectedGroups());
+		unordered_map<Synonym, Symbol> varMap(query.getVarMap());
 
-        for (auto &pair : unselectedGroups) {
-            if (!getUnselectedGroupResult(pair.first, varMap, pair.second)) {
-                return TotalCombinationList();
-            }
-        }
+		for (auto &pair : unselectedGroups) {
+			if (!getUnselectedGroupResult(pair.first, varMap, pair.second)) {
+				return TotalCombinationList();
+			}
+		}
 
-        TotalCombinationList result;
-        vector<Synonym> selectList(query.getResults());
-        vector<std::pair<vector<Synonym>, vector<Clause>>> selectedGroups(query.getSelectedGroups());
+		TotalCombinationList result;
+		vector<Synonym> selectList(query.getResults());
+		vector<std::pair<vector<Synonym>, vector<Clause>>> selectedGroups(query.getSelectedGroups());
 
-        for (auto &pair : selectedGroups) {
-            vector<Synonym> &synList(pair.first);
-            vector<Clause> &group(pair.second);
-            TotalCombinationList &tempCombiList(getSelectedGroupResult(synList, varMap, group, selectList));
-            result.combine(tempCombiList);
+		for (auto &pair : selectedGroups) {
+			vector<Synonym> &synList(pair.first);
+			vector<Clause> &group(pair.second);
+			TotalCombinationList &tempCombiList(getSelectedGroupResult(synList, varMap, group, selectList));
+			result.combine(tempCombiList);
 
-            for (Synonym &syn : synList) {
-                vector<Synonym>::iterator it(selectList.begin());
-                while (it != selectList.end()) {
-                    if (syn == (*it)) {
-                        it = selectList.erase(it);
-                    } else {
-                        ++it;
-                    }
-                }
-            }
-        }
-
-        if (selectList.size() == 1 && selectList[0] == SYMBOL_BOOLEAN) {
-            vector<Candidate> candList({ string(SYMBOL_TRUE) });
-            result.addSynonym(SYMBOL_BOOLEAN, candList);
-
-        } else {
-            for (Synonym &syn : selectList) {
-                vector<Candidate> candList(getCandidates(varMap[syn]));
-                result.addSynonym(syn, candList);
-            }
-        }
-
-        return result;
-    }
+			for (Synonym &syn : synList) {
+				vector<Synonym>::iterator it(selectList.begin());
+				while (it != selectList.end()) {
+					if (syn == (*it)) {
+						it = selectList.erase(it);
+					}
+					else {
+						++it;
+					}
+				}
+			}
+		}
+		for (Synonym &syn : selectList) {
+			vector<Candidate> candList(getCandidates(varMap[syn]));
+			result.addSynonym(syn, candList);
+		}
+		return result;
+	}
 }
 
 bool QueryEvaluator::getBooleanGroupResult(vector<Clause> &clauseGroup) {

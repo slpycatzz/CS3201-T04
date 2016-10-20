@@ -21,7 +21,7 @@ class QueryTree {
     std::vector<Clause> QueryTree::getClauses();
     std::vector<Clause> QueryTree::getClauses(std::vector<Symbol> clauseType);
 
-    bool insertDeclaration(std::unordered_map<std::string, Symbol>);
+    bool insertDeclaration(std::unordered_map<std::string, Symbol> &variableMap);
     bool insert(Symbol type, std::string argType, std::vector<std::string> argList);
     bool insert(Symbol type, std::string argType, std::unordered_map<std::string, bool> argList);
 

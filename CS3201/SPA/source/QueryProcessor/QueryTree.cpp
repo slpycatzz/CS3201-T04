@@ -16,10 +16,12 @@ QueryTree::QueryTree() {}
 
 QueryTree::~QueryTree() {}
 
-bool QueryTree::insertDeclaration(unordered_map<string, Symbol> variableMap) {
-    for (std::pair<string, Symbol> pair : variableMap) {
+bool QueryTree::insertDeclaration(unordered_map<string, Symbol> &variableMap) {
+    /*for (std::pair<string, Symbol> pair : variableMap) {
         varMap.insert(pair);
-    }
+    }*/
+	/* More optimized code */
+	varMap = variableMap;
     return true;
 }
 

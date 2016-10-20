@@ -23,7 +23,7 @@ namespace SystemTesting {
 	TEST_CLASS(SystemTest) {
 public:
 	struct StringCompare {
-		bool operator() (const std::string &str1, const std::string &str2) {
+		bool operator() (const string &str1, const string &str2) {
 			if (Utils::IsNonNegativeNumeric(str1) && Utils::IsNonNegativeNumeric(str2)) {
 				return (std::stoi(str1) < std::stoi(str2));
 			}
@@ -34,7 +34,7 @@ public:
 	};
 
 	struct CombinationCompare {
-		bool operator() (const std::vector<Candidate> comb1, const std::vector<Candidate> comb2) {
+		bool operator() (const vector<Candidate> comb1, const vector<Candidate> comb2) {
 			StringCompare comp;
 			for (unsigned i=0; i < comb1.size(); i++) {
 				if (comp(comb1[i], comb2[i])) return true;
@@ -43,7 +43,7 @@ public:
 		}
 	};
 
-	std::vector<std::vector<Candidate>>& sortResult(std::vector<std::vector<Candidate>> &combList) {
+	vector<vector<Candidate>>& sortResult(vector<vector<Candidate>> &combList) {
 		CombinationCompare comp;
 		std::sort(combList.begin(), combList.end(), comp);
 		return combList;
@@ -68,7 +68,7 @@ public:
 		parse(fileName);
 	}
 
-	QueryTree getQueryTree(std::string query) {
+	QueryTree getQueryTree(string query) {
 		QueryPreprocessor qp;
 		qp.preprocessQuery(query);
 		QueryTree qt(qp.getQueryTree());
@@ -76,15 +76,15 @@ public:
 		return qo.optimize(qt);
 	}
 
-	std::vector<std::string> resultToString(std::vector<std::vector<Candidate>> &list) {
-		std::vector<std::string> res;
-		for (std::vector<std::string> combi : list) {
+	vector<string> resultToString(vector<vector<Candidate>> &list) {
+		vector<string> res;
+		for (vector<string> combi : list) {
 			res.push_back(Utils::VectorToString(combi));
 		}
 		return res;
 	}
 
-	std::string format(ResultList &resultList) {
+	string format(ResultList &resultList) {
 		return Utils::VectorToString(resultToString(sortResult(resultList.second)));
 	}
 
@@ -107,101 +107,115 @@ public:
         Assert::AreEqual(7, int(PKB::GetNumberOfWhile()));
     }
 
-	TEST_METHOD(Integration_QE_GetCandidatesTest) {
+	TEST_METHOD(Integration_QE_GetCandidates_Generic) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("variable v; Select v;"));
 		
 		QueryEvaluator qe;
-		//std::unordered_map<std::string, Symbol> map(qt.getSelect());
 
-		std::vector<std::string> result = resultToString(qe.selectQueryResults(qt).second);
-		//Logger::WriteMessage(Utils::VectorToString(result).c_str());
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<a>,<b>,<c>,<d>,<e>,<f>,<g>,<h>>");
+		Assert::AreEqual(expected, actual);
 	}
 
-	TEST_METHOD(TestEvaluateModifies) {
+	TEST_METHOD(Integration_QE_GetCandidates_Boolean) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("assign a; variable v; Select BOOLEAN such that Modifies(a, v);"));
+
+		QueryEvaluator qe;
+		
+		//std::unordered_map<string, Symbol> varMap(qt.getVarMap());
+		//Assert::IsTrue(varMap.find("BOOLEAN") != varMap.end());
+		//string actual(Utils::VectorToString(qt.getResults()));
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<TRUE>>");
+		Assert::AreEqual(expected, actual);
+	}
+
+	TEST_METHOD(Integration_QE_EvaluateModifies) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; Select a such that Modifies(a, \"a\")"));
 		QueryEvaluator qe;
 
-		std::string actual(format(qe.selectQueryResults(qt)));
-		std::string expected("<<1>,<8>,<9>,<10>,<16>,<23>,<29>>");
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<1>,<8>,<9>,<10>,<16>,<23>,<29>>");
 		Assert::AreEqual(expected, actual);
 	}
 
-	TEST_METHOD(TestEvaluateFollows) {
+	TEST_METHOD(Integration_QE_EvaluateFollows) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; while w; Select a such that Follows(a, w)"));
 		QueryEvaluator qe;
 		
-		std::string actual(format(qe.selectQueryResults(qt)));
-		std::string expected("<<5>,<11>,<29>,<32>,<34>,<37>>");
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<5>,<11>,<29>,<32>,<34>,<37>>");
 		Assert::AreEqual(expected, actual);
 	}
 
-	TEST_METHOD(TestEvaluateFollowsWithConst) {
+	TEST_METHOD(Integration_QE_EvaluateFollowsWithConst) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; while w; Select w such that Follows(3, 4)"));
 		QueryEvaluator qe;
 
-		std::string actual(format(qe.selectQueryResults(qt)));
-		std::string expected("<<6>,<7>,<12>,<30>,<33>,<35>,<38>>");
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<6>,<7>,<12>,<30>,<33>,<35>,<38>>");
 		Assert::AreEqual(expected, actual);
 	}
-	TEST_METHOD(TestGetModifies) {
+	TEST_METHOD(Intgeration_QE_GetModifies) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select v such that Modifies(1, v)"));
 		QueryEvaluator qe;
 
-		std::string actual(format(qe.selectQueryResults(qt)));
-		std::string expected("<<a>>");
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<a>>");
 		Assert::AreEqual(expected, actual);
 	}
-	TEST_METHOD(TestGetUses) {
+	TEST_METHOD(Integration_QE_GetUses) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select a such that Uses(a, \"a\")"));
 		QueryEvaluator qe;
 
-		std::string actual(format(qe.selectQueryResults(qt)));
-		std::string expected("<<10>,<21>,<22>,<36>,<42>,<44>,<46>>");
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<10>,<21>,<22>,<36>,<42>,<44>,<46>>");
 		Assert::AreEqual(expected, actual);
 	}
-	TEST_METHOD(TestExactPattern) {
+	TEST_METHOD(Integration_QE_ExactPattern) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",\"c\")"));
 		QueryEvaluator qe;
 
-		std::string actual(format(qe.selectQueryResults(qt)));
-		std::string expected("<<2>>");
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<2>>");
 		Assert::AreEqual(expected, actual);
 	}
-	TEST_METHOD(TestExactRHSPattern) {
+	TEST_METHOD(Integration_QE_ExactRHSPattern) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_,\"c\")"));
 		QueryEvaluator qe;
 
-		std::string actual(format(qe.selectQueryResults(qt)));
-		std::string expected("<<2>,<16>>");
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<2>,<16>>");
 		Assert::AreEqual(expected, actual);
 	}
-	TEST_METHOD(TestUnderscorePattern) {
+	TEST_METHOD(Integration_QE_UnderscorePattern) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(\"c\",_)"));
 		QueryEvaluator qe;
 
-		std::string actual(format(qe.selectQueryResults(qt)));
-		std::string expected("<<2>,<3>,<5>,<24>,<26>,<41>,<48>>");
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<2>,<3>,<5>,<24>,<26>,<41>,<48>>");
 		Assert::AreEqual(expected, actual);
 	}
-	TEST_METHOD(TestSubPattern) {
+	TEST_METHOD(Integration_QE_SubPattern) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_)"));
 		QueryEvaluator qe;
 
-		std::string actual(format(qe.selectQueryResults(qt)));
-		std::string expected("<<2>,<4>,<10>,<16>,<18>,<37>,<42>,<47>>");
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<2>,<4>,<10>,<16>,<18>,<37>,<42>,<47>>");
 		Assert::AreEqual(expected, actual);
 	}
-	TEST_METHOD(TestEvaluateExactPattern) {
+	TEST_METHOD(Integration_QE_EvaluateExactPattern) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, \"c\")"));
 		QueryEvaluator qe;
@@ -209,21 +223,21 @@ public:
 		bool f(qe.evaluatePatternClause("2", "c", "\"c\""));
 		Assert::IsTrue(f);
 	}
-	TEST_METHOD(TestEvaluateSubPattern) {
+	TEST_METHOD(Integration_QE_EvaluateSubPattern) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_)"));
 		QueryEvaluator qe;
 
 		Assert::IsTrue(qe.evaluatePatternClause("2", "c", "_\"c\"_"));
 	}
-    TEST_METHOD(TestSubPatternConstant) {
+    TEST_METHOD(Integration_QE_SubPatternConstant) {
         getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
         QueryTree qt(getQueryTree("assign a; Select a pattern a(_, _\"97\"_)"));
         QueryEvaluator qe;
     
         Assert::IsTrue(qe.evaluatePatternClause("1", "_", "_\"97\"_"));
     }
-    TEST_METHOD(TestExactPatternConstant) {
+    TEST_METHOD(Integration_QE_ExactPatternConstant) {
         getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
         QueryTree qt(getQueryTree("assign a; Select a pattern a(_, \"42\")"));
         QueryEvaluator qe;
@@ -231,10 +245,10 @@ public:
         Assert::IsTrue(qe.evaluatePatternClause("25", "_", "\"42\""));
     }
     TEST_METHOD(Integration_Optimizer_TestOne) {
-        std::string query, expectedBooleanClauses, actualBooleanClauses;
-        std::string expectedUnselectedClauses, actualUnselectedClauses;
-        std::string expectedSelectedClausesOne, actualSelectedClausesOne;
-        std::string expectedSelectedClausesTwo, actualSelectedClausesTwo;
+        string query, expectedBooleanClauses, actualBooleanClauses;
+        string expectedUnselectedClauses, actualUnselectedClauses;
+        string expectedSelectedClausesOne, actualSelectedClausesOne;
+        string expectedSelectedClausesTwo, actualSelectedClausesTwo;
 
         getSampleProgram("..\\tests\\IntegrationTesting\\IntegrationTest-OptimizerSource.txt");
 
@@ -261,18 +275,18 @@ public:
             actualBooleanClauses += c.toString() + " ";
         }
 
-        std::vector<Clause> unselectedGroup = qt.getUnselectedGroups().at(0).second;
+        vector<Clause> unselectedGroup = qt.getUnselectedGroups().at(0).second;
         for (Clause c : unselectedGroup) {
             actualUnselectedClauses += c.toString() + " ";
         }
 
         //testing for group 1 only, ignore pattern a1(v2,_"x+y"_) in group 2
-        std::vector<Clause> selectedGroupOne = qt.getSelectedGroups().at(0).second;
+        vector<Clause> selectedGroupOne = qt.getSelectedGroups().at(0).second;
         for (Clause c : selectedGroupOne) {
             actualSelectedClausesOne += c.toString() + " ";
         }
 
-        std::vector<Clause> selectedGroupTwo = qt.getSelectedGroups().at(1).second;
+        vector<Clause> selectedGroupTwo = qt.getSelectedGroups().at(1).second;
         for (Clause c : selectedGroupTwo) {
             actualSelectedClausesTwo += c.toString() + " ";
         }
@@ -294,18 +308,18 @@ public:
         parse(fileName);
 
         QueryProjector projector;
-        std::string expected, actual;
+        string expected, actual;
 
-        std::list<std::string> results;
+        std::list<string> results;
         ResultList resultList({ { "a", "s", "c" },{ { "1","2","3" },{ "4","5","6" } } });
 
-        std::unordered_map<std::string, bool> varAttrMap({ { "c", true } });
+        std::unordered_map<string, bool> varAttrMap({ { "c", true } });
         
         projector.projectResult(results, varAttrMap, resultList);
 
         expected = "1 2 Projector2, 4 5 Projector3";
 
-        for (std::string s : results) {
+        for (string s : results) {
             actual += s + ", ";
         }
         actual = actual.substr(0, actual.length() - 2);

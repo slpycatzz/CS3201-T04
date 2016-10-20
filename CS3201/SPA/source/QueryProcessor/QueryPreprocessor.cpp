@@ -61,8 +61,6 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
         varSymbolMap[variableNames[i]] = Constants::StringToSymbol(declarationType);
     }
 
-    qt.insertDeclaration(varSymbolMap);
-
     return true;
 }
 
@@ -169,6 +167,7 @@ void QueryPreprocessor::parseSelect() {
         } else if (accept(SYMBOL_BOOLEAN)) {
             var.push_back(SYMBOL_BOOLEAN);
             varSymbolMap[SYMBOL_BOOLEAN] = BOOLEAN;
+			//qt.insertBooleanDeclaration();
             varAttrMap[SYMBOL_BOOLEAN] = false;
         } else {
             throw QuerySyntaxErrorException("6");
@@ -179,6 +178,8 @@ void QueryPreprocessor::parseSelect() {
         throw QuerySyntaxErrorException("7");
     }
 
+
+	qt.insertDeclaration(varSymbolMap);
     qt.insert(QUERY_RESULT, "placeholder", var);
     qt.insert(QUERY_RESULT, "placeholder", varAttrMap);
 }
@@ -579,9 +580,11 @@ bool QueryPreprocessor::expect(string &var, char token) {
 }
 
 bool QueryPreprocessor::isVarExist(string var) {
-    if (toLower(var).compare("boolean") == 0) {
+    /*
+	if (toLower(var).compare("boolean") == 0) {
         return true;
     }
+	*/
     if (varSymbolMap.find(var) != varSymbolMap.end()) {
         return true;
     }
