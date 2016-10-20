@@ -224,6 +224,8 @@ void Utils::SplitAndIgnoreEmpty(string str, char delimiter, vector<string> &targ
 
     stringStream.str(str);
     while (getline(stringStream, temp, delimiter)) {
+        temp = TrimSpaces(temp);
+
         if (!temp.empty()) {
             target.push_back(temp);
         }
