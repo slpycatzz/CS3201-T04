@@ -297,17 +297,25 @@ void QueryPreprocessor::parsePattern() {
 
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(PATTERN)) {
+            string expressionFront;
             // case: pattern expression string e.g. _"a+1"_, "a+1"
             if (r.isArgValid(varSymbolMap[relation], "pattern", i)) {
                 string expressionWithBrackets;
+                expressionFront = patternList[patternList.size() - 1];
+                string expressionBack = "\"";
+                    if (expressionFront.size() == 2) {
+                        expressionBack += "_";
+                }
+                patternList.pop_back();
+
                 expressionWithBrackets = Utils::GetExactExpressionWithBrackets(Utils::GetPostfixExpression(patternList));
-                argList.push_back(expressionWithBrackets);
+                argList.push_back(expressionFront+expressionWithBrackets+expressionBack);
                 patternList.clear();
             } else {
                 throw QuerySyntaxErrorException("19");
             }
 
-            queryList[cur] = peek().substr(getPatternExpression().size());
+            queryList[cur] = peek().substr(getPatternExpression().size()+expressionFront.size()-1);
         } else {
             throw QuerySyntaxErrorException("20");
         }
@@ -508,11 +516,13 @@ bool QueryPreprocessor::isConstantVar(string var) {
     string varCopy = var;
     if (accept(var, '"')) {
         isConstantVarTerm(var);
-        expect(var, '"');
+        patternList.push_back("\"");
+        return expect(var, '"');
     } else if (accept(var, '_')) {
         expect(var, '"');
         isConstantVarTerm(var);
         expect(var, '"');
+        patternList.push_back("_\"");
         return expect(var, '_');
     }
 }
@@ -611,7 +621,9 @@ bool QueryPreprocessor::accept(string &var, Symbol token) {
 }
 
 bool QueryPreprocessor::expect(string &var, char token) {
-    peek();
+    if (var.size() == 0) {
+        var = peek();
+    }
     if (var[0] == token) {
         var = var.substr(1);
         return true;
