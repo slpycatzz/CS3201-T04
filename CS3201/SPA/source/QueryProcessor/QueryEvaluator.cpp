@@ -521,6 +521,9 @@ bool QueryEvaluator::evaluateModifies(Candidate procOrStmtNo, Candidate varName)
 		return PKB::IsModifies(stmtNo, varName);
 	}
 	else {
+        if (varName == "_") {
+            return (!PKB::GetProcedureModifiedVariables(procOrStmtNo).empty());
+        }
 		return PKB::IsModifiesProcedure(procOrStmtNo, varName);
 	}
 }

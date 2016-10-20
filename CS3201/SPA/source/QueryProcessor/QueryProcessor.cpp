@@ -22,9 +22,9 @@ void QueryProcessor::process(std::string query, std::list<std::string>& results)
     queryProjector.projectResult(results, queryTree.getResultsInfo(), queryResult);
     
     // For testing
-    /*queryPreprocessor.preprocessQuery(query);
-    QueryTree queryTree = queryOptimizer.optimize(queryPreprocessor.getQueryTree());
-    queryProjector.projectResult(results, queryTree.getResultsInfo(), { { "a1", "s1", "c1" },{ { "1","2","3" },{ "4","5","6" } } });
-    queryTree.printGroups();
-    PKB::PrintPriorityTable();*/
+    //queryPreprocessor.preprocessQuery(query);
+    //QueryTree queryTree = queryOptimizer.optimize(queryPreprocessor.getQueryTree());
+    //queryProjector.projectResult(results, queryTree.getResultsInfo(), { { "a1", "s1", "c1" },{ { "1","2","3" },{ "4","5","6" } } });
+    //queryTree.printGroups();
+    //PKB::PrintPriorityTable();
 }
