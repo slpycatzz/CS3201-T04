@@ -116,9 +116,7 @@ void RelationTable::initTable() {
 
     clauseMap1[FOLLOWS_TRANSITIVE] = arg1;
     clauseMap2[FOLLOWS_TRANSITIVE] = arg2;
-    arg1.clear();
-    arg2.clear();
-
+    
 	// procedure includes variable("procedureName")
     clauseMap1[NEXT] = arg1;
     clauseMap2[NEXT] = arg2;
