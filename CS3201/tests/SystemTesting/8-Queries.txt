@@ -1,0 +1,100 @@
+1 - with, synonym.attrName and synonym.attrName
+procedure p;variable v;
+Select p with p.procName = v.varName
+none
+5000
+2 - with, synonym.attrName and synonym.attrName
+constant c;stmt s;
+Select c with c.value = s.stmt#
+1,2,3,9,10
+5000
+3 - with, synonym.attrName and synonym.attrName
+constant c; if ifstmt;
+Select c with c.value = ifstmt.stmt#
+3
+5000
+4 - with, synonym.attrName and synonym.attrName
+constant c; assign a;
+Select c with c.value = a.stmt#
+1,2,9,10
+5000
+5 - with, synonym.attrName and synonym of prog_line
+constant c; prog_line n;
+Select c with c.value = n
+1,2,3,9,10
+5000
+6 - with, synonym.attrName and IDENT
+procedure p;
+Select p with p.procName = "Pikachu"
+Pikachu
+5000
+7 - with, synonym.attrName and IDENT
+variable x;
+Select x with x.varName = "i"
+i
+5000
+8 - with, synonym.attrName and INTEGER
+constant c;
+Select c with c.value = 3
+3
+5000
+9 - with, synonym.attrName and INTEGER
+constant c;
+Select c with c.value = 7
+none
+5000
+10 - with, synonym.attrName and INTEGER
+stmt s;
+Select s with s.stmt# = 8
+8
+5000
+11 - with, synonym.attrName and INTEGER
+stmt s;
+Select s with s.stmt# = 20
+none
+5000
+12 - with, IDENT and synonym.attrName
+procedure p;
+Select p with "Mudkip" = p.procName
+Mudkip
+5000
+13 - with, IDENT and synonym.attrName
+variable v;
+Select v with "q" = v.varName
+q
+5000
+14 - with, IDENT and IDENT
+if ifstmt;
+Select ifstmt with "Pikachu" = "Mewtwo"
+none
+5000
+15 - with, IDENT and IDENT
+call c;
+Select c with "z" = "z"
+6,12,19
+5000
+16 - with, INTEGER and synonym.attrName
+constant c;
+Select c with 9 = c.value
+9
+5000
+17 - with, INTEGER and synonym.attrName
+stmt s;
+Select s with 18 = s.stmt#
+18
+5000
+18 - with, INTEGER and synonym of prog_line
+prog_line n;
+Select n with 9 = n
+9
+5000
+19 - with, INTEGER and synonym of prog_line
+prog_line n;
+Select n with 0 = n
+none
+5000
+20 - with, INTEGER and INTEGER
+if ifstmt;
+Select ifstmt with 12 = 12
+3,16
+5000

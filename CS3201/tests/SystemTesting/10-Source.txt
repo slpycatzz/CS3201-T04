@@ -1,0 +1,33 @@
+procedure FirstHokage{
+    hashirama=0;
+    tobirama=1;
+    if tobirama then{
+        hiruzen=hashirama+tobirama;
+    }
+    else{
+        hiruzen=hashirama;
+    }
+    call SecondHokage;
+}
+procedure SecondHokage{
+    hashirama=9;
+    tobirama=hashirama+3;
+    hiruzen=hashirama+tobirama;
+}
+procedure ThirdHokage{
+    minato=2;
+    tsunade=minato+1;
+    call SecondHokage;
+    danzo=hashirama;
+}
+procedure FourthHokage{
+    kakashi=3;
+    hashirama=2+kakashi;
+    if tobirama then{
+        hashirama=kakashi;
+    }
+    else{
+        tobirama=10;
+        call ThirdHokage;
+    }
+}

@@ -1,0 +1,75 @@
+2 - MRelation2:: MRelation2
+procedure p;variable v;
+Select p such that Calls(p,"p4") and Modifies(p,v) with v.varName = "cho"
+p3,p2
+5000
+4 - MRelation4 ::MRelation4
+assign a; if i1; prog_line n;variable v;
+Select i1 such that Parent(i1,a) and Next(i1,n) and Uses(a,v) and Modifies(a,v) with v.varName = "heir"
+39
+5000
+6 - MRelation4 :: MRelation4
+procedure p1;procedure p2; assign a1;stmt s; variable v;
+Select p1 such that Uses(p1,v) and Calls(p1,p2) and Modifies(p2,v) and Parent(s,a1)
+p1,p2,p3
+5000
+7 - MRelation4 :: MRelation4
+procedure p1;procedure p2;variable v;stmt s1; stmt s2;
+Select s2 such that Calls*(p1,p2) and Modifies(p1,v) and Modifies(s1,v) and Parent(s2,s1)
+3,5,10,14,18,24,28,31,37,39
+5000
+10 - MRelation3 :: MRelation3
+variable v1;variable v2;assign a;assign b;stmt s;
+Select <v1,v2> such that Modifies(a,v1) and Uses(b,v2) and Parent*(s,a)
+heir heir,heir psy,heir cho,heir ghost,heir man,psy heir,psy psy,psy cho,psy ghost,psy man,cho heir,cho psy,cho cho,cho ghost,cho man,ghost heir,ghost psy,ghost cho,ghost ghost,ghost man,man heir,man psy,man cho,man ghost,man man
+5000
+11 - MRelation2 :: MRelation2
+variable v;procedure p1;procedure p2;
+Select v such that Calls*(p1,p2) and Modifies(p2,v)
+heir,psy,cho,ghost,man
+5000
+13 - MRelation4 :: MRelation4
+variable v1; variable v2;variable v3;assign a;assign b;procedure p1;
+Select<v1,v2,v3> such that Modifies(a,v1) and Uses(b,v2) and Modifies(p1,v3) and Uses(a,v3)
+heir heir heir,heir heir psy,heir heir cho,heir heir ghost,heir heir man,heir psy heir,heir psy psy,heir psy cho,heir psy ghost,heir psy man,heir cho heir,heir cho psy,heir cho cho,heir cho ghost,heir cho man,heir ghost heir,heir ghost psy,heir ghost cho,heir ghost ghost,heir ghost man,heir man heir,heir man psy,heir man cho,heir man ghost,heir man man,psy heir heir,psy heir cho,psy heir ghost,psy heir man,psy psy heir,psy psy cho,psy psy ghost,psy psy man,psy cho heir,psy cho cho,psy cho ghost,psy cho man,psy ghost heir,psy ghost cho,psy ghost ghost,psy ghost man,psy man heir,psy man cho,psy man ghost,psy man man,cho heir heir,cho heir psy,cho heir ghost,cho psy heir,cho psy psy,cho psy ghost,cho cho heir,cho cho psy,cho cho ghost,cho ghost heir,cho ghost psy,cho ghost ghost,cho man heir,cho man psy,cho man ghost,ghost heir heir,ghost heir psy,ghost heir cho,ghost heir ghost,ghost heir man,ghost psy heir,ghost psy psy,ghost psy cho,ghost psy ghost,ghost psy man,ghost cho heir,ghost cho psy,ghost cho cho,ghost cho ghost,ghost cho man,ghost ghost heir,ghost ghost psy,ghost ghost cho,ghost ghost ghost,ghost ghost man,ghost man heir,ghost man psy,ghost man cho,ghost man ghost,ghost man man,man heir heir,man heir psy,man heir ghost,man heir man,man psy heir,man psy psy,man psy ghost,man psy man,man cho heir,man cho psy,man cho ghost,man cho man,man ghost heir,man ghost psy,man ghost ghost,man ghost man,man man heir,man man psy,man man ghost,man man man
+5000
+14 - MRelation9 :: MRelation9
+assign a;assign b;assign c;variable v1; variable v2;stmt s1;stmt s2;procedure p1;procedure p2;prog_line n1;prog_line n2;
+Select<a,b,c> pattern b("ghost",_) such that Uses(a,v1) and Parent*(s1,b) and Follows*(s1,s2) and Modifies(p1,v2) and Calls*(p1,p2) and Uses(c,v2) and Next*(n1,n2) with n1 = 26 and v2.varName = "psy"
+1 6 2,1 6 11,1 8 2,1 8 11,1 17 2,1 17 11,1 21 2,1 21 11,1 29 2,1 29 11,1 40 2,1 40 11,2 6 11,2 8 11,2 17 11,2 21 11,2 29 11,2 40 11,9 6 11,9 8 11,9 17 11,9 21 11,9 29 11,9 40 11,27 6 30,27 6 32,27 6 33,27 8 30,27 8 32,27 8 33,27 17 30,27 17 32,27 17 33,27 21 30,27 21 32,27 21 33,27 29 30,27 29 32,27 29 33,27 40 30,27 40 32,27 40 33,29 6 33,29 8 33,29 17 33,29 21 33,29 29 33,29 40 33,32 6 33,32 8 33,32 17 33,32 21 33,32 29 33,32 40 33,38 6 40,38 8 40,38 17 40,38 21 40,38 29 40,38 40 40,42 6 40,42 8 40,42 17 40,42 21 40,42 29 40,42 40 40,43 6 40,43 8 40,43 17 40,43 21 40,43 29 40,43 40 40,44 6 40,44 8 40,44 17 40,44 21 40,44 29 40,44 40 40,45 6 40,45 8 40,45 17 40,45 21 40,45 29 40,45 40 40
+5000
+15 - MRelation1 :: MRelation1
+assign a;
+Select <a,a> such that Modifies(a,"ghost")
+6 6,8 8,17 17,21 21,29 29,38 38,40 40
+5000
+16 - MRelation1 :: MRelation1
+assign a;
+Select a such that Parent(a,a)
+none
+5000
+17 - MRelation1 :: MRelation1
+assign a;
+Select a such that Follows(a,a)
+none
+5000
+24 - MRelation1 :: MRelation1
+assign a;
+Select a such that Follows*(a,a)
+none
+5000
+29 - MRelation2 :: MRelation2
+assign a,b;
+Select a pattern a("cho",_) and a(_,_"3 * psy + 2"_)
+none
+5000
+31 - MRelation6 :: MRelation6
+stmt s;while w;variable v; prog_line n1,n2; assign a;
+Select <w,a> such that Follows*(w,s) and Parent(w,a) and Uses(a,v) and Next*(n1,n2) and Parent*(n1,n2) with v.varName = "psy" pattern w("man",_) 
+31 32,31 33
+5000
+35 - MRelation :: MRelation
+prog_line n1;
+Select n1 such that Next(n1,n1)
+none
+5000

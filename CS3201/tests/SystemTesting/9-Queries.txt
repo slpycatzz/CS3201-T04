@@ -1,0 +1,50 @@
+1 - To test pattern match exact expression, both side - varying
+assign a;
+Select a pattern a(_, _"1"_)
+1, 6, 10, 13, 17, 18, 20, 25, 27, 30
+5000
+2 - To test pattern exact-expression match, both side - defined
+assign a;
+Select a pattern a("oSCar", "1 + beta + tmp")
+6
+5000
+3 - To test pattern exact-expression match, both side - defined, mutiple matches
+assign a;
+Select a pattern a("x", " x + 1")
+10, 18
+5000
+4 - To test pattern sub-expression match, both sides are varying
+assign a; variable v;
+Select v pattern a(v, _)
+i, b, c, oSCar, x, Romeo, a, w, z, y
+5000
+5 - To test pattern sub-expression match
+assign a1; assign a2;
+Select a1 pattern a2("x", _)
+1, 2, 3, 6, 8, 10, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23, 25, 27, 28, 29, 30
+5000
+6 - To test pattern sub-expression match
+assign a1; assign a2;
+Select a1 pattern a2("lalala", _)
+none
+5000
+7 - To test pattern match exact expression, both sides are defined
+assign a;
+Select a pattern a("x", "x-1")
+25
+5000
+8 - To test pattern sub-expression match, first var - defined
+assign a;
+Select a pattern a("x", _"x"_)
+10, 18, 25
+5000
+9 - To test pattern sub-expression match, first var - defined
+assign a;
+Select a pattern a("z", _"i"_)
+29
+5000
+10 - To test pattern sub-expression match, both sides are varying
+assign a; variable v;
+Select v pattern a(v, _)
+i, b, c, oSCar, x, Romeo, a, w, z, y
+5000
