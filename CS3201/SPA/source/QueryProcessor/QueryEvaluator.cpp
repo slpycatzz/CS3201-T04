@@ -597,7 +597,7 @@ bool QueryEvaluator::evaluateFollows(Candidate stmt1, Candidate stmt2)
 	else {
 		int stmtNo1(Utils::StringToInt(stmt1));
 		if (stmt2 == "_") {
-			return (PKB::GetFollowing(stmtNo1) > 0);
+			return (!PKB::GetFollowing(stmtNo1).empty());
 		}
 		else {
 			int stmtNo2(Utils::StringToInt(stmt2));
@@ -626,7 +626,7 @@ bool QueryEvaluator::evaluateFollowsStar(Candidate stmt1, Candidate stmt2)
 	else {
 		int stmtNo1(Utils::StringToInt(stmt1));
 		if (stmt2 == "_") {
-			return (PKB::GetFollowing(stmtNo1) > 0);
+			return (!PKB::GetFollowing(stmtNo1).empty());
 		}
 		else {
 			int stmtNo2(Utils::StringToInt(stmt2));

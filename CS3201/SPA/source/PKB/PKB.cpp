@@ -687,8 +687,8 @@ StmtNumber PKB::GetFollows(StmtNumber following) {
     return (followsTable_.hasValue(following)) ? followsTable_.getKey(following) : 0;
 }
 
-StmtNumber PKB::GetFollowing(StmtNumber follows) {
-    return (followsTable_.hasKey(follows)) ? followsTable_.getValue(follows) : 0;
+set<StmtNumber> PKB::GetFollowing(StmtNumber follows) {
+    return followsTable_.getValues(follows);
 }
 
 set<StmtNumber> PKB::GetFollowsTransitive(StmtNumber following) {
