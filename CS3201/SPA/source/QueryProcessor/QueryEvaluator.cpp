@@ -436,7 +436,14 @@ bool QueryEvaluator::evaluatePatternClause(Candidate stmt,
 			return true;
 		}
 		else {
-			return PKB::IsModifies(stmtNo, lhsVar);
+            //stmtNo can be type assign/if/while
+            std::string stmtSymbol = PKB::GetStmtSymbol(stmtNo);
+            if ((stmtSymbol == SYMBOL_ASSIGN)) {
+                return PKB::IsModifies(stmtNo, lhsVar);
+            }
+            else {
+                return PKB::HasControlVariableAtStmtNumber(stmtNo, lhsVar);
+            }
 		}
 	}
 	else if (Utils::StartsWith(expression, '_')) {
