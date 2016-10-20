@@ -546,11 +546,12 @@ void QueryPreprocessor::callFactorRecognizer(string &var) {
         
 
         patternList.push_back(name);
-        
+
         /* Constant. */
     } else if (accept(var, CONSTANT)) {
         
         patternList.push_back(name);
+
 
     } else if (var[0] == '\"') {
 
@@ -562,30 +563,21 @@ void QueryPreprocessor::callFactorRecognizer(string &var) {
     }
 }
 
-void QueryPreprocessor::callTermRecognizer(string &var) {
-    callFactorRecognizer(var);
-
-    while (accept(var, CHAR_SYMBOL_MULTIPLY)) {
-        patternList.push_back(string(1, CHAR_SYMBOL_MULTIPLY));
-
-        callFactorRecognizer(var);
-
-    }
-}
-
 void QueryPreprocessor::callExpressionRecognizer(string &var) {
-    callTermRecognizer(var);
+    callFactorRecognizer(var);
     while (true) {
 
         if (accept(var, CHAR_SYMBOL_PLUS)) {
             patternList.push_back(string(1, CHAR_SYMBOL_PLUS));
         } else if (accept(var, CHAR_SYMBOL_MINUS)) {
             patternList.push_back(string(1, CHAR_SYMBOL_MINUS));
+        } else if (accept(var, CHAR_SYMBOL_MULTIPLY)) {
+            patternList.push_back(string(1, CHAR_SYMBOL_MULTIPLY));
         } else {
             break;
         }
+        callFactorRecognizer(var);
     }    
-    callTermRecognizer(var);
 }
 
 bool QueryPreprocessor::isConstantVarTerm(string &var) {
@@ -633,7 +625,8 @@ bool QueryPreprocessor::expect(string &var, char token) {
         var = var.substr(1);
         return true;
     } else {
-        throw QuerySyntaxErrorException("invalid pattern expression");
+        var += "end";
+        throw QuerySyntaxErrorException("invalid pattern expression"+var);
     }
 }
 
