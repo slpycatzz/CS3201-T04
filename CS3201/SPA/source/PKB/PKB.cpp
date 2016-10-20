@@ -449,8 +449,8 @@ void PKB::GenerateCallsTable(map<ProcedureName, set<ProcedureName>> calls) {
         callsTable_.insert(pair.first, pair.second);
     }
 
-    callsTransitiveTable_.generateKeyToValueTransitiveMap(callsTable_);
-    callsTransitiveTable_.generateValueToKeyTransitiveMap(callsTable_);
+    callsTransitiveTable_.generateKeyToValuesTransitiveMap(callsTable_);
+    callsTransitiveTable_.generateValueToKeysTransitiveMap(callsTable_);
 }
 
 bool PKB::IsCalls(ProcedureName calling, ProcedureName called) {
@@ -611,8 +611,8 @@ void PKB::GenerateParentTable(map<StmtNumber, set<StmtNumber>> parent) {
         parentTable_.insert(pair.first, pair.second);
     }
 
-    parentTransitiveTable_.generateKeyToValueTransitiveMap(parentTable_);
-    parentTransitiveTable_.generateValueToKeyTransitiveMap(parentTable_);
+    parentTransitiveTable_.generateKeyToValuesTransitiveMap(parentTable_);
+    parentTransitiveTable_.generateValueToKeysTransitiveMap(parentTable_);
 }
 
 bool PKB::IsParent(StmtNumber parent, StmtNumber child) {
@@ -663,8 +663,8 @@ void PKB::GenerateFollowsTable(map<StmtNumber, StmtNumber> follows) {
         followsTable_.insert(pair.first, pair.second);
     }
 
-    followsTransitiveTable_.generateKeyToValueTransitiveMap(followsTable_);
-    followsTransitiveTable_.generateValueToKeyTransitiveMap(followsTable_);
+    followsTransitiveTable_.generateKeyToValuesTransitiveMap(followsTable_);
+    followsTransitiveTable_.generateValueToKeysTransitiveMap(followsTable_);
 }
 
 bool PKB::IsFollows(StmtNumber follows, StmtNumber following) {
