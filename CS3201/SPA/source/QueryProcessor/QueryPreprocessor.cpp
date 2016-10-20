@@ -307,7 +307,10 @@ void QueryPreprocessor::parsePattern() {
                         expressionBack += "_";
                 }
                 patternList.pop_back();
-
+                string patternBack = patternList[patternList.size() - 1];
+                if (patternBack == "+" || patternBack == "-" || patternBack == "*") {
+                    throw QuerySyntaxErrorException("invalid pattern found");
+                }
                 expressionWithBrackets = Utils::GetExactExpressionWithBrackets(Utils::GetPostfixExpression(patternList));
                 argList.push_back(expressionFront+expressionWithBrackets+expressionBack);
                 patternList.clear();
@@ -565,7 +568,8 @@ void QueryPreprocessor::callFactorRecognizer(string &var) {
 
 void QueryPreprocessor::callExpressionRecognizer(string &var) {
     callFactorRecognizer(var);
-    while (true) {
+    int limit = 0;
+    while (true || limit++ > 999) {
 
         if (accept(var, CHAR_SYMBOL_PLUS)) {
             patternList.push_back(string(1, CHAR_SYMBOL_PLUS));
@@ -578,6 +582,9 @@ void QueryPreprocessor::callExpressionRecognizer(string &var) {
         }
         callFactorRecognizer(var);
     }    
+    if (limit > 999) {
+        throw QuerySyntaxErrorException("Error occurred somewhere");
+    }
 }
 
 bool QueryPreprocessor::isConstantVarTerm(string &var) {
