@@ -15,9 +15,6 @@ class QueryUtils {
     static bool IsStringLiteral(std::string str);
     static bool IsLiteral(std::string str);
 
-	static std::string GetExpression(std::string expr);
-	static std::string GetSubExpression(std::string expr);
-
-	static std::unordered_map<std::string, std::string>
-		GetSubMap(std::unordered_map<std::string, std::string> &map, const std::vector<std::string> &keyList);
+    static std::string GetExpression(std::string expression);
+    static std::string GetSubExpression(std::string expression);
 };

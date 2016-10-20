@@ -184,7 +184,7 @@ void TotalCombinationList::reduceSingleFactor(vector<Synonym> &synList, PartialC
     combinationComp comp(synList);
     std::set<CandidateCombination, combinationComp> resultSet(comp);
     for (CandidateCombination &combination : candidateList) {
-        CandidateCombination selectedCombi(QueryUtils::GetSubMap(combination, synList));
+        CandidateCombination selectedCombi(Utils::GetSubMap(combination, synList));
         resultSet.insert(selectedCombi);
     }
     candidateList.clear();

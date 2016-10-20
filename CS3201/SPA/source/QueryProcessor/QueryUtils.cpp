@@ -42,33 +42,24 @@ bool QueryUtils::IsLiteral(string str) {
     return (Utils::IsNonNegativeNumeric(str) || IsStringLiteral(str));
 }
 
-string QueryUtils::GetExpression(string expr) {
+string QueryUtils::GetExpression(string expression) {
     stringstream res;
-    for (char c : expr) {
-        if ((c != ' ') && (c != '\"')) {
+    for (char c : expression) {
+        if ((c != CHAR_SYMBOL_SPACE) && (c != CHAR_SYMBOL_DOUBLEQUOTES)) {
             res << c;
         }
     }
     return res.str();
 }
 
-string QueryUtils::GetSubExpression(string expr) {
+string QueryUtils::GetSubExpression(string expression) {
     stringstream res;
-    for (char c : expr) {
-        if ((c != ' ') && (c != '_') && (c != '\"')) {
+    for (char c : expression) {
+        if ((c != CHAR_SYMBOL_SPACE) && (c != CHAR_SYMBOL_UNDERSCORE) && (c != CHAR_SYMBOL_DOUBLEQUOTES)) {
             res << c;
         }
     }
     return res.str();
-}
-
-unordered_map<string, string>
-QueryUtils::GetSubMap(unordered_map<string, string>& map, const vector<string>& keyList) {
-    unordered_map<string, string> result;
-    for (string key : keyList) {
-        result.insert_or_assign(key, map.at(key));
-    }
-    return result;
 }
 
 bool QueryUtils::IsStringLiteral(string str) {

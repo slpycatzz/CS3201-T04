@@ -15,8 +15,8 @@ class Utils {
 
     static std::vector<std::vector<std::string>> Zip(std::vector<std::string> list1, std::vector<std::string> list2);
 
-	static bool IsSameTree(TreeNode &node1, TreeNode &node2);
-	static bool IsSubTree(TreeNode &node, TreeNode &root);
+    static bool IsSameTree(TreeNode &node1, TreeNode &node2);
+    static bool IsSubTree(TreeNode &node, TreeNode &root);
 
     static bool VectorContains(std::vector<unsigned int> vec, unsigned int i);
     static bool VectorContains(std::vector<std::string> vec, std::string str);
@@ -31,6 +31,10 @@ class Utils {
     static std::unordered_map<std::string, std::string> ReduceMap(
         std::unordered_map<std::string, std::string> &map,
         std::vector<std::string> &selections);
+
+    static std::unordered_map<std::string, std::string> GetSubMap(
+        std::unordered_map<std::string, std::string> &map,
+        const std::vector<std::string> &keyList);
 
     static std::string MapToString(std::unordered_map<std::string, std::string> &map);
     static std::string MapToValueString(std::unordered_map<std::string, std::string> &map);

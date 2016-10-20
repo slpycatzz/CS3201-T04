@@ -39,14 +39,17 @@
     <ClCompile Include="source\QueryProcessor\QueryPreprocessorUnitTest.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="QueryProjectorUnitTest.cpp">
+    <ClCompile Include="source\QueryProcessor\QueryProjectorUnitTest.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="TotalCombinationListUnitTest.cpp">
+    <ClCompile Include="source\QueryProcessor\QueryUtilsUnitTest.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="QueryUtilsUnitTest.cpp">
+    <ClCompile Include="source\QueryProcessor\TotalCombinationListUnitTest.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UtilsUnitTest.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
