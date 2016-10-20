@@ -552,8 +552,10 @@ void QueryPreprocessor::callFactorRecognizer(string &var) {
         
         patternList.push_back(name);
 
+    } else if (var == "\"") {
+
     } else {
-        throw QuerySyntaxErrorException();
+        throw QuerySyntaxErrorException("invalid var or const");
     }
 }
 
