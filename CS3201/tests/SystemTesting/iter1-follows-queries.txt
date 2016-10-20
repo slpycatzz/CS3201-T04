@@ -31,7 +31,7 @@ Select w such that Follows(_,w)
 7 - follows* underscore 1
 stmt s;
 Select s such that Follows*(s,_)
-1, 2, 3, 4, 5, 7, 8, 9
+1, 2, 3, 4, 5, 8, 9
 5000
 8 - follows* underscore 2
 stmt s;

@@ -62,6 +62,7 @@ const char CHAR_SYMBOL_CLOSEBRACKET      = ')';
 const char CHAR_SYMBOL_UNDERSCORE        = '_';
 const char CHAR_SYMBOL_COMMA             = ',';
 const char CHAR_SYMBOL_DOUBLEQUOTES      = '\"';
+const char CHAR_SYMBOL_SPACE             = ' ';
 
 enum Symbol {
     INVALID, UNDEFINED,

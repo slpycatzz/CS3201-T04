@@ -4,25 +4,12 @@
 
 #include "Constants.h"
 #include "QueryProcessor/QueryUtils.h"
-#include "TreeNode.h"
 #include "Utils.h"
 
 using std::string;
 using std::stringstream;
 using std::vector;
 using std::unordered_map;
-
-TreeNode* QueryUtils::BuildExpressionTree(string expr) {
-    unsigned i = expr.find_first_not_of(CHAR_SYMBOL_UNDERSCORE);
-    unsigned j = expr.find_last_not_of(CHAR_SYMBOL_UNDERSCORE);
-    string temp(LiteralToCandidate(expr.substr(i, j - i + 1)));
-
-    if (Utils::IsNonNegativeNumeric(temp)) {
-        return new TreeNode(CONSTANT, temp);
-    } else {
-        return new TreeNode(VARIABLE, temp);
-    }
-}
 
 string QueryUtils::LiteralToCandidate(string stringLiteral) {
     return (IsStringLiteral(stringLiteral)) ? GetValueFromStringLiteral(stringLiteral) : stringLiteral;
@@ -42,33 +29,24 @@ bool QueryUtils::IsLiteral(string str) {
     return (Utils::IsNonNegativeNumeric(str) || IsStringLiteral(str));
 }
 
-string QueryUtils::GetExpression(string expr) {
+string QueryUtils::GetExpression(string expression) {
     stringstream res;
-    for (char c : expr) {
-        if ((c != ' ') && (c != '\"')) {
+    for (char c : expression) {
+        if ((c != CHAR_SYMBOL_SPACE) && (c != CHAR_SYMBOL_DOUBLEQUOTES)) {
             res << c;
         }
     }
     return res.str();
 }
 
-string QueryUtils::GetSubExpression(string expr) {
+string QueryUtils::GetSubExpression(string expression) {
     stringstream res;
-    for (char c : expr) {
-        if ((c != ' ') && (c != '_') && (c != '\"')) {
+    for (char c : expression) {
+        if ((c != CHAR_SYMBOL_SPACE) && (c != CHAR_SYMBOL_UNDERSCORE) && (c != CHAR_SYMBOL_DOUBLEQUOTES)) {
             res << c;
         }
     }
     return res.str();
-}
-
-unordered_map<string, string>
-QueryUtils::GetSubMap(unordered_map<string, string>& map, const vector<string>& keyList) {
-    unordered_map<string, string> result;
-    for (string key : keyList) {
-        result.insert_or_assign(key, map.at(key));
-    }
-    return result;
 }
 
 bool QueryUtils::IsStringLiteral(string str) {

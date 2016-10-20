@@ -59,16 +59,6 @@ vector<vector<string>> Utils::Zip(vector<string> list1, vector<string> list2) {
     return result;
 }
 
-bool Utils::IsSameTree(TreeNode & node1, TreeNode & node2)
-{
-	return false;
-}
-
-bool Utils::IsSubTree(TreeNode & node, TreeNode & root)
-{
-	return false;
-}
-
 bool Utils::VectorContains(vector<unsigned int> vec, unsigned int value) {
     return (std::find(vec.begin(), vec.end(), value) != vec.end());
 }
@@ -120,6 +110,15 @@ unordered_map<string, string> Utils::ReduceMap(unordered_map<string, string> &ma
         if (VectorContains(selections, kv.first)) {
             result.insert_or_assign(kv.first, kv.second);
         }
+    }
+
+    return result;
+}
+
+unordered_map<string, string> Utils::GetSubMap(unordered_map<string, string>& map, const vector<string>& keyList) {
+    unordered_map<string, string> result;
+    for (string key : keyList) {
+        result.insert_or_assign(key, map.at(key));
     }
 
     return result;
@@ -217,6 +216,8 @@ void Utils::SplitAndIgnoreEmpty(string str, char delimiter, vector<string> &targ
 
     stringStream.str(str);
     while (getline(stringStream, temp, delimiter)) {
+        temp = TrimSpaces(temp);
+
         if (!temp.empty()) {
             target.push_back(temp);
         }

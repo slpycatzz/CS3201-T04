@@ -282,6 +282,7 @@ public:
 
         //testing for group 1 only, ignore pattern a1(v2,_"x+y"_) in group 2
         vector<Clause> selectedGroupOne = qt.getSelectedGroups().at(0).second;
+
         for (Clause c : selectedGroupOne) {
             actualSelectedClausesOne += c.toString() + " ";
         }
@@ -294,7 +295,7 @@ public:
         expectedBooleanClauses = "Uses(5,\"y\") Follows(3,4) ";
         expectedUnselectedClauses = "pattern a3(\"z\",_) Modifies(a3,v3) Uses(a3,v4) Uses(s4,v4) Uses(s4,v3) ";
         expectedSelectedClausesOne = "Follows(s2,3) Modifies(s3,\"x\") Parent(s3,s1) Uses(s2,v1) Uses(s3,v1) Follows*(s1,s2) ";
-        expectedSelectedClausesTwo = "pattern a1(v2,_\"x+y\"_) ";
+        expectedSelectedClausesTwo = "pattern a1(v2,_\"(x+y)\"_) ";
 
         Assert::AreEqual(expectedBooleanClauses, actualBooleanClauses);
         Assert::AreEqual(expectedUnselectedClauses, actualUnselectedClauses);

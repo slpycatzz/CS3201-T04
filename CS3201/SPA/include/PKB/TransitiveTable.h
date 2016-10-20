@@ -11,7 +11,7 @@ class TransitiveTable {
     inline TransitiveTable<K, V>() {}
     inline ~TransitiveTable<K, V>() {}
 
-    inline void generateKeyToValueTransitiveMap(Table<K, V> table) {
+    inline void generateKeyToValuesTransitiveMap(Table<K, V> table) {
         std::set<K> keys = table.getKeys();
 
         if (keys.empty()) {
@@ -33,7 +33,7 @@ class TransitiveTable {
                     continue;
                 }
 
-                keyToValueTransitiveMap[key].insert(values.begin(), values.end());
+                keyToValuesTransitiveMap[key].insert(values.begin(), values.end());
 
                 for (const auto &value : values) {
                     keyStack.push(value);
@@ -42,7 +42,7 @@ class TransitiveTable {
         }
     }
 
-    inline void generateValueToKeyTransitiveMap(Table<K, V> table) {
+    inline void generateValueToKeysTransitiveMap(Table<K, V> table) {
         std::set<V> values = table.getValues();
 
         if (values.empty()) {
@@ -64,7 +64,7 @@ class TransitiveTable {
                     continue;
                 }
 
-                valueToKeyTransitiveMap[value].insert(keys.begin(), keys.end());
+                valueToKeysTransitiveMap[value].insert(keys.begin(), keys.end());
 
                 for (const auto &key : keys) {
                     valueStack.push(key);
@@ -73,13 +73,18 @@ class TransitiveTable {
         }
     }
 
+    inline void insert(K key, V value) {
+        keyToValuesTransitiveMap[key].insert(value);
+        valueToKeysTransitiveMap[value].insert(key);
+    }
+
     inline std::set<K> getKeys(V value) {
         /* If does not exist, return empty set. */
         if (!hasValue(value)) {
             return std::set<K>();
         }
 
-        return valueToKeyTransitiveMap[value];
+        return valueToKeysTransitiveMap[value];
     }
 
     inline std::set<V> getValues(K key) {
@@ -88,12 +93,12 @@ class TransitiveTable {
             return std::set<V>();
         }
 
-        return keyToValueTransitiveMap[key];
+        return keyToValuesTransitiveMap[key];
     }
 
     inline unsigned int getNumberOfValues() {
         unsigned int numberOfValues = 0;
-        for (const auto &pair : keyToValueTransitiveMap) {
+        for (const auto &pair : keyToValuesTransitiveMap) {
             numberOfValues += pair.second.size();
         }
 
@@ -101,21 +106,21 @@ class TransitiveTable {
     }
 
     inline bool hasKey(K key) {
-        return (keyToValueTransitiveMap.count(key) == 1);
+        return (keyToValuesTransitiveMap.count(key) == 1);
     }
 
     inline bool hasValue(V value) {
-        return (valueToKeyTransitiveMap.count(value) == 1);
+        return (valueToKeysTransitiveMap.count(value) == 1);
     }
 
     inline bool hasKeyToValue(K key, V value) {
-        std::set<V> values = keyToValueTransitiveMap[key];
+        std::set<V> values = keyToValuesTransitiveMap[key];
 
         return (values.count(value) == 1);
     }
 
     inline bool hasKeyToValues(K key, std::set<V> subvalues) {
-        std::set<V> values = keyToValueTransitiveMap[key];
+        std::set<V> values = keyToValuesTransitiveMap[key];
 
         for (auto &value : subvalues) {
             if (values.count(value) != 1) {
@@ -127,13 +132,13 @@ class TransitiveTable {
     }
 
     inline bool hasValueToKey(K key, V value) {
-        std::set<K> keys = valueToKeyTransitiveMap[value];
+        std::set<K> keys = valueToKeysTransitiveMap[value];
 
         return (keys.count(key) == 1);
     }
 
     inline bool hasValueToKeys(std::set<K> subkeys, V value) {
-        std::set<K> keys = valueToKeyTransitiveMap[value];
+        std::set<K> keys = valueToKeysTransitiveMap[value];
 
         for (auto &key : subkeys) {
             if (keys.count(key) != 1) {
@@ -145,7 +150,7 @@ class TransitiveTable {
     }
 
     inline void printTable() {
-        for (const auto &pair : keyToValueTransitiveMap) {
+        for (const auto &pair : keyToValuesTransitiveMap) {
             std::cout << pair.first << " -> { ";
 
             for (const auto &value : pair.second) {
@@ -157,7 +162,7 @@ class TransitiveTable {
 
         std::cout << "=====================" << std::endl;
 
-        for (const auto &pair : valueToKeyTransitiveMap) {
+        for (const auto &pair : valueToKeysTransitiveMap) {
             std::cout << pair.first << " -> { ";
 
             for (const auto &key : pair.second) {
@@ -169,11 +174,11 @@ class TransitiveTable {
     }
 
     inline void clear() {
-        keyToValueTransitiveMap.clear();
-        valueToKeyTransitiveMap.clear();
+        keyToValuesTransitiveMap.clear();
+        valueToKeysTransitiveMap.clear();
     }
 
  private:
-    std::unordered_map<K, std::set<V>> keyToValueTransitiveMap;
-    std::unordered_map<V, std::set<K>> valueToKeyTransitiveMap;
+    std::unordered_map<K, std::set<V>> keyToValuesTransitiveMap;
+    std::unordered_map<V, std::set<K>> valueToKeysTransitiveMap;
 };

@@ -1,0 +1,248 @@
+procedure p1{
+	if sun then { 	
+		man = 15 - 3 + 20 * 2;	
+		man = 3;	
+	} else {
+		if master then { 	
+			while doctor { 
+				doctor = 8 + 8;	
+			}
+			ghost = doctor + 1 * 7;	
+			heir = 5 * 11 * doctor - sun * 9;	
+			good = running + good - running;	
+			man = running - master - 10 * sun - sun;	
+			good = 12 + 14 - ghost - man;	
+			if psy then { 	
+				psy = 20;	
+			} else {
+				good = 18 * good * heir;	
+			}
+			if running then { 	
+				good = 3 + good * heir + psy;	
+			} else {
+				cho = master + 8 * 10 + 5;	
+				call p3;	
+				sun = good - doctor;	
+				ghost = 3 * cho + good * 13;	
+			}
+			good = 19 * 8 * heir;	
+			sun = heir;	
+		} else {
+			psy = sun;	
+			if ghost then { 	
+				ghost = 3 - heir + 14 * 15;	
+			} else {
+				sun = good - 16 + 17 - 1 * psy;	
+			}
+			call p2;	
+			sun = 3 * 15;	
+		}
+	}
+	man = 3 - psy + 17 - 20 * master;	
+	doctor = 17 + good * cho * 14 - doctor;	
+}
+procedure p2{
+	man = 13;	
+	cho = 9 - sun + 5 - cho + 17;	
+	psy = 14 * 7 - heir * 11 + psy;	
+	while master { 
+		while cho { 	
+			man = man;	
+			if running then { 	
+				man = man - 1 * 4 * heir;	
+			} else {
+				sun = 18 + 18 - ghost + 10;	
+			}
+		}
+		cho = psy - doctor;	
+		sun = 20 + 9 - 6 * 2;	
+		psy = 7 + 17 + cho - 6 - 12;	
+		while heir { 	
+			running = 19 * 9 * 4;	
+			call p4;	
+			cho = 14 - 4 * master + doctor + sun;	
+		}
+	}
+	good = heir - 18 + master - good + doctor;	
+	heir = doctor;	
+}
+procedure p3{
+	while master { 	
+		cho = 14 - doctor * good;	
+		ghost = 17;	
+		running = sun * doctor;	
+	}
+	call man;	
+	psy = ghost;	
+	while ghost { 	
+		if heir then { 	
+			if man then { 	
+				psy = 12;	
+			} else {
+				running = 17 + 3;	
+			}
+			while cho { 	
+				doctor = man - good - running * doctor * master;	
+				master = 1 - psy;	
+			}
+			if psy then { 
+				ghost = 3 + 19 * good + 4 + ghost;
+				running = doctor + 16 - psy + 2;	
+			} else {
+				sun = heir * 11 * doctor + running;
+				good = 12 + psy;
+				man = heir * 5;	
+				psy = doctor - 14 + psy;
+			}
+		} else {
+			running = good - master * man - 2 * 13;	
+		}
+		man = 9;	
+	}
+	if man then { 	
+		while good { 	
+			while running { 	
+				doctor = 16 + 14 - sun;
+			}
+		}
+		doctor = ghost - doctor * 11;	
+	} else {
+		if running then { 	
+			if cho then { 
+				cho = sun * 12 - heir;	
+				psy = man;	
+			} else {
+				master = psy;	
+				man = 9 - ghost;	
+				heir = good - 2 + 3 - sun;	
+				heir = 9 - man * 7;	
+				psy = 8 * heir + good - 5;	
+			}
+			if psy then { 	
+				man = 4;
+			} else {
+				heir = ghost - good;	
+				heir = psy - cho - 10 + 8 - 18;	
+			}
+			sun = 12 - 10 + 13 + 1 + master;	
+			heir = good;	
+		} else {
+			master = psy;	
+			ghost = 10 + 19 - psy + 3 + heir;	
+			call p4;	
+			heir = 16 + doctor - 13 * running;	
+			while master { 	
+				running = 17;	
+			}
+			if ghost then { 	
+				running = sun * 8 - 14;	
+				psy = cho + ghost - 11 - 20 * 14;	
+			} else {
+				running = man;	
+				running = heir * 9 - psy - running;	
+				running = 2 * 18 * sun * 16;	
+				doctor = 1;	
+				doctor = cho + 6;	
+			}
+			while cho { 	
+				heir = 5 - good + 15 * 15 + running;	
+				sun = 10 * 3 * cho;	
+				running = master * cho - running;	
+			}
+			while man { 	
+				sun = good - sun;	
+				heir = 20 - 13;	
+			}
+		}
+	}
+	cho = psy + master;	
+}
+procedure p4{
+	man = psy;	
+	while running { 	
+		while psy { 	
+			man = 1;	
+			psy = 1 * 17 + master;	
+		}
+		while doctor { 	
+			while ghost { 	
+				heir = ghost - psy - 4 - 13;	
+			}
+		}
+		if psy then { 
+			good = psy;	
+			ghost = 7;	
+		} else {
+			if man then { 	
+				heir = psy - 13 + doctor * 3 - 16;	
+			} else {
+				call man;	
+				master = 20 - master;	
+				man = cho;	
+			}
+		}
+	}
+	while heir { 	
+		ghost = 13 - 12 + psy + 20;	
+	}
+	while good { 	
+		doctor = ghost + sun * doctor - ghost + 11;	
+	}
+	ghost = running - 6 * 6;	
+	good = 18;	
+	while master { 	
+		if master then { 	
+			while master { 	
+				heir = 3 - doctor - 17 + ghost;	
+			}
+			doctor = 14 - 5 + 11;	
+			while cho { 	
+				heir = ghost - master;	
+				psy = 19 - 5 - psy * sun + 19;	
+				running = 11 + 13 + 7;	
+			}
+			heir = heir * running * 9 - doctor;	
+		} else {
+			master = 2 + heir - 14 - 19 * sun;	
+			while master {
+				cho = good * cho;	
+			}
+		}
+		if heir then { 	
+			master = psy + ghost * 4 * 13;	
+		} else {
+			if heir then { 
+				heir = ghost + master - 12;
+				man = psy + 9 * 20 + 6;	
+			} else {
+				man = 17 * 5 + doctor;	
+				cho = heir + sun * psy + 10 + good;
+			}
+		}
+		while man { 	
+			if running then { 	
+				running = doctor - ghost * psy + doctor;	
+			} else {
+				doctor = doctor + running - 20 * cho;
+				master = 1;
+			}
+			master = man + 1 * ghost + 1 * 4;	
+		}
+		master = man * ghost;	
+		while good { 	
+			cho = 4 - 7 - sun * running + good;	
+		}
+	}
+}
+
+procedure man {
+	running = 20 + cho + 17;	
+	while sun { 	
+		if sun then { 	
+			good = 9 + 5 + 15 * 2;	
+			running = 1 * man + 17 - doctor;	
+		} else {
+			good = heir + 20 + 4 + sun;
+		}
+	}
+}

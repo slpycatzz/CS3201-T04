@@ -168,17 +168,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="QueryProjectorUnitTest.cpp" />
-    <ClCompile Include="QueryUtilsUnitTest.cpp" />
-    <ClCompile Include="TotalCombinationListUnitTest.cpp" />
     <ClCompile Include="source\Frontend\FrontendParserUnitTest.cpp" />
     <ClCompile Include="source\PKB\PKBUnitTest.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryEvaluatorUnitTest.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryPreprocessorUnitTest.cpp" />
+    <ClCompile Include="source\QueryProcessor\QueryProjectorUnitTest.cpp" />
+    <ClCompile Include="source\QueryProcessor\QueryUtilsUnitTest.cpp" />
+    <ClCompile Include="source\QueryProcessor\TotalCombinationListUnitTest.cpp" />
     <ClCompile Include="source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\UtilsUnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\stdafx.h" />

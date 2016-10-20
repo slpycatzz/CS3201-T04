@@ -1,12 +1,86 @@
 procedure Test2 {
-    x = 0;
-    i = 5;
-    while i {
-        x = x + y;
-        i = i + 1; }
-    while x {
-       x = x + 1;
-       while z {
-          z = 1; } }
-    z = z + x + i;
-    y = z + 2; }
+    weird = 41 + NAMES;                         \\1
+    while a {                                   \\2
+        NAMES = a + 32 + NAMES + 91 + b;        \\3
+        a = 43 + 14 + weird;                    \\4
+    }
+    c = 55 + 30;                                \\5
+    while c {                                   \\6
+        CapS = 83 + 35;                         \\7
+        c = 4 + 25 + b + NAMES;                 \\8
+    }
+    CapS = 7 + weird + d;                       \\9
+    CapS = 84 + 6 + CapS + CapS + CapS;         \\10
+    b = 64 + 23 + a + 35;                       \\11
+    d = 28 + 9 + b + b + 43;                    \\12
+    while NAMES {                               \\13
+        a = 55 + 54 + NAMES;                    \\14
+        NAMES = 48 + b + d + NAMES;             \\15
+        weird = 9 + 30 + 39;                    \\16
+    }
+    d = 28 + 70 + 38 + NAMES;                   \\17
+    b = 12 + 15 + CapS + b;                     \\18
+    weird = 51;                                 \\19
+    e1 = 11 + 5 + b;                            \\20
+    NAMES = d + c;                              \\21
+    d = 28;                                     \\22
+    c = 56 + 24;                                \\23
+    e1 = 97 + b + b;                            \\24
+    while CapS {                                \\25
+        a = 28 + 69 + a + 96;                   \\26
+        d = b;                                  \\27
+        e1 = 93 + 25;                           \\28
+        e1 = b;                                 \\29
+    }
+    b = 2 + 75 + 30 + a;                        \\30
+    while d {                                   \\31
+        CapS = 63 + 42 + NAMES + 72 + 78;       \\32
+        d = 23 + 25 + 36;                       \\33
+    }
+    b = c + d;                                  \\34
+    NAMES = weird + 45;                         \\35
+    while NAMES {                               \\36
+        b = weird + 67;                         \\37
+        weird = 40;                             \\38
+        NAMES = b + 12;                         \\39
+    }
+    while CapS {                                \\40
+        b = 34 + 33 + weird;                    \\41
+        c = 62;                                 \\42
+        NAMES = 45 + a + CapS + 90 + weird;     \\43
+    }
+    a = c + 19;                                 \\44
+    CapS = weird;                               \\45
+    a = 91;                                     \\46
+    b = weird;                                  \\47
+    NAMES = 27 + 72;                            \\48
+    weird = 11 + c + CapS;                      \\49
+    NAMES = a + 64 + a + c + 8;                 \\50
+    d = 57 + CapS + weird + NAMES;              \\51
+    a = 59;                                     \\52
+    NAMES = b + 34;                             \\53
+    NAMES = weird + 5 + 75;                     \\54
+    c = d + 35 + 13 + 1 + b;                    \\55
+    CapS = 68 + c + d + 28 + NAMES;             \\56
+    a = 17 + c + a + e1 + CapS;                 \\57
+    b = 49;                                     \\58
+    while NAMES {                               \\59
+        e1 = 94 + b + 55 + a + 93;              \\60
+        NAMES = 38;                             \\61
+        a = 10;                                 \\62
+        CapS = d;                               \\63
+        a = e1 + weird + 5 + 54;                \\64
+        b = 38 + NAMES;                         \\65
+        CapS = weird + CapS;                    \\66
+        a = 85 + 69 + NAMES + 90;               \\67
+    }
+    while d {                                   \\68
+        weird = 17 + CapS + 95 + 49;            \\69
+        NAMES = b;                              \\70
+        d = 84 + CapS + 41 + a + c;             \\71
+        d = 30 + weird + 78 + 76 + 88;          \\72
+    }
+    NAMES = NAMES + c + b;                      \\73
+    CapS = 16 + 94 + a;                         \\74
+    e1 = 27 + 77 + a + 100;                     \\75
+}

@@ -1,0 +1,33 @@
+procedure Pikachu{
+    x=0;                
+    y=1;                
+    if y then{          
+        z=x+y;          
+    }
+    else{
+        z=x;            
+    }
+    call Mewtwo;        
+}
+procedure Mewtwo{
+    x=9;                
+    y=x+3;              
+    z=x+y;              
+}
+procedure Mew{
+    p=2;                
+    q=p+1;              
+    call Mewtwo;        
+    w=x;                
+}
+procedure Mudkip{
+    i=3;                
+    x=2+i;              
+    if y then{          
+        x=i;            
+    }
+    else{
+        y=10;           
+        call Mew;     
+    }
+}

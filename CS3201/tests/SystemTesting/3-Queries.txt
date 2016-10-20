@@ -1,60 +1,155 @@
+1 - pattern 1
+assign a;
+Select a pattern a("c",_)
+2, 3, 5, 24, 26, 41, 48
+5000
+2 - pattern 2
+assign a;
+Select a pattern a(_,_"g"_)
+13, 14, 23, 24, 31, 45
+5000
 3 - pattern 3
 assign a;
-Select a pattern a(_,"1")
-5
+Select a pattern a("a","c")
+16
+5000
+4 - modifies 1
+assign a;
+Select a such that Modifies(a,"e")
+11, 14, 36, 37, 42
+5000
+5 - modifies 2
+stmt s;
+Select s such that Modifies(s,"e")
+6, 7, 11, 12, 14, 30, 33, 35, 36, 37, 42
+5000
+6 - modifies 3
+while w;
+Select w such that Modifies(w,"e")
+6, 7, 12, 30, 33, 35
+5000
+7 - uses 1
+stmt s;
+Select s such that Uses(s,"g")
+6, 7, 12, 13, 14, 23, 24, 30, 31, 33, 45
+5000
+8 - uses 2
+assign a;
+Select a such that Uses(a,"g")
+13, 14, 23, 24, 31, 45
+5000
+9 - uses 3
+variable v;
+Select v such that Uses(6,v)
+a, b, c, d, e, f, g, h
+5000
+10 - parent 1
+stmt s;
+Select s such that Parent(s,9)
+7
+5000
+11 - parent 2
+stmt s;
+Select s such that Parent(12,s)
+13, 14, 15, 16
+5000
+12 - parent 3
+stmt s, s1;
+Select s such that Parent(s,s1)
+6, 7, 12, 30, 33, 35, 38
+5000
+13 - parent* 1
+stmt s;
+Select s such that Parent*(s,13)
+6, 7, 12
+5000
+14 - parent* 2
+while w, w1;
+Select w1 such that Parent*(w,w1)
+7, 12, 33, 35, 38
+5000
+15 - parent* 3
+assign a; while w;
+Select a such that Parent*(w,a)
+8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 31, 32, 34, 36, 37, 39, 40, 41, 42, 43
+5000
+16 - follows 1
+stmt s;
+Select s such that Follows(6,s)
+25
+5000
+17 - follows 2
+stmt s;
+Select s such that Follows(s,12)
+11
+5000
+18 - follows 3
+stmt s; while w;
+Select s such that Follows(s,w)
+5, 11, 29, 32, 34, 37
+5000
+19 - follows* 1
+stmt s; while w;
+Select w such that Follows*(s,w)
+6, 12, 30, 33, 35, 38
+5000
+20 - follows* 2
+stmt s; while w;
+Select w such that Follows*(w,s)
+6, 7, 12, 30, 35, 38
 5000
 21 - follows* 3
-stmt s; while w;
-Select s such that Follows*(s,w)
-1, 5, 8
+while w, w1;
+Select w such that Follows*(w,w1)
+6
 5000
 22 - combination 1
 assign a;
-Select a pattern a(_,_"1"_) such that Modifies(a,"z")
-4, 10
+Select a pattern a(_,_"e"_) such that Modifies(a,"d")
+
 5000
 23 - combination 2
 assign a;
-Select a such that Uses(a,"x") pattern a(_,_"1"_)
-2, 3
+Select a such that Uses(a,"h") pattern a("c",_)
+24, 41
 5000
 24 - combination 3
-stmt s; assign a; variable v;
-Select v such that Uses(s,v) pattern a(v,_)
-i, x, y, z
+while w; assign a; variable v;
+Select v such that Uses(w,v) pattern a(v,"c")
+a, c
 5000
 25 - combination 4
 assign a; stmt s;
-Select a pattern a("z",_) such that Parent(s,a)
-4, 8, 10
+Select a pattern a("a",_) such that Parent(s,a)
+8, 9, 10, 16, 23
 5000
 26 - combination 5
 assign a; while w;
-Select w pattern a(_,_"1"_) such that Parent(w,a)
-1, 6, 9
+Select w pattern a(_,_"g"_) such that Parent(w,a)
+6, 12, 30
 5000
 27 - combination 6
 assign a; while w;
-Select a pattern a(_,_"1"_) such that Parent*(w,a)
-2, 3, 4, 10, 12
+Select a pattern a(_,_"f"_) such that Parent*(w,a)
+15, 40, 41
 5000
 28 - combination 7
 assign a; while w;
-Select w pattern a("z",_) such that Parent*(w,a)
-1, 6, 7, 9
+Select w pattern a("g",_) such that Parent*(w,a)
+6, 7, 30, 33, 35, 38
 5000
 29 - combination 8
-assign a; stmt s;
-Select a pattern a("x",_) such that Follows(a,s)
-2
+assign a, a1;
+Select a pattern a("g",_) such that Follows(a,a1)
+21, 28, 31, 39
 5000
 30 - combination 9
-assign a, a1;
-Select a pattern a("y",_) such that Follows*(a1,a)
-3, 12, 13
+assign a; while w;
+Select a pattern a("a",_) such that Follows*(a,w)
+1, 8, 9, 10, 29
 5000
 31 - combination 10
 assign a; while w;
-Select a pattern a(_,_"1"_) such that Follows*(w,a)
-5, 12
+Select a pattern a(_,_"c"_) such that Follows*(w,a)
+18, 42, 47
 5000

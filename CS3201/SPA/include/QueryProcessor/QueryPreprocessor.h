@@ -57,8 +57,14 @@ class QueryPreprocessor {
      bool isValidVarType(std::string varName);
      bool isConstantVar(std::string varName);
 
+     bool isConstantVarTerm(std::string &var);
+     void callExpressionRecognizer(std::string &var);
+     void callTermRecognizer(std::string &var);
+     void callFactorRecognizer(std::string &var);
+
      std::vector<std::string> getNextToken(std::vector<std::string> queryList);
      Symbol getVarType(std::string var);
+     std::string getPatternExpression();
      Symbol getAttributeType(std::string var);
 
      void mergeSeparatedClauses();
@@ -66,6 +72,7 @@ class QueryPreprocessor {
      // global variables
      std::vector<std::string> queries;
      std::vector<std::string> queryList;
+     std::vector<std::string> patternList;
      Symbol prevClause;
      Symbol prevRelation;
      int cur;

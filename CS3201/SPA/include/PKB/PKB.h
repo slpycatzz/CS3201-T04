@@ -177,18 +177,6 @@ class PKB {
 
     static void Clear();
 
-    /* START - Deprecated */
-    static void GenerateAssignTable(std::map<unsigned int, TreeNode*> assigns);
-    static TreeNode* GetAssignTreeNode(unsigned int stmtNumber);
-    static std::vector<TreeNode*> GetAllAssignTreeNodes();
-    static bool IsExactPattern(unsigned int stmtNo, std::string varName, TreeNode* exprTree);
-    static bool IsSubPattern(unsigned int stmtNo, std::string varName, TreeNode* exprTree);
-    static bool IsExactRHS(unsigned int stmtNo, TreeNode* exprTree);
-    static bool IsSubRHS(unsigned int stmtNo, TreeNode* exprTree);
-    static bool HasExactPattern(TreeNode* exprTree);
-    static bool HasSubPattern(TreeNode* exprTree);
-    /* END - Deprecated */
-
  private:
     static bool ComparePairAscending(const std::pair<unsigned int, std::string> &pairOne, const std::pair<unsigned int, std::string> &pairTwo);
 
@@ -206,7 +194,7 @@ class PKB {
     static Table<Index, ConstantValue> constantTable_;                              /* map<index, constantValue>      */
     static Table<Index, VariableName> variableTable_;                               /* map<index, variableName>       */
     static Table<Index, ProcedureName> procedureTable_;                             /* map<index, procedureName>      */
-    
+
     static Table<StmtNumber, VariableName> controlVariableTable_;                   /* map<stmtNumber, variableName>  */
     static Table<StmtNumber, ProcedureName> callTable_;                             /* map<stmtNumber, procedureName> */
     static Table<StmtNumber, StmtSymbol> stmtTable_;                                /* map<stmtNumber, symbol string> */
@@ -233,8 +221,5 @@ class PKB {
     static TransitiveTable<StmtNumber, StmtNumber> followsTransitiveTable_;         /* map<stmtNumber, set(stmtNumber)> */
 
     static Table<StmtNumber, StmtNumber> nextTable_;                                /* map<stmtNumber, set(stmtNumber)> */
-    static std::vector<std::vector<StmtNumber>> nextTransitiveTable_;               /* vector<vector(stmtNumber)> */
-
-    /* Deprecated. */
-    static Table<unsigned int, TreeNode*> assignTable_;                             /* map<stmtNumber, expression string> */
+    static TransitiveTable<StmtNumber, StmtNumber> nextTransitiveTable_;            /* map<stmtNumber, set(stmtNumber)> */
 };

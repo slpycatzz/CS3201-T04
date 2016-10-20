@@ -1,0 +1,240 @@
+1 - tuple, Follows, stmt and stmt
+stmt s1,s2; if ifstmt;
+Select <s1,s2> such that Follows(s1,ifstmt) and Follows(s2,ifstmt)
+2 2,15 15
+5000
+2 - tuple,Follows,stmt and stmt
+stmt s1,s2,s3; call c;
+Select <s1,s2,s3> such that Follows(s1,c) and Follows(s2,c) and Follows(s3,c)
+11 11 11,18 18 18,3 3 3
+5000
+3 - tuple,Follows,stmt and stmt
+stmt s; if ifstmt;
+Select <s,s> such that Follows(ifstmt,s)
+6 6
+5000
+4 - tuple,Follows,stmt and if
+stmt s; if ifstmt;
+Select <s,ifstmt> such that Follows(s,ifstmt)
+2 3,15 16
+5000
+5 - tuple, Follows, if and stmt
+stmt s; if ifstmt;
+Select <s,ifstmt> such that Follows(ifstmt,s)
+6 3
+5000
+6 - tuple,Follows, stmt and call
+stmt s; call c;
+Select <s,c> such that Follows(s,c)
+3 6,11 12,18 19
+5000
+7 - tuple,Follows, stmt and assign
+stmt s; assign a;
+Select <s,a> such that Follows(s,a)
+1 2,7 8,8 9,10 11,12 13,14 15
+5000
+8 - tuple,Follows, if and if
+if ifstmt1,ifstmt2;
+Select <ifstmt1,ifstmt2> such that Follows(ifstmt1,ifstmt2)
+none
+5000
+9 - tuple,Follows, if and if
+if ifstmt1,ifstmt2;
+Select <ifstmt1,ifstmt2> such that Follows(14,_)
+3 3,3 16,16 16,16 3
+5000
+10 - tuple, Follows, if and call
+if ifstmt;call c;
+Select <ifstmt,c> such that Follows(ifstmt,c)
+3 6
+5000
+11 - tuple, Follows, call and assign
+call c; assign a;
+Select <c,a> such that Follows(c,a)
+12 13
+5000
+12 - tuple, Follows, assign and call
+assign a; call c;
+Select <a,c> such that Follows(a,c)
+11 12,18 19
+5000
+13 - tuple, Follows, assign and prog_line
+assign a;prog_line n;
+Select <a,n> such that Follows(a,n)
+1 2,2 3,7 8,8 9,10 11,11 12,14 15,15 16,18 19
+5000
+14 - tuple, Follows, prog_line and prog_line
+prog_line n1,n2;
+Select <n1,n2> such that Follows(n1,16) and Follows(n2,19)
+15 18
+5000
+15 - tuple, Follows*, stmt and if
+stmt s; if ifstmt;
+Select <s,ifstmt> such that Follows*(s,ifstmt)
+1 3,2 3,14 16,15 16
+5000
+16 - tuple, Follows*, stmt and call
+stmt s; call c;
+Select <s,c> such that Follows*(s,c)
+1 6,2 6,3 6,10 12,11 12,18 19
+5000
+17 - tuple, Follows*, call and call
+call c1,c2,c3;
+Select <c1,c2,c3> such that Follows*(_,19) with c1.stmt#=c2.stmt# and c2.stmt#=c3.stmt#
+6 6 6,12 12 12,19 19 19
+5000
+18 - tuple, Parent, stmt and stmt
+stmt s1,s2;
+Select <s1,s2> such that Parent(s1,s2)
+3 4,3 5,16 17,16 18,16 19
+5000
+19 - tuple, Parent, stmt and call
+stmt s; call c;
+Select <s,c> such that Parent(s,c)
+16 19
+5000
+20 - tuple, Parent,stmt and assign
+stmt s; assign a;
+Select <s,a> such that Parent(s,a)
+3 4,3 5,16 17,16 18
+5000
+21 - tuple, Parent, if and call
+call c;if ifstmt;
+Select <c,ifstmt> such that Parent(3,ifstmt) and Parent(16,c)
+none
+5000
+22 - tuple, Modifies, stmt and var
+stmt s; variable v;
+Select <s,v> such that Modifies(s,v)
+1 hashirama,2 tobirama,3 hiruzen,4 hiruzen,5 hiruzen,6 hashirama,6 tobirama,6 hiruzen,7 hashirama,8 tobirama,9 hiruzen,10 minato,11 tsunade,12 hashirama,12 tobirama,12 hiruzen,13 danzo,14 kakashi,15 hashirama,16 hashirama,16 tobirama,16 minato, 16 tsunade,16 hiruzen, 16 danzo, 17 hashirama,18 tobirama,19 minato,19 tsunade,19 hashirama,19 tobirama,19 hiruzen,19 danzo
+5000
+23 - tuple, Modifies, stmt and stmt
+stmt s1,s2;
+Select <s1,s2> such that Modifies(s1,"kakashi") and Modifies(s2,"minato")
+14 10,14 19
+5000
+24 - tuple,Modifies, assign and assign
+assign a1,a2;
+Select <a1,a2> such that Modifies(a1,"hiruzen") and Modifies(a2,"tobirama")
+4 2,4 8,4 18,5 2,5 8,5 18,9 2,9 8,9 18
+5000
+25 - tuple, Modifies, procedure and procedure
+procedure p1,p2;
+Select <p1,p2> such that Modifies(p1,"danzo") and Modifies(p2,"kakashi")
+ThirdHokage FourthHokage,FourthHokage FourthHokage
+5000
+26 - tuple, Uses, call and var
+call c; variable v;
+Select <c,v> such that Uses(c,v)
+6 hashirama,6 tobirama,12 hashirama,12 tobirama,19 minato,19 hashirama,19 tobirama
+5000
+27 - tuple, Uses, if and if
+if ifstmt1,ifstmt2;
+Select <ifstmt1,ifstmt2> such that Uses(ifstmt1,"tobirama") and Uses(ifstmt2,"hiruzen")
+none
+5000
+28 - tuple, Uses, procedure and variable
+procedure p;variable v;
+Select <p,v> such that Uses(p,v)
+FirstHokage tobirama, FirstHokage hashirama,SecondHokage hashirama,SecondHokage tobirama,ThirdHokage minato,ThirdHokage hashirama,ThirdHokage tobirama,FourthHokage kakashi,FourthHokage tobirama,FourthHokage minato,FourthHokage hashirama
+5000
+29 - tuple, Uses, procedure and procedure
+procedure p1,p2;
+Select <p1,p2> such that Uses(p1,"kakashi") and Uses(p2,"minato")
+FourthHokage ThirdHokage,FourthHokage FourthHokage
+5000
+30 - tuple, Uses, variable and variable
+variable v1,v2;
+Select <v1,v2> such that Uses("FirstHokage",v1) and Uses("ThirdHokage",v2)
+hashirama minato,hashirama hashirama,hashirama tobirama,tobirama minato,tobirama hashirama, tobirama tobirama
+5000
+31 - tuple, Calls, procedure and procedure
+procedure p1,p2;
+Select <p1,p2> such that Calls(p1,p2)
+FirstHokage SecondHokage,ThirdHokage SecondHokage,FourthHokage ThirdHokage
+5000
+32 - tuple, Calls,procedure and procedure
+procedure p1,p2;
+Select <p1,p2> such that Calls(p1,"SecondHokage") and Calls(p2,"ThirdHokage")
+FirstHokage FourthHokage,ThirdHokage FourthHokage
+5000
+33 - tuple, Calls*, procedure and procedure
+procedure p1,p2;
+Select <p1,p2> such that Calls*(p1,p2)
+FirstHokage SecondHokage,ThirdHokage SecondHokage,FourthHokage ThirdHokage,FourthHokage SecondHokage
+5000
+34 - tuple, Calls*, procedure and procedure
+procedure p1,p2;
+Select <p1,p2> such that Calls*("ThirdHokage",p1) and Calls(p2,"ThirdHokage")
+SecondHokage FourthHokage
+5000
+35 - tuple,Calls*, procedure and procedure
+procedure p1,p2,p3,p4;
+Select <p1,p2,p3,p4> with p1.procName=p2.procName and p3.procName=p4.procName and p3.procName="SecondHokage"
+FirstHokage FirstHokage SecondHokage SecondHokage, SecondHokage SecondHokage SecondHokage SecondHokage,ThirdHokage ThirdHokage SecondHokage SecondHokage, FourthHokage FourthHokage SecondHokage SecondHokage
+5000
+36 - tuple, with, constant and procedure
+constant c;procedure p;if ifstmt;
+Select <c,p> with c.value=ifstmt.stmt# and p.procName="FirstHokage"
+3 FirstHokage
+5000
+37 - tuple, with, stmt and constant
+stmt s;constant c;
+Select <s,c> with s.stmt#=8 and c.value=3
+8 3
+5000
+38 - tuple, with, constant and if
+constant c;if ifstmt;
+Select <c,ifstmt> with c.value=ifstmt.stmt#
+3 3
+5000
+39 - tuple, pattern,assign and assign
+assign a1,a2;
+Select <a1,a2> pattern a1("hiruzen","hashirama") and a2("hiruzen","hashirama+tobirama")
+5 4,5 9
+5000
+40 - tuple, pattern, variable and assign
+assign a; variable v;
+Select <a,v> pattern a(v,"hashirama")
+5 hiruzen,13 danzo
+5000
+41 - tuple, pattern, variable and if
+if ifstmt;variable v;
+Select <ifstmt,v> pattern ifstmt(v,_,_)
+3 tobirama,16 tobirama
+5000
+42 - tuple, synonym.attrName,stmt#
+stmt s1,s2,s3;
+Select <s1,s1.stmt#> such that Follows(s1,s2) and Parent(s3,s1)
+18 18
+5000
+43 - tuple,synonym.attrName,procName
+procedure p1,p2;
+Select <p1.procName,p2> such that Modifies(p1,"danzo") and Modifies(p2,"kakashi")
+ThirdHokage FourthHokage,FourthHokage FourthHokage
+5000
+44 - tuple,synonym/attrName,procName
+procedure p1,p2;
+Select <p1.procName,p2.procName> such that Calls(p1,p2)
+FirstHokage SecondHokage,ThirdHokage SecondHokage,FourthHokage ThirdHokage
+5000
+45 - tuple, synonym.attrName,stmt#,varName
+call c; variable v;
+Select <c.stmt#,v.varName> such that Uses(c,v)
+6 hashirama,6 tobirama,12 hashirama,12 tobirama,19 minato,19 hashirama,19 tobirama
+5000
+46 - tuple, synonym.attrName,stmt#
+if ifstmt;call c;
+Select <ifstmt.stmt#,c.stmt#> such that Follows(ifstmt,c)
+3 6
+5000
+47 - tuple, synonym.attrName, value
+constant c;procedure p;if ifstmt;
+Select <c.value,p> with c.value=ifstmt.stmt# and p.procName="FirstHokage"
+3 FirstHokage
+5000
+48 - tuple, synonym,value and stmt#
+constant c;if ifstmt;
+Select <c.value,ifstmt.stmt#> with c.value=ifstmt.stmt#
+3 3
+5000
