@@ -380,19 +380,6 @@ ResultList QueryEvaluator::getResultsFromCombinationList
     return result;
 }
 
-PartialCombinationList QueryEvaluator::mergeCombinationList(PartialCombinationList &combList1,
-    PartialCombinationList &combList2) {
-    PartialCombinationList result;
-
-    for (CandidateCombination comb1 : combList1) {
-        for (CandidateCombination comb2 : combList2) {
-            result.push_back(Utils::MergeMap(comb1, comb2));
-        }
-    }
-
-    return result;
-}
-
 bool QueryEvaluator::isBoolSelect(vector<string> &selectList) {
     if (selectList.size() == 1 && selectList[0] == SYMBOL_BOOLEAN) {
         return true;

@@ -91,9 +91,6 @@ class QueryEvaluator {
     ResultList getResultsFromCombinationList(TotalCombinationList &combinations,
         std::vector<Synonym> &selectList);
 
-    PartialCombinationList mergeCombinationList(PartialCombinationList &combList1,
-        PartialCombinationList &combList2);
-
     bool isBoolSelect(std::vector<std::string>& selectList);
 
     std::string log;

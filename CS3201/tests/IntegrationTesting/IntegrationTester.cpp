@@ -220,30 +220,100 @@ public:
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, \"c\")"));
 		QueryEvaluator qe;
 
-		bool f(qe.evaluatePatternClause("2", "c", "\"c\""));
-		Assert::IsTrue(f);
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<2>,<16>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_LongPattern_1) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, \"81 + 45 + 4 + b\")"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<9>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_LongPattern_2) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("assign a; variable v; Select v pattern a(v, _\"g + 91 + 45 + g + 13\"_)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<d>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_LongPattern_3) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("assign a; variable v; Select <a,v> pattern a(v, _\"e+f\"_)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<5,c>,<41,c>>");
+		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_EvaluateSubPattern) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select a pattern a(_, _\"c\"_)"));
 		QueryEvaluator qe;
 
-		Assert::IsTrue(qe.evaluatePatternClause("2", "c", "_\"c\"_"));
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<2>,<4>,<10>,<16>,<18>,<37>,<42>,<47>>");
+		Assert::AreEqual(expected, actual);
 	}
     TEST_METHOD(Integration_QE_SubPatternConstant) {
         getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
         QueryTree qt(getQueryTree("assign a; Select a pattern a(_, _\"97\"_)"));
         QueryEvaluator qe;
-    
-        Assert::IsTrue(qe.evaluatePatternClause("1", "_", "_\"97\"_"));
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<1>>");
+		Assert::AreEqual(expected, actual);
     }
     TEST_METHOD(Integration_QE_ExactPatternConstant) {
         getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
         QueryTree qt(getQueryTree("assign a; Select a pattern a(_, \"42\")"));
         QueryEvaluator qe;
 
-        Assert::IsTrue(qe.evaluatePatternClause("25", "_", "\"42\""));
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<25>>");
+		Assert::AreEqual(expected, actual);
     }
+	TEST_METHOD(Integration_QE_Follows_2vars) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; Select s such that Follows(s,w)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<5>,<11>,<29>,<32>,<34>,<37>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_Follows_2var) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select <s,v> such that Follows(s, w) pattern w(v,_)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<25>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_Follows_1var) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select <w,v> such that Follows(29, w) pattern w(v,_)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<30,a>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_Follows_0var) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select <w,v> such that Follows(29, 30) pattern w(v,_)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<25>>");
+		Assert::AreEqual(expected, actual);
+	}
     TEST_METHOD(Integration_Optimizer_TestOne) {
         string query, expectedBooleanClauses, actualBooleanClauses;
         string expectedUnselectedClauses, actualUnselectedClauses;
