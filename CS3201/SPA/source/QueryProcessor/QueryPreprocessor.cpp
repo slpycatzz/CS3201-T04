@@ -167,7 +167,7 @@ void QueryPreprocessor::parseSelect() {
         } else if (accept(SYMBOL_BOOLEAN)) {
             var.push_back(SYMBOL_BOOLEAN);
             varSymbolMap[SYMBOL_BOOLEAN] = BOOLEAN;
-			//qt.insertBooleanDeclaration();
+            // qt.insertBooleanDeclaration();
             varAttrMap[SYMBOL_BOOLEAN] = false;
         } else {
             throw QuerySyntaxErrorException("6");
@@ -179,7 +179,7 @@ void QueryPreprocessor::parseSelect() {
     }
 
 
-	qt.insertDeclaration(varSymbolMap);
+    qt.insertDeclaration(varSymbolMap);
     qt.insert(QUERY_RESULT, "placeholder", var);
     qt.insert(QUERY_RESULT, "placeholder", varAttrMap);
 }
@@ -495,7 +495,7 @@ string QueryPreprocessor::getVar() {
 
 string QueryPreprocessor::getPatternExpression() {
     string word = queryList[cur];
-    
+
     return word.substr(0, word.find_last_of('"')+1);
 }
 
@@ -545,17 +545,13 @@ void QueryPreprocessor::callFactorRecognizer(string &var) {
 
         patternList.push_back(string(1, CHAR_SYMBOL_CLOSEBRACKET));
 
-        /* Variable. */
+    /* Variable. */
     } else if (accept(var, VARIABLE)) {
-        
-
         patternList.push_back(name);
 
-        /* Constant. */
+    /* Constant. */
     } else if (accept(var, CONSTANT)) {
-        
         patternList.push_back(name);
-
 
     } else if (var[0] == '\"') {
 
@@ -571,7 +567,6 @@ void QueryPreprocessor::callExpressionRecognizer(string &var) {
     callFactorRecognizer(var);
     int limit = 0;
     while (true || limit++ > 999) {
-
         if (accept(var, CHAR_SYMBOL_PLUS)) {
             patternList.push_back(string(1, CHAR_SYMBOL_PLUS));
         } else if (accept(var, CHAR_SYMBOL_MINUS)) {
@@ -581,8 +576,10 @@ void QueryPreprocessor::callExpressionRecognizer(string &var) {
         } else {
             break;
         }
+
         callFactorRecognizer(var);
-    }    
+    }
+
     if (limit > 999) {
         throw QuerySyntaxErrorException("Error occurred somewhere");
     }
@@ -640,10 +637,10 @@ bool QueryPreprocessor::expect(string &var, char token) {
 
 bool QueryPreprocessor::isVarExist(string var) {
     /*
-	if (toLower(var).compare("boolean") == 0) {
+    if (toLower(var).compare("boolean") == 0) {
         return true;
     }
-	*/
+    */
     if (varSymbolMap.find(var) != varSymbolMap.end()) {
         return true;
     }
@@ -853,11 +850,11 @@ string QueryPreprocessor::removeWhitespaces(string str) {
 void QueryPreprocessor::mergeSeparatedClauses() {
     bool isFound = false;
     while (cur < queryList.size()-1 && !isFound) {
-        
         isFound = ((queryList[cur+1].find("such") != std::string::npos)
             || (queryList[cur+1].find("pattern") != std::string::npos)
             || (queryList[cur+1].find("with") != std::string::npos)
             || (queryList[cur+1].find("and") != std::string::npos));
+
         if (isFound == false) {
             queryList[cur + 1] = queryList[cur] + queryList[cur + 1];
             cur++;
