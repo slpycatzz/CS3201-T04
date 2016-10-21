@@ -101,6 +101,8 @@ class PKB {
     static std::set<ProcedureName> GetCalled(ProcedureName calling);
     static std::set<ProcedureName> GetCallingTransitive(ProcedureName called);
     static std::set<ProcedureName> GetCalledTransitive(ProcedureName calling);
+    static unsigned int GetNumberOfCallsRelationship();
+    static unsigned int GetNumberOfCallsTransitiveRelationship();
     static void PrintCallsTable();
     static void PrintCallsTransitiveTable();
 
@@ -114,6 +116,8 @@ class PKB {
     static std::set<StmtNumber> GetStmtNumberModifying(VariableName variableName);
     static std::set<VariableName> GetProcedureModifiedVariables(ProcedureName procedureName);
     static std::set<ProcedureName> GetProceduresNameModifying(VariableName variableName);
+    static unsigned int GetNumberOfModifiesRelationship();
+    static unsigned int GetNumberOfModifiesProcedureRelationship();
     static void PrintModifiesTable();
     static void PrintModifiesProcedureTable();
 
@@ -127,6 +131,8 @@ class PKB {
     static std::set<StmtNumber> GetStmtNumberUsing(VariableName variableName);
     static std::set<VariableName> GetProcedureUsedVariables(ProcedureName procedureName);
     static std::set<ProcedureName> GetProceduresNameUsing(VariableName variableName);
+    static unsigned int GetNumberOfUsesRelationship();
+    static unsigned int GetNumberOfUsesProcedureRelationship();
     static void PrintUsesTable();
     static void PrintUsesProcedureTable();
 
@@ -139,6 +145,8 @@ class PKB {
     static std::set<StmtNumber> GetChildren(StmtNumber parent);
     static std::set<StmtNumber> GetParentsTransitive(StmtNumber child);
     static std::set<StmtNumber> GetChildrenTransitive(StmtNumber parent);
+    static unsigned int GetNumberOfParentRelationship();
+    static unsigned int GetNumberOfParentTransitiveRelationship();
     static void PrintParentTable();
     static void PrintParentTransitiveTable();
 
@@ -151,6 +159,8 @@ class PKB {
     static std::set<StmtNumber> GetFollowing(StmtNumber follows);
     static std::set<StmtNumber> GetFollowsTransitive(StmtNumber following);
     static std::set<StmtNumber> GetFollowingTransitive(StmtNumber follows);
+    static unsigned int GetNumberOfFollowsRelationship();
+    static unsigned int GetNumberOfFollowsTransitiveRelationship();
     static void PrintFollowsTable();
     static void PrintFollowsTransitiveTable();
 
@@ -163,6 +173,8 @@ class PKB {
     static std::set<StmtNumber> GetPrevious(StmtNumber next);
     static std::set<StmtNumber> GetNextTransitive(StmtNumber current);
     static std::set<StmtNumber> GetPreviousTransitive(StmtNumber next);
+    static unsigned int GetNumberOfNextRelationship();
+    static unsigned int GetNumberOfNextTransitiveRelationship();
     static void PrintNextTable();
     static void PrintNextTransitiveTable();
 

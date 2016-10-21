@@ -32,37 +32,37 @@ unsigned int PKB::tableMaximumSize_  = 0;
 vector<CFGNode> PKB::controlFlowGraphs_;
 vector<vector<CFGNode>> PKB::controlFlowGraphsNodes_;
 
-Table<Index, ConstantValue> PKB::constantTable_;
-Table<Index, VariableName>  PKB::variableTable_;
-Table<Index, ProcedureName> PKB::procedureTable_;
+Table<Index, ConstantValue> PKB::constantTable_  = Table<Index, ConstantValue>();
+Table<Index, VariableName>  PKB::variableTable_  = Table<Index, VariableName>();
+Table<Index, ProcedureName> PKB::procedureTable_ = Table<Index, ProcedureName>();
 
-Table<StmtNumber, VariableName>  PKB::controlVariableTable_;
-Table<StmtNumber, ProcedureName> PKB::callTable_;
-Table<StmtNumber, StmtSymbol>    PKB::stmtTable_;
-Table<StmtNumber, StmtSymbol>    PKB::stmtlistTable_;
+Table<StmtNumber, VariableName>  PKB::controlVariableTable_ = Table<StmtNumber, VariableName>();
+Table<StmtNumber, ProcedureName> PKB::callTable_            = Table<StmtNumber, ProcedureName>();
+Table<StmtNumber, StmtSymbol>    PKB::stmtTable_            = Table<StmtNumber, StmtSymbol>();
+Table<StmtNumber, StmtSymbol>    PKB::stmtlistTable_        = Table<StmtNumber, StmtSymbol>();
 
-Table<Priority, TableSymbol> PKB::priorityTable_;
+Table<Priority, TableSymbol> PKB::priorityTable_ = Table<Priority, TableSymbol>();
 
-Table<StmtNumber, Expression> PKB::expressionTable_;
-Table<StmtNumber, SubExpressions> PKB::subExpressionTable_;
+Table<StmtNumber, Expression> PKB::expressionTable_        = Table<StmtNumber, Expression>();
+Table<StmtNumber, SubExpressions> PKB::subExpressionTable_ = Table<StmtNumber, SubExpressions>();
 
-Table<ProcedureName, ProcedureName> PKB::callsTable_;
-TransitiveTable<ProcedureName, ProcedureName> PKB::callsTransitiveTable_;
+Table<ProcedureName, ProcedureName> PKB::callsTable_                     = Table<ProcedureName, ProcedureName>();
+TransitiveTable<ProcedureName, ProcedureName> PKB::callsTransitiveTable_ = TransitiveTable<ProcedureName, ProcedureName>();
 
-Table<StmtNumber, VariableName> PKB::modifiesTable_;
-Table<ProcedureName, VariableName> PKB::modifiesProcedureTable_;
+Table<StmtNumber, VariableName> PKB::modifiesTable_             = Table<StmtNumber, VariableName>();
+Table<ProcedureName, VariableName> PKB::modifiesProcedureTable_ = Table<ProcedureName, VariableName>();
 
-Table<StmtNumber, VariableName> PKB::usesTable_;
-Table<ProcedureName, VariableName> PKB::usesProcedureTable_;
+Table<StmtNumber, VariableName> PKB::usesTable_             = Table<StmtNumber, VariableName>();
+Table<ProcedureName, VariableName> PKB::usesProcedureTable_ = Table<ProcedureName, VariableName>();
 
-Table<StmtNumber, StmtNumber> PKB::parentTable_;
-TransitiveTable<StmtNumber, StmtNumber> PKB::parentTransitiveTable_;
+Table<StmtNumber, StmtNumber> PKB::parentTable_                     = Table<StmtNumber, StmtNumber>();
+TransitiveTable<StmtNumber, StmtNumber> PKB::parentTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 
-Table<StmtNumber, StmtNumber> PKB::followsTable_;
-TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_;
+Table<StmtNumber, StmtNumber> PKB::followsTable_                     = Table<StmtNumber, StmtNumber>();
+TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 
-Table<StmtNumber, StmtNumber> PKB::nextTable_;
-TransitiveTable<StmtNumber, StmtNumber> PKB::nextTransitiveTable_;
+Table<StmtNumber, StmtNumber> PKB::nextTable_ = Table<StmtNumber, StmtNumber>();
+TransitiveTable<StmtNumber, StmtNumber> PKB::nextTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 
 /* START - AST functions */
 
@@ -330,20 +330,20 @@ void PKB::PrintStmtlistTable() {
 void PKB::GeneratePriorityTable() {
     vector<std::pair<unsigned int, string>> tablesSize;
 
-    tablesSize.push_back(std::make_pair(callsTable_.getNumberOfValues(),   SYMBOL_CALLS));
-    tablesSize.push_back(std::make_pair(followsTable_.getNumberOfValues(), SYMBOL_FOLLOWS));
-    tablesSize.push_back(std::make_pair(parentTable_.getNumberOfValues(),  SYMBOL_PARENT));
+    tablesSize.push_back(std::make_pair(callsTable_.getNumberOfRelationship(),   SYMBOL_CALLS));
+    tablesSize.push_back(std::make_pair(followsTable_.getNumberOfRelationship(), SYMBOL_FOLLOWS));
+    tablesSize.push_back(std::make_pair(parentTable_.getNumberOfRelationship(),  SYMBOL_PARENT));
 
-    tablesSize.push_back(std::make_pair(callsTransitiveTable_.getNumberOfValues(),   SYMBOL_CALLS_TRANSITIVE));
-    tablesSize.push_back(std::make_pair(followsTransitiveTable_.getNumberOfValues(), SYMBOL_FOLLOWS_TRANSITIVE));
-    tablesSize.push_back(std::make_pair(parentTransitiveTable_.getNumberOfValues(),  SYMBOL_PARENT_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(callsTransitiveTable_.getNumberOfRelationship(),   SYMBOL_CALLS_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(followsTransitiveTable_.getNumberOfRelationship(), SYMBOL_FOLLOWS_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(parentTransitiveTable_.getNumberOfRelationship(),  SYMBOL_PARENT_TRANSITIVE));
 
-    tablesSize.push_back(std::make_pair(nextTable_.getNumberOfValues(), SYMBOL_NEXT));
+    tablesSize.push_back(std::make_pair(nextTable_.getNumberOfRelationship(), SYMBOL_NEXT));
 
-    tablesSize.push_back(std::make_pair(modifiesTable_.getNumberOfValues(),          SYMBOL_MODIFIES));
-    tablesSize.push_back(std::make_pair(modifiesProcedureTable_.getNumberOfValues(), SYMBOL_MODIFIES_PROCEDURE));
-    tablesSize.push_back(std::make_pair(usesTable_.getNumberOfValues(),              SYMBOL_USES));
-    tablesSize.push_back(std::make_pair(usesProcedureTable_.getNumberOfValues(),     SYMBOL_USES_PROCEDURE));
+    tablesSize.push_back(std::make_pair(modifiesTable_.getNumberOfRelationship(),          SYMBOL_MODIFIES));
+    tablesSize.push_back(std::make_pair(modifiesProcedureTable_.getNumberOfRelationship(), SYMBOL_MODIFIES_PROCEDURE));
+    tablesSize.push_back(std::make_pair(usesTable_.getNumberOfRelationship(),              SYMBOL_USES));
+    tablesSize.push_back(std::make_pair(usesProcedureTable_.getNumberOfRelationship(),     SYMBOL_USES_PROCEDURE));
 
     /* Sort the size in ascending order to determine the priority. */
     std::sort(tablesSize.begin(), tablesSize.end(), ComparePairAscending);
@@ -446,8 +446,7 @@ void PKB::GenerateCallsTable(map<ProcedureName, set<ProcedureName>> calls) {
         callsTable_.insert(pair.first, pair.second);
     }
 
-    callsTransitiveTable_.generateKeyToValuesTransitiveMap(callsTable_);
-    callsTransitiveTable_.generateValueToKeysTransitiveMap(callsTable_);
+    callsTransitiveTable_.generateTransitiveTable(callsTable_);
 }
 
 bool PKB::IsCalls(ProcedureName calling, ProcedureName called) {
@@ -480,6 +479,14 @@ set<ProcedureName> PKB::GetCallingTransitive(ProcedureName called) {
 
 set<ProcedureName> PKB::GetCalledTransitive(ProcedureName calling) {
     return callsTransitiveTable_.getValues(calling);
+}
+
+unsigned int PKB::GetNumberOfCallsRelationship() {
+    return callsTable_.getNumberOfRelationship();
+}
+
+unsigned int PKB::GetNumberOfCallsTransitiveRelationship() {
+    return callsTransitiveTable_.getNumberOfRelationship();
 }
 
 void PKB::PrintCallsTable() {
@@ -537,6 +544,14 @@ set<ProcedureName> PKB::GetProceduresNameModifying(VariableName variableName) {
     return modifiesProcedureTable_.getKeys(variableName);
 }
 
+unsigned int PKB::GetNumberOfModifiesRelationship() {
+    return modifiesTable_.getNumberOfRelationship();
+}
+
+unsigned int PKB::GetNumberOfModifiesProcedureRelationship() {
+    return modifiesProcedureTable_.getNumberOfRelationship();
+}
+
 void PKB::PrintModifiesTable() {
     modifiesTable_.printTable();
 }
@@ -592,6 +607,15 @@ set<ProcedureName> PKB::GetProceduresNameUsing(VariableName variableName) {
     return usesProcedureTable_.getKeys(variableName);
 }
 
+unsigned int PKB::GetNumberOfUsesRelationship() {
+    return usesTable_.getNumberOfRelationship();
+}
+
+unsigned int PKB::GetNumberOfUsesProcedureRelationship() {
+    return usesProcedureTable_.getNumberOfRelationship();
+}
+
+
 void PKB::PrintUsesTable() {
     usesTable_.printTable();
 }
@@ -608,8 +632,7 @@ void PKB::GenerateParentTable(map<StmtNumber, set<StmtNumber>> parent) {
         parentTable_.insert(pair.first, pair.second);
     }
 
-    parentTransitiveTable_.generateKeyToValuesTransitiveMap(parentTable_);
-    parentTransitiveTable_.generateValueToKeysTransitiveMap(parentTable_);
+    parentTransitiveTable_.generateTransitiveTable(parentTable_);
 }
 
 bool PKB::IsParent(StmtNumber parent, StmtNumber child) {
@@ -644,6 +667,14 @@ set<StmtNumber> PKB::GetChildrenTransitive(StmtNumber parent) {
     return parentTransitiveTable_.getValues(parent);
 }
 
+unsigned int PKB::GetNumberOfParentRelationship() {
+    return parentTable_.getNumberOfRelationship();
+}
+
+unsigned int PKB::GetNumberOfParentTransitiveRelationship() {
+    return parentTransitiveTable_.getNumberOfRelationship();
+}
+
 void PKB::PrintParentTable() {
     parentTable_.printTable();
 }
@@ -660,8 +691,7 @@ void PKB::GenerateFollowsTable(map<StmtNumber, StmtNumber> follows) {
         followsTable_.insert(pair.first, pair.second);
     }
 
-    followsTransitiveTable_.generateKeyToValuesTransitiveMap(followsTable_);
-    followsTransitiveTable_.generateValueToKeysTransitiveMap(followsTable_);
+    followsTransitiveTable_.generateTransitiveTable(followsTable_);
 }
 
 bool PKB::IsFollows(StmtNumber follows, StmtNumber following) {
@@ -694,6 +724,14 @@ set<StmtNumber> PKB::GetFollowsTransitive(StmtNumber following) {
 
 set<StmtNumber> PKB::GetFollowingTransitive(StmtNumber follows) {
     return followsTransitiveTable_.getValues(follows);
+}
+
+unsigned int PKB::GetNumberOfFollowsRelationship() {
+    return followsTable_.getNumberOfRelationship();
+}
+
+unsigned int PKB::GetNumberOfFollowsTransitiveRelationship() {
+    return followsTransitiveTable_.getNumberOfRelationship();
 }
 
 void PKB::PrintFollowsTable() {
@@ -804,6 +842,14 @@ set<StmtNumber> PKB::GetPreviousTransitive(StmtNumber next) {
     return nextTransitiveTable_.getKeys(next);
 }
 
+unsigned int PKB::GetNumberOfNextRelationship() {
+    return nextTable_.getNumberOfRelationship();
+}
+
+unsigned int PKB::GetNumberOfNextTransitiveRelationship() {
+    return nextTransitiveTable_.getNumberOfRelationship();
+}
+
 void PKB::PrintNextTable() {
     nextTable_.printTable();
 }
@@ -855,36 +901,37 @@ void PKB::Clear() {
     controlFlowGraphs_.clear();
     controlFlowGraphsNodes_.clear();
 
-    constantTable_.clear();
-    variableTable_.clear();
-    procedureTable_.clear();
-    controlVariableTable_.clear();
-    callsTable_.clear();
-    stmtTable_.clear();
-    stmtlistTable_.clear();
+    constantTable_  = Table<Index, ConstantValue>();
+    variableTable_  = Table<Index, VariableName>();
+    procedureTable_ = Table<Index, ProcedureName>();
 
-    priorityTable_.clear();
+    controlVariableTable_ = Table<StmtNumber, VariableName>();
+    callTable_            = Table<StmtNumber, ProcedureName>();
+    stmtTable_            = Table<StmtNumber, StmtSymbol>();
+    stmtlistTable_        = Table<StmtNumber, StmtSymbol>();
 
-    expressionTable_.clear();
-    subExpressionTable_.clear();
+    priorityTable_ = Table<Priority, TableSymbol>();
 
-    callsTable_.clear();
-    callsTransitiveTable_.clear();
+    expressionTable_    = Table<StmtNumber, Expression>();
+    subExpressionTable_ = Table<StmtNumber, SubExpressions>();
 
-    modifiesTable_.clear();
-    modifiesProcedureTable_.clear();
+    callsTable_           = Table<ProcedureName, ProcedureName>();
+    callsTransitiveTable_ = TransitiveTable<ProcedureName, ProcedureName>();
 
-    usesTable_.clear();
-    usesProcedureTable_.clear();
+    modifiesTable_          = Table<StmtNumber, VariableName>();
+    modifiesProcedureTable_ = Table<ProcedureName, VariableName>();
 
-    parentTable_.clear();
-    parentTransitiveTable_.clear();
+    usesTable_          = Table<StmtNumber, VariableName>();
+    usesProcedureTable_ = Table<ProcedureName, VariableName>();
 
-    followsTable_.clear();
-    followsTransitiveTable_.clear();
+    parentTable_           = Table<StmtNumber, StmtNumber>();
+    parentTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 
-    nextTable_.clear();
-    nextTransitiveTable_.clear();
+    followsTable_           = Table<StmtNumber, StmtNumber>();
+    followsTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
+
+    nextTable_           = Table<StmtNumber, StmtNumber>();
+    nextTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 }
 
 bool PKB::ComparePairAscending(const std::pair<unsigned int, string> &pairOne, const std::pair<unsigned int, string> &pairTwo) {

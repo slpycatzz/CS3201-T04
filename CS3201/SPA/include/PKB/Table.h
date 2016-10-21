@@ -8,12 +8,20 @@
 template<typename K, typename V>
 class Table {
  public:
-    inline Table<K, V>() {}
+    inline Table<K, V>() {
+        numberOfRelationship = 0;
+
+        keyToValuesMap.clear();
+        valueToKeysMap.clear();
+    }
+
     inline ~Table<K, V>() {}
 
     inline void insert(K key, V value) {
         keyToValuesMap[key].insert(value);
         valueToKeysMap[value].insert(key);
+
+        numberOfRelationship++;
     }
 
     inline void insert(K key, std::set<V> values) {
@@ -22,14 +30,8 @@ class Table {
         for (auto &value : values) {
             valueToKeysMap[value].insert(key);
         }
-    }
 
-    inline void insert(std::set<K> keys, V value) {
-        valueToKeysMap.insert(std::make_pair(value, keys));
-
-        for (auto &key : keys) {
-            keyToValuesMap[key].insert(value);
-        }
+        numberOfRelationship += values.size();
     }
 
     inline K getKey(V value) {
@@ -96,13 +98,8 @@ class Table {
         return valueToKeysMap;
     }
 
-    inline unsigned int getNumberOfValues() {
-        unsigned int numberOfValues = 0;
-        for (const auto &pair : keyToValuesMap) {
-            numberOfValues += pair.second.size();
-        }
-
-        return numberOfValues;
+    inline unsigned int getNumberOfRelationship() {
+        return numberOfRelationship;
     }
 
     inline bool hasKey(K key) {
@@ -173,12 +170,9 @@ class Table {
         }
     }
 
-    inline void clear() {
-        keyToValuesMap.clear();
-        valueToKeysMap.clear();
-    }
-
  private:
+    unsigned int numberOfRelationship;
+
     std::unordered_map<K, std::set<V>> keyToValuesMap;
     std::unordered_map<V, std::set<K>> valueToKeysMap;
 };
