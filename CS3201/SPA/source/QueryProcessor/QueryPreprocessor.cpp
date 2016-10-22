@@ -383,7 +383,7 @@ void QueryPreprocessor::parseWith() {
     if (isAttributeValid(var, varAttribute, var2, varAttribute2)) {
         vector<string> varList = { var, var2 };
         Symbol varAttrType = getAttributeType(var, varAttribute);
-
+        
         qt.insert(WITH, Constants::SymbolToString(varAttrType), varList);
     } else {
         throw QuerySyntaxErrorException("22");
@@ -394,8 +394,22 @@ void QueryPreprocessor::parseWith() {
 // return only CONSTANT | VARIABLE | INVALID
 Symbol QueryPreprocessor::getAttributeType(string var, string varAttr) {
     Symbol varType = getVarType(var);
+    if (varType == INVALID) {
+        // case: CONSTANT or "var"
+        if (var[0] == '\"') {
+            string varName = var.substr(1, var.size() - 2);
+            if (!isValidVarName(varName)) {
+                throw QuerySyntaxErrorException("91");
+            }
+            return VARIABLE;
+        } else {
+            if (!Utils::IsNonNegativeNumeric(var)) {
+                throw QuerySyntaxErrorException("92");
+            }
+            return CONSTANT;
+        }
+    }
     switch (varType) {
-    
     case PROCEDURE:
     case VARIABLE:
         return VARIABLE;
@@ -421,20 +435,29 @@ Symbol QueryPreprocessor::getAttributeType(string var, string varAttr) {
 // case: var1.varAttr = var2.varAttr
 bool QueryPreprocessor::isAttributeValid(string var, string varAttr, string var2, string varAttr2) {
     Symbol attrType1 = getAttributeType(var,varAttr);
-    Symbol attrType2 = getAttributeType(var,varAttr);
+    Symbol attrType2 = getAttributeType(var2,varAttr2);
     bool isValid;
     // check same attrType e.g. CONSTANT == CONSTANT | VARIABLE == VARIABLE
     isValid = isAttributeValid(var, varAttr) && isAttributeValid(var2, varAttr2);
     // check var and attrType is valid e.g. proc == "procName"
+    
     isValid = (attrType1 == attrType2) && isValid;
     return isValid;
 }
 
 // test for var.varAttr: getAttr(var) == varAttr
 bool QueryPreprocessor::isAttributeValid(string var, string varAttribute) {
-    Symbol attrType = getAttributeType(var, varAttribute);
+    Symbol attrType = INVALID;
+    bool isConstantOrVariable = false;
+
+    if (getVarType(var) == INVALID) {
+        isConstantOrVariable = true;
+    }
+
+    attrType = getAttributeType(var, varAttribute);
+
     if (varAttribute == "") {
-    } else {
+    } else if (!isConstantOrVariable) {
         switch (attrType) {
         case PROCEDURE:
         case CALL:
@@ -459,6 +482,7 @@ bool QueryPreprocessor::isAttributeValid(string var, string varAttribute) {
         case ASSIGN:
         case WHILE:
         case IF:
+        case PROGRAM_LINE:
             if (varAttribute == "stmt#") {
                 break;
             } else {
@@ -467,6 +491,8 @@ bool QueryPreprocessor::isAttributeValid(string var, string varAttribute) {
         default:
             throw QuerySyntaxErrorException("21");
         }
+    } else {
+        throw QuerySyntaxErrorException("CONSTANT/VARIABLE should not have a varAttr");
     }
     if (attrType == INVALID) {
         return false;
