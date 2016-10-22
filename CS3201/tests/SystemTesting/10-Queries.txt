@@ -1,7 +1,7 @@
 1 - tuple, Follows, stmt and stmt
 stmt s1,s2; if ifstmt;
 Select <s1,s2> such that Follows(s1,ifstmt) and Follows(s2,ifstmt)
-2 15,15 2
+2 15,15 2,15 15,2 2
 5000
 2 - tuple,Follows,stmt and stmt
 stmt s1,s2,s3; call c;
