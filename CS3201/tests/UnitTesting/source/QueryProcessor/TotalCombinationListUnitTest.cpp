@@ -82,6 +82,47 @@ namespace UnitTesting {
             Assert::AreEqual(expected, actual);
         }
 
+		TEST_METHOD(TotalCombinationList_MergeTest_1) {
+			TotalCombinationList totalCombi(getSampleList_2());
+			totalCombi.merge(string("a"), string("c"));
+			Assert::IsTrue(totalCombi.getFactorList().size() == 1);
+			PartialCombinationList product(totalCombi["a"]);
+
+			string actual(PartialToString(product));
+			string expected("<<a:1,b:2,c:4>,<a:1,b:2,c:5>,<a:1,b:3,c:4>,<a:1,b:3,c:5>>");
+			Assert::AreEqual(expected, actual);
+		}
+
+		TEST_METHOD(TotalCombinationList_CartesianProductFilterTest) {
+			TotalCombinationList totalCombi(getSampleList_2());
+
+			auto f = [](CandidateCombination combi)->bool {
+				return (combi["a"] == "1" && combi["c"] == "5");
+			};
+
+			PartialCombinationList product(totalCombi.cartesianProduct(totalCombi["a"], totalCombi["c"], f));
+
+			string actual(PartialToString(product));
+			string expected("<<a:1,b:2,c:5>,<a:1,b:3,c:5>>");
+			Assert::AreEqual(expected, actual);
+		}
+
+		TEST_METHOD(TotalCombinationList_MergeFilterTest) {
+			TotalCombinationList totalCombi(getSampleList_2());
+
+			auto f = [](CandidateCombination combi)->bool {
+				return (combi["a"] == "1" && combi["c"] == "5");
+			};
+
+			totalCombi.mergeAndFilter(string("a"), string("c"), f);
+			Assert::IsTrue(totalCombi.getFactorList().size() == 1);
+			PartialCombinationList product(totalCombi["a"]);
+
+			string actual(PartialToString(product));
+			string expected("<<a:1,b:2,c:5>,<a:1,b:3,c:5>>");
+			Assert::AreEqual(expected, actual);
+		}
+
         TEST_METHOD(TotalCombinationList_GetSelectCombinationsTest_One) {
             TotalCombinationList totalCombi(getSampleList_2());
             vector<string> selectList{ "a", "b" , "c" };
@@ -164,7 +205,7 @@ namespace UnitTesting {
             Assert::AreEqual(expected, actual);
         }
 
-        TEST_METHOD(TotalCombinationList_MergeTest) {
+        TEST_METHOD(TotalCombinationList_MergeTest_2) {
             TotalCombinationList totalCombi(getSampleList_1());
             string actual;
 

@@ -81,6 +81,36 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query) {
     }
 }
 
+ResultList QueryEvaluator::getResultsFromCombinationList
+(TotalCombinationList &combinations, vector<Synonym> &selectList) {
+	PartialCombinationList
+		selectedCombinations(combinations.getCombinationList(selectList));
+	vector<vector<Candidate>> selectedCombinationList;
+
+	for (CandidateCombination combi : selectedCombinations) {
+		vector<Candidate> candidateTuple;
+
+		for (Synonym syn : selectList) {
+			candidateTuple.push_back(combi[syn]);
+		}
+
+		selectedCombinationList.push_back(candidateTuple);
+	}
+
+	ResultList result{ selectList, selectedCombinationList };
+
+	return result;
+}
+
+bool QueryEvaluator::isBoolSelect(vector<string> &selectList) {
+	if (selectList.size() == 1 && selectList[0] == SYMBOL_BOOLEAN) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
 	if (!getBooleanGroupResult(query.getBooleanClauses())) {
 		return TotalCombinationList();
@@ -356,35 +386,6 @@ void QueryEvaluator::filterNoVarCallWith(Synonym & call, Candidate cand, TotalCo
             return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call])) == cand);
         };
         combinations.filter(call, comp);
-    }
-}
-
-ResultList QueryEvaluator::getResultsFromCombinationList
-(TotalCombinationList &combinations, vector<Synonym> &selectList) {
-    PartialCombinationList
-        selectedCombinations(combinations.getCombinationList(selectList));
-    vector<vector<Candidate>> selectedCombinationList;
-
-    for (CandidateCombination combi : selectedCombinations) {
-        vector<Candidate> candidateTuple;
-
-        for (Synonym syn : selectList) {
-            candidateTuple.push_back(combi[syn]);
-        }
-
-        selectedCombinationList.push_back(candidateTuple);
-    }
-
-    ResultList result{ selectList, selectedCombinationList };
-
-    return result;
-}
-
-bool QueryEvaluator::isBoolSelect(vector<string> &selectList) {
-    if (selectList.size() == 1 && selectList[0] == SYMBOL_BOOLEAN) {
-        return true;
-    } else {
-        return false;
     }
 }
 

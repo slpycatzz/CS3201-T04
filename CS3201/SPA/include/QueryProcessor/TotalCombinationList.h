@@ -26,22 +26,16 @@ class TotalCombinationList {
     /* Content manipulation */
 
     void addSynonym(Synonym &syn, unsigned index);
-
     void addSynonym(const char* &syn, unsigned index);
-
     void addSynonym(const char syn[], unsigned index);
 
     void addSynonym(Synonym &syn, std::vector<Candidate> &candidateList);
-
     void addSynonym(const char* &syn, std::vector<Candidate> &candidateList);
-
     void addSynonym(const char syn[], std::vector<Candidate> &candidateList);
 
     void addSynonym(Synonym &syn, PartialCombinationList &partList);
-
     void addSynonym(const char* &syn, PartialCombinationList &partList);
-
-    void addSynonym(const char syn[], PartialCombinationList &partList);
+	void addSynonym(const char syn[], PartialCombinationList &partList);
 
     void merge(Synonym &syn1, Synonym &syn2);
 
@@ -57,6 +51,7 @@ class TotalCombinationList {
 
     std::unordered_map<Synonym, unsigned>& getContent();
     std::map<unsigned, PartialCombinationList>& getFactorList();
+	unsigned getFactorCount();
 
     bool contains(Synonym &syn);
     bool contains(const char* &syn);

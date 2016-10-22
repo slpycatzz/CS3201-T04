@@ -88,10 +88,16 @@ void TotalCombinationList::merge(Synonym &syn1, Synonym &syn2) {
 }
 
 void TotalCombinationList::combine(TotalCombinationList &combiList) {
-    std::unordered_map<Synonym, unsigned> combiListContent(combiList.getContent());
+    std::unordered_map<Synonym, unsigned>& combiListContent(combiList.getContent());
+	std::map<unsigned, PartialCombinationList>& combiListFactors(combiList.getFactorList());
     for (std::pair<Synonym, unsigned> kv : combiListContent) {
-        addSynonym(kv.first, combiList[kv.first]);
+		unsigned index = kv.second + factorCounter;
+		content.insert_or_assign(kv.first, index);
+		factorList.insert_or_assign(index, combiListFactors[kv.second]);
+		//addSynonym(kv.first, combiList[kv.first]);
     }
+	factorCounter += combiList.getFactorCount();
+	empty = (empty && combiList.isEmpty());
 }
 
 // template<typename Filterer>
@@ -152,6 +158,10 @@ std::unordered_map<Synonym, unsigned>& TotalCombinationList::getContent() {
 
 std::map<unsigned, PartialCombinationList>& TotalCombinationList::getFactorList() {
     return factorList;
+}
+
+unsigned TotalCombinationList::getFactorCount() {
+	return factorCounter;
 }
 
 bool TotalCombinationList::contains(Synonym &syn) {
@@ -223,7 +233,8 @@ PartialCombinationList& TotalCombinationList::getCombinationList(vector<Synonym>
 PartialCombinationList TotalCombinationList::cartesianProduct(PartialCombinationList &list1, PartialCombinationList &list2) {
     if (&list1 == &list2) {
         return list1;
-    } else {
+    }
+	else {
         PartialCombinationList::iterator iter1 = list1.begin();
         while (iter1 != list1.end()) {
             CandidateCombination combi1 = *iter1;
