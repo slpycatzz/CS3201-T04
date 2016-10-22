@@ -20,6 +20,7 @@ const char SYMBOL_THAT[]      = "that";
 const char SYMBOL_SUCH_THAT[] = "such that";
 const char SYMBOL_WITH[]      = "with";
 const char SYMBOL_PATTERN[]   = "pattern";
+const char SYMBOL_AND[]       = "and";
 
 const char SYMBOL_MODIFIES[]           = "Modifies";
 const char SYMBOL_MODIFIES_PROCEDURE[] = "ModifiesProcedure";

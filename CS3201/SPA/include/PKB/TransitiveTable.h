@@ -8,8 +8,19 @@
 template<typename K, typename V>
 class TransitiveTable {
  public:
-    inline TransitiveTable<K, V>() {}
+    inline TransitiveTable<K, V>() {
+        numberOfRelationship = 0;
+
+        keyToValuesTransitiveMap.clear();
+        valueToKeysTransitiveMap.clear();
+    }
+
     inline ~TransitiveTable<K, V>() {}
+
+    inline void generateTransitiveTable(Table<K, V> table) {
+        generateKeyToValuesTransitiveMap(table);
+        generateValueToKeysTransitiveMap(table);
+    }
 
     inline void generateKeyToValuesTransitiveMap(Table<K, V> table) {
         std::set<K> keys = table.getKeys();
@@ -34,6 +45,7 @@ class TransitiveTable {
                 }
 
                 keyToValuesTransitiveMap[key].insert(values.begin(), values.end());
+                numberOfRelationship += values.size();
 
                 for (const auto &value : values) {
                     keyStack.push(value);
@@ -76,6 +88,8 @@ class TransitiveTable {
     inline void insert(K key, V value) {
         keyToValuesTransitiveMap[key].insert(value);
         valueToKeysTransitiveMap[value].insert(key);
+
+        numberOfRelationship++;
     }
 
     inline std::set<K> getKeys(V value) {
@@ -96,13 +110,8 @@ class TransitiveTable {
         return keyToValuesTransitiveMap[key];
     }
 
-    inline unsigned int getNumberOfValues() {
-        unsigned int numberOfValues = 0;
-        for (const auto &pair : keyToValuesTransitiveMap) {
-            numberOfValues += pair.second.size();
-        }
-
-        return numberOfValues;
+    inline unsigned int getNumberOfRelationship() {
+        return numberOfRelationship;
     }
 
     inline bool hasKey(K key) {
@@ -173,12 +182,9 @@ class TransitiveTable {
         }
     }
 
-    inline void clear() {
-        keyToValuesTransitiveMap.clear();
-        valueToKeysTransitiveMap.clear();
-    }
-
  private:
+    unsigned int numberOfRelationship;
+
     std::unordered_map<K, std::set<V>> keyToValuesTransitiveMap;
     std::unordered_map<V, std::set<K>> valueToKeysTransitiveMap;
 };
