@@ -376,7 +376,7 @@ void QueryPreprocessor::parseWith() {
     if(accept('.')){
         // case: ... = var2.varAttr
         varAttribute2 = getVar();
-        queryList[cur] = peek().substr(var2.size());
+        queryList[cur] = peek().substr(varAttribute2.size());
     } else {
         // case: ... = var2
         varAttribute2 = "";
@@ -494,7 +494,7 @@ bool QueryPreprocessor::isAttributeValid(string var, string varAttribute) {
             throw QuerySyntaxErrorException("21");
         }
     } else {
-        throw QuerySyntaxErrorException("CONSTANT/VARIABLE should not have a varAttr");
+        throw QuerySyntaxErrorException("1CONSTANT/VARIABLE should not have a varAttr");
     }
     if (attrType == INVALID) {
         return false;
@@ -580,7 +580,7 @@ void QueryPreprocessor::callFactorRecognizer(string &var) {
     } else if (var[0] == ')') {
     } else {
         var += "end";
-        throw QuerySyntaxErrorException("invalid var or const"+var);
+        throw QuerySyntaxErrorException("21invalid var or const"+var);
     }
 }
 
@@ -602,7 +602,7 @@ void QueryPreprocessor::callExpressionRecognizer(string &var) {
     }
 
     if (limit > 999) {
-        throw QuerySyntaxErrorException("Error occurred somewhere");
+        throw QuerySyntaxErrorException("111Error occurred somewhere");
     }
 }
 
@@ -652,7 +652,7 @@ bool QueryPreprocessor::expect(string &var, char token) {
         return true;
     } else {
         var += "end";
-        throw QuerySyntaxErrorException("invalid pattern expression"+var);
+        throw QuerySyntaxErrorException("123invalid pattern expression"+var);
     }
 }
 
