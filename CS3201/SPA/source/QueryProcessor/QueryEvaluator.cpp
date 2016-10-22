@@ -28,6 +28,8 @@ vector<Candidate> QueryEvaluator::getCandidates(Symbol &synType) {
             return vector<Candidate>{ SYMBOL_TRUE };
         case CONSTANT:
             return PKB::GetAllConstantValues();
+        case CALL:
+            return Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(CALL));
         case PROGRAM_LINE:
             return Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(STMT));
         case STMT:

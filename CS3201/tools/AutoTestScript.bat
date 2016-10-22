@@ -16,6 +16,10 @@ start /wait %runDir%AutoTester.exe %testDir%4-Source.txt %testDir%4-Queries.txt 
 start /wait %runDir%AutoTester.exe %testDir%5-Source.txt %testDir%5-Queries.txt %testDir%output\out5.xml
 start /wait %runDir%AutoTester.exe %testDir%6-Source.txt %testDir%6-Queries.txt %testDir%output\out6.xml
 start /wait %runDir%AutoTester.exe %testDir%7-Source.txt %testDir%7-Queries.txt %testDir%output\out7.xml
+start /wait %runDir%AutoTester.exe %testDir%8-Source.txt %testDir%8-Queries.txt %testDir%output\out8.xml
+start /wait %runDir%AutoTester.exe %testDir%9-Source.txt %testDir%9-Queries.txt %testDir%output\out9.xml
+start /wait %runDir%AutoTester.exe %testDir%10-Source.txt %testDir%10-Queries.txt %testDir%output\out10.xml
+start /wait %runDir%AutoTester.exe %testDir%11-Source.txt %testDir%11-Queries.txt %testDir%output\out11.xml
 
 setlocal enabledelayedexpansion
 
