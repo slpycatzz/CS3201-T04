@@ -50,7 +50,7 @@ class QueryPreprocessor {
      void parseAnd(Symbol);
      void parseWith();
 
-     bool isAttributeValid(std::string var, std::string varAttr, bool isVarValue);
+     bool isAttributeValid(std::string var, std::string varAttr);
      bool isAttributeValid(std::string var, std::string varAttr, std::string var2, std::string varAttr2);
      bool isVarExist(std::string var);
      bool isValidVarName(std::string varName);
@@ -59,13 +59,12 @@ class QueryPreprocessor {
 
      bool isConstantVarTerm(std::string &var);
      void callExpressionRecognizer(std::string &var);
-     void callTermRecognizer(std::string &var);
      void callFactorRecognizer(std::string &var);
 
      std::vector<std::string> getNextToken(std::vector<std::string> queryList);
      Symbol getVarType(std::string var);
      std::string getPatternExpression();
-     Symbol getAttributeType(std::string var);
+     Symbol getAttributeType(std::string var, std::string varAttr);
 
      void mergeSeparatedClauses();
      std::string removeWhitespaces(std::string);
