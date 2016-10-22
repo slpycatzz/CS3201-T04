@@ -170,7 +170,7 @@ void QueryPreprocessor::parseSelect() {
             // qt.insertBooleanDeclaration();
             varAttrMap[SYMBOL_BOOLEAN] = false;
         } else {
-            throw QuerySyntaxErrorException("6");
+            throw QuerySyntaxErrorException("6"+peek());
         }
     }
     if (var.size() < 1) {
@@ -190,6 +190,7 @@ void QueryPreprocessor::parseSuchThat() {
     string relationString;
     expect("such");
     expect("that");
+    mergeSeparatedClauses();
     relationString = peek().substr(0, peek().find_first_of('('));
     relation = Constants::StringToSymbol(relationString);
     if (relation == INVALID) {
@@ -354,6 +355,7 @@ void QueryPreprocessor::parseWith() {
     string var, varAttribute;
     string var2, varAttribute2;
     expect("with");
+    mergeSeparatedClauses();
     var = getVar();
     queryList[cur] = peek().substr(getVar().size());
     if (accept('.')) {
@@ -458,25 +460,25 @@ bool QueryPreprocessor::isAttributeValid(string var, string varAttribute) {
 
     if (varAttribute == "") {
     } else if (!isConstantOrVariable) {
-        switch (attrType) {
+        switch (getVarType(var)) {
         case PROCEDURE:
         case CALL:
             if (varAttribute == "procName") {
                 break;
             } else {
-                throw QuerySyntaxErrorException(varAttribute + "is an invalid attribute type");
+                throw QuerySyntaxErrorException(varAttribute + "1is an invalid attribute type");
             }
         case VARIABLE:
             if (varAttribute == "varName") {
                 break;
             } else {
-                throw QuerySyntaxErrorException(varAttribute + "is an invalid attribute type");
+                throw QuerySyntaxErrorException(varAttribute + "2is an invalid attribute type");
             }
         case CONSTANT:
             if (varAttribute == "value") {
                 break;
             } else {
-                throw QuerySyntaxErrorException(varAttribute + "is an invalid attribute type");
+                throw QuerySyntaxErrorException(var+varAttribute + "3is an invalid attribute type");
             }
         case STMT:
         case ASSIGN:
@@ -486,7 +488,7 @@ bool QueryPreprocessor::isAttributeValid(string var, string varAttribute) {
             if (varAttribute == "stmt#") {
                 break;
             } else {
-                throw QuerySyntaxErrorException(varAttribute + "is an invalid attribute type");
+                throw QuerySyntaxErrorException(varAttribute + "4is an invalid attribute type");
             }
         default:
             throw QuerySyntaxErrorException("21");
@@ -508,6 +510,7 @@ string QueryPreprocessor::getVar() {
     int pos = 0;
     for (char c : word) {
         if (c == ',' || c == '>' || c == ';' || c == ')' || c == '.' || c == '=') {
+            isFound = true;
             break;
         }
         pos++;
@@ -570,15 +573,11 @@ void QueryPreprocessor::callFactorRecognizer(string &var) {
     /* Variable. */
     } else if (accept(var, VARIABLE)) {
         patternList.push_back(name);
-
     /* Constant. */
     } else if (accept(var, CONSTANT)) {
         patternList.push_back(name);
-
     } else if (var[0] == '\"') {
-
     } else if (var[0] == ')') {
-
     } else {
         var += "end";
         throw QuerySyntaxErrorException("invalid var or const"+var);
