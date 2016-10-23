@@ -373,19 +373,18 @@ void QueryPreprocessor::parseWith() {
     expect('=');
     var2 = getVar();
     queryList[cur] = peek().substr(var2.size());
-    if(accept('.')){
+    if (accept('.')) {
         // case: ... = var2.varAttr
         varAttribute2 = getVar();
         queryList[cur] = peek().substr(varAttribute2.size());
     } else {
         // case: ... = var2
         varAttribute2 = "";
-        
     }
     if (isAttributeValid(var, varAttribute, var2, varAttribute2)) {
         vector<string> varList = { var, var2 };
         Symbol varAttrType = getAttributeType(var, varAttribute);
-        
+
         qt.insert(WITH, Constants::SymbolToString(varAttrType), varList);
     } else {
         throw QuerySyntaxErrorException("22");
@@ -436,13 +435,13 @@ Symbol QueryPreprocessor::getAttributeType(string var, string varAttr) {
 }
 // case: var1.varAttr = var2.varAttr
 bool QueryPreprocessor::isAttributeValid(string var, string varAttr, string var2, string varAttr2) {
-    Symbol attrType1 = getAttributeType(var,varAttr);
-    Symbol attrType2 = getAttributeType(var2,varAttr2);
+    Symbol attrType1 = getAttributeType(var, varAttr);
+    Symbol attrType2 = getAttributeType(var2, varAttr2);
     bool isValid;
     // check same attrType e.g. CONSTANT == CONSTANT | VARIABLE == VARIABLE
     isValid = isAttributeValid(var, varAttr) && isAttributeValid(var2, varAttr2);
     // check var and attrType is valid e.g. proc == "procName"
-    
+
     isValid = (attrType1 == attrType2) && isValid;
     return isValid;
 }
@@ -830,7 +829,7 @@ void QueryPreprocessor::expect(char token) {
     // peek to remove empty vector
     peek();
     // wm todo: check if end of query is valid
-    if (cur == queryList.size()) throw QuerySyntaxErrorException("30 expect(char)token: cur==size");
+    if (cur == queryList.size()) throw QuerySyntaxErrorException("30");
 
     if (queryList[cur][0] == token) {
         queryList[cur] = peek().substr(1);
