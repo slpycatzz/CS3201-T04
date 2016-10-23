@@ -6,17 +6,17 @@ p3,p2
 4 - MRelation4 ::MRelation4
 assign a; if i1; prog_line n;variable v;
 Select i1 such that Parent(i1,a) and Next(i1,n) and Uses(a,v) and Modifies(a,v) with v.varName = "heir"
-39
+137
 5000
 6 - MRelation4 :: MRelation4
 procedure p1;procedure p2; assign a1;stmt s; variable v;
 Select p1 such that Uses(p1,v) and Calls(p1,p2) and Modifies(p2,v) and Parent(s,a1)
-p1,p2,p3
+p1,p2,p3,p4
 5000
 7 - MRelation4 :: MRelation4
 procedure p1;procedure p2;variable v;stmt s1; stmt s2;
 Select s2 such that Calls*(p1,p2) and Modifies(p1,v) and Modifies(s1,v) and Parent(s2,s1)
-3,5,10,14,18,24,28,31,37,39
+1,4,5,12,15,24,34,35,37,43,49,55,56,57,60,63,72,73,74,77,78,86,96,98,106,110,115,116,119,120,122,125,130,132,136,137,138,141,147,149,151,156,157,163,166,167
 5000
 10 - MRelation3 :: MRelation3
 variable v1;variable v2;assign a;assign b;stmt s;
@@ -26,7 +26,7 @@ heir heir,heir psy,heir cho,heir ghost,heir man,psy heir,psy psy,psy cho,psy gho
 11 - MRelation2 :: MRelation2
 variable v;procedure p1;procedure p2;
 Select v such that Calls*(p1,p2) and Modifies(p2,v)
-heir,psy,cho,ghost,man
+cho,doctor,ghost,good,heir,man,master,psy,running,sun
 5000
 13 - MRelation4 :: MRelation4
 variable v1; variable v2;variable v3;assign a;assign b;procedure p1;
