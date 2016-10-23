@@ -18,7 +18,7 @@ class Clause {
      //Used by optimizer
      std::string toString();
      std::vector<std::string> getSynonyms();
-
+     
  private:
      Symbol clauseType;
      std::string clauseName;

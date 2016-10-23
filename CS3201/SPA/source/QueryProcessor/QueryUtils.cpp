@@ -29,6 +29,15 @@ bool QueryUtils::IsLiteral(string str) {
     return (Utils::IsNonNegativeNumeric(str) || IsStringLiteral(str));
 }
 
+bool QueryUtils::IsSynonym(std::string str) {
+    if (!IsLiteral(str) && !(Utils::StartsWith(str, CHAR_SYMBOL_UNDERSCORE) && Utils::EndsWith(str, CHAR_SYMBOL_UNDERSCORE))) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 string QueryUtils::GetExpression(string expression) {
     stringstream res;
     for (char c : expression) {

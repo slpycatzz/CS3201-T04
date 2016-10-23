@@ -4,6 +4,7 @@
 
 #include "Constants.h"
 #include "QueryProcessor/Clause.h"
+#include "QueryProcessor/QueryUtils.h"
 #include "Utils.h"
 
 using std::string;
@@ -66,12 +67,19 @@ string Clause::toString() {
 vector<string> Clause::getSynonyms() {
     vector<string> synonyms;
 
-    for (string arg : getArg()) {
-        if (!Utils::IsNonNegativeNumeric(arg) &&                                                                        //not a number
-            !(arg == string(1, CHAR_SYMBOL_UNDERSCORE)) &&                                                                                            //not an underscore
-            !(Utils::StartsWith(arg, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(arg, CHAR_SYMBOL_DOUBLEQUOTES)) &&    //not in quotes
-            !(Utils::StartsWith(arg, CHAR_SYMBOL_UNDERSCORE) && Utils::EndsWith(arg, CHAR_SYMBOL_UNDERSCORE))) {        //not surrounded by underscores
-            synonyms.push_back(arg);                                                                                            //then it is a synonym
+    if (getClauseType() == Constants::SymbolToString(WITH)) {
+        for (unsigned int i = 0; i < 2; i++) {
+            string arg = getArg()[i];
+            if (QueryUtils::IsSynonym(arg)) {
+                synonyms.push_back(arg);
+            }
+        }
+    }
+    else {
+        for (string arg : getArg()) {
+            if (QueryUtils::IsSynonym(arg)) {
+                synonyms.push_back(arg);
+            }
         }
     }
 

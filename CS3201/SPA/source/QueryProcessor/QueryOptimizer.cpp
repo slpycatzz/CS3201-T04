@@ -195,8 +195,8 @@ QueryTree QueryOptimizer::optimize(QueryTree qt) {
             bool isCombined = false;
             for (Clause c : group2) {
                 bool match = false;
-                for (string args : c.getArg()) {
-                    set<string>::const_iterator it3 = synonyms.find(args);
+                for (string syn : c.getSynonyms()) {
+                    set<string>::const_iterator it3 = synonyms.find(syn);
                     if (it3 != synonyms.end()) {
                         // found matching synonym
                         match = true;
