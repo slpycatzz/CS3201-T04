@@ -340,7 +340,7 @@ public:
 	}
 	TEST_METHOD(Integration_QE_WhilePattern_1) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
-		QueryTree qt(getQueryTree("while w, w1; variable v; Select <w,w1> pattern w(v,_) and pattern w1(v, _) and Parent*(w, w1)"));
+		QueryTree qt(getQueryTree("while w, w1; variable v; Select <w,w1> pattern w(v,_) and w1(v, _) such that Parent*(w, w1)"));
 		QueryEvaluator qe;
 
 		Clause pattern(qt.getSelectedGroups().at(0).second.at(0));
@@ -358,7 +358,7 @@ public:
 	}
 	TEST_METHOD(Integration_QE_WhilePattern_2) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
-		QueryTree qt(getQueryTree("while w, w1; Select <w, w1> pattern w(_,_) and pattern w1(_,_)"));
+		QueryTree qt(getQueryTree("while w, w1; Select <w, w1> pattern w(_,_) and w1(_,_)"));
 		QueryEvaluator qe;
 
 		Clause pattern(qt.getSelectedGroups().at(0).second.at(0));

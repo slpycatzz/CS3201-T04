@@ -264,7 +264,7 @@ void QueryPreprocessor::parsePattern() {
             throw QuerySyntaxErrorException("14");
         }
     } else {
-        throw QuerySyntaxErrorException("15");
+        throw QuerySyntaxErrorException("15"+queryList[cur]+"|"+queryList[cur+1]);
     }
     mergeSeparatedClauses();
     expect('(');
@@ -423,7 +423,7 @@ Symbol QueryPreprocessor::getAttributeType(string var, string varAttr) {
         return CONSTANT;
     // special case for call
     case CALL:
-        if (varAttr == "") {
+        if (varAttr == "" || varAttr == "stmt#") {
             return CONSTANT;
         }
         return VARIABLE;
@@ -461,11 +461,16 @@ bool QueryPreprocessor::isAttributeValid(string var, string varAttribute) {
     } else if (!isConstantOrVariable) {
         switch (getVarType(var)) {
         case PROCEDURE:
-        case CALL:
             if (varAttribute == "procName") {
                 break;
             } else {
-                throw QuerySyntaxErrorException(varAttribute + "1is an invalid attribute type");
+                throw QuerySyntaxErrorException("100");
+            }
+        case CALL:
+            if (varAttribute == "procName" || varAttribute == "stmt#") {
+                break;
+            } else {
+                throw QuerySyntaxErrorException("1" + var + "and" + varAttribute + "is an invalid attribute type");
             }
         case VARIABLE:
             if (varAttribute == "varName") {
