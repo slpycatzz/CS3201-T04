@@ -22,6 +22,6 @@ void QueryProcessor::process(std::string query, std::list<std::string>& results)
     queryProjector.projectResult(results, queryTree.getResultsInfo(), queryResult);
     
     // For testing
-    queryTree.printGroups();
+    //queryTree.printGroups();
     //PKB::PrintPriorityTable();
 }

@@ -1,12 +1,12 @@
 1 - tuple, Follows, stmt and stmt
 stmt s1,s2; if ifstmt;
 Select <s1,s2> such that Follows(s1,ifstmt) and Follows(s2,ifstmt)
-2 15,15 2,15 15,2 2
+2 2,15 15
 5000
 2 - tuple,Follows,stmt and stmt
 stmt s1,s2,s3; call c;
 Select <s1,s2,s3> such that Follows(s1,c) and Follows(s2,c) and Follows(s3,c)
-11 11 11,18 18 18,3 3 3,11 11 18,11 11 3,11 18 11,11 18 18,11 18 3,11 3 11,11 3 18,11 3 3,18 11 11,18 11 18,18 11 3,18 18 11,18 18 3,18 3 11,18 3 18,18 3 3,3 11 11,3 11 18,3 11 3,3 18 11,3 18 18,3 18 3,3 3 11,3 3 18
+11 11 11,18 18 18,3 3 3
 5000
 3 - tuple,Follows,stmt and stmt
 stmt s; if ifstmt;
