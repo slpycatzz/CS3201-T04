@@ -176,7 +176,7 @@ public:
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<7,a>,<7,b>,<7,d>,<7,e>,<7,h>,<12,a>,<12,b>,<12,d>,<12,e>,<12,g>,<12,h>>");
+		string expected("<<7,a>,<7,b>,<7,d>,<7,e>,<7,g>,<7,h>,<12,a>,<12,b>,<12,d>,<12,e>,<12,h>>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_ModifiesWhile) {
@@ -185,7 +185,7 @@ public:
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<a>>");
+		string expected("<<6,a>,<6,b>,<6,c>,<6,d>,<6,e>,<6,g>,<6,h>,<33,c>,<33,e>,<33,g>,<33,h>>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_UsesAssign) {
@@ -212,7 +212,7 @@ public:
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<10>,<21>,<22>,<36>,<42>,<44>,<46>>");
+		string expected("<<6>,<7>,<30>,<33>,<35>>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_ExactPattern) {
@@ -361,25 +361,79 @@ public:
 	}
 	TEST_METHOD(Integration_QE_Follows_2var_2) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
-		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select <s,v> such that Follows(s, w) pattern w(v,_)"));
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select <s,v> such that Follows(s, w) and Uses(w, v) and Uses(s, v)"));
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<25>>");
+		string expected("<<5,e>,<5,f>,<37,d>>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_Follows_1var) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
-		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select <w,v> such that Follows(29, w) pattern w(v,_)"));
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select <w,v> such that Follows(29, w) and Uses(w, v)"));
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<30,a>>");
+		string expected("<<30,a>,<30,b>,<30,c>,<30,d>,<30,e>,<30,f>,<30,g>,<30,h>>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_Follows_0var) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
-		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select BOOLEAN such that Follows(29, 30) pattern w(v,_)"));
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select BOOLEAN such that Follows(29, 30)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<TRUE>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_Next_2var) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select s such that Next(s, w)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<5>,<6>,<11>,<16>,<22>,<24>,<29>,<32>,<33>,<34>,<37>,<41>,<42>,<43>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_Next_1var) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select s such that Next(s, 7)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<6>,<22>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_Next_0var) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select BOOLEAN such that Next(6, 7)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<TRUE>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_NextStar_2var) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source2.txt");
+		QueryTree qt(getQueryTree("if s; while w; variable v; Select s such that Next*(s, s)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<7>,<12>,<35>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_NextStar_1var) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select w such that Next*(s, 10)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<6>,<7>,<12>,<30>,<33>,<35>,<38>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_NextStar_0var) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select BOOLEAN such that Next*(11, 10)"));
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
