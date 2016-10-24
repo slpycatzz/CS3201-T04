@@ -68,6 +68,9 @@ Icon?
 
 # Project-specific files
 ========================
+CS3201/AutoTester/tests/
+CS3201/tests/SystemTesting/output/
+CS3201/tests/SystemTesting/clauseTesting/output/
 local_tests/
 source.txt
 s.txt
@@ -117,6 +120,3 @@ ipch/
 *.vsp
 *.vspx
 *.sap
-CS3201/AutoTester/tests/
-CS3201/tests/SystemTesting/output/
-CS3201/tests/SystemTesting/clauseTesting/output/
