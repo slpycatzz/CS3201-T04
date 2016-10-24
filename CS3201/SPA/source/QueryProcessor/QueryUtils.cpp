@@ -12,7 +12,15 @@ using std::vector;
 using std::unordered_map;
 
 string QueryUtils::LiteralToCandidate(string stringLiteral) {
-    return (IsStringLiteral(stringLiteral)) ? GetValueFromStringLiteral(stringLiteral) : stringLiteral;
+	if (IsStringLiteral(stringLiteral)) {
+		return GetValueFromStringLiteral(stringLiteral);
+	}
+	else if (Utils::IsNonNegativeNumeric(stringLiteral)) {
+		return Utils::IntToString(Utils::StringToInt(stringLiteral));
+	}
+	else {
+		return stringLiteral;
+	}
 }
 
 string QueryUtils::GetValueFromStringLiteral(string stringLiteral) {

@@ -158,11 +158,17 @@ TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
 
 bool QueryEvaluator::getBooleanGroupResult(vector<Clause> &clauseGroup) {
     for (Clause clause : clauseGroup) {
-        Candidate arg0(QueryUtils::LiteralToCandidate(clause.getArg()[0]));
+        
+		Candidate arg0(QueryUtils::LiteralToCandidate(clause.getArg()[0]));
         Candidate arg1(QueryUtils::LiteralToCandidate(clause.getArg()[1]));
         string clauseType(clause.getClauseType());
-
-        if (!evaluateSuchThatClause(clauseType, arg0, arg1)) {
+		
+		if (clauseType == SYMBOL_WITH) {
+			if (arg0 != arg1) {
+				return false;
+			}
+		}
+        else if (!evaluateSuchThatClause(clauseType, arg0, arg1)) {
             return false;
         }
     }
@@ -206,24 +212,12 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
 
     for (Clause clause : clauseGroup) {
 
-		/*LOG - DELETE AFTER DEBUGGING*/
-		log.append("\n");
-		log.append("clause type: " + clause.getClauseType() + "\n");
-		log.append("args: " + clause.getArg()[0] + clause.getArg()[1]);
-
         filterByClause(clause, combinations, varMap);
 
         if (combinations.isEmpty()) {
             return TotalCombinationList();
         }
     }
-
-	/*LOG - DELETE AFTER DEBUGGING*/
-	log.append("\n");
-	log.append("totalCombinationList content: ");
-	for (auto kv : combinations.getContent()) log.append(kv.first + ":" + Utils::IntToString(kv.second) + " ");
-	log.append("totalCombinationList factors: ");
-	for (auto kv : combinations.getFactorList()) log.append(Utils::IntToString(kv.first) + ":" + std::to_string((int) &kv.second));
 
     combinations.reduceTotalContent(selectList);
 
@@ -233,6 +227,12 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
 void QueryEvaluator::filterByClause(Clause &clause,
     TotalCombinationList &combinations, unordered_map<Synonym, Symbol> &varMap) {
     string clauseType(clause.getClauseType());
+
+
+	/*LOG - DELETE AFTER DEBUGGING*/
+	log.append("\n");
+	log.append("clause type: " + clause.getClauseType() + "\n");
+	log.append("args: " + clause.getArg()[0] + clause.getArg()[1]);
 
     if (clauseType == SYMBOL_PATTERN) {
         vector<Synonym> args(clause.getArg());
@@ -328,6 +328,14 @@ void QueryEvaluator::filterByClause(Clause &clause,
             }
         }
     }
+
+
+	/*LOG - DELETE AFTER DEBUGGING*/
+	log.append("\n");
+	log.append("totalCombinationList content: ");
+	for (auto kv : combinations.getContent()) log.append(kv.first + ":" + Utils::IntToString(kv.second) + " ");
+	log.append("totalCombinationList factors: ");
+	for (auto kv : combinations.getFactorList()) log.append(Utils::IntToString(kv.first) + ":" + std::to_string((int)&kv.second));
 }
 
 void QueryEvaluator::filterNoVarPattern(Synonym assignStmt, Candidate lhs,
@@ -573,12 +581,12 @@ bool QueryEvaluator::evaluateParentStar(Candidate stmt1, Candidate stmt2) {
             return (PKB::GetNumberOfContainerStmt() > 0);
         } else {
             int stmtNo2(Utils::StringToInt(stmt2));
-            return (!PKB::GetParentsTransitive(stmtNo2).empty());
+            return (!PKB::GetParent(stmtNo2).empty());
         }
     } else {
         int stmtNo1(Utils::StringToInt(stmt1));
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
-            return (!PKB::GetChildrenTransitive(stmtNo1).empty());
+            return (!PKB::GetChildren(stmtNo1).empty());
         } else {
             int stmtNo2(Utils::StringToInt(stmt2));
             return PKB::IsParentTransitive(stmtNo1, stmtNo2);

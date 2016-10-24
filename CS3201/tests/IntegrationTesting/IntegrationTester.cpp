@@ -484,6 +484,26 @@ public:
 		string expected("<<TRUE>>");
 		Assert::AreEqual(expected, actual);
 	}
+	TEST_METHOD(Integration_QE_With_2const) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select BOOLEAN with 6=6"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		Logger::WriteMessage(qe.log.c_str());
+		string expected("<<TRUE>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_Mixed_1) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
+		QueryTree qt(getQueryTree("stmt s; while w; variable v, v1; Select <v,v1> such that Uses(s, v) and Modifies(w, v1) and Follows(s, w)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<c,c>,<c,g>,<c,h>,<d,c>,<d,g>,<d,h>");
+		expected.append(",<e,a>,<e,b>,<e,c>,<e,d>,<e,e>,<e,g>,<e,h>,<f,a>,<f,b>,<f,c>,<f,d>,<f,e>,<f,g>,<f,h>>");
+		Assert::AreEqual(expected, actual);
+	}
     TEST_METHOD(Integration_Optimizer_TestOne) {
         string query, expectedBooleanClauses, actualBooleanClauses;
         string expectedUnselectedClauses, actualUnselectedClauses;
