@@ -23,5 +23,4 @@ void QueryProcessor::process(std::string query, std::list<std::string>& results)
     
     // For testing
     //queryTree.printGroups();
-    //PKB::PrintPriorityTable();
 }
