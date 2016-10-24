@@ -1,0 +1,30 @@
+1
+p Calls p "p4" Modifies p v with v "cho" 
+2
+i1 Parent i1 a Next i1 n Uses a v Modifies a v with v "heir" 
+3
+p1 Uses p1 v Calls p1 p2 Modifies p2 v Parent s a1 
+4
+s2 Calls* p1 p2 Modifies p1 v Modifies s1 v Parent s2 s1 
+5
+v1 v2 Modifies a v1 Uses b v2 Parent* s a 
+6
+v Calls* p1 p2 Modifies p2 v 
+7
+v1 v2 v3 Modifies a v1 Uses b v2 Modifies p1 v3 Uses a v3 
+8
+a b c Uses a v1 Parent* s1 b Follows* s1 s2 Modifies p1 v2 Calls* p1 p2 Uses c v2 Next* n1 n2 pattern b "ghost" _ with n1 26 with v2 "psy" 
+9
+a a Modifies a "ghost" 
+10
+Query parser encountered a syntax error in the query : 10
+11
+a Follows a a 
+12
+a Follows* a a 
+13
+a pattern a "cho" _ pattern a _ _"((3*psy)+2)"_ 
+14
+w a Follows* w s Parent w a Uses a v Next* n1 n2 Parent* n1 n2 pattern w "man" _ with v "psy" 
+15
+n1 Next n1 n1 
