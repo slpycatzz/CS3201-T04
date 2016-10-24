@@ -1,0 +1,39 @@
+p with p v 
+
+c with c s 
+
+c with c ifstmt 
+
+c with c a 
+
+c with c n 
+
+p with p "Pikachu" 
+
+x with x "i" 
+
+c with c 3 
+
+c with c 7 
+
+s with s 8 
+
+s with s 20 
+
+p with "Mudkip" p 
+
+v with "q" v 
+
+ifstmt with "Pikachu" "Mewtwo" 
+
+c with "z" "z" 
+
+c with 9 c 
+
+s with 18 s 
+
+n with 9 n 
+
+n with 0 n 
+
+ifstmt with 12 12 

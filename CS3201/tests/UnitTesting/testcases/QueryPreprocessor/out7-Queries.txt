@@ -1,0 +1,216 @@
+
+s Parent s s1 with s1 3 
+
+s Parent s s1 with s1 12 
+
+s Parent s s1 with s1 17 
+
+s Parent s s1 with s1 22 
+
+s Parent s s1 with s1 29 
+
+s Parent s 5 
+
+s Parent s 14 
+
+s Parent s 16 
+
+s Parent s 23 
+
+s Parent s 30 
+
+s Parent 4 s 
+
+s Parent 10 s 
+
+s Parent 12 s 
+
+s Parent 28 s 
+
+s Parent* s 5 
+
+s Parent* s 17 
+
+s Parent* s 18 
+
+s Parent* s 22 
+
+s Parent* s 30 
+
+w Parent* s 5 
+
+w Parent* s 12 
+
+w Parent* s 21 
+
+w Parent* w 2 
+
+w Parent* w 12 
+
+w Parent* w 14 
+
+w Parent* w 18 
+
+w Parent* w 23 
+
+w Parent* w 30 
+
+s Follows s 1 
+
+s Follows s 4 
+
+s Follows s 10 
+
+s Follows s 11 
+
+s Follows s 19 
+
+s Follows s 22 
+
+a Follows a 1 
+
+a Follows a 4 
+
+a Follows a 10 
+
+a Follows a 11 
+
+a Follows a 19 
+
+a Follows a 22 
+
+w Follows* s w 
+
+w Follows* w s 
+
+s Follows* s 2 
+
+s Follows* s 11 
+
+s Follows* s 12 
+
+s Follows* s 17 
+
+s Follows* s 22 
+
+ifstat Follows* ifstat 11 
+
+ifstat Follows* ifstat 18 
+
+ifstat Follows* ifstat 26 
+
+ifstat Follows* ifstat 28 
+
+a Follows* a 5 
+
+a Follows* a 8 
+
+a Follows* a 12 
+
+a Follows* a 18 
+
+a Follows* a 28 
+
+v Modifies 4 v 
+
+v Modifies 6 v 
+
+v Modifies 10 v 
+
+v Modifies 12 v 
+
+w Modifies w "i" 
+
+w Modifies w "t" 
+
+v Modifies "Mama" v 
+
+s Uses s "x" 
+
+s Uses s "t" 
+
+s Uses s "i" 
+
+v Uses 19 v 
+
+v Uses 20 v 
+
+v Uses 28 v 
+
+v Uses a v 
+
+a Modifies a "i" Uses a "i" 
+
+Query parser encountered a syntax error in the query : 10
+
+a Modifies a "x" Uses a "x" 
+
+a Modifies a "a" Parent w a 
+
+a Parent w a Modifies a "a" 
+
+a Modifies a "a" Parent w a 
+
+p Calls* p "Zehzeh" 
+
+p Calls "Papa" p Modifies p "i" Uses p "c" 
+
+p Calls* "Papa" p Modifies p "t" 
+
+a pattern a "t" _ 
+
+a pattern a "a" "(2*c)" 
+
+a Follows w a pattern a "t" _ 
+
+a pattern a _ "(t+1)" 
+
+a pattern a _ "((t*3)+2)" 
+
+Query parser encountered a syntax error in the query : 30
+
+a pattern a _ _"(t+(b*x))"_ 
+
+a pattern a _ _"(t+a)"_ 
+
+a pattern a _ _"(t+b)"_ 
+
+a pattern a _ _"(3+2)"_ 
+
+a pattern a _ _"(x+a)"_ 
+
+a pattern a _ _"(c*a)"_ 
+
+a pattern a1 _ _"(t+a)"_ 
+
+s with s c 
+
+BOOLEAN pattern ifstat "i" _ _ with c 2 
+
+BOOLEAN Next 1 2 
+
+BOOLEAN Next 7 9 
+
+BOOLEAN Next 9 10 
+
+BOOLEAN Next 11 12 
+
+BOOLEAN Next 12 13 
+
+BOOLEAN Next 13 12 
+
+BOOLEAN Next 14 15 
+
+BOOLEAN Next 18 11 
+
+BOOLEAN Next 18 19 
+
+BOOLEAN Next 21 27 
+
+BOOLEAN Next 27 30 
+
+n Next* 11 n Next* n 10 
+
+n Next* n n 
+
+BOOLEAN Calls* "Papa" p Modifies p "t" 
