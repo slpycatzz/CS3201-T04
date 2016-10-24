@@ -111,12 +111,12 @@ B,C,Temp,i,tesVar,testVar,x,y,z
 23 - Uses(num,v) select boolean
 variable v;
 Select BOOLEAN such that Uses(1,v)
-false
+FALSE
 5000
 24 - Uses(num,_) select boolean
 
 Select BOOLEAN such that Uses(1,_)
-false
+FALSE
 5000
 25 - Uses(stmt,v) select boolean
 stmt s; variable v;
