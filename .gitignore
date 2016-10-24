@@ -119,3 +119,4 @@ ipch/
 *.sap
 CS3201/AutoTester/tests/
 CS3201/tests/SystemTesting/output/
+CS3201/tests/SystemTesting/clauseTesting/output/
