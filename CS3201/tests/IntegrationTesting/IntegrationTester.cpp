@@ -457,6 +457,15 @@ public:
 		string expected("<<TRUE>>");
 		Assert::AreEqual(expected, actual);
 	}
+	TEST_METHOD(Integration_QE_Next_1) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source3.txt");
+		QueryTree qt(getQueryTree("stmt s1, s2; variable v; Select s1 such that Next(s1, s2)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<1>,<2>,<3>,<6>,<7>,<8>,<9>,<10>,<11>>");
+		Assert::AreEqual(expected, actual);
+	}
 	TEST_METHOD(Integration_QE_NextStar_2var) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source2.txt");
 		QueryTree qt(getQueryTree("if s; while w; variable v; Select s such that Next*(s, s)"));

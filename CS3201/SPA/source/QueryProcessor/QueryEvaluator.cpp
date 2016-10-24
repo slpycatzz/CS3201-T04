@@ -523,17 +523,21 @@ bool QueryEvaluator::evaluateUses(Candidate procOrStmtNo, Candidate varName) {
     if (Utils::IsNonNegativeNumeric(procOrStmtNo)) {
         if (varName == string(1, CHAR_SYMBOL_UNDERSCORE)) {
             return (!PKB::GetUsedVariables(Utils::StringToInt(procOrStmtNo)).empty());
-        } else {
+        }
+		else {
             int stmtNo(Utils::StringToInt(procOrStmtNo));
             return PKB::IsUses(stmtNo, varName);
         }
-    } else if (procOrStmtNo == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+    }
+	else if (procOrStmtNo == string(1, CHAR_SYMBOL_UNDERSCORE)) {
         if (varName == string(1, CHAR_SYMBOL_UNDERSCORE)) {
             return (PKB::GetNumberOfAssign() > 0);
-        } else {
+        }
+		else {
             return (!PKB::GetStmtNumberUsing(varName).empty());
         }
-    } else {
+    }
+	else {
         if (varName == string(1, CHAR_SYMBOL_UNDERSCORE)) {
             return (!PKB::GetProcedureUsedVariables(procOrStmtNo).empty());
         }
@@ -547,12 +551,25 @@ bool QueryEvaluator::evaluateModifies(Candidate procOrStmtNo, Candidate varName)
         if (varName == string(1, CHAR_SYMBOL_UNDERSCORE)) {
             return (!PKB::GetModifiedVariables(stmtNo).empty());
         }
-        return PKB::IsModifies(stmtNo, varName);
-    } else {
+		else {
+			return PKB::IsModifies(stmtNo, varName);
+		}
+    }
+	else if (procOrStmtNo == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+		if (varName == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			return (PKB::GetNumberOfAssign() > 0);
+		}
+		else {
+			return (!PKB::GetStmtNumberModifying(varName).empty());
+		}
+	}
+	else {
         if (varName == string(1, CHAR_SYMBOL_UNDERSCORE)) {
             return (!PKB::GetProcedureModifiedVariables(procOrStmtNo).empty());
-        }
-        return PKB::IsModifiesProcedure(procOrStmtNo, varName);
+		}
+		else {
+			return PKB::IsModifiesProcedure(procOrStmtNo, varName);
+		}
     }
 }
 
@@ -564,11 +581,13 @@ bool QueryEvaluator::evaluateParent(Candidate stmt1, Candidate stmt2) {
             int stmtNo2(Utils::StringToInt(stmt2));
             return (!PKB::GetParentsTransitive(stmtNo2).empty());
         }
-    } else {
+    }
+	else {
         int stmtNo1(Utils::StringToInt(stmt1));
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
             return (!PKB::GetChildrenTransitive(stmtNo1).empty());
-        } else {
+        }
+		else {
             int stmtNo2(Utils::StringToInt(stmt2));
             return PKB::IsParent(stmtNo1, stmtNo2);
         }
@@ -583,11 +602,13 @@ bool QueryEvaluator::evaluateParentStar(Candidate stmt1, Candidate stmt2) {
             int stmtNo2(Utils::StringToInt(stmt2));
             return (!PKB::GetParent(stmtNo2).empty());
         }
-    } else {
+    }
+	else {
         int stmtNo1(Utils::StringToInt(stmt1));
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
             return (!PKB::GetChildren(stmtNo1).empty());
-        } else {
+        }
+		else {
             int stmtNo2(Utils::StringToInt(stmt2));
             return PKB::IsParentTransitive(stmtNo1, stmtNo2);
         }
@@ -597,22 +618,18 @@ bool QueryEvaluator::evaluateParentStar(Candidate stmt1, Candidate stmt2) {
 bool QueryEvaluator::evaluateFollows(Candidate stmt1, Candidate stmt2) {
     if (stmt1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
-            vector<unsigned> vec(PKB::GetSymbolStmtNumbers(STMT));
-            for (unsigned cand1 : vec) {
-                for (unsigned cand2 : vec) {
-                    if (PKB::IsFollows(cand1, cand2)) return true;
-                }
-            }
-            return false;
+			return (PKB::GetNumberOfFollowsRelationship() > 0);
         } else {
             int stmtNo2(Utils::StringToInt(stmt2));
             return (!PKB::GetFollows(stmtNo2).empty());
         }
-    } else {
+    }
+	else {
         int stmtNo1(Utils::StringToInt(stmt1));
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
             return (!PKB::GetFollowing(stmtNo1).empty());
-        } else {
+        }
+		else {
             int stmtNo2(Utils::StringToInt(stmt2));
             return PKB::IsFollows(stmtNo1, stmtNo2);
         }
@@ -622,22 +639,19 @@ bool QueryEvaluator::evaluateFollows(Candidate stmt1, Candidate stmt2) {
 bool QueryEvaluator::evaluateFollowsStar(Candidate stmt1, Candidate stmt2) {
     if (stmt1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
-            vector<unsigned> vec(PKB::GetSymbolStmtNumbers(STMT));
-            for (unsigned cand1 : vec) {
-                for (unsigned cand2 : vec) {
-                    if (PKB::IsFollowsTransitive(cand1, cand2)) return true;
-                }
-            }
-            return false;
-        } else {
+			return (PKB::GetNumberOfFollowsRelationship() > 0);
+        }
+		else {
             int stmtNo2(Utils::StringToInt(stmt2));
             return (!PKB::GetFollows(stmtNo2).empty());
         }
-    } else {
+    }
+	else {
         int stmtNo1(Utils::StringToInt(stmt1));
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
             return (!PKB::GetFollowing(stmtNo1).empty());
-        } else {
+        }
+		else {
             int stmtNo2(Utils::StringToInt(stmt2));
             return PKB::IsFollowsTransitive(stmtNo1, stmtNo2);
         }
@@ -645,23 +659,85 @@ bool QueryEvaluator::evaluateFollowsStar(Candidate stmt1, Candidate stmt2) {
 }
 
 bool QueryEvaluator::evaluateNext(Candidate stmt1, Candidate stmt2) {
-    int stmtNo1(Utils::StringToInt(stmt1));
-    int stmtNo2(Utils::StringToInt(stmt2));
-    return PKB::IsNext(stmtNo1, stmtNo2);
+	if (stmt1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+		if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			return (PKB::GetNumberOfNextRelationship() > 0);
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return (!PKB::GetNext(stmtNo2).empty());
+		}
+	}
+	else {
+		int stmtNo1(Utils::StringToInt(stmt1));
+		if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			return (!PKB::GetPrevious(stmtNo1).empty());
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return PKB::IsNext(stmtNo1, stmtNo2);
+		}
+	}
 }
 
 bool QueryEvaluator::evaluateNextStar(Candidate stmt1, Candidate stmt2) {
-    int stmtNo1(Utils::StringToInt(stmt1));
-    int stmtNo2(Utils::StringToInt(stmt2));
-    return PKB::IsNextTransitive(stmtNo1, stmtNo2);
+	if (stmt1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+		if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			return (PKB::GetNumberOfNextRelationship() > 0);
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return (!PKB::GetNext(stmtNo2).empty());
+		}
+	}
+	else {
+		int stmtNo1(Utils::StringToInt(stmt1));
+		if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			return (!PKB::GetPrevious(stmtNo1).empty());
+		}
+		else {
+			int stmtNo2(Utils::StringToInt(stmt2));
+			return PKB::IsNextTransitive(stmtNo1, stmtNo2);
+		}
+	}
 }
 
 bool QueryEvaluator::evaluateCalls(Candidate proc1, Candidate proc2) {
-    return PKB::IsCalls(proc1, proc2);
+	if (proc1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+		if (proc2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			return (PKB::GetNumberOfCallsRelationship() > 0);
+		}
+		else {
+			return (!PKB::GetCalling(proc2).empty());
+		}
+	}
+	else {
+		if (proc2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			return (!PKB::GetCalled(proc1).empty());
+		}
+		else {
+			return PKB::IsCalls(proc1, proc2);
+		}
+	}
 }
 
 bool QueryEvaluator::evaluateCallsStar(Candidate proc1, Candidate proc2) {
-    return PKB::IsCallsTransitive(proc1, proc2);
+	if (proc1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+		if (proc2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			return (PKB::GetNumberOfCallsRelationship() > 0);
+		}
+		else {
+			return (!PKB::GetCalling(proc2).empty());
+		}
+	}
+	else {
+		if (proc2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			return (!PKB::GetCalled(proc1).empty());
+		}
+		else {
+			return PKB::IsCallsTransitive(proc1, proc2);
+		}
+	}
 }
 
 bool QueryEvaluator::evaluateAffects(Candidate assign1, Candidate assign2) {
