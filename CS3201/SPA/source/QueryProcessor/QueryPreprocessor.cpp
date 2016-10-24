@@ -130,7 +130,7 @@ void QueryPreprocessor::parseSelect() {
                     queryList[cur] = peek().substr(getVar().size());
                     if (isAttributeValid(temp, varAttribute1)) {
                         // only call needs to return true
-                        if (getVarType(temp) == CALL) {
+                        if (getVarType(temp) == CALL && varAttribute1 == "procName") {
                             varAttrMap[temp] = true;
                         }
                     } else {

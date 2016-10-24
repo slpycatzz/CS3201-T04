@@ -1,0 +1,155 @@
+1 - Uses(num,v)
+stmt s; variable v;
+Select s such that Uses(4,v)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,46,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+2 - Uses(num,v) select v
+stmt s; variable v;
+Select v such that Uses(4,v)
+testVar
+5000
+3 - Uses(stmt,v)
+stmt s; variable v;
+Select s such that Uses(s,v)
+10,11,12,13,14,15,16,17,18,19,2,20,22,23,24,25,26,27,28,29,3,30,31,33,35,36,37,38,4,40,41,42,43,44,45,46,47,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+4 - Uses(stmt,v) select v
+stmt s; variable v;
+Select v such that Uses(s,v)
+B,C,Temp,i,tesVar,testVar,x,y,z
+5000
+5 - Uses(assign,v)
+assign a; variable v;
+Select a such that Uses(a,v)
+10,11,13,15,17,18,2,22,23,26,28,3,30,33,37,4,41,43,44,45,46,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,70,71,72,75,77,79,8,9
+5000
+6 - Uses(assign,v) select v
+assign a; variable v;
+Select v such that Uses(a,v)
+C,Temp,i,testVar,x,y,z
+5000
+7 - Uses(while,v)
+while w; variable v;
+Select w such that Uses(w,v)
+12,14,16,19,36,40,53,55,60,64,73,74,76,78
+5000
+8 - Uses(while,v) select v
+while w; variable v;
+Select v such that Uses(w,v)
+B,C,Temp,i,tesVar,testVar,x
+5000
+9 - Uses(prog_line,v)
+prog_line l; variable v;
+Select l such that Uses(l,v)
+10,11,12,13,14,15,16,17,18,19,2,20,22,23,24,25,26,27,28,29,3,30,31,33,35,36,37,38,4,40,41,42,43,44,45,46,47,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+10 - Uses(prog_line,v) select v
+prog_line l; variable v;
+Select v such that Uses(l,v)
+B,C,Temp,i,tesVar,testVar,x,y,z
+5000
+11 - Uses(num,_)
+stmt s;
+Select s such that Uses(5,_)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,46,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+12 - Uses(stmt,_)
+stmt s;
+Select s such that Uses(s,_)
+10,11,12,13,14,15,16,17,18,19,2,20,22,23,24,25,26,27,28,29,3,30,31,33,35,36,37,38,4,40,41,42,43,44,45,46,47,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+13 - Uses(while,_)
+while w;
+Select w such that Uses(w,_)
+12,14,16,19,36,40,53,55,60,64,73,74,76,78
+5000
+14 - Uses(assign,_)
+assign a;
+Select a such that Uses(a,_)
+10,11,13,15,17,18,2,22,23,26,28,3,30,33,37,4,41,43,44,45,46,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,70,71,72,75,77,79,8,9
+5000
+15 - Uses(if,v)
+if ifs; variable v;
+Select ifs such that Uses(ifs,v)
+20,25,27,29,38,42,49,51,57,65
+5000
+16. Uses(if,v) select v
+if ifs; variable v;
+Select v such that Uses(ifs,v)
+B,C,Temp,i,tesVar,testVar,x
+5000
+17 - Uses(if,_)
+if ifs; variable v;
+Select v such that Uses(ifs,_)
+B,C,Temp,i,tesVar,testVar,x,y,z
+5000
+18 - Uses(call,v)
+call c; variable v;
+Select c such that Uses(c,v)
+24,31,35,47,80
+5000
+19 - Uses(call,v) select v
+call c; variable v;
+Select v such that Uses(c,v)
+B,C,Temp,i,tesVar,testVar
+5000
+20 - Uses(call,_)
+call c;
+Select c such that Uses(c,_)
+24,31,35,47,80
+5000
+21 - Uses(proc,v)
+procedure p; variable v;
+Select p such that Uses(p,v)
+B,C,D,SourceOne
+5000
+22 - Uses(proc,v) select v
+procedure p; variable v;
+Select v such that Uses(p,v)
+B,C,Temp,i,tesVar,testVar,x,y,z
+5000
+23 - Uses(num,v) select boolean
+variable v;
+Select BOOLEAN such that Uses(1,v)
+FALSE
+5000
+24 - Uses(num,_) select boolean
+
+Select BOOLEAN such that Uses(1,_)
+FALSE
+5000
+25 - Uses(stmt,v) select boolean
+stmt s; variable v;
+Select BOOLEAN such that Uses(s,v)
+TRUE
+5000
+26 - Uses(stmt,_) select boolean
+stmt s;
+Select BOOLEAN such that Uses(s,_)
+TRUE
+5000
+27 - Uses(while,_) select boolean
+while w;
+Select BOOLEAN such that Uses(w,_)
+TRUE
+5000
+28 - Uses(assign,_) select boolean
+assign a;
+Select BOOLEAN such that Uses(a,_)
+TRUE
+5000
+29 - Uses(if,_) select boolean
+if ifs;
+Select BOOLEAN such that Uses(ifs,_)
+TRUE
+5000
+30 - Uses(call,_) select boolean
+call c;
+Select BOOLEAN such that Uses(c,_)
+TRUE
+5000
+31 - Uses(proc,_) select boolean
+procedure p;
+Select BOOLEAN such that Uses(p,_)
+TRUE
+5000

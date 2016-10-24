@@ -1,0 +1,45 @@
+1 - Pattern a(_,_)
+assign a;
+Select a pattern a(_,_)
+1,10,11,13,15,17,18,2,21,22,23,26,28,3,30,32,33,34,37,39,4,41,43,44,45,46,48,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,70,71,72,75,77,79,8,9
+5000
+2 - Pattern a(v,_)
+assign a; variable v;
+Select a pattern a(v,_)
+1,10,11,13,15,17,18,2,21,22,23,26,28,3,30,32,33,34,37,39,4,41,43,44,45,46,48,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,70,71,72,75,77,79,8,9
+5000
+3 - Pattern if(_,_,_)
+if ifs;
+Select ifs pattern ifs(_,_,_)
+20,25,27,29,38,42,49,51,57,65
+5000
+4 - Pattern if(v,_,_)
+if ifs; variable v;
+Select ifs pattern ifs(v,_,_)
+20,25,27,29,38,42,49,51,57,65
+5000
+5 - Pattern w(_,_)
+while w;
+Select w pattern w(_,_)
+12,14,16,19,36,40,53,55,60,64,73,74,76,78
+5000
+6 - Pattern w(v,_)
+while w; variable v;
+Select w pattern w(v,_)
+12,14,16,19,36,40,53,55,60,64,73,74,76,78
+5000
+7 - Pattern a(_,_) boolean
+assign a;
+Select BOOLEAN pattern a(_,_)
+TRUE
+5000
+8 - Pattern if(_,_,_) boolean
+if ifs;
+Select BOOLEAN pattern ifs(_,_,_)
+TRUE
+5000
+9 - Pattern w(_,_) boolean
+while w;
+Select BOOLEAN pattern w(_,_)
+TRUE
+5000
