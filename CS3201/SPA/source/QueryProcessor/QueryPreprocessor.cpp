@@ -83,6 +83,8 @@ bool QueryPreprocessor::processQuery(string query) {
     /* remaining string: ...[such that]...and...[pattern]...and...[with]...and...*/
     Symbol prevClause = INVALID;
 
+
+
     /* continue parsing [such that... pattern...] clauses until end of query */
     while (cur+1 < queryList.size()) {
         // wm todo: check if EOL reached or no items left works
@@ -101,7 +103,7 @@ bool QueryPreprocessor::processQuery(string query) {
             parseWith();
             prevClause = WITH;
         } else {
-            break;
+            throw QuerySyntaxErrorException("abc");
         }
 
         /* stop parsing if [such that...pattern...] query fails, trim processed part of query */
