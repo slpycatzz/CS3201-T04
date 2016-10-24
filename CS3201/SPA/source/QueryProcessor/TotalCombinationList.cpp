@@ -13,7 +13,7 @@ using std::vector;
 
 /* Constructor */
 TotalCombinationList::TotalCombinationList() {
-    empty = true;
+    empty = false;
     factorCounter = 0;
 }
 
@@ -53,7 +53,7 @@ void TotalCombinationList::addSynonym(Synonym &syn, PartialCombinationList &part
     factorList.insert_or_assign(factorCounter, partList);
     content.insert_or_assign(syn, factorCounter);
     factorCounter++;
-    empty = partList.empty();
+    empty = (empty || partList.empty());
 }
 
 void TotalCombinationList::addSynonym(const char* &syn, PartialCombinationList &partList) {
@@ -94,10 +94,9 @@ void TotalCombinationList::combine(TotalCombinationList &combiList) {
 		unsigned index = kv.second + factorCounter;
 		content.insert_or_assign(kv.first, index);
 		factorList.insert_or_assign(index, combiListFactors[kv.second]);
-		//addSynonym(kv.first, combiList[kv.first]);
     }
 	factorCounter += combiList.getFactorCount();
-	empty = (empty && combiList.isEmpty());
+	empty = (empty || combiList.isEmpty());
 }
 
 // template<typename Filterer>

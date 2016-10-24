@@ -21,7 +21,7 @@ Select s2 such that Calls*(p1,p2) and Modifies(p1,v) and Modifies(s1,v) and Pare
 10 - MRelation3 :: MRelation3
 variable v1;variable v2;assign a;assign b;stmt s;
 Select <v1,v2> such that Modifies(a,v1) and Uses(b,v2) and Parent*(s,a)
-heir heir,heir psy,heir cho,heir ghost,heir man,psy heir,psy psy,psy cho,psy ghost,psy man,cho heir,cho psy,cho cho,cho ghost,cho man,ghost heir,ghost psy,ghost cho,ghost ghost,ghost man,man heir,man psy,man cho,man ghost,man man
+heir heir,heir psy,heir cho,heir ghost,heir man,psy heir,psy psy,psy cho,psy ghost,psy man,cho heir,cho psy,cho cho,cho ghost,cho man,ghost heir,ghost psy,ghost cho,ghost ghost,ghost man,man heir,man psy,man cho,man ghost,man man,cho doctor,cho good,cho master,cho running,cho sun,doctor cho,doctor doctor,doctor ghost,doctor good,doctor heir,doctor man,doctor master,doctor psy,doctor running,doctor sun,ghost doctor,ghost good,ghost master,ghost running,ghost sun,good cho,good doctor,good ghost,good good,good heir,good man,good master,good psy,good running,good sun,heir doctor,heir good,heir master,heir running,heir sun,man doctor,man good,man master,man running,man sun,master cho,master doctor,master ghost,master good,master heir,master man,master master,master psy,master running,master sun,psy doctor,psy good,psy master,psy running,psy sun,running cho,running doctor,running ghost,running good,running heir,running man,running master,running psy,running running,running sun,sun cho,sun doctor,sun ghost,sun good,sun heir,sun man,sun master,sun psy,sun running,sun sun
 5000
 11 - MRelation2 :: MRelation2
 variable v;procedure p1;procedure p2;

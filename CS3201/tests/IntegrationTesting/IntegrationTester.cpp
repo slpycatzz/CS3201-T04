@@ -518,12 +518,45 @@ public:
 		QueryTree qt(getQueryTree("assign a; Select <a,a> such that Modifies(a, \"ghost\")"));
 		QueryEvaluator qe;
 
-		Assert::IsTrue(PKB::IsModifies(20, "ghost"));
-
 		string actual(format(qe.selectQueryResults(qt)));
 		string expected("<<7,7>,<20,20>,<25,25>,<51,51>,<64,64>,<93,93>,<124,124>,<131,131>,<134,134>>");
 		Assert::AreEqual(expected, actual);
 	}
+	TEST_METHOD(SystemTest_11_10) {
+		getSampleProgram("..\\tests\\SystemTesting\\11-Source.txt");
+		QueryTree qt(getQueryTree("variable v1;variable v2;assign a;assign b;stmt s; Select v2 such that Modifies(a,v1) and Uses(b,v2) and Parent*(s,a)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<cho>,<doctor>,<ghost>,<good>,<heir>,<man>,<master>,<psy>,<running>,<sun>>");
+
+		Logger::WriteMessage(qe.log.c_str());
+
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_IfStmt) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source2.txt");
+		QueryTree qt(getQueryTree("call a; if ifstmt; Select <a,ifstmt> such that Modifies(ifstmt, \"a\")"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(SystemTest_10_21) {
+		getSampleProgram("..\\tests\\SystemTesting\\10-Source.txt");
+		QueryTree qt(getQueryTree("call c; if ifstmt; Select <c,ifstmt> such that Parent(3, ifstmt)"));
+		QueryEvaluator qe;
+
+		//vector<Clause> group = qt.getSelectedGroups().at(0);
+		//TotalCombinationList total(qe.)
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<>");
+
+		Assert::AreEqual(expected, actual);
+	}
+
     TEST_METHOD(Integration_Optimizer_TestOne) {
         string query, expectedBooleanClauses, actualBooleanClauses;
         string expectedUnselectedClauses, actualUnselectedClauses;

@@ -57,13 +57,7 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query) {
     vector<Synonym> selectList(query.getResults());
     TotalCombinationList queryResults(getQueryResults(query));
     if (isBoolSelect(selectList)) {
-        string resultBoolean;
-
-        if (!queryResults.isEmpty()) {
-            resultBoolean.append(SYMBOL_TRUE);
-        } else {
-            resultBoolean.append(SYMBOL_FALSE);
-        }
+		string resultBoolean = (queryResults.getFactorCount() > 0 && !queryResults.isEmpty()) ? SYMBOL_TRUE : SYMBOL_FALSE;
 
         vector<vector<string>> tupleList;
         tupleList.push_back(vector<string>{resultBoolean});
@@ -72,7 +66,7 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query) {
         return resultList;
 
     } else {
-        if (queryResults.isEmpty()) {
+        if (queryResults.isEmpty() || queryResults.getFactorCount() == 0) {
             ResultList resultList{ selectList, vector<vector<string>>() };
             return resultList;
 
@@ -135,6 +129,9 @@ TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
             vector<Synonym> &synList(pair.first);
             vector<Clause> &group(pair.second);
             TotalCombinationList &tempCombiList(getSelectedGroupResult(synList, varMap, group, selectList));
+			if (tempCombiList.isEmpty() || tempCombiList.getFactorCount() == 0) {
+				return TotalCombinationList();
+			}
             result.combine(tempCombiList);
 
             for (Synonym &syn : synList) {
@@ -148,6 +145,9 @@ TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
                 }
             }
         }
+		if (result.isEmpty()) {
+			return TotalCombinationList();
+		}
         for (Synonym &syn : selectList) {
             vector<Candidate> candList(getCandidates(varMap[syn]));
             result.addSynonym(syn, candList);
@@ -201,6 +201,7 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
     TotalCombinationList combinations(getTotalCandidateList(varMap, synList));
 
 	/*LOG - DELETE AFTER DEBUGGING*/
+	log.append("\n");
 	log.append("synList: ");
 	for (Synonym syn : synList) log.append(syn + " ");
 	log.append("\n");
@@ -232,7 +233,7 @@ void QueryEvaluator::filterByClause(Clause &clause,
 	/*LOG - DELETE AFTER DEBUGGING*/
 	log.append("\n");
 	log.append("clause type: " + clause.getClauseType() + "\n");
-	log.append("args: " + clause.getArg()[0] + clause.getArg()[1]);
+	log.append("args: " + clause.getArg()[0] + " " + clause.getArg()[1]);
 
     if (clauseType == SYMBOL_PATTERN) {
         vector<Synonym> args(clause.getArg());
@@ -334,8 +335,17 @@ void QueryEvaluator::filterByClause(Clause &clause,
 	log.append("\n");
 	log.append("totalCombinationList content: ");
 	for (auto kv : combinations.getContent()) log.append(kv.first + ":" + Utils::IntToString(kv.second) + " ");
+	log.append("\n");
 	log.append("totalCombinationList factors: ");
-	for (auto kv : combinations.getFactorList()) log.append(Utils::IntToString(kv.first) + ":" + std::to_string((int)&kv.second));
+	for (auto kv : combinations.getFactorList()) {
+		log.append(kv.first + ":");
+		log.append("<");
+		for (CandidateCombination comb : kv.second) {
+			log.append(Utils::MapToString(comb));
+			log.append(" ");
+		}
+		log.append("> ");
+	}
 }
 
 void QueryEvaluator::filterNoVarPattern(Synonym assignStmt, Candidate lhs,

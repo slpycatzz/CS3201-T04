@@ -202,7 +202,7 @@ namespace UnitTesting {
                 result.combine(tempCombiList);
             }
 
-            Assert::IsTrue(result.isEmpty());
+            Assert::IsTrue(result.isEmpty() || result.getFactorCount() == 0);
         }
     };
 }

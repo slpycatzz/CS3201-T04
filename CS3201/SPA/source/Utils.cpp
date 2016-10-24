@@ -278,7 +278,7 @@ bool Utils::IsNonNegativeNumeric(string str) {
         }
     }
 
-    return true;
+    return !str.empty();
 }
 
 bool Utils::StartsWith(string str, char c) {
