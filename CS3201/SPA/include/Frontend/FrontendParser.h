@@ -63,6 +63,7 @@ class FrontendParser {
     std::map<unsigned int, unsigned int> stmtsLevels_;                  /* map<stmtNumber, stmtLevel> */
     std::map<unsigned int, std::string> proceduresLastStmt_;
     std::map<unsigned int, unsigned int> thenLastStmt_;                 /* map<if stmtNumber, thenLast stmtNumber> */
+    std::map<unsigned int, unsigned int> elseFirstStmt_;                /* map<if stmtNumber, elseFirst stmtNumber> */
 
     /* For PKB generic table generation. */
     std::set<std::string> constants_;

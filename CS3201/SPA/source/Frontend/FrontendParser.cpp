@@ -347,6 +347,8 @@ TreeNode* FrontendParser::callIfRecognizer() {
     /* For PKB stmtlist table generation. */
     stmtlists_.insert(std::make_pair(stmtNumber_, SYMBOL_IF_ELSE));
 
+    elseFirstStmt_.insert(std::make_pair(stmtNumber, stmtNumber_));
+
     ifNode->addChild(callStmtListRecognizer());
 
     return ifNode;
@@ -850,8 +852,8 @@ int FrontendParser::getFollowingOfStmtNumber(unsigned int stmtNumber) {
 
         if (stmtsLevels_[i] == stmtLevel) {
             /* Catch "if" statement being in same level but different statement list. */
-            for (auto &pair : thenLastStmt_) {
-                if (pair.second == (i - 1)) {
+            for (auto &pair : elseFirstStmt_) {
+                if (pair.second == i) {
                     return 0;
                 }
             }
@@ -872,7 +874,7 @@ set<unsigned int> FrontendParser::getNextStmtNumbers(unsigned int stmtNumber) {
 
     } else if (symbol == SYMBOL_IF) {
         stmtNumbers.insert(stmtNumber + 1);
-        stmtNumbers.insert(thenLastStmt_[stmtNumber] + 1);
+        stmtNumbers.insert(elseFirstStmt_[stmtNumber]);
 
         /* Don't need check for following or parent flow path. */
         return stmtNumbers;
