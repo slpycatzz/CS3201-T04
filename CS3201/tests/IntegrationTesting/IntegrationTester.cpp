@@ -513,6 +513,17 @@ public:
 		expected.append(",<e,a>,<e,b>,<e,c>,<e,d>,<e,e>,<e,g>,<e,h>,<f,a>,<f,b>,<f,c>,<f,d>,<f,e>,<f,g>,<f,h>>");
 		Assert::AreEqual(expected, actual);
 	}
+	TEST_METHOD(Integration_QE_Mixed_2) {
+		getSampleProgram("..\\tests\\SystemTesting\\11-Source.txt");
+		QueryTree qt(getQueryTree("assign a; Select <a,a> such that Modifies(a, \"ghost\")"));
+		QueryEvaluator qe;
+
+		Assert::IsTrue(PKB::IsModifies(20, "ghost"));
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<7,7>,<20,20>,<25,25>,<51,51>,<64,64>,<93,93>,<124,124>,<131,131>,<134,134>>");
+		Assert::AreEqual(expected, actual);
+	}
     TEST_METHOD(Integration_Optimizer_TestOne) {
         string query, expectedBooleanClauses, actualBooleanClauses;
         string expectedUnselectedClauses, actualUnselectedClauses;

@@ -665,13 +665,13 @@ bool QueryEvaluator::evaluateNext(Candidate stmt1, Candidate stmt2) {
 		}
 		else {
 			int stmtNo2(Utils::StringToInt(stmt2));
-			return (!PKB::GetNext(stmtNo2).empty());
+			return (!PKB::GetPrevious(stmtNo2).empty());
 		}
 	}
 	else {
 		int stmtNo1(Utils::StringToInt(stmt1));
 		if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
-			return (!PKB::GetPrevious(stmtNo1).empty());
+			return (!PKB::GetNext(stmtNo1).empty());
 		}
 		else {
 			int stmtNo2(Utils::StringToInt(stmt2));
@@ -687,13 +687,13 @@ bool QueryEvaluator::evaluateNextStar(Candidate stmt1, Candidate stmt2) {
 		}
 		else {
 			int stmtNo2(Utils::StringToInt(stmt2));
-			return (!PKB::GetNext(stmtNo2).empty());
+			return (!PKB::GetPrevious(stmtNo2).empty());
 		}
 	}
 	else {
 		int stmtNo1(Utils::StringToInt(stmt1));
 		if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
-			return (!PKB::GetPrevious(stmtNo1).empty());
+			return (!PKB::GetNext(stmtNo1).empty());
 		}
 		else {
 			int stmtNo2(Utils::StringToInt(stmt2));
