@@ -1,0 +1,130 @@
+1
+s Follows 2 3 
+2
+s Follows 2 s 
+3
+s Follows s 5 
+4
+s1 Follows s1 s2 
+5
+s Follows s s 
+6
+w Follows w 3 
+7
+w Follows 5 w 
+8
+w1 Follows w1 w2 
+9
+w Follows w w 
+10
+a Follows 4 a 
+11
+a Follows a 5 
+12
+a2 Follows a1 a2 
+13
+a Follows a a 
+14
+l Follows 4 l 
+15
+l Follows l 5 
+16
+l1 Follows l1 l2 
+17
+l Follows l l 
+18
+a Follows a s 
+19
+s Follows s a 
+20
+w Follows w l 
+21
+w Follows l w 
+22
+a Follows a w 
+23
+w Follows w a 
+24
+s Follows s l 
+25
+l Follows l s 
+26
+s Follows _ _ 
+27
+s Follows s _ 
+28
+s Follows _ s 
+29
+a Follows _ a 
+30
+a Follows a _ 
+31
+w Follows w _ 
+32
+w Follows _ w 
+33
+l Follows l _ 
+34
+l Follows _ l 
+35
+ifs Follows ifs s 
+36
+ifs Follows ifs w 
+37
+ifs Follows ifs c 
+38
+ifs2 Follows ifs1 ifs2 
+39
+ifs Follows ifs a 
+40
+ifs Follows ifs 3 
+41
+ifs Follows ifs l 
+42
+ifs Follows ifs _ 
+43
+ifs Follows _ ifs 
+44
+c Follows c 5 
+45
+c Follows c s 
+46
+c Follows c a 
+47
+c Follows c w 
+48
+c Follows c ifs 
+49
+c Follows c _ 
+50
+c Follows _ c 
+51
+s Follows s ifs 
+52
+a Follows a ifs 
+53
+w Follows w ifs 
+54
+l Follows l ifs 
+55
+ifs Follows ifs ifs 
+56
+s Follows s c 
+57
+a Follows a c 
+58
+w Follows w c 
+59
+l Follows l c 
+60
+c Follows c c 
+61
+BOOLEAN Follows s1 s2 
+62
+BOOLEAN Follows _ _ 
+63
+BOOLEAN Follows w _ 
+64
+BOOLEAN Follows ifs _ 
+65
+BOOLEAN Follows c _ 

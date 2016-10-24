@@ -1,0 +1,130 @@
+1
+s Next* 2 3 
+2
+s Next* 2 s 
+3
+s Next* s 5 
+4
+s1 Next* s1 s2 
+5
+s Next* s s 
+6
+w Next* w 3 
+7
+w Next* 5 w 
+8
+w1 Next* w1 w2 
+9
+w Next* w w 
+10
+a Next* 4 a 
+11
+a Next* a 5 
+12
+a1 Next* a1 a2 
+13
+a Next* a a 
+14
+l Next* 4 l 
+15
+l Next* l 5 
+16
+l1 Next* l1 l2 
+17
+l Next* l l 
+18
+a Next* a s 
+19
+s Next* s a 
+20
+w Next* w l 
+21
+w Next* l w 
+22
+a Next* a w 
+23
+w Next* w a 
+24
+s Next* s l 
+25
+l Next* l s 
+26
+s Next* _ _ 
+27
+s Next* s _ 
+28
+s Next* _ s 
+29
+a Next* _ a 
+30
+a Next* a _ 
+31
+w Next* w _ 
+32
+w Next* _ w 
+33
+l Next* l _ 
+34
+l Next* _ l 
+35
+ifs Next* ifs s 
+36
+ifs Next* ifs w 
+37
+ifs Next* ifs c 
+38
+ifs2 Next* ifs1 ifs2 
+39
+ifs Next* ifs a 
+40
+ifs Next* ifs 3 
+41
+ifs Next* ifs l 
+42
+ifs Next* ifs _ 
+43
+ifs Next* _ ifs 
+44
+c Next* c 5 
+45
+c Next* c s 
+46
+c Next* c a 
+47
+c Next* c w 
+48
+c Next* c ifs 
+49
+c Next* c _ 
+50
+c Next* _ c 
+51
+s Next* s ifs 
+52
+a Next* a ifs 
+53
+w Next* w ifs 
+54
+l Next* l ifs 
+55
+ifs Next* ifs ifs 
+56
+s Next* s c 
+57
+a Next* a c 
+58
+w Next* w c 
+59
+l Next* l c 
+60
+c Next* c c 
+61
+BOOLEAN Next* s1 s2 
+62
+BOOLEAN Next* _ _ 
+63
+BOOLEAN Next* w _ 
+64
+BOOLEAN Next* ifs _ 
+65
+BOOLEAN Next* c _ 

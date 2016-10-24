@@ -1,0 +1,10 @@
+1
+p Calls p q 
+2 - Calls p p same 
+p Calls p p 
+3 - Calls p _ 
+p Calls p _ 
+4 - Calls _ p 
+p Calls _ p 
+5 - Calls _ _ 
+BOOLEAN Calls _ _ 

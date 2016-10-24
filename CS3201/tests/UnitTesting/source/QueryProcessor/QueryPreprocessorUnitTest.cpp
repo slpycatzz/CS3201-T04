@@ -625,6 +625,398 @@ namespace UnitTesting {
                 i++;
             }
         }
+        TEST_METHOD(QueryPreprocessor_01xmlClauseTesting) {
+            string expected, actual;
+            QueryPreprocessor qpStub;
+            vector<string> queryList;
+            vector<string> expectedList;
+            string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
+            // queries10.txt
+            string dirPath = "..\\tests\\SystemTesting\\clauseTesting\\";
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\clauseTesting\\";
+
+            queryList = qpStub.unitTestStubGetParams(dirPath + "Calls.txt", true);
+            
+            expectedList = qpStub.unitTestStubGetParams(dirPath1 + "outCalls.txt", false);
+
+            Assert::AreEqual(expectedList.size(), queryList.size());
+
+            size_t empty = 0;
+            Assert::AreNotEqual(empty, queryList.size());
+
+            int i = 0;
+            for (string query : queryList) {
+                QueryPreprocessor qp;
+                QueryTree qt;
+                actual = "";
+                try {
+                    qp.preprocessQuery(query);
+                }
+                catch (std::exception& ex) {
+                    actual = ex.what();
+                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    i++;
+                    continue;
+                }
+                qt = qp.getQueryTree();
+                vector<string> varList;
+
+                varList = qt.getResults();
+                for (unsigned int ii = 0; ii < varList.size(); ii++) {
+                    actual += varList[ii] + " ";
+                }
+                vector<Clause> clauseList = qt.getClauses();
+
+                for (Clause c : clauseList) {
+                    actual += c.getClauseType() + " ";
+                    int num = c.getArgCount();
+                    if (c.getClauseType() == "with") {
+                        num--;
+                    }
+                    for (int n = 0; n < num; n++) {
+                        actual += c.getArg()[n] + " ";
+                    }
+                }
+                Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                i++;
+            }
+        }
+        TEST_METHOD(QueryPreprocessor_02xmlClauseTestingCallsStar) {
+            string expected, actual;
+            QueryPreprocessor qpStub;
+            vector<string> queryList;
+            vector<string> expectedList;
+            string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
+            // queries10.txt
+            string dirPath = "..\\tests\\SystemTesting\\clauseTesting\\";
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\clauseTesting\\";
+
+            queryList = qpStub.unitTestStubGetParams(dirPath + "CallsStar.txt", true);
+
+            expectedList = qpStub.unitTestStubGetParams(dirPath1 + "outCallsStar.txt", false);
+
+            Assert::AreEqual(expectedList.size(), queryList.size());
+
+            size_t empty = 0;
+            Assert::AreNotEqual(empty, queryList.size());
+
+            int i = 0;
+            for (string query : queryList) {
+                QueryPreprocessor qp;
+                QueryTree qt;
+                actual = "";
+                try {
+                    qp.preprocessQuery(query);
+                }
+                catch (std::exception& ex) {
+                    actual = ex.what();
+                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    i++;
+                    continue;
+                }
+                qt = qp.getQueryTree();
+                vector<string> varList;
+
+                varList = qt.getResults();
+                for (unsigned int ii = 0; ii < varList.size(); ii++) {
+                    actual += varList[ii] + " ";
+                }
+                vector<Clause> clauseList = qt.getClauses();
+
+                for (Clause c : clauseList) {
+                    actual += c.getClauseType() + " ";
+                    int num = c.getArgCount();
+                    if (c.getClauseType() == "with") {
+                        num--;
+                    }
+                    for (int n = 0; n < num; n++) {
+                        actual += c.getArg()[n] + " ";
+                    }
+                }
+                Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                i++;
+            }
+        }
+        TEST_METHOD(QueryPreprocessor_03xmlClauseTestingCustom) {
+            string expected, actual;
+            QueryPreprocessor qpStub;
+            vector<string> queryList;
+            vector<string> expectedList;
+            string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
+            // queries10.txt
+            string dirPath = "..\\tests\\SystemTesting\\clauseTesting\\";
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\clauseTesting\\";
+
+            queryList = qpStub.unitTestStubGetParams(dirPath + "Custom.txt", true);
+
+            expectedList = qpStub.unitTestStubGetParams(dirPath1 + "outCustom.txt", false);
+
+            Assert::AreEqual(expectedList.size(), queryList.size());
+
+            size_t empty = 0;
+            Assert::AreNotEqual(empty, queryList.size());
+
+            int i = 0;
+            for (string query : queryList) {
+                QueryPreprocessor qp;
+                QueryTree qt;
+                actual = "";
+                try {
+                    qp.preprocessQuery(query);
+                }
+                catch (std::exception& ex) {
+                    actual = ex.what();
+                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    i++;
+                    continue;
+                }
+                qt = qp.getQueryTree();
+                vector<string> varList;
+
+                varList = qt.getResults();
+                for (unsigned int ii = 0; ii < varList.size(); ii++) {
+                    actual += varList[ii] + " ";
+                }
+                vector<Clause> clauseList = qt.getClauses();
+
+                for (Clause c : clauseList) {
+                    actual += c.getClauseType() + " ";
+                    int num = c.getArgCount();
+                    if (c.getClauseType() == "with") {
+                        num--;
+                    }
+                    for (int n = 0; n < num; n++) {
+                        actual += c.getArg()[n] + " ";
+                    }
+                }
+                Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                i++;
+            }
+        }
+        TEST_METHOD(QueryPreprocessor_04xmlClauseTestingFollows) {
+            string expected, actual;
+            QueryPreprocessor qpStub;
+            vector<string> queryList;
+            vector<string> expectedList;
+            string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
+            // queries10.txt
+            string dirPath = "..\\tests\\SystemTesting\\clauseTesting\\";
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\clauseTesting\\";
+
+            queryList = qpStub.unitTestStubGetParams(dirPath + "Follows.txt", true);
+
+            expectedList = qpStub.unitTestStubGetParams(dirPath1 + "outFollows.txt", false);
+
+            Assert::AreEqual(expectedList.size(), queryList.size());
+
+            size_t empty = 0;
+            Assert::AreNotEqual(empty, queryList.size());
+
+            int i = 0;
+            for (string query : queryList) {
+                QueryPreprocessor qp;
+                QueryTree qt;
+                actual = "";
+                try {
+                    qp.preprocessQuery(query);
+                }
+                catch (std::exception& ex) {
+                    actual = ex.what();
+                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    i++;
+                    continue;
+                }
+                qt = qp.getQueryTree();
+                vector<string> varList;
+
+                varList = qt.getResults();
+                for (unsigned int ii = 0; ii < varList.size(); ii++) {
+                    actual += varList[ii] + " ";
+                }
+                vector<Clause> clauseList = qt.getClauses();
+
+                for (Clause c : clauseList) {
+                    actual += c.getClauseType() + " ";
+                    int num = c.getArgCount();
+                    if (c.getClauseType() == "with") {
+                        num--;
+                    }
+                    for (int n = 0; n < num; n++) {
+                        actual += c.getArg()[n] + " ";
+                    }
+                }
+                Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                i++;
+            }
+        }
+        TEST_METHOD(QueryPreprocessor_05xmlClauseTestingFollowsStar) {
+            string expected, actual;
+            QueryPreprocessor qpStub;
+            vector<string> queryList;
+            vector<string> expectedList;
+            string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
+            // queries10.txt
+            string dirPath = "..\\tests\\SystemTesting\\clauseTesting\\";
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\clauseTesting\\";
+
+            queryList = qpStub.unitTestStubGetParams(dirPath + "FollowsStar.txt", true);
+
+            expectedList = qpStub.unitTestStubGetParams(dirPath1 + "outFollowsStar.txt", false);
+
+            Assert::AreEqual(expectedList.size(), queryList.size());
+
+            size_t empty = 0;
+            Assert::AreNotEqual(empty, queryList.size());
+
+            int i = 0;
+            for (string query : queryList) {
+                QueryPreprocessor qp;
+                QueryTree qt;
+                actual = "";
+                try {
+                    qp.preprocessQuery(query);
+                }
+                catch (std::exception& ex) {
+                    actual = ex.what();
+                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    i++;
+                    continue;
+                }
+                qt = qp.getQueryTree();
+                vector<string> varList;
+
+                varList = qt.getResults();
+                for (unsigned int ii = 0; ii < varList.size(); ii++) {
+                    actual += varList[ii] + " ";
+                }
+                vector<Clause> clauseList = qt.getClauses();
+
+                for (Clause c : clauseList) {
+                    actual += c.getClauseType() + " ";
+                    int num = c.getArgCount();
+                    if (c.getClauseType() == "with") {
+                        num--;
+                    }
+                    for (int n = 0; n < num; n++) {
+                        actual += c.getArg()[n] + " ";
+                    }
+                }
+                Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                i++;
+            }
+        }
+        TEST_METHOD(QueryPreprocessor_06xmlClauseTestingNext) {
+            string expected, actual;
+            QueryPreprocessor qpStub;
+            vector<string> queryList;
+            vector<string> expectedList;
+            string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
+            // queries10.txt
+            string dirPath = "..\\tests\\SystemTesting\\clauseTesting\\";
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\clauseTesting\\";
+
+            queryList = qpStub.unitTestStubGetParams(dirPath + "Next.txt", true);
+
+            expectedList = qpStub.unitTestStubGetParams(dirPath1 + "outNext.txt", false);
+
+            Assert::AreEqual(expectedList.size(), queryList.size());
+
+            size_t empty = 0;
+            Assert::AreNotEqual(empty, queryList.size());
+
+            int i = 0;
+            for (string query : queryList) {
+                QueryPreprocessor qp;
+                QueryTree qt;
+                actual = "";
+                try {
+                    qp.preprocessQuery(query);
+                }
+                catch (std::exception& ex) {
+                    actual = ex.what();
+                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    i++;
+                    continue;
+                }
+                qt = qp.getQueryTree();
+                vector<string> varList;
+
+                varList = qt.getResults();
+                for (unsigned int ii = 0; ii < varList.size(); ii++) {
+                    actual += varList[ii] + " ";
+                }
+                vector<Clause> clauseList = qt.getClauses();
+
+                for (Clause c : clauseList) {
+                    actual += c.getClauseType() + " ";
+                    int num = c.getArgCount();
+                    if (c.getClauseType() == "with") {
+                        num--;
+                    }
+                    for (int n = 0; n < num; n++) {
+                        actual += c.getArg()[n] + " ";
+                    }
+                }
+                Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                i++;
+            }
+        }
+        TEST_METHOD(QueryPreprocessor_08xmlClauseTestingNextStar) {
+            string expected, actual;
+            QueryPreprocessor qpStub;
+            vector<string> queryList;
+            vector<string> expectedList;
+            string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
+            // queries10.txt
+            string dirPath = "..\\tests\\SystemTesting\\clauseTesting\\";
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\clauseTesting\\";
+
+            queryList = qpStub.unitTestStubGetParams(dirPath + "NextStar.txt", true);
+
+            expectedList = qpStub.unitTestStubGetParams(dirPath1 + "outNextStar.txt", false);
+
+            Assert::AreEqual(expectedList.size(), queryList.size());
+
+            size_t empty = 0;
+            Assert::AreNotEqual(empty, queryList.size());
+
+            int i = 0;
+            for (string query : queryList) {
+                QueryPreprocessor qp;
+                QueryTree qt;
+                actual = "";
+                try {
+                    qp.preprocessQuery(query);
+                }
+                catch (std::exception& ex) {
+                    actual = ex.what();
+                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    i++;
+                    continue;
+                }
+                qt = qp.getQueryTree();
+                vector<string> varList;
+
+                varList = qt.getResults();
+                for (unsigned int ii = 0; ii < varList.size(); ii++) {
+                    actual += varList[ii] + " ";
+                }
+                vector<Clause> clauseList = qt.getClauses();
+
+                for (Clause c : clauseList) {
+                    actual += c.getClauseType() + " ";
+                    int num = c.getArgCount();
+                    if (c.getClauseType() == "with") {
+                        num--;
+                    }
+                    for (int n = 0; n < num; n++) {
+                        actual += c.getArg()[n] + " ";
+                    }
+                }
+                Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                i++;
+            }
+        }
     };
 }  // namespace UnitTesting
 

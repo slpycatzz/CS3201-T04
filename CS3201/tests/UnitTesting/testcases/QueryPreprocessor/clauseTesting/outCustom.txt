@@ -1,0 +1,210 @@
+1
+v Uses "B" v 
+2
+BOOLEAN Uses "C" "x" 
+3
+BOOLEAN Uses "C" "C" 
+4
+BOOLEAN Uses "SourceOne" _ 
+5
+Query parser encountered a syntax error in the query : 12
+6
+a Uses "SourceOne" v 
+7
+v Uses v v 
+8
+Query parser encountered a syntax error in the query : 10
+9
+Query parser encountered a syntax error in the query : 10
+10
+s Uses ifs "testVar" 
+11
+v Modifies "SourceOne" v 
+12
+BOOLEAN Modifies "C" "testVar" 
+13
+BOOLEAN Modifies "B" _ 
+14
+w Modifies w "Temp" 
+15
+p 
+16
+sl 
+17
+s 
+18
+a 
+19
+c 
+20
+w 
+21
+ifs 
+22
+v 
+23
+c 
+24
+l 
+25
+p 
+26
+c 
+27
+v 
+28
+c 
+29
+s 
+30 - c.procName
+Query parser encountered a syntax error in the query : procName4is an invalid attribute type
+31
+v Uses "SourceOne" v Modifies "SourceOne" v 
+32
+v2 Uses "B" v1 Modifies "C" v2 
+33
+Query parser encountered a syntax error in the query : 12
+34
+p Calls "B" p 
+35
+BOOLEAN Calls "C" "B" 
+36
+Query parser encountered a syntax error in the query : 10
+37
+p Calls* p "C" 
+38
+p Calls* "SourceOne" p 
+39
+Query parser encountered a syntax error in the query : 10
+40
+Query parser encountered a syntax error in the query : 10
+41
+Query parser encountered a syntax error in the query : 10
+42
+Query parser encountered a syntax error in the query : 31
+43
+a pattern a "Temp" _ 
+44
+w pattern w "i" _ 
+45
+ifs pattern ifs "C" _ _ 
+46
+a pattern a "B" "(((testVar*i)*Temp)*testVar)" 
+47
+BOOLEAN pattern a "x" _"(z-z)"_ 
+48
+a pattern a _ _"(Temp-i)"_ 
+49
+a pattern a _ "(i*20)" 
+50
+Query parser encountered a syntax error in the query : 30
+51
+a pattern a "i" "(Temp+(i*testVar))" 
+52
+a pattern a "B" _"(Temp*testVar)"_ 
+53
+p with p "SourceOne" 
+54
+c with c "C" 
+55
+v with v "Temp" 
+56
+c with c 40 
+57
+s with s 10 
+58
+p with v p 
+59
+c with c p 
+60
+s with c s 
+61
+l with l 20 
+62
+BOOLEAN with "testVar" "testVar" 
+63
+s with 20 40 
+64
+p with p "INVALID" 
+65
+Query parser encountered a syntax error in the query : 22
+66
+Query parser encountered a syntax error in the query : 10
+67
+Query parser encountered a syntax error in the query : 31
+68
+s Uses s "x" Uses s "x" 
+69
+s Uses s "testVar" Uses s "x" 
+70
+a1 Uses a1 _ Modifies a2 _ Uses a2 _ 
+71
+l Parent s l Follows l s 
+72
+l Parent* s l Follows* l s 
+73
+s2 Parent s1 s2 Parent* s1 s2 
+74
+a1 Follows a1 a2 Follows* a1 a2 
+75
+p2 Calls p1 p2 Next s1 s2 
+76
+s2 Calls* p1 p2 Next* s1 s2 
+77
+p1 Calls p1 p2 Calls* p1 p2 
+78
+s1 Next s1 s2 Next* s1 s2 
+79
+Query parser encountered a syntax error in the query : 4
+80
+s Modifies a "x" pattern a "x" _ 
+81
+p2 Calls p1 p2 pattern w _ _ 
+82
+ifs Calls* p1 p2 pattern ifs _ _ _ 
+83
+Query parser encountered a syntax error in the query : 10
+84
+ifs Follows s ifs pattern ifs _ _ _ 
+85
+a Follows* w a pattern w _ _ 
+86
+a2 Next a1 a2 pattern a2 _ _ 
+87
+a Next* a w pattern w _ _ 
+88
+c pattern a "testVar" _"Temp"_ with c 20 
+89
+a2 pattern a1 _ "i" pattern a2 _ "C" 
+90
+c Modifies s1 _ Parent* s1 s2 with s2 c with c 20 
+91
+a Uses a v pattern a _ "(testVar*Temp)" with v "i" 
+92
+c Calls* p _ Follows* c s with c p 
+93
+s2 Parent* s1 s2 Next* s1 s2 with s1 c 
+94
+s Follows s ifs Next s ifs Calls p _ Parent s a pattern ifs _ _ _ with p "SourceOne" 
+95
+Query parser encountered a syntax error in the query : stmt4is an invalid attribute type
+96
+a 
+97
+s Follows s ifs Next s ifs Calls p _ Follows s s1 pattern ifs _ _ _ with p "SourceOne" 
+98
+a Follows* w a pattern w _ _ 
+99
+c Calls* p _ Follows* c s with c p 
+100
+c Calls* p _ Follows* c s with c p 
+101
+ifs Follows s ifs pattern ifs _ _ _ 
+102
+w pattern w "i" _ 
+103
+s Modifies a "x" pattern a "x" _ 
+104
+v Modifies "SourceOne" v 
+105
+c pattern a "testVar" _"Temp"_ with c 20 
