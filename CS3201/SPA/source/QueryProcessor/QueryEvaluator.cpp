@@ -57,7 +57,7 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query) {
     vector<Synonym> selectList(query.getResults());
     TotalCombinationList queryResults(getQueryResults(query));
     if (isBoolSelect(selectList)) {
-		string resultBoolean = (queryResults.getFactorCount() > 0 && !queryResults.isEmpty()) ? SYMBOL_TRUE : SYMBOL_FALSE;
+		string resultBoolean = (queryResults.getFactorCount() > 0) ? SYMBOL_TRUE : SYMBOL_FALSE;
 
         vector<vector<string>> tupleList;
         tupleList.push_back(vector<string>{resultBoolean});
