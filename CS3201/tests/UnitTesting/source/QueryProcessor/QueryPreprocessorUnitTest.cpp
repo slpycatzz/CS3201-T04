@@ -25,7 +25,7 @@ namespace UnitTesting {
             QueryPreprocessor qp;
             QueryTree qt;
 
-            query = "assign a,a1; while w1,w2;Select a";
+            query = "assign a,a1; while w1,w2;call c;Select c.procName";
             try {
                 qp.preprocessQuery(query);
             } catch (std::exception& ex) {
@@ -35,7 +35,7 @@ namespace UnitTesting {
             vector<string> varList;
 
             varList = qt.getResults();
-            expected = "a ";
+            expected = "c ";
             for (unsigned int i = 0; i < varList.size(); i++) {
                 actual += varList[i] + " ";
             }
@@ -999,199 +999,22 @@ namespace UnitTesting {
 
         TEST_METHOD(QueryPreprocessor_10xmlSelectAll) {
             string expected, actual;
-
+            QueryPreprocessor qpStub;
             vector<string> queryList;
             vector<string> expectedList;
             string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
             // queries10.txt
-            queryList.push_back("stmt s1,s2; if ifstmt;Select <s1,s2> such that Follows(s1,ifstmt) and Follows(s2,ifstmt)");
-
-            queryList.push_back("stmt s1,s2,s3; call c;Select <s1,s2,s3> such that Follows(s1,c) and Follows(s2,c) and Follows(s3,c)");
-
-            queryList.push_back("stmt s; if ifstmt;Select <s,s> such that Follows(ifstmt,s)");
-
-            queryList.push_back("stmt s; if ifstmt;Select <s,ifstmt> such that Follows(s,ifstmt)");
-
-            queryList.push_back("stmt s; if ifstmt;Select <s,ifstmt> such that Follows(ifstmt,s)");
-
-            queryList.push_back("stmt s; call c;Select <s,c> such that Follows(s,c)");
-
-            queryList.push_back("stmt s; assign a;Select <s,a> such that Follows(s,a)");
-
-            queryList.push_back("if ifstmt1,ifstmt2;Select <ifstmt1,ifstmt2> such that Follows(ifstmt1,ifstmt2)");
-
-            queryList.push_back("if ifstmt1,ifstmt2;Select <ifstmt1,ifstmt2> such that Follows(14,_)");
-
-            queryList.push_back("if ifstmt;call c;Select <ifstmt,c> such that Follows(ifstmt,c)");
-
-            queryList.push_back("call c; assign a;Select <c,a> such that Follows(c,a)");
-
-            queryList.push_back("assign a; call c;Select <a,c> such that Follows(a,c)");
-
-            queryList.push_back("assign a;prog_line n;Select <a,n> such that Follows(a,n)");
-
-            queryList.push_back("prog_line n1,n2;Select <n1,n2> such that Follows(n1,16) and Follows(n2,19)");
-
-            queryList.push_back("stmt s; if ifstmt;Select <s,ifstmt> such that Follows*(s,ifstmt)");
-
-            queryList.push_back("stmt s; call c;Select <s,c> such that Follows*(s,c)");
-
-            queryList.push_back("call c1,c2,c3;Select <c1,c2,c3> such that Follows*(_,19) with c1.stmt#=c2.stmt# and c2.stmt#=c3.stmt#");
-
-            queryList.push_back("stmt s1,s2;Select <s1,s2> such that Parent(s1,s2)");
-
-            queryList.push_back("stmt s; call c;Select <s,c> such that Parent(s,c)");
-
-            queryList.push_back("stmt s; assign a;Select <s,a> such that Parent(s,a)");
-
-            queryList.push_back("call c;if ifstmt;Select <c,ifstmt> such that Parent(3,ifstmt) and Parent(16,c)");
-
-            queryList.push_back("stmt s; variable v;Select <s,v> such that Modifies(s,v)");
-
-            queryList.push_back("stmt s1,s2;Select <s1,s2> such that Modifies(s1,\"kakashi\") and Modifies(s2,\"minato\")");
-
-            queryList.push_back("assign a1,a2;Select <a1,a2> such that Modifies(a1,\"hiruzen\") and Modifies(a2,\"tobirama\")");
-
-            queryList.push_back("procedure p1,p2;Select <p1,p2> such that Modifies(p1,\"danzo\") and Modifies(p2,\"kakashi\")");
-
-            queryList.push_back("call c; variable v;Select <c,v> such that Uses(c,v)");
-
-            queryList.push_back("if ifstmt1,ifstmt2;Select <ifstmt1,ifstmt2> such that Uses(ifstmt1,\"tobirama\") and Uses(ifstmt2,\"hiruzen\")");
-
-            queryList.push_back("procedure p;variable v;Select <p,v> such that Uses(p,v)");
-
-            queryList.push_back("procedure p1,p2;Select <p1,p2> such that Uses(p1,\"kakashi\") and Uses(p2,\"minato\")");
-
-            queryList.push_back("variable v1,v2;Select <v1,v2> such that Uses(\"FirstHokage\",v1) and Uses(\"ThirdHokage\",v2)");
-
-            queryList.push_back("procedure p1,p2;Select <p1,p2> such that Calls(p1,p2)");
-
-            queryList.push_back("procedure p1,p2;Select <p1,p2> such that Calls(p1,\"SecondHokage\") and Calls(p2,\"ThirdHokage\")");
-
-            queryList.push_back("procedure p1,p2;Select <p1,p2> such that Calls*(p1,p2)");
-
-            queryList.push_back("procedure p1,p2;Select <p1,p2> such that Calls*(\"ThirdHokage\",p1) and Calls(p2,\"ThirdHokage\")");
-
-            queryList.push_back("procedure p1,p2,p3,p4;Select <p1,p2,p3,p4> with p1.procName=p2.procName and p3.procName=p4.procName and p3.procName=\"SecondHokage\"");
-
-            queryList.push_back("constant c;procedure p;if ifstmt;Select <c,p> with c.value=ifstmt.stmt# and p.procName=\"FirstHokage\"");
-
-            queryList.push_back("stmt s;constant c;Select <s,c> with s.stmt#=8 and c.value=3");
-
-            queryList.push_back("constant c;if ifstmt;Select <c,ifstmt> with c.value=ifstmt.stmt#");
-
-            queryList.push_back("assign a1,a2;Select <a1,a2> pattern a1(\"hiruzen\",\"hashirama\") and a2(\"hiruzen\",\"hashirama+tobirama\")");
-
-            queryList.push_back("assign a; variable v;Select <a,v> pattern a(v,\"hashirama\")");
-
-            queryList.push_back("if ifstmt;variable v;Select <ifstmt,v> pattern ifstmt(v,_,_)");
-
-            queryList.push_back("stmt s1,s2,s3;Select <s1,s1.stmt#> such that Follows(s1,s2) and Parent(s3,s1)");
-
-            queryList.push_back("procedure p1,p2;Select <p1.procName,p2> such that Modifies(p1,\"danzo\") and Modifies(p2,\"kakashi\")");
-
-            queryList.push_back("procedure p1,p2;Select <p1.procName,p2.procName> such that Calls(p1,p2)");
-
-            queryList.push_back("call c; variable v;Select <c.stmt#,v.varName> such that Uses(c,v)");
-
-            queryList.push_back("if ifstmt;call c;Select <ifstmt.stmt#,c.stmt#> such that Follows(ifstmt,c)");
-
-            queryList.push_back("constant c;procedure p;if ifstmt;Select <c.value,p> with c.value=ifstmt.stmt# and p.procName=\"FirstHokage\"");
+            string dirPath = "..\\tests\\SystemTesting\\";
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\";
             
-            expectedList.push_back("s1 s2 Follows s1 ifstmt Follows s2 ifstmt ");
+            queryList = qpStub.unitTestStubGetParams(dirPath+"10-Queries.txt", true);
+            expectedList = qpStub.unitTestStubGetParams(dirPath1+"out10-Queries.txt", false);
+            
+            Assert::AreEqual(expectedList.size(), queryList.size());
 
-            expectedList.push_back("s1 s2 s3 Follows s1 c Follows s2 c Follows s3 c ");
-
-            expectedList.push_back("s s Follows ifstmt s ");
-
-            expectedList.push_back("s ifstmt Follows s ifstmt ");
-
-            expectedList.push_back("s ifstmt Follows ifstmt s ");
-
-            expectedList.push_back("s c Follows s c ");
-
-            expectedList.push_back("s a Follows s a ");
-
-            expectedList.push_back("ifstmt1 ifstmt2 Follows ifstmt1 ifstmt2 ");
-
-            expectedList.push_back("ifstmt1 ifstmt2 Follows 14 _ ");
-
-            expectedList.push_back("ifstmt c Follows ifstmt c ");
-
-            expectedList.push_back("c a Follows c a ");
-
-            expectedList.push_back("a c Follows a c ");
-
-            expectedList.push_back("a n Follows a n ");
-
-            expectedList.push_back("n1 n2 Follows n1 16 Follows n2 19 ");
-
-            expectedList.push_back("s ifstmt Follows* s ifstmt ");
-
-            expectedList.push_back("s c Follows* s c ");
-
-            expectedList.push_back("c1 c2 c3 Follows* _ 19 with c1 c2 with c2 c3 ");
-
-            expectedList.push_back("s1 s2 Parent s1 s2 ");
-
-            expectedList.push_back("s c Parent s c ");
-
-            expectedList.push_back("s a Parent s a ");
-
-            expectedList.push_back("c ifstmt Parent 3 ifstmt Parent 16 c ");
-
-            expectedList.push_back("s v Modifies s v ");
-
-            expectedList.push_back("s1 s2 Modifies s1 \"kakashi\" Modifies s2 \"minato\" ");
-
-            expectedList.push_back("a1 a2 Modifies a1 \"hiruzen\" Modifies a2 \"tobirama\" ");
-
-            expectedList.push_back("p1 p2 Modifies p1 \"danzo\" Modifies p2 \"kakashi\" ");
-
-            expectedList.push_back("c v Uses c v ");
-
-            expectedList.push_back("ifstmt1 ifstmt2 Uses ifstmt1 \"tobirama\" Uses ifstmt2 \"hiruzen\" ");
-
-            expectedList.push_back("p v Uses p v ");
-
-            expectedList.push_back("p1 p2 Uses p1 \"kakashi\" Uses p2 \"minato\" ");
-
-            expectedList.push_back("v1 v2 Uses \"FirstHokage\" v1 Uses \"ThirdHokage\" v2 ");
-
-            expectedList.push_back("p1 p2 Calls p1 p2 ");
-
-            expectedList.push_back("p1 p2 Calls p1 \"SecondHokage\" Calls p2 \"ThirdHokage\" ");
-
-            expectedList.push_back("p1 p2 Calls* p1 p2 ");
-
-            expectedList.push_back("p1 p2 Calls* \"ThirdHokage\" p1 Calls p2 \"ThirdHokage\" ");
-
-            expectedList.push_back("p1 p2 p3 p4 with p1 p2 with p3 p4 with p3 \"SecondHokage\" ");
-
-            expectedList.push_back("c p with c ifstmt with p \"FirstHokage\" ");
-
-            expectedList.push_back("s c with s 8 with c 3 ");
-
-            expectedList.push_back("c ifstmt with c ifstmt ");
-
-            expectedList.push_back("a1 a2 pattern a1 \"hiruzen\" \"hashirama\" pattern a2 \"hiruzen\" \"(hashirama+tobirama)\" ");
-
-            expectedList.push_back("a v pattern a v \"hashirama\" ");
-
-            expectedList.push_back("ifstmt v pattern ifstmt v _ _ ");
-
-            expectedList.push_back("s1 s1 Follows s1 s2 Parent s3 s1 ");
-
-            expectedList.push_back("p1 p2 Modifies p1 \"danzo\" Modifies p2 \"kakashi\" ");
-
-            expectedList.push_back("p1 p2 Calls p1 p2 ");
-
-            expectedList.push_back("c v Uses c v ");
-
-            expectedList.push_back("ifstmt c Follows ifstmt c ");
-
-            expectedList.push_back("c p with c ifstmt with p \"FirstHokage\" ");
-
+            if (queryList.size() == 0) {
+                actual = "no file found";
+            }
             int i = 0;
             for (string query : queryList) {
                 QueryPreprocessor qp;

@@ -1,0 +1,96 @@
+1
+s1 s2 Follows s1 ifstmt Follows s2 ifstmt 
+2
+s1 s2 s3 Follows s1 c Follows s2 c Follows s3 c 
+3
+s s Follows ifstmt s 
+4
+s ifstmt Follows s ifstmt 
+5
+s ifstmt Follows ifstmt s 
+6
+s c Follows s c 
+7
+s a Follows s a 
+8
+ifstmt1 ifstmt2 Follows ifstmt1 ifstmt2 
+9
+ifstmt1 ifstmt2 Follows 14 _ 
+10
+ifstmt c Follows ifstmt c 
+11
+c a Follows c a 
+12
+a c Follows a c 
+13
+a n Follows a n 
+14
+n1 n2 Follows n1 16 Follows n2 19 
+15
+s ifstmt Follows* s ifstmt 
+16
+s c Follows* s c 
+17
+c1 c2 c3 Follows* _ 19 with c1 c2 with c2 c3 
+18
+s1 s2 Parent s1 s2 
+19
+s c Parent s c 
+20
+s a Parent s a 
+21
+c ifstmt Parent 3 ifstmt Parent 16 c 
+22
+s v Modifies s v 
+23
+s1 s2 Modifies s1 "kakashi" Modifies s2 "minato" 
+24
+a1 a2 Modifies a1 "hiruzen" Modifies a2 "tobirama" 
+25
+p1 p2 Modifies p1 "danzo" Modifies p2 "kakashi" 
+26
+c v Uses c v 
+27
+ifstmt1 ifstmt2 Uses ifstmt1 "tobirama" Uses ifstmt2 "hiruzen" 
+28
+p v Uses p v 
+29
+p1 p2 Uses p1 "kakashi" Uses p2 "minato" 
+30
+v1 v2 Uses "FirstHokage" v1 Uses "ThirdHokage" v2 
+31
+p1 p2 Calls p1 p2 
+32
+p1 p2 Calls p1 "SecondHokage" Calls p2 "ThirdHokage" 
+33
+p1 p2 Calls* p1 p2 
+34
+p1 p2 Calls* "ThirdHokage" p1 Calls p2 "ThirdHokage" 
+35
+p1 p2 p3 p4 with p1 p2 with p3 p4 with p3 "SecondHokage" 
+36
+c p with c ifstmt with p "FirstHokage" 
+37
+s c with s 8 with c 3 
+38
+c ifstmt with c ifstmt 
+39
+a1 a2 pattern a1 "hiruzen" "hashirama" pattern a2 "hiruzen" "(hashirama+tobirama)" 
+40
+a v pattern a v "hashirama" 
+41
+ifstmt v pattern ifstmt v _ _ 
+42
+s1 s1 Follows s1 s2 Parent s3 s1 
+43
+p1 p2 Modifies p1 "danzo" Modifies p2 "kakashi" 
+44
+p1 p2 Calls p1 p2 
+45
+c v Uses c v 
+46
+ifstmt c Follows ifstmt c 
+47
+c p with c ifstmt with p "FirstHokage" 
+48
+c ifstmt with c ifstmt 

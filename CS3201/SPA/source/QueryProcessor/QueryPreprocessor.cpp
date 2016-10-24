@@ -145,12 +145,11 @@ void QueryPreprocessor::parseSelect() {
             accept(',');
         }
     } else {
-        if (isVarExist(peek())) {
-            var.push_back(peek());
-            temp = peek();
-            queryList[cur] = temp.substr(getVar().size());
-
+        if (accept(VARIABLE)) {
+            temp = getVar();
+            var.push_back(temp);
             varAttrMap[temp] = false;
+            queryList[cur] = peek().substr(getVar().size());
 
             // case: <var1.varAttr, var2>
             if (accept('.')) {
@@ -888,4 +887,35 @@ void QueryPreprocessor::mergeSeparatedClauses() {
         }
     }
     queryList[cur] = removeWhitespaces(peek());
+}
+
+vector<string> QueryPreprocessor::unitTestStubGetParams(string filePath,bool isInput) {
+    string currentLine, query;
+    vector<string> queryLines;
+    std::ifstream fileStream(filePath);
+    int lineNumber = 0;
+
+    if (isInput) {
+        while (std::getline(fileStream, currentLine)) {
+            if (lineNumber % 5 == 1) {
+                query = currentLine;
+            }
+            if (lineNumber % 5 == 2) {
+                queryLines.push_back(query+currentLine);
+                query = "";
+            }
+            lineNumber++;
+        }
+        return queryLines;
+    } else {
+        while (std::getline(fileStream, currentLine)) {
+            if (lineNumber % 2 == 0) {
+            }
+            if (lineNumber % 2 == 1) {
+                queryLines.push_back(currentLine);
+            }
+            lineNumber++;    
+        }
+        return queryLines;
+    }
 }

@@ -19,6 +19,7 @@ class QueryPreprocessor {
     void preprocessQuery(std::string query);
     QueryTree getQueryTree();
     std::string testMethodOut();
+    std::vector<std::string> unitTestStubGetParams(std::string filePath, bool isInput);
 
     // usage: e.g. "Select <a,a1> such that Uses(a1,"x")"
     bool processDeclaration(std::string declaration);
