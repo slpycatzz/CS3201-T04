@@ -1,0 +1,135 @@
+procedure SourceOne { \\ Tests basics
+	testVar = 12;											\\ 1
+	Temp = testVar + 20;									\\ 2
+	Temp = (Temp + 20);										\\ 3
+	Temp = testVar + (20);									\\ 4
+	x = x * y;												\\ 5
+	x = (x * y);											\\ 6
+	x = x * y + z;											\\ 7
+	x = x * (y + z);										\\ 8
+	x = x - y * z;											\\ 9
+	x = (testVar - Temp) * z;								\\ 10
+	x = z - z - x;											\\ 11
+	while testVar {											\\ 12
+		testVar = i + 1;									\\ 13
+	}
+	while i {												\\ 14
+		i = i + 2;											\\ 15
+		while testVar {										\\ 16
+			i = (testVar);									\\ 17
+		}
+		testVar = i * i;									\\ 18
+	}
+	while x {												\\ 19
+		if x then {											\\ 20
+			i = 20;											\\ 21
+		}
+		else {
+			i = 20 + i;										\\ 22
+		}
+		testVar = Temp - i;									\\ 23
+	}
+	call D;													\\ 24
+	if testVar then {										\\ 25
+		i = Temp;											\\ 26
+		if Temp then {										\\ 27
+			i = Temp + 	(i * testVar);						\\ 28
+		}
+		else {
+			if i then {										\\ 29
+				Temp = i + testVar;							\\ 30
+				call C;										\\ 31
+			}
+			else {
+				i =20;										\\ 32
+			}
+			i = Temp + i;									\\ 33
+		}
+	}
+	else {
+		Temp = 20;											\\ 34
+		call B;												\\ 35
+	}
+}
+
+procedure B {	\\ Tests nested if-else, while alternating
+	while B {												\\ 36
+		B = 20 * (testVar) + Temp;							\\ 37
+		if B then {											\\ 38
+			i = 20;											\\ 39
+			while i {										\\ 40
+				testVar = Temp * 10;						\\ 41
+				if tesVar then {							\\ 42
+					Temp = i * 20;							\\ 43
+				}
+				else {
+					i = (testVar - 20);						\\ 44
+				}
+			}
+			testVar = (i);									\\ 45
+		}
+		else {
+			B = testVar * i * (Temp * testVar);				\\ 46
+		}
+	}
+	call C;													\\ 47
+}
+
+procedure C {	\\ Tests nested if-else, while random
+	x = 20;													\\ 48
+	if testVar then {										\\ 49
+		Temp = testVar;										\\ 50
+		if Temp then {										\\ 51
+			testVar = Temp;									\\ 52
+			while testVar {									\\ 53
+				Temp = 20 + i;								\\ 54
+				while i {									\\ 55
+					Temp = i + 20;							\\ 56
+					if C then {								\\ 57
+						testVar = Temp * 20 - testVar;		\\ 58
+						C = testVar + 20;					\\ 59
+						while C {							\\ 60
+							testVar = 40 + testVar;			\\ 61
+							testVar = testVar * Temp;		\\ 62
+						}
+					}
+					else {
+						i = (C);							\\ 63
+						while C {							\\ 64
+							if C then {						\\ 65
+								testVar = C;				\\ 66
+							} 
+							else {
+								C = Temp;					\\ 67
+							}
+						}
+					}
+					Temp = (C - i);							\\ 68
+				}
+			}
+			testVar = testVar;								\\ 69
+		}
+		else {
+			C = testVar + Temp + 20;						\\ 70
+		}
+	}
+	else {
+		testVar = 40 + testVar;								\\ 71
+	}
+	C = (testVar - Temp) * 40;								\\ 72
+}
+
+procedure D {	\\ Tests nested whiles
+	while testVar {											\\ 73
+		while testVar {										\\ 74
+			testVar = Temp * Temp;							\\ 75
+			while Temp {									\\ 76
+				i = Temp;									\\ 77
+				while testVar {								\\ 78
+					i = (testVar);							\\ 79
+				}
+			}
+		}
+	}
+	call C;													\\ 80
+}

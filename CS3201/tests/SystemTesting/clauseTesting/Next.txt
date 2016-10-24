@@ -1,0 +1,325 @@
+1 - Next (num, num)
+stmt s;
+Select s such that Next(2,3)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,46,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+2 - Next (num, stmt)
+stmt s;
+Select s such that Next(2,s)
+3
+5000
+3 - Next (stmt, num)
+stmt s;
+Select s such that Next(s,5)
+4
+5000
+4 - Next (stmt, stmt) different
+stmt s1,s2;
+Select s1 such that Next(s1,s2)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,29,3,30,31,32,34,36,37,38,39,4,40,41,42,43,44,45,46,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,73,74,75,76,77,78,79,8,9
+5000
+5 - Next(stmt, stmt) same
+stmt s;
+Select s such that Next(s,s)
+
+5000
+6 - Next (while, num)
+while w;
+Select w such that Next(w, 3)
+
+5000
+7 - Next (num, while)
+while w;
+Select w such that Next(5,w)
+
+5000
+8 - Next (while, while) different
+while w1,w2;
+Select w1 such that Next(w1,w2)
+12,14,55,73,74,76,78
+5000
+9 - Next (while, while) same
+while w;
+Select w such that Next(w,w)
+
+5000
+10 - Next(num, assign)
+assign a;
+Select a such that Next(4,a)
+5
+5000
+11 - Next(assign, num)
+assign a;
+Select a such that Next(a,5)
+4
+5000
+12 - Next(assign, assign) different
+assign a1,a2;
+Select a1 such that Next(a1,a2)
+1,10,2,21,22,3,32,4,5,58,6,61,69,7,70,71,8,9
+5000
+13 - Next(assign, assign) same
+assign a;
+Select a such that Next(a,a)
+
+5000
+14 - Next(num, prog_line)
+prog_line l;
+Select l such that Next(4,l)
+5
+5000
+15 - Next(prog_line, num)
+prog_line l;
+Select l such that Next(l,5)
+4
+5000
+16 - Next(prog_line, prog_line) different
+prog_line l1,l2;
+Select l1 such that Next(l1,l2)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,29,3,30,31,32,34,36,37,38,39,4,40,41,42,43,44,45,46,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,73,74,75,76,77,78,79,8,9
+5000
+17 - Next(prog_line, prog_line) same
+prog_line l;
+Select l such that Next(l,l)
+
+5000
+18 - Next(assign, stmt)
+assign a; stmt s;
+Select a such that Next(a,s)
+1,10,11,13,15,17,18,2,21,22,23,26,3,30,32,34,37,39,4,41,43,44,45,46,48,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,70,71,75,77,79,8,9
+5000
+19 - Next(stmt, assign)
+stmt s; assign a;
+Select s such that Next(s,a)
+1,10,12,14,16,2,20,21,22,25,27,29,3,31,32,36,38,4,40,42,49,5,51,53,55,57,58,6,60,61,64,65,69,7,70,71,74,76,78,8,9
+5000
+20 - Next(while, prog_line)
+while w; prog_line l;
+Select w such that Next(w,l)
+12,14,16,19,36,40,53,55,60,64,73,74,76,78
+5000
+21 - Next(prog_line, while)
+prog_line l; while w;
+Select w such that Next(l,w)
+12,14,16,19,36,40,53,55,60,64,73,74,76,78
+5000
+22 - Next(assign, while)
+assign a; while w;
+Select a such that Next(a,w)
+11,13,15,17,18,23,39,43,44,45,46,52,54,59,62,63,66,67,68,75,77,79
+5000
+23 - Next(while, assign)
+while w; assign a;
+Select w such that Next(w,a)
+12,14,16,36,40,53,55,60,64,74,76,78
+5000
+24 - Next(stmt, prog_line)
+stmt s; prog_line l;
+Select s such that Next(s,l)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,29,3,30,31,32,34,36,37,38,39,4,40,41,42,43,44,45,46,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,73,74,75,76,77,78,79,8,9
+5000
+25 - Next(prog_line, stmt)
+prog_line l; stmt s;
+Select l such that Next(l,s)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,29,3,30,31,32,34,36,37,38,39,4,40,41,42,43,44,45,46,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,73,74,75,76,77,78,79,8,9
+5000
+26 - Next(_,_)
+stmt s;
+Select s such that Next(_,_)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,46,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+27 - Next(stmt,_)
+stmt s;
+Select s such that Next(s,_)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,29,3,30,31,32,34,36,37,38,39,4,40,41,42,43,44,45,46,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,73,74,75,76,77,78,79,8,9
+5000
+28 - Next(_,stmt)
+stmt s;
+Select s such that Next(_,s)
+10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,46,47,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+29 - Next(_,assign)
+assign a;
+Select a such that Next(_,a)
+10,11,13,15,17,18,2,21,22,23,26,28,3,30,32,33,34,37,39,4,41,43,44,45,46,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,70,71,72,75,77,79,8,9
+5000
+30 - Next(assign,_)
+assign a;
+Select a such that Next(a,_)
+1,10,11,13,15,17,18,2,21,22,23,26,3,30,32,34,37,39,4,41,43,44,45,46,48,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,70,71,75,77,79,8,9
+5000
+31 - Next(while,_)
+while w;
+Select w such that Next(w,_)
+12,14,16,19,36,40,53,55,60,64,73,74,76,78
+5000
+32 - Next(_,while)
+while w;
+Select w such that Next(_,w)
+12,14,16,19,36,40,53,55,60,64,73,74,76,78
+5000
+33 - Next(prog_line,_)
+prog_line l;
+Select l such that Next(l,_)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,29,3,30,31,32,34,36,37,38,39,4,40,41,42,43,44,45,46,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,73,74,75,76,77,78,79,8,9
+5000
+34 - Next(_,prog_line)
+prog_line l;
+Select l such that Next(_,l)
+10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,46,47,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+35 - Next(if,stmt)
+if ifs; stmt s;
+Select ifs such that Next(ifs,s)
+20,25,27,29,38,42,49,51,57,65
+5000
+36 - Next(if,while)
+if ifs; while w;
+Select ifs such that Next(ifs,w)
+
+5000
+37 - Next(if,call)
+if ifs; call c;
+Select ifs such that Next(ifs,c)
+
+5000
+38 - Next(if,if)
+if ifs1,ifs2;
+Select ifs2 such that Next(ifs1,ifs2)
+29
+5000
+39 - Next(if,assign)
+if ifs; assign a;
+Select ifs such that Next(ifs,a)
+20,25,27,29,38,42,49,51,57,65
+5000
+40 - Next(if,num)
+if ifs;
+Select ifs such that Next(ifs,3)
+
+5000
+41 - Next(if, prog_line)
+if ifs; prog_line l;
+Select ifs such that Next(ifs,l)
+20,25,27,29,38,42,49,51,57,65
+5000
+42 - Next(if,_)
+if ifs; 
+Select ifs such that Next(ifs,_)
+20,25,27,29,38,42,49,51,57,65
+5000
+43 - Next(_,if)
+if ifs;
+Select ifs such that Next(_,ifs)
+20,25,27,29,38,42,49,51,57,65
+5000
+44 - Next(call, num)
+call c;
+Select c such that Next(c,5)
+
+5000
+45 - Next(call, stmt)
+call c; stmt s;
+Select c such that Next(c,s)
+24,31
+5000
+46 - Next(call, assign)
+call c; assign a;
+Select c such that Next(c,a)
+31
+5000
+47 - Next(call,while)
+call c; while w;
+Select c such that Next(c,w)
+
+5000
+48 - Next(call, if)
+call c; if ifs;
+Select c such that Next(c,ifs)
+24
+5000
+49 - Next(call,_)
+call c;
+Select c such that Next(c,_)
+24,31
+5000
+50 - Next(_,call)
+call c;
+Select c such that Next(_,c)
+24,31,35,47,80
+5000
+51 - Next(stmt,if)
+stmt s; if ifs;
+Select s such that Next(s,ifs)
+19,24,26,27,37,41,48,50,56,64
+5000
+52 - Next(assign, if)
+assign a; if ifs;
+Select a such that Next(a,ifs)
+26,37,41,48,50,56
+5000
+53 - Next(while, if)
+while w; if ifs;
+Select w such that Next(w,ifs)
+19,64
+5000
+54 - Next(prog_line, if)
+prog_line l; if ifs;
+Select l such that Next(l,ifs)
+19,24,26,27,37,41,48,50,56,64
+5000
+55 - Next(if,if) same
+if ifs;
+Select ifs such that Next(ifs,ifs)
+
+5000
+56 - Next(stmt,call)
+stmt s; call c;
+Select s such that Next(s,c)
+19,30,34,36,73
+5000
+57 - Next(assign, call)
+assign a; call c;
+Select a such that Next(a,c)
+30,34
+5000
+58 - Next(while, call)
+while w; call c;
+Select w such that Next(w,c)
+19,36,73
+5000
+59 - Next(prog_line, call)
+prog_line l; call c;
+Select l such that Next(l,c)
+19,30,34,36,73
+5000
+60 - Next(call,call) same
+call c;
+Select c such that Next(c,c)
+
+5000
+61 - Next(stmt, stmt) select boolean
+stmt s1,s2;
+Select BOOLEAN such that Next(s1,s2)
+true
+5000
+62 - Next(_,_) select boolean
+
+Select BOOLEAN such that Next(_,_)
+true
+5000
+63 - Next(while,_) select boolean
+while w;
+Select BOOLEAN such that Next(w,_)
+true
+5000
+64 - Next(if,_) select boolean
+if ifs;
+Select BOOLEAN such that Next(ifs,_)
+true
+5000
+65 - Next(call,_) select boolean
+call c;
+Select BOOLEAN such that Next(c,_)
+true
+5000

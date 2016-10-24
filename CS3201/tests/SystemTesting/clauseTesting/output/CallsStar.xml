@@ -1,0 +1,70 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>tools</name><parsing_time_taken>6.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Callsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="Calls*(p,p) different">1</id><querystr><![CDATA[procedure p, q; Select p such that Calls*(p,q)]]></querystr>
+<stuans>B,D,SourceOne</stuans>
+<correct>B,D,SourceOne</correct>
+<time_taken>24.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Callsstar="1" SuchThat="1" CondNum="3" RelNum="1" comment="Calls*(p,p) same">2</id><querystr><![CDATA[procedure p; Select p such that Calls*(p,p)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>29.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Callsstar="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="Calls*(p,_)">3</id><querystr><![CDATA[procedure p; Select p such that Calls*(p,_)]]></querystr>
+<stuans></stuans>
+<correct>B,D,SourceOne</correct>
+<time_taken>68.000000</time_taken>
+<failed>
+<missing>B,D,SourceOne</missing>
+<additional></additional>
+<summary>
+<expected>3</expected>
+<matched>0</matched>
+<missing>3</missing>
+<additional>0</additional>
+</summary>
+</failed>
+</query>
+<query>
+<id ReturnTuple="1" Callsstar="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="Calls*(_,p)">4</id><querystr><![CDATA[procedure p; Select p such that Calls*(_,p)]]></querystr>
+<stuans></stuans>
+<correct>B,C,D</correct>
+<time_taken>32.000000</time_taken>
+<failed>
+<missing>B,C,D</missing>
+<additional></additional>
+<summary>
+<expected>3</expected>
+<matched>0</matched>
+<missing>3</missing>
+<additional>0</additional>
+</summary>
+</failed>
+</query>
+<query>
+<id ReturnBoolean="1" Callsstar="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="Calls*(_,_)">5</id><querystr><![CDATA[ Select BOOLEAN such that Calls*(_,_)]]></querystr>
+<stuans>FALSE</stuans>
+<correct>TRUE</correct>
+<time_taken>32.000000</time_taken>
+<failed>
+<missing>TRUE</missing>
+<additional>FALSE</additional>
+<summary>
+<expected>1</expected>
+<matched>0</matched>
+<missing>1</missing>
+<additional>1</additional>
+</summary>
+</failed>
+</query>
+</queries>
+</test_results>

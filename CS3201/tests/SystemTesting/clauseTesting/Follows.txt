@@ -1,0 +1,325 @@
+1 - Follows (num, num)
+stmt s;
+Select s such that Follows(2,3)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,46,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+2 - Follows (num, stmt)
+stmt s;
+Select s such that Follows(2,s)
+3
+5000
+3 - Follows (stmt, num)
+stmt s;
+Select s such that Follows(s,5)
+4
+5000
+4 - Follows (stmt, stmt) different
+stmt s1,s2;
+Select s1 such that Follows(s1,s2)
+1,10,11,12,14,15,16,19,2,20,24,26,29,3,30,34,36,37,39,4,40,41,48,49,5,50,52,53,54,56,57,58,59,6,61,63,7,73,75,77,8,9
+5000
+5 - Follows(stmt, stmt) same
+stmt s;
+Select s such that Follows(s,s)
+
+5000
+6 - Follows (while, num)
+while w;
+Select w such that Follows(w, 3)
+
+5000
+7 - Follows (num, while)
+while w;
+Select w such that Follows(5,w)
+
+5000
+8 - Follows (while, while) different
+while w1,w2;
+Select w1 such that Follows(w1,w2)
+12,14
+5000
+9 - Follows (while, while) same
+while w;
+Select w such that Follows(w,w)
+
+5000
+10 - Follows(num, assign)
+assign a;
+Select a such that Follows(4,a)
+5
+5000
+11 - Follows(assign, num)
+assign a;
+Select a such that Follows(a,5)
+4
+5000
+12 - Follows(assign, assign) different
+assign a1,a2;
+Select a2 such that Follows(a1,a2)
+10,11,2,3,4,5,59,6,62,7,8,9
+5000
+13 - Follows(assign, assign) same
+assign a;
+Select a such that Follows(a,a)
+
+5000
+14 - Follows(num, prog_line)
+prog_line l;
+Select l such that Follows(4,l)
+5
+5000
+15 - Follows(prog_line, num)
+prog_line l;
+Select l such that Follows(l,5)
+4
+5000
+16 - Follows(prog_line, prog_line) different
+prog_line l1,l2;
+Select l1 such that Follows(l1,l2)
+1,10,11,12,14,15,16,19,2,20,24,26,29,3,30,34,36,37,39,4,40,41,48,49,5,50,52,53,54,56,57,58,59,6,61,63,7,73,75,77,8,9
+5000
+17 - Follows(prog_line, prog_line) same
+prog_line l;
+Select l such that Follows(l,l)
+
+5000
+18 - Follows(assign, stmt)
+assign a; stmt s;
+Select a such that Follows(a,s)
+1,10,11,15,2,26,3,30,34,37,39,4,41,48,5,50,52,54,56,58,59,6,61,63,7,75,77,8,9
+5000
+19 - Follows(stmt, assign)
+stmt s; assign a;
+Select s such that Follows(s,a)
+1,10,16,2,20,29,3,4,40,49,5,53,57,58,6,61,7,8,9
+5000
+20 - Follows(while, prog_line)
+while w; prog_line l;
+Select w such that Follows(w,l)
+12,14,16,19,36,40,53,73
+5000
+21 - Follows(prog_line, while)
+prog_line l; while w;
+Select w such that Follows(l,w)
+12,14,16,19,40,53,55,60,64,76,78
+5000
+22 - Follows(assign, while)
+assign a; while w;
+Select a such that Follows(a,w)
+11,15,39,52,54,59,63,75,77
+5000
+23 - Follows(while, assign)
+while w; assign a;
+Select w such that Follows(w,a)
+16,40,53
+5000
+24 - Follows(stmt, prog_line)
+stmt s; prog_line l;
+Select s such that Follows(s,l)
+1,10,11,12,14,15,16,19,2,20,24,26,29,3,30,34,36,37,39,4,40,41,48,49,5,50,52,53,54,56,57,58,59,6,61,63,7,73,75,77,8,9
+5000
+25 - Follows(prog_line, stmt)
+prog_line l; stmt s;
+Select l such that Follows(l,s)
+1,10,11,12,14,15,16,19,2,20,24,26,29,3,30,34,36,37,39,4,40,41,48,49,5,50,52,53,54,56,57,58,59,6,61,63,7,73,75,77,8,9
+5000
+26 - Follows(_,_)
+stmt s;
+Select s such that Follows(_,_)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,46,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,68,69,7,70,71,72,73,74,75,76,77,78,79,8,80,9
+5000
+27 - Follows(stmt,_)
+stmt s;
+Select s such that Follows(s,_)
+1,10,11,12,14,15,16,19,2,20,24,26,29,3,30,34,36,37,39,4,40,41,48,49,5,50,52,53,54,56,57,58,59,6,61,63,7,73,75,77,8,9
+5000
+28 - Follows(_,stmt)
+stmt s;
+Select s such that Follows(_,s)
+10,11,12,14,16,18,19,2,23,24,25,27,3,31,33,35,38,4,40,42,45,47,49,5,51,53,55,57,59,6,60,62,64,68,69,7,72,76,78,8,80,9
+5000
+29 - Follows(_,assign)
+assign a;
+Select a such that Follows(_,a)
+10,11,18,2,23,3,33,4,45,5,59,6,62,68,69,7,72,8,9
+5000
+30 - Follows(assign,_)
+assign a;
+Select a such that Follows(a,_)
+1,10,11,15,2,26,3,30,34,37,39,4,41,48,5,50,52,54,56,58,59,6,61,63,7,75,77,8,9
+5000
+31 - Follows(while,_)
+while w;
+Select w such that Follows(w,_)
+12,14,16,19,36,40,53,73
+5000
+32 - Follows(_,while)
+while w;
+Select w such that Follows(_,w)
+12,14,16,19,40,53,55,60,64,76,78
+5000
+33 - Follows(prog_line,_)
+prog_line l;
+Select l such that Follows(l,_)
+1,10,11,12,14,15,16,19,2,20,24,26,29,3,30,34,36,37,39,4,40,41,48,49,5,50,52,53,54,56,57,58,59,6,61,63,7,73,75,77,8,9
+5000
+34 - Follows(_,prog_line)
+prog_line l;
+Select l such that Follows(_,l)
+10,11,12,14,16,18,19,2,23,24,25,27,3,31,33,35,38,4,40,42,45,47,49,5,51,53,55,57,59,6,60,62,64,68,69,7,72,76,78,8,80,9
+5000
+35 - Follows(if,stmt)
+if ifs; stmt s;
+Select ifs such that Follows(ifs,s)
+20,29,49,57
+5000
+36 - Follows(if,while)
+if ifs; while w;
+Select ifs such that Follows(ifs,w)
+
+5000
+37 - Follows(if,call)
+if ifs; call c;
+Select ifs such that Follows(ifs,c)
+
+5000
+38 - Follows(if,if)
+if ifs1,ifs2;
+Select ifs2 such that Follows(ifs1,ifs2)
+
+5000
+39 - Follows(if,assign)
+if ifs; assign a;
+Select ifs such that Follows(ifs,a)
+20,29,49,57
+5000
+40 - Follows(if,num)
+if ifs;
+Select ifs such that Follows(ifs,3)
+
+5000
+41 - Follows(if, prog_line)
+if ifs; prog_line l;
+Select ifs such that Follows(ifs,l)
+20,29,49,57
+5000
+42 - Follows(if,_)
+if ifs; 
+Select ifs such that Follows(ifs,_)
+20,29,49,57
+5000
+43 - Follows(_,if)
+if ifs;
+Select ifs such that Follows(_,ifs)
+25,27,38,42,49,51,57
+5000
+44 - Follows(call, num)
+call c;
+Select c such that Follows(c,5)
+
+5000
+45 - Follows(call, stmt)
+call c; stmt s;
+Select c such that Follows(c,s)
+24
+5000
+46 - Follows(call, assign)
+call c; assign a;
+Select c such that Follows(c,a)
+
+5000
+47 - Follows(call,while)
+call c; while w;
+Select c such that Follows(c,w)
+
+5000
+48 - Follows(call, if)
+call c; if ifs;
+Select c such that Follows(c,ifs)
+24
+5000
+49 - Follows(call,_)
+call c;
+Select c such that Follows(c,_)
+24
+5000
+50 - Follows(_,call)
+call c;
+Select c such that Follows(_,c)
+24,31,35,47,80
+5000
+51 - Follows(stmt,if)
+stmt s; if ifs;
+Select s such that Follows(s,ifs)
+24,26,37,41,48,50,56
+5000
+52 - Follows(assign, if)
+assign a; if ifs;
+Select a such that Follows(a,ifs)
+26,37,41,48,50,56
+5000
+53 - Follows(while, if)
+while w; if ifs;
+Select w such that Follows(w,ifs)
+
+5000
+54 - Follows(prog_line, if)
+prog_line l; if ifs;
+Select l such that Follows(l,ifs)
+24,26,37,41,48,50,56
+5000
+55 - Follows(if,if) same
+if ifs;
+Select ifs such that Follows(ifs,ifs)
+
+5000
+56 - Follows(stmt,call)
+stmt s; call c;
+Select s such that Follows(s,c)
+19,30,34,36,73
+5000
+57 - Follows(assign, call)
+assign a; call c;
+Select a such that Follows(a,c)
+30,34
+5000
+58 - Follows(while, call)
+while w; call c;
+Select w such that Follows(w,c)
+19,36,73
+5000
+59 - Follows(prog_line, call)
+prog_line l; call c;
+Select l such that Follows(l,c)
+19,30,34,36,73
+5000
+60 - Follows(call,call) same
+call c;
+Select c such that Follows(c,c)
+
+5000
+61 - Follows(stmt, stmt) select boolean
+stmt s1,s2;
+Select BOOLEAN such that Follows(s1,s2)
+TRUE
+5000
+62 - Follows(_,_) select boolean
+
+Select BOOLEAN such that Follows(_,_)
+TRUE
+5000
+63 - Follows(while,_) select boolean
+while w;
+Select BOOLEAN such that Follows(w,_)
+TRUE
+5000
+64 - Follows(if,_) select boolean
+if ifs;
+Select BOOLEAN such that Follows(ifs,_)
+TRUE
+5000
+65 - Follows(call,_) select boolean
+call c;
+Select BOOLEAN such that Follows(c,_)
+TRUE
+5000

@@ -1,0 +1,26 @@
+1 - Calls(p,p) different
+procedure p, q;
+Select p such that Calls(p,q)
+B,D,SourceOne
+5000
+2 - Calls(p,p) same
+procedure p;
+Select p such that Calls(p,p)
+
+5000
+3 - Calls(p,_)
+procedure p;
+Select p such that Calls(p,_)
+B,D,SourceOne
+5000
+4 - Calls(_,p)
+procedure p;
+Select p such that Calls(_,p)
+B,C,D
+5000
+5 - Calls(_,_)
+
+Select BOOLEAN such that Calls(_,_)
+TRUE
+5000
+
