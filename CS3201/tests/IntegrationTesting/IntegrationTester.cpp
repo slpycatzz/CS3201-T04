@@ -358,29 +358,22 @@ public:
 	}
 	TEST_METHOD(Integration_QE_WhilePattern_2) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
-		QueryTree qt(getQueryTree("while w, w1; Select <w, w1> pattern w(_,_) and w1(_,_)"));
+		QueryTree qt(getQueryTree("while w, w1; Select <w, w1> pattern w(\"a\",_) and w1(\"b\",_)"));
 		QueryEvaluator qe;
 
-		Clause pattern(qt.getSelectedGroups().at(0).second.at(0));
-		string test("<");
-		for (string s : pattern.getArg()) {
-			test.append(s);
-			test.append(",");
-		}
-		test.append(">");
-		Logger::WriteMessage(test.c_str());
-
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<6,7>>");
+		Logger::WriteMessage(qe.log.c_str());
+		string expected("<<30,35>>");
 		Assert::AreEqual(expected, actual);
 	}
+
     TEST_METHOD(Integration_QE_ExactPatternConstant) {
         getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
-        QueryTree qt(getQueryTree("assign a; Select a pattern a(_, \"42\")"));
+        QueryTree qt(getQueryTree("assign a; Select a pattern a(_,\"c\")"));
         QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<25>>");
+		string expected("<<2>,<16>>");
 		Assert::AreEqual(expected, actual);
     }
 	TEST_METHOD(Integration_QE_Follows_2var_1) {
@@ -412,11 +405,11 @@ public:
 	}
 	TEST_METHOD(Integration_QE_Follows_1var_Underscore) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
-		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select <w,v> such that Follows(_, w) and Uses(w, v)"));
+		QueryTree qt(getQueryTree("stmt s; while w; variable v; Select w such that Follows(_, w) and Follows(w, s)"));
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<30,a>,<30,b>,<30,c>,<30,d>,<30,e>,<30,f>,<30,g>,<30,h>>");
+		string expected("<<6>,<12>,<30>,<35>,<38>>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_Follows_0var) {

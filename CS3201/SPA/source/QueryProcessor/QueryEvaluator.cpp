@@ -194,13 +194,36 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
     vector<Synonym> &selectList) {
     TotalCombinationList combinations(getTotalCandidateList(varMap, synList));
 
+	/*LOG - DELETE AFTER DEBUGGING*/
+	log.append("synList: ");
+	for (Synonym syn : synList) log.append(syn + " ");
+	log.append("\n");
+	log.append("selectList: ");
+	for (Synonym syn : selectList) log.append(syn + " ");
+	log.append("\n");
+	log.append("varMap: ");
+	for (auto kv : varMap) log.append(kv.first + ":" + Constants::SymbolToString(kv.second) + " ");
+
     for (Clause clause : clauseGroup) {
+
+		/*LOG - DELETE AFTER DEBUGGING*/
+		log.append("\n");
+		log.append("clause type: " + clause.getClauseType() + "\n");
+		log.append("args: " + clause.getArg()[0] + clause.getArg()[1]);
+
         filterByClause(clause, combinations, varMap);
 
         if (combinations.isEmpty()) {
             return TotalCombinationList();
         }
     }
+
+	/*LOG - DELETE AFTER DEBUGGING*/
+	log.append("\n");
+	log.append("totalCombinationList content: ");
+	for (auto kv : combinations.getContent()) log.append(kv.first + ":" + Utils::IntToString(kv.second) + " ");
+	log.append("totalCombinationList factors: ");
+	for (auto kv : combinations.getFactorList()) log.append(Utils::IntToString(kv.first) + ":" + std::to_string((int) &kv.second));
 
     combinations.reduceTotalContent(selectList);
 
@@ -221,45 +244,73 @@ void QueryEvaluator::filterByClause(Clause &clause,
             filterOneVarPattern(assignStmt, lhs, rhs, combinations);
         }
 
-    } else if (clauseType == SYMBOL_WITH) {
+    }
+	
+	else if (clauseType == SYMBOL_WITH) {
         vector<Synonym> args(clause.getArg());
         Synonym var0(args[0]), var1(args[1]);
 
-        if (QueryUtils::IsLiteral(var0)) {
-            var0 = QueryUtils::LiteralToCandidate(var0);
+		if (args[2] == SYMBOL_VARIABLE) {
+			if (QueryUtils::IsStringLiteral(var0)) {
+				var0 = QueryUtils::LiteralToCandidate(var0);
+				if (QueryUtils::IsStringLiteral(var1)) {
+					var1 = QueryUtils::LiteralToCandidate(var1);
+					filterNoVarWith(var0, var1, combinations);
+				}
+				else if (varMap[var1] == CALL) {
+					filterNoVarCallWith(var1, var0, combinations);
+				}
+				else {
+					filterSecondVarWith(var0, var1, combinations);
+				}
+			}
+			else if (varMap[var0] == CALL) {
+				if (QueryUtils::IsStringLiteral(var1)) {
+					var1 = QueryUtils::LiteralToCandidate(var1);
+					filterNoVarCallWith(var0, var1, combinations);
+				}
+				else if (varMap[var1] == CALL) {
+					filterTwoVarsCallWith(var0, var1, combinations);
+				}
+				else {
+					filterOneVarCallWith(var0, var1, combinations);
+				}
+			}
+			else {
+				if (QueryUtils::IsStringLiteral(var1)) {
+					var1 = QueryUtils::LiteralToCandidate(var1);
+					filterFirstVarWith(var0, var1, combinations);
+				}
+				else if (varMap[var1] == CALL) {
+					filterOneVarCallWith(var1, var0, combinations);
+				}
+				else {
+					filterTwoVarsWith(var0, var1, combinations);
+				}
+			}
+		}
+		else if (args[2] == SYMBOL_CONSTANT) {
+			if (Utils::IsNonNegativeNumeric(var0)) {
+				var0 = QueryUtils::LiteralToCandidate(var0);
+				if (Utils::IsNonNegativeNumeric(var1)) {
+					filterNoVarWith(var0, QueryUtils::LiteralToCandidate(var1), combinations);
+				}
+				else {
+					filterSecondVarWith(var0, var1, combinations);
+				}
 
-            if (QueryUtils::IsLiteral(var1)) {
-                filterNoVarWith(var0, QueryUtils::LiteralToCandidate(var1), combinations);
-            } else if (varMap[var1] == CALL) {
-                filterNoVarCallWith(var1, var0, combinations);
-            } else {
-                filterSecondVarWith(var0, var1, combinations);
-            }
-
-        } else if (QueryUtils::IsLiteral(var1)) {
-            var1 = QueryUtils::LiteralToCandidate(var1);
-            if (varMap[var0] == CALL) {
-                filterNoVarCallWith(var0, var1, combinations);
-            } else {
-                filterFirstVarWith(var0, var1, combinations);
-            }
-
-        } else {
-            if (varMap[var0] == CALL) {
-                if (varMap[var1] == CALL) {
-                    filterTwoVarsCallWith(var0, var1, combinations);
-                } else {
-                    filterOneVarCallWith(var0, var1, combinations);
-                }
-
-            } else if (varMap[var1] == CALL) {
-                filterOneVarCallWith(var1, var0, combinations);
-            } else {
-                filterTwoVarsWith(var0, var1, combinations);
-            }
-        }
-
-    } else {
+			}
+			else if (Utils::IsNonNegativeNumeric(var1)) {
+				var1 = QueryUtils::LiteralToCandidate(var1);
+				filterFirstVarWith(var0, var1, combinations);
+			}
+			else {
+				filterTwoVarsWith(var0, var1, combinations);
+			}
+		}
+    }
+	
+	else {
         vector<Synonym> args(clause.getArg());
         Synonym var0(args[0]), var1(args[1]);
         if (QueryUtils::IsLiteral(var0)) {
@@ -350,43 +401,25 @@ void QueryEvaluator::filterNoVarWith(Candidate const1, Candidate const2, TotalCo
 }
 
 void QueryEvaluator::filterTwoVarsCallWith(Synonym & call0, Synonym & call1, TotalCombinationList & combinations) {
+	auto comp = [=](CandidateCombination combi) -> bool {
+		return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call0]))
+			== (PKB::GetCallProcedureName(Utils::StringToInt(combi[call1]))));
+	};
+	combinations.mergeAndFilter(call0, call1, comp);
 }
 
 void QueryEvaluator::filterOneVarCallWith(Synonym & call, Synonym & var, TotalCombinationList & combinations) {
-    PartialCombinationList part(combinations[var]);
-    if (part.empty()) {
-        combinations.filter(false);
-
-    } else {
-        Candidate cand(part.front()[var]);
-        if (Utils::IsNonNegativeNumeric(cand)) {
-            auto comp = [=](CandidateCombination combi) -> bool {
-                return (combi[call] == combi[var]);
-            };
-            combinations.mergeAndFilter(call, var, comp);
-
-        } else {
-            auto comp = [=](CandidateCombination combi) -> bool {
-                return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call])) == combi[var]);
-            };
-            combinations.mergeAndFilter(call, var, comp);
-        }
-    }
+    auto comp = [=](CandidateCombination combi) -> bool {
+        return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call])) == combi[var]);
+    };
+    combinations.mergeAndFilter(call, var, comp);
 }
 
 void QueryEvaluator::filterNoVarCallWith(Synonym & call, Candidate cand, TotalCombinationList & combinations) {
-    if (Utils::IsNonNegativeNumeric(cand)) {
-        auto comp = [=](CandidateCombination combi) -> bool {
-            return (combi[call] == cand);
-        };
-        combinations.filter(call, comp);
-
-    } else {
-        auto comp = [=](CandidateCombination combi) -> bool {
-            return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call])) == cand);
-        };
-        combinations.filter(call, comp);
-    }
+    auto comp = [=](CandidateCombination combi) -> bool {
+        return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call])) == cand);
+    };
+    combinations.filter(call, comp);
 }
 
 bool QueryEvaluator::evaluateClause(Clause &clause, CandidateCombination &comb) {

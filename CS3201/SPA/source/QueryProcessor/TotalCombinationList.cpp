@@ -207,7 +207,8 @@ void TotalCombinationList::reduceTotalContent(vector<Synonym> &synList) {
     for (auto &kv : factorList) {
         vector<Synonym> subSynList;
         for (Synonym syn : synList) {
-            if (content[syn] == kv.first) {
+			std::unordered_map<Synonym, unsigned>::iterator it = content.find(syn);
+			if ((it != content.end()) && ((*it).second == kv.first)) {
                 subSynList.push_back(syn);
             }
         }
