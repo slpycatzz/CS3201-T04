@@ -111,7 +111,7 @@ Select <s,v> such that Modifies(s,v)
 23 - tuple, Modifies, stmt and stmt
 stmt s1,s2;
 Select <s1,s2> such that Modifies(s1,"kakashi") and Modifies(s2,"minato")
-14 10,14 19
+14 10,14 19,14 16
 5000
 24 - tuple,Modifies, assign and assign
 assign a1,a2;
