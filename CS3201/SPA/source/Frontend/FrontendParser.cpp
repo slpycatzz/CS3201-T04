@@ -334,8 +334,13 @@ TreeNode* FrontendParser::callIfRecognizer() {
     stmtlists_.insert(std::make_pair(stmtNumber_, SYMBOL_IF_THEN));
 
     ifNode->addChild(callStmtListRecognizer());
-
-    thenLastStmt_.insert(std::make_pair(stmtNumber, stmtNumber_ - 1));
+    
+    for (unsigned int i = stmtNumber_ - 1; i > stmtNumber; i--) {
+        if (stmtsLevels_[i] == (stmtsLevels_[stmtNumber] + 1)) {
+            thenLastStmt_.insert(std::make_pair(stmtNumber, i));
+            break;
+        }
+    }
 
     expect(SYMBOL_IF_ELSE);
 
