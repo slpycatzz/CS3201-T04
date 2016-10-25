@@ -187,9 +187,9 @@ s2 Parent* s1 s2 Next* s1 s2 with s1 c
 94
 s Follows s ifs Next s ifs Calls p _ Parent s a pattern ifs _ _ _ with p "SourceOne" 
 95
-Query parser encountered a syntax error in the query : stmt4is an invalid attribute type
+Query parser encountered a syntax error in the query : 333
 96
-a 
+Query parser encountered a syntax error in the query : 333
 97
 s Follows s ifs Next s ifs Calls p _ Follows s s1 pattern ifs _ _ _ with p "SourceOne" 
 98
