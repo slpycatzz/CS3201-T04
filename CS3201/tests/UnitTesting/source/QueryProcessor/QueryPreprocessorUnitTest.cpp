@@ -19,7 +19,7 @@ using std::vector;
 namespace UnitTesting {
     TEST_CLASS(QueryPreprocessorUnitTest) {
      public:
-         
+
         TEST_METHOD(QueryPreprocessor_aSelect) {
             string expected, actual, query;
             QueryPreprocessor qp;
@@ -52,8 +52,7 @@ namespace UnitTesting {
             query += "Select a such that Uses(a1, x)";
             try {
                 qp.preprocessQuery(query);
-            }
-            catch (std::exception& ex) {
+            } catch (std::exception& ex) {
                 actual = ex.what();
             }
             qt = qp.getQueryTree();
@@ -79,8 +78,7 @@ namespace UnitTesting {
             query += "Select a such that Uses(a1, \"x\")";
             try {
                 qp.preprocessQuery(query);
-            }
-            catch (std::exception& ex) {
+            } catch (std::exception& ex) {
                 actual = ex.what();
             }
             qt = qp.getQueryTree();
@@ -107,8 +105,7 @@ namespace UnitTesting {
             query += "Select a such that Uses(1, x)";
             try {
                 qp.preprocessQuery(query);
-            }
-            catch (std::exception& ex) {
+            } catch (std::exception& ex) {
                 actual = ex.what();
             }
             qt = qp.getQueryTree();
@@ -134,8 +131,7 @@ namespace UnitTesting {
             query += "Select a such that Uses(a1, x)";
             try {
                 qp.preprocessQuery(query);
-            }
-            catch (std::exception& ex) {
+            } catch (std::exception& ex) {
                 actual = ex.what();
             }
             qt = qp.getQueryTree();
@@ -160,8 +156,7 @@ namespace UnitTesting {
             query += "Select a pattern a1(\"x\",_)";
             try {
                 qp.preprocessQuery(query);
-            }
-            catch (std::exception& ex) {
+            } catch (std::exception& ex) {
                 actual = ex.what();
             }
             qt = qp.getQueryTree();
@@ -188,8 +183,7 @@ namespace UnitTesting {
 
             try {
                 qp.preprocessQuery(query);
-            }
-            catch (std::exception& ex) {
+            } catch (std::exception& ex) {
                 actual = ex.what();
             }
             qt = qp.getQueryTree();
@@ -216,8 +210,7 @@ namespace UnitTesting {
 
             try {
                 qp.preprocessQuery(query);
-            }
-            catch (std::exception& ex) {
+            } catch (std::exception& ex) {
                 actual = ex.what();
             }
             qt = qp.getQueryTree();
@@ -243,8 +236,7 @@ namespace UnitTesting {
             query += "Select a pattern a1(\"x\",_)";
             try {
                 qp.preprocessQuery(query);
-            }
-            catch (std::exception& ex) {
+            } catch (std::exception& ex) {
                 actual = ex.what();
             }
             qt = qp.getQueryTree();
@@ -325,8 +317,7 @@ namespace UnitTesting {
 
             try {
                 qp.preprocessQuery(query);
-            }
-            catch (std::exception& ex) {
+            } catch (std::exception& ex) {
                 actual = ex.what();
             }
             qt = qp.getQueryTree();
@@ -428,8 +419,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
@@ -484,8 +474,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
@@ -524,10 +513,10 @@ namespace UnitTesting {
             // queries10.txt
             string dirPath = "..\\tests\\SystemTesting\\";
             string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\";
-            
-            queryList = qpStub.unitTestStubGetParams(dirPath+"10-Queries.txt", true);
-            expectedList = qpStub.unitTestStubGetParams(dirPath1+"out10-Queries.txt", false);
-            
+
+            queryList = qpStub.unitTestStubGetParams(dirPath + "10-Queries.txt", true);
+            expectedList = qpStub.unitTestStubGetParams(dirPath1 + "out10-Queries.txt", false);
+
             Assert::AreEqual(expectedList.size(), queryList.size());
 
             if (queryList.size() == 0) {
@@ -540,8 +529,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
@@ -587,7 +575,7 @@ namespace UnitTesting {
 
             size_t empty = 0;
             Assert::AreNotEqual(empty, queryList.size());
-            
+
             int i = 0;
             for (string query : queryList) {
                 QueryPreprocessor qp;
@@ -595,8 +583,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
@@ -636,7 +623,7 @@ namespace UnitTesting {
             string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\clauseTesting\\";
 
             queryList = qpStub.unitTestStubGetParams(dirPath + "Calls.txt", true);
-            
+
             expectedList = qpStub.unitTestStubGetParams(dirPath1 + "outCalls.txt", false);
 
             Assert::AreEqual(expectedList.size(), queryList.size());
@@ -651,8 +638,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
@@ -707,8 +693,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
@@ -763,8 +748,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
@@ -819,8 +803,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
@@ -875,8 +858,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
@@ -931,8 +913,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
@@ -987,8 +968,7 @@ namespace UnitTesting {
                 actual = "";
                 try {
                     qp.preprocessQuery(query);
-                }
-                catch (std::exception& ex) {
+                } catch (std::exception& ex) {
                     actual = ex.what();
                     Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
                     i++;
