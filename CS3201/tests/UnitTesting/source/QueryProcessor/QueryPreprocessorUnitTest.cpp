@@ -997,6 +997,40 @@ namespace UnitTesting {
                 i++;
             }
         }
+        TEST_METHOD(QueryPreprocessor_iiQueryTestInvalid) {
+            string expected, actual;
+            QueryPreprocessor qpStub;
+            vector<string> queryList;
+            vector<string> expectedList;
+            string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
+            // queries10.txt
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\";
+
+            queryList = qpStub.unitTestStubGetParams(dirPath1 + "Invalid.txt", false);
+
+            size_t empty = 0;
+            Assert::AreNotEqual(empty, queryList.size());
+
+            int i = 0;
+            for (string query : queryList) {
+                i++;
+                QueryPreprocessor qp;
+                QueryTree qt;
+                actual = "";
+                try {
+                    qp.preprocessQuery(query);
+                }
+                catch (std::exception& ex) {
+                    actual = ex.what();
+                    string queryNo = "query #" + Utils::IntToString(i) + ": ";
+                    if (actual.size() > querySyntaxErrorMsg.size()) {
+                        actual = actual.substr(0, querySyntaxErrorMsg.size());
+                    }
+                    Assert::AreEqual(queryNo + querySyntaxErrorMsg, queryNo + actual);                
+                    continue;
+                }
+            }
+        }
     };
 }  // namespace UnitTesting
 

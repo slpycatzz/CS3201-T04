@@ -1,0 +1,30 @@
+1 ----------------------------------- #####  Declarations  ####
+assign a;
+2
+assign assign; Select BOOLEAN
+3
+assign a,a1; call a; Select a
+4
+call wrongNumber; stmt s.stmt#;
+5
+call s; assign 1a; Select s
+6
+call s#,s; Select BOOLEAN
+7
+Assign a; Select BOOLEAN
+8
+assign _; Select BOOLEAN
+9
+assign a,,; Select BOOLEAN
+10
+procedure p Select ; BOOLEAN
+11
+assign a a; procedure p.; Select aa
+12 ----------------------------------- ####  Select  ####
+assign a; Select a;
+13
+assign a; such that(a,"x")
+14
+Select BOOLEAN such that Uses("stmt", "var")
+15
+assign a,a1;
