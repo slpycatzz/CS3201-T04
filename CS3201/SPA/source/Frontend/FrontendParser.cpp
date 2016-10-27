@@ -42,7 +42,7 @@ void FrontendParser::parseProgram(string filePath) {
 
     /* Split program lines into tokens. */
     for (const auto &programLine : programLines) {
-        Utils::SplitAndIgnoreEmpty(programLine, ' ', tokens_);
+        Utils::SplitAndIgnoreEmpty(programLine, " \t", tokens_);
     }
 
     PKB::SetASTRoot(callProgramRecognizer());

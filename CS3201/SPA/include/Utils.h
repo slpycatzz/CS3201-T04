@@ -44,6 +44,7 @@ class Utils {
 
     static void Split(std::string str, char delimiter, std::vector<std::string> &target);
     static std::vector<std::string> Split(std::string str, char delimiter);
+    static void SplitAndIgnoreEmpty(std::string str, std::string delimiters, std::vector<std::string> &target);
     static void SplitAndIgnoreEmpty(std::string str, char delimiter, std::vector<std::string> &target);
     static std::vector<std::string> SplitAndIgnoreEmpty(std::string str, char delimiter);
 

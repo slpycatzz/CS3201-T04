@@ -210,6 +210,37 @@ vector<string> Utils::Split(string str, char delimiter) {
     return result;
 }
 
+void Utils::SplitAndIgnoreEmpty(string str, string delimiters, vector<string> &target) {
+    string current, temp;
+    istringstream stringStream;
+
+    stringStream.str(str);
+    while (getline(stringStream, current)) {
+        int previous = 0, position;
+        while ((position = current.find_first_of(delimiters, previous)) != string::npos) {
+            if (position > previous) {
+                temp = current.substr(previous, position - previous);
+                temp = TrimSpaces(temp);
+
+                if (!temp.empty()) {
+                    target.push_back(temp);
+                }
+            }
+
+            previous = position + 1;
+        }
+
+        if (previous < current.length()) {
+            temp = current.substr(previous, string::npos);
+            temp = TrimSpaces(temp);
+
+            if (!temp.empty()) {
+                target.push_back(temp);
+            }
+        }
+    }
+}
+
 void Utils::SplitAndIgnoreEmpty(string str, char delimiter, vector<string> &target) {
     string temp;
     istringstream stringStream;
