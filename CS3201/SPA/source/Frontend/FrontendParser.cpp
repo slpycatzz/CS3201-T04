@@ -268,7 +268,7 @@ TreeNode* FrontendParser::callStmtRecognizer() {
         stmtNode = callCallRecognizer();
 
     } else {
-        throw ProgramSyntaxErrorException();
+        throw ProgramSyntaxErrorException(MESSAGE_STMT_INVALID);
     }
 
     /* For PKB stmt table generation. */
@@ -493,7 +493,7 @@ TreeNode* FrontendParser::callFactorRecognizer() {
         factorNode = PKB::CreateASTNode(CONSTANT, constant);
 
     } else {
-        throw ProgramSyntaxErrorException();
+        throw ProgramSyntaxErrorException(MESSAGE_ASSIGN_STMT_INVALID);
     }
 
     return factorNode;
@@ -501,13 +501,13 @@ TreeNode* FrontendParser::callFactorRecognizer() {
 
 void FrontendParser::expect(string token) {
     if (!accept(token)) {
-        throw ProgramSyntaxErrorException();
+        throw ProgramSyntaxErrorException(MESSAGE_TOKEN_INVALID + getToken());
     }
 }
 
 void FrontendParser::expect(char token) {
     if (!accept(token)) {
-        throw ProgramSyntaxErrorException();
+        throw ProgramSyntaxErrorException(MESSAGE_TOKEN_INVALID + getToken());
     }
 }
 
