@@ -36,13 +36,12 @@ void TestWrapper::parse(std::string filePath) {
 * Function for evaluating a list of SIMPLE queries.
 */
 void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
-    /* Check if AutoTester sent stop signal. */
-    if (AbstractWrapper::GlobalStop) {
-        return;
-    }
-
     try {
         queryProcessor.process(query, results);
+        /* Check if AutoTester sent stop signal. */
+        if (AbstractWrapper::GlobalStop) {
+            return;
+        }
     }
     catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;
