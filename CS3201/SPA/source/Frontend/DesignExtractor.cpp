@@ -29,8 +29,10 @@ void DesignExtractor::resetInstance() {
     instance = DesignExtractor();
 }
 
-void DesignExtractor::populatePKB(map<StmtNumber, unsigned int> stmtsLevels) {
+void DesignExtractor::populatePKB(map<StmtNumber, unsigned int> stmtsLevels, unsigned int tableMaximumSize) {
     stmtsLevels_ = stmtsLevels;
+
+    PKB::SetTableMaximumSize(tableMaximumSize);
 
     /* Generic tables population. */
     populateGenericTables();
@@ -111,6 +113,9 @@ void DesignExtractor::populateDesignAbstractionTables() {
     precomputeParent();
     precomputeFollows();
     precomputeNext();
+
+    /* Initialize compute on demand matrixes. */
+    PKB::InitializeNextTransitiveMatrixSize();
 }
 
 void DesignExtractor::setProcedureData(ProcedureName procedureName, StmtNumber firstStmtNumber, StmtNumber lastStmtNumber) {
@@ -416,7 +421,6 @@ void DesignExtractor::precomputeNext() {
         CFGNode rootNode = new TreeNode(pair.first);
         queue.push(rootNode);
 
-        visitedStmtNumbers.insert(pair.first);
         visitedNodes.insert(rootNode);
 
         while (!queue.empty()) {
@@ -428,21 +432,18 @@ void DesignExtractor::precomputeNext() {
 
             for (StmtNumber stmtNumber : nextStmtNumbers) {
                 PKB::InsertNext(currentNode->getStmtNumber(), stmtNumber);
-            }
 
-            for (auto &next : nextStmtNumbers) {
-                CFGNode newNode;
+                CFGNode newNode = NULL;
 
-                if (visitedStmtNumbers.count(next) == 1) {
-                    for (CFGNode visitedNode : visitedNodes) {
-                        if (visitedNode->getStmtNumber() == next) {
-                            newNode = visitedNode;
-                            break;
-                        }
+                for (CFGNode visitedNode : visitedNodes) {
+                    if (visitedNode->getStmtNumber() == stmtNumber) {
+                        newNode = visitedNode;
+                        break;
                     }
+                }
 
-                } else {
-                    newNode = new TreeNode(next);
+                if (newNode == NULL) {
+                    newNode = new TreeNode(stmtNumber);
 
                     queue.push(newNode);
                     nextNodes.insert(newNode);
@@ -451,7 +452,6 @@ void DesignExtractor::precomputeNext() {
                 currentNode->addChild(newNode);
             }
 
-            visitedStmtNumbers.insert(nextStmtNumbers.begin(), nextStmtNumbers.end());
             visitedNodes.insert(nextNodes.begin(), nextNodes.end());
         }
 
@@ -590,27 +590,29 @@ set<unsigned int> DesignExtractor::getNextStmtNumbers(unsigned int stmtNumber) {
         /* While, assign and call not at the end of flow path is caught here.*/
         if (followingStmtNumber > 0) {
             stmtNumbers.insert(followingStmtNumber);
-            break;
+            return stmtNumbers;
         }
 
         int parentStmtNumber = getParentOfStmtNumber(stmtNumber);
 
         /* While, assign and call at root level is caught here. */
         if (parentStmtNumber < 1) {
-            break;
+            return stmtNumbers;
         }
 
         /* While, assign and call at the end of flow path is caught here. */
-        Symbol symbol = stmts_[parentStmtNumber];
-        if (symbol == WHILE) {
-            stmtNumbers.insert(parentStmtNumber);
-            break;
+        switch (stmts_[parentStmtNumber]) {
+            default:
+                break;
+
+            case WHILE:
+                stmtNumbers.insert(parentStmtNumber);
+                return stmtNumbers;
 
             /* Loop up to parent to look for next flow path. */
-        } else if (symbol == IF) {
-            stmtNumber = parentStmtNumber;
+            case IF:
+                stmtNumber = parentStmtNumber;
+                break;
         }
     }
-
-    return stmtNumbers;
 }

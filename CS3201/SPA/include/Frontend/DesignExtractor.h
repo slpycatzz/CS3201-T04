@@ -14,7 +14,7 @@ class DesignExtractor {
     static DesignExtractor& getInstance();
     void resetInstance();
 
-    void populatePKB(std::map<StmtNumber, unsigned int> stmtsLevels);
+    void populatePKB(std::map<StmtNumber, unsigned int> stmtsLevels, unsigned int tableMaximumSize);
 
     void setProcedureData(ProcedureName procedureName, StmtNumber firstStmtNumber, StmtNumber lastStmtNumber);
     void setStmtListData(Symbol stmtSymbol, StmtNumber stmtNumber);

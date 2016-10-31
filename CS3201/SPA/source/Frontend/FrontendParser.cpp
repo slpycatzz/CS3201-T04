@@ -50,7 +50,7 @@ void FrontendParser::parseProgram(string filePath) {
     /* Validate no recursive call in program. */
     validateRecursiveCall();
 
-    designExtractor.populatePKB(stmtsLevels_);
+    designExtractor.populatePKB(stmtsLevels_, stmtNumber_);
 }
 
 vector<string> FrontendParser::preprocessProgramLines(std::ifstream& fileStream) {

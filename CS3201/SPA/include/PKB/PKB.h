@@ -157,6 +157,7 @@ class PKB {
 
     static void InsertControlFlowGraph(CFGNode controlFlowGraph);
     static void InsertNext(StmtNumber current, StmtNumber next);
+    static void InitializeNextTransitiveMatrixSize();
     static void PopulateNextTransitiveTable();
     static bool IsNext(StmtNumber current, StmtNumber next);
     static bool IsNextTransitive(StmtNumber current, StmtNumber next);
@@ -179,6 +180,7 @@ class PKB {
     static void SetTableMaximumSize(unsigned int tableMaximumSize);
 
     static void Clear();
+    static void ClearComputeOnDemandTables();
 
     /* START - Deprecated functions */
     static bool HasControlVariableNameAtStmtNumber(StmtNumber stmtNumber, VariableName controlVariable);
@@ -249,4 +251,7 @@ class PKB {
 
     static Table<StmtNumber, StmtNumber> nextTable_;
     static TransitiveTable<StmtNumber, StmtNumber> nextTransitiveTable_;
+
+    static std::vector<std::vector<StmtNumber>> nextTransitiveMatrix_;
+
 };

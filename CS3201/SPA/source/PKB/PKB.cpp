@@ -63,6 +63,8 @@ TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_        = Tr
 Table<StmtNumber, StmtNumber> PKB::nextTable_                               = Table<StmtNumber, StmtNumber>();
 TransitiveTable<StmtNumber, StmtNumber> PKB::nextTransitiveTable_           = TransitiveTable<StmtNumber, StmtNumber>();
 
+vector<vector<StmtNumber>> PKB::nextTransitiveMatrix_;
+
 /* START - Constant table functions */
 
 void PKB::InsertConstantValue(ConstantIndex constantIndex, ConstantValue constantValue) {
@@ -733,6 +735,11 @@ void PKB::InsertNext(StmtNumber current, StmtNumber next) {
     nextTable_.insert(current, next);
 }
 
+void PKB::InitializeNextTransitiveMatrixSize() {
+    /* Initialize next transitive table space. */
+    nextTransitiveMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
+}
+
 void PKB::PopulateNextTransitiveTable() {
     for (vector<CFGNode> treeNodes : controlFlowGraphsNodes_) {
         /* DFS all the nodes in the control flow graph. */
@@ -752,6 +759,7 @@ void PKB::PopulateNextTransitiveTable() {
                         child->setVisited(true);
 
                         nextTransitiveTable_.insert(node->getStmtNumber(), child->getStmtNumber());
+                        nextTransitiveMatrix_[node->getStmtNumber()][child->getStmtNumber()] = 1;
                         visitedNodes.push_back(child);
                         queue.push(child);
                     }
@@ -770,7 +778,16 @@ bool PKB::IsNext(StmtNumber current, StmtNumber next) {
 }
 
 bool PKB::IsNextTransitive(StmtNumber current, StmtNumber next) {
-    return nextTransitiveTable_.hasKeyToValue(current, next);
+    if (current > tableMaximumSize_ || current <= 0) {
+        return false;
+    }
+
+    if (next > tableMaximumSize_ || next <= 0) {
+        return false;
+    }
+
+    /* Worst case is O(1) time complexity. */
+    return (nextTransitiveMatrix_[current][next] == 1);
 }
 
 set<StmtNumber> PKB::GetNext(StmtNumber current) {
@@ -879,6 +896,13 @@ void PKB::Clear() {
 
     nextTable_              = Table<StmtNumber, StmtNumber>();
     nextTransitiveTable_    = TransitiveTable<StmtNumber, StmtNumber>();
+    
+    nextTransitiveMatrix_.clear();
+}
+
+void PKB::ClearComputeOnDemandTables() {
+    nextTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
+    nextTransitiveMatrix_.clear();
 }
 
 bool PKB::ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo) {
