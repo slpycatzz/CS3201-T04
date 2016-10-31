@@ -10,7 +10,7 @@ const char GENERIC_MESSAGE_PROGRAMLOGICERROR[]  = "Frontend parser encountered a
 const char GENERIC_MESSAGE_QUERYSYNTAXERROR[]   = "Query parser encountered a syntax error in the query";
 const char GENERIC_MESSAGE_QUERYLOGICERROR[]    = "Query parser encountered a logic error in the query";
 
-const char MESSAGE_TOKEN_INVALID[]         = "Invalid token : ";
+const char MESSAGE_TOKEN_INVALID[]         = "Invalid token";
 const char MESSAGE_STMT_INVALID[]          = "Invalid statement";
 const char MESSAGE_ASSIGN_STMT_INVALID[]   = "Invalid assign statement";
 const char MESSAGE_VARIABLENAME_INVALID[]  = "Invalid variable name";

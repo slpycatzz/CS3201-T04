@@ -79,7 +79,10 @@ namespace UnitTesting {
             try {
                 frontendParser.parseProgram(filePath);
             } catch (std::exception &ex) {
-                Assert::AreEqual(ex.what(), GENERIC_MESSAGE_PROGRAMSYNTAXERROR);
+                string errorMessage = genericMessageProgramSyntaxError + " : ";
+                errorMessage += MESSAGE_TOKEN_INVALID;
+
+                Assert::AreEqual(ex.what(), errorMessage.c_str());
             }
         }
 
@@ -89,7 +92,10 @@ namespace UnitTesting {
             try {
                 frontendParser.parseProgram(filePath);
             } catch (std::exception &ex) {
-                Assert::AreEqual(ex.what(), GENERIC_MESSAGE_PROGRAMSYNTAXERROR);
+                string errorMessage = genericMessageProgramSyntaxError + " : ";
+                errorMessage += MESSAGE_STMT_INVALID;
+
+                Assert::AreEqual(ex.what(), errorMessage.c_str());
             }
         }
 
