@@ -1,6 +1,4 @@
 #include <algorithm>
-#include <map>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -10,8 +8,6 @@
 #include "Constants.h"
 #include "PKB/PKB.h"
 
-using std::map;
-using std::set;
 using std::string;
 using std::vector;
 
