@@ -13,130 +13,120 @@
 #include "Utils.h"
 
 typedef TreeNode*    CFGNode;
-typedef std::string  ConstantValue;
-typedef std::string  Expression;
-typedef std::string  SubExpressions;
-typedef std::string  VariableName;
-typedef std::string  ProcedureName;
-typedef std::string  StmtSymbol;
-typedef std::string  TableSymbol;
-typedef unsigned int StmtNumber;
-typedef unsigned int Index;
+
+typedef std::string  Expression, SubExpression;
+typedef std::string  ConstantValue, ProcedureName, VariableName;
+
+typedef unsigned int ConstantIndex, ProcedureIndex, VariableIndex;
 typedef unsigned int Priority;
+typedef unsigned int StmtNumber;
 
 class PKB {
  public:
-    static void SetASTRoot(TreeNode *root);
-    static TreeNode* GetASTRoot();
-    static TreeNode* CreateASTNode(Symbol symbol);
-    static TreeNode* CreateASTNode(Symbol, std::string value);
-    static TreeNode* CreateASTNode(Symbol symbol, StmtNumber stmtNumber);
-    static TreeNode* CreateASTNode(Symbol symbol, StmtNumber stmtNumber, std::string value);
-    static void PrintASTTree();
-
-    static void GenerateConstantTable(std::set<ConstantValue> constants);
-    static bool HasConstant(ConstantValue constantValue);
-    static std::set<std::string> GetConstantValue(Index index);
-    static std::set<Index> GetConstantIndex(ConstantValue constantValue);
-    static std::vector<std::string> GetAllConstantValues();
+    static void InsertConstantValue(ConstantIndex constantIndex, ConstantValue constant);
+    static bool HasConstantValue(ConstantValue constantValue);
+    static ConstantIndex GetConstantIndex(ConstantValue constantValue);
+    static ConstantValue GetConstantValue(ConstantIndex constantIndex);
+    static std::vector<ConstantValue> GetAllConstantValues();
     static void PrintConstantTable();
 
-    static void GenerateVariableTable(std::set<VariableName> variableNames);
-    static bool HasVariable(VariableName variableName);
-    static std::set<VariableName> GetVariableName(Index index);
-    static std::set<Index> GetVariableIndex(VariableName variableName);
+    static void InsertVariableName(VariableIndex variableIndex, VariableName variableName);
+    static bool HasVariableName(VariableName variableName);
+    static VariableIndex GetVariableIndex(VariableName variableName);
+    static VariableName GetVariableName(VariableIndex variableIndex);
     static std::vector<VariableName> GetAllVariableNames();
     static void PrintVariableTable();
 
-    static void GenerateProcedureTable(std::set<ProcedureName> procedureNames);
-    static bool HasProcedure(ProcedureName procedureName);
-    static std::set<ProcedureName> GetProcedureName(Index index);
-    static std::set<Index> GetProcedureIndex(ProcedureName procedureName);
-    static std::vector<ProcedureName> GetAllProcedures();
+    static void InsertProcedureName(ProcedureIndex procedureIndex, ProcedureName procedureName);
+    static bool HasProcedureName(ProcedureName procedureName);
+    static ProcedureIndex GetProcedureIndex(ProcedureName procedureName);
+    static ProcedureName GetProcedureName(ProcedureIndex procedureIndex);
+    static std::vector<ProcedureName> GetAllProcedureNames();
+    static std::vector<ProcedureIndex> GetAllProcedureIndexes();
     static void PrintProcedureTable();
 
-    static void GenerateControlVariableTable(std::map<StmtNumber, VariableName> controlVariables);
-    static bool HasControlVariable(VariableName controlVariable);
-    static bool HasControlVariableAtStmtNumber(StmtNumber stmtNumber, VariableName controlVariable);
-    static std::set<VariableName> GetControlVariable(StmtNumber stmtNumber);
-    static std::vector<VariableName> GetAllControlVariables();
+    static void InsertControlVariable(StmtNumber stmtNumber, VariableIndex variableIndex);
+    static bool HasControlVariableIndex(VariableIndex variableIndex);
+    static bool HasControlVariableIndexAtStmtNumber(StmtNumber stmtNumber, VariableIndex variableIndex);
+    static VariableIndex GetControlVariableIndex(StmtNumber stmtNumber);
+    static std::vector<VariableIndex> GetAllControlVariableIndexes();
     static void PrintControlVariableTable();
 
-    static void GenerateCallTable(std::map<StmtNumber, ProcedureName> callStmtNumbers);
-    static ProcedureName GetCallProcedureName(StmtNumber stmtNumber);
+    static void InsertCallStmt(StmtNumber stmtNumber, ProcedureIndex procedureIndex);
+    static ProcedureIndex GetCallStmtProcedureIndex(StmtNumber stmtNumber);
     static void PrintCallTable();
 
-    static void GenerateStmtTable(std::map<StmtNumber, StmtSymbol> stmts);
-    static StmtSymbol GetStmtSymbol(StmtNumber stmtNumber);
-    static std::vector<StmtNumber> GetSymbolStmtNumbers(StmtSymbol symbol);
-    static std::vector<StmtNumber> GetSymbolStmtNumbers(Symbol symbol);
+    static void InsertStmt(StmtNumber stmtNumber, Symbol stmtSymbol);
+    static Symbol GetStmtSymbol(StmtNumber stmtNumber);
+    static std::vector<StmtNumber> GetSymbolStmtNumbers(Symbol stmtSymbol);
     static void PrintStmtTable();
 
-    static void GenerateStmtlistTable(std::map<StmtNumber, StmtSymbol> stmtlists);
+    static void InsertStmtlist(StmtNumber stmtNumber, Symbol stmtSymbol);
     static std::vector<StmtNumber> GetAllStmtlistsStmtNumber();
     static void PrintStmtlistTable();
 
-    static void GeneratePriorityTable();
-    static Priority GetPriority(TableSymbol symbol);
+    static void PopulatePriorityTable();
     static Priority GetPriority(Symbol symbol);
     static void PrintPriorityTable();
 
-    static void GenerateExpressionTable(std::map<StmtNumber, Expression> expressions);
-    static void GenerateSubExpressionTable(std::map<StmtNumber, std::set<SubExpressions>> subExpressions);
-    static bool IsExactPattern(StmtNumber stmtNumber, VariableName variableName, Expression expression);
-    static bool IsSubPattern(StmtNumber stmtNumber, VariableName variableName, SubExpressions subExpression);
+    static void InsertExpression(StmtNumber stmtNumber, Expression expression);
+    static void InsertSubExpression(StmtNumber stmtNumber, SubExpression subExpression);
+    static bool IsExactPattern(StmtNumber stmtNumber, VariableIndex variableIndex, Expression expression);
+    static bool IsSubPattern(StmtNumber stmtNumber, VariableIndex variableIndex, SubExpression subExpression);
     static bool HasExactExpression(Expression expression);
-    static bool HasSubExpression(SubExpressions subExpression);
+    static bool HasSubExpression(SubExpression subExpression);
     static bool IsExactExpression(StmtNumber stmtNumber, Expression expression);
-    static bool IsSubExpression(StmtNumber stmtNumber, SubExpressions subExpression);
+    static bool IsSubExpression(StmtNumber stmtNumber, SubExpression subExpression);
     static void PrintExactExpressionTable();
     static void PrintSubExpressionTable();
 
-    static void GenerateCallsTable(std::map<ProcedureName, std::set<ProcedureName>> calls);
-    static bool IsCalls(ProcedureName calling, ProcedureName called);
-    static bool IsCalls(ProcedureName calling, std::set<ProcedureName> called);
-    static bool IsCallsTransitive(ProcedureName calling, ProcedureName called);
-    static bool IsCallsTransitive(ProcedureName calling, std::set<ProcedureName> called);
-    static std::set<ProcedureName> GetCalling(ProcedureName called);
-    static std::set<ProcedureName> GetCalled(ProcedureName calling);
-    static std::set<ProcedureName> GetCallingTransitive(ProcedureName called);
-    static std::set<ProcedureName> GetCalledTransitive(ProcedureName calling);
+    static void InsertCalls(ProcedureIndex calling, ProcedureIndex called);
+    static void PopulateCallsTransitiveTable();
+    static bool IsCalls(ProcedureIndex calling, ProcedureIndex called);
+    static bool IsCalls(ProcedureIndex calling, std::set<ProcedureIndex> calleds);
+    static bool IsCallsTransitive(ProcedureIndex calling, ProcedureIndex called);
+    static bool IsCallsTransitive(ProcedureIndex calling, std::set<ProcedureIndex> calleds);
+    static std::set<ProcedureIndex> GetCalling(ProcedureIndex called);
+    static std::set<ProcedureIndex> GetCalled(ProcedureIndex calling);
+    static std::set<ProcedureIndex> GetCallingTransitive(ProcedureIndex called);
+    static std::set<ProcedureIndex> GetCalledTransitive(ProcedureIndex calling);
     static unsigned int GetNumberOfCallsRelationship();
     static unsigned int GetNumberOfCallsTransitiveRelationship();
     static void PrintCallsTable();
     static void PrintCallsTransitiveTable();
 
-    static void GenerateModifiesTable(std::map<StmtNumber, std::set<VariableName>> modifies);
-    static void GenerateModifiesProcedureTable(std::map<ProcedureName, std::set<VariableName>> modifiesProcedure);
-    static bool IsModifies(StmtNumber stmtNumber, VariableName variableName);
-    static bool IsModifies(StmtNumber stmtNumber, std::set<VariableName> variableNames);
-    static bool IsModifiesProcedure(ProcedureName procedureName, VariableName variableName);
-    static bool IsModifiesProcedure(ProcedureName procedureName, std::set<VariableName> variableNames);
-    static std::set<VariableName> GetModifiedVariables(StmtNumber stmtNumber);
-    static std::set<StmtNumber> GetStmtNumberModifying(VariableName variableName);
-    static std::set<VariableName> GetProcedureModifiedVariables(ProcedureName procedureName);
-    static std::set<ProcedureName> GetProceduresNameModifying(VariableName variableName);
+    static void InsertModifies(StmtNumber stmtNumber, VariableIndex variableIndex);
+    static void InsertModifiesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
+    static bool IsModifies(StmtNumber stmtNumber, VariableIndex variableIndex);
+    static bool IsModifies(StmtNumber stmtNumber, std::set<VariableIndex> variableIndexes);
+    static bool IsModifiesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
+    static bool IsModifiesProcedure(ProcedureIndex procedureIndex, std::set<VariableIndex> variableIndexes);
+    static std::set<VariableIndex> GetModifiedVariables(StmtNumber stmtNumber);
+    static std::set<StmtNumber> GetStmtNumberModifying(VariableIndex variableIndex);
+    static std::set<VariableIndex> GetProcedureModifiedVariables(ProcedureIndex procedureIndex);
+    static std::set<ProcedureIndex> GetProceduresNameModifying(VariableIndex variableIndex);
     static unsigned int GetNumberOfModifiesRelationship();
     static unsigned int GetNumberOfModifiesProcedureRelationship();
     static void PrintModifiesTable();
     static void PrintModifiesProcedureTable();
 
-    static void GenerateUsesTable(std::map<StmtNumber, std::set<VariableName>> uses);
-    static void GenerateUsesProcedureTable(std::map<ProcedureName, std::set<VariableName>> usesProcedure);
-    static bool IsUses(StmtNumber stmtNumber, VariableName variableName);
-    static bool IsUses(StmtNumber stmtNumber, std::set<VariableName> variableNames);
-    static bool IsUsesProcedure(ProcedureName procedureName, VariableName variableName);
-    static bool IsUsesProcedure(ProcedureName procedureName, std::set<VariableName> variableNames);
-    static std::set<VariableName> GetUsedVariables(StmtNumber stmtNumber);
-    static std::set<StmtNumber> GetStmtNumberUsing(VariableName variableName);
-    static std::set<VariableName> GetProcedureUsedVariables(ProcedureName procedureName);
-    static std::set<ProcedureName> GetProceduresNameUsing(VariableName variableName);
+    static void InsertUses(StmtNumber stmtNumber, VariableIndex variableIndex);
+    static void InsertUsesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
+    static bool IsUses(StmtNumber stmtNumber, VariableIndex variableIndex);
+    static bool IsUses(StmtNumber stmtNumber, std::set<VariableIndex> variableIndexes);
+    static bool IsUsesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
+    static bool IsUsesProcedure(ProcedureIndex procedureIndex, std::set<VariableIndex> variableIndexes);
+    static std::set<VariableIndex> GetUsedVariables(StmtNumber stmtNumber);
+    static std::set<StmtNumber> GetStmtNumberUsing(VariableIndex variableIndex);
+    static std::set<VariableIndex> GetProcedureUsedVariables(ProcedureIndex procedureIndex);
+    static std::set<ProcedureIndex> GetProceduresNameUsing(VariableIndex variableIndex);
     static unsigned int GetNumberOfUsesRelationship();
     static unsigned int GetNumberOfUsesProcedureRelationship();
     static void PrintUsesTable();
     static void PrintUsesProcedureTable();
 
-    static void GenerateParentTable(std::map<StmtNumber, std::set<StmtNumber>> parent);
+    static void InsertParent(StmtNumber parent, StmtNumber child);
+    static void PopulateParentTransitiveTable();
     static bool IsParent(StmtNumber parent, StmtNumber child);
     static bool IsParent(StmtNumber parent, std::set<StmtNumber> children);
     static bool IsParentTransitive(StmtNumber parent, StmtNumber child);
@@ -150,7 +140,8 @@ class PKB {
     static void PrintParentTable();
     static void PrintParentTransitiveTable();
 
-    static void GenerateFollowsTable(std::map<StmtNumber, StmtNumber> follows);
+    static void InsertFollows(StmtNumber follows, StmtNumber following);
+    static void PopulateFollowsTransitiveTable();
     static bool IsFollows(StmtNumber follows, StmtNumber following);
     static bool IsFollows(StmtNumber follows, std::set<StmtNumber> followings);
     static bool IsFollowsTransitive(StmtNumber follows, StmtNumber following);
@@ -164,9 +155,9 @@ class PKB {
     static void PrintFollowsTable();
     static void PrintFollowsTransitiveTable();
 
-    static void SetControlFlowGraphs(std::vector<TreeNode*> controlFlowGraphs);
-    static void GenerateNextTable(std::map<StmtNumber, std::set<StmtNumber>> next);
-    static void GenerateNextTransitiveTable();
+    static void InsertControlFlowGraph(CFGNode controlFlowGraph);
+    static void InsertNext(StmtNumber current, StmtNumber next);
+    static void PopulateNextTransitiveTable();
     static bool IsNext(StmtNumber current, StmtNumber next);
     static bool IsNextTransitive(StmtNumber current, StmtNumber next);
     static std::set<StmtNumber> GetNext(StmtNumber current);
@@ -189,8 +180,32 @@ class PKB {
 
     static void Clear();
 
+    /* START - Deprecated functions */
+    static bool HasControlVariableNameAtStmtNumber(StmtNumber stmtNumber, VariableName controlVariable);
+
+    static ProcedureName GetCallStmtProcedureName(StmtNumber stmtNumber, std::string deprecatedFiller);
+
+    static bool IsExactPattern(StmtNumber stmtNumber, VariableName variableName, Expression expression);
+    static bool IsSubPattern(StmtNumber stmtNumber, VariableName variableName, SubExpression subExpression);
+
+    static bool IsCalls(ProcedureName calling, ProcedureName called);
+    static bool IsCallsTransitive(ProcedureName calling, ProcedureName called);
+    static std::set<ProcedureName> GetCalling(ProcedureName called);
+    static std::set<ProcedureName> GetCalled(ProcedureName calling);
+
+    static bool IsModifies(StmtNumber stmtNumber, VariableName variableName);
+    static bool IsModifiesProcedure(ProcedureName procedureName, VariableName variableName);
+    static std::set<StmtNumber> GetStmtNumberModifying(VariableName variableName);
+    static std::set<VariableName> GetProcedureModifiedVariables(ProcedureName procedureName);
+
+    static bool IsUses(StmtNumber stmtNumber, VariableName variableName);
+    static bool IsUsesProcedure(ProcedureName procedureName, VariableName variableName);
+    static std::set<StmtNumber> GetStmtNumberUsing(VariableName variableName);
+    static std::set<VariableName> GetProcedureUsedVariables(ProcedureName procedureName);
+    /* END   - Deprecated functions */
+
  private:
-    static bool ComparePairAscending(const std::pair<unsigned int, std::string> &pairOne, const std::pair<unsigned int, std::string> &pairTwo);
+    static bool ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo);
 
     static unsigned int numberOfProcedure_;
     static unsigned int numberOfAssign_;
@@ -203,35 +218,35 @@ class PKB {
     static std::vector<CFGNode> controlFlowGraphs_;
     static std::vector<std::vector<CFGNode>> controlFlowGraphsNodes_;
 
-    static Table<Index, ConstantValue> constantTable_;                              /* map<index, constantValue>      */
-    static Table<Index, VariableName> variableTable_;                               /* map<index, variableName>       */
-    static Table<Index, ProcedureName> procedureTable_;                             /* map<index, procedureName>      */
+    static Table<ConstantIndex, ConstantValue> constantTable_;
+    static Table<VariableIndex, VariableName> variableTable_;
+    static Table<ProcedureIndex, ProcedureName> procedureTable_;
 
-    static Table<StmtNumber, VariableName> controlVariableTable_;                   /* map<stmtNumber, variableName>  */
-    static Table<StmtNumber, ProcedureName> callTable_;                             /* map<stmtNumber, procedureName> */
-    static Table<StmtNumber, StmtSymbol> stmtTable_;                                /* map<stmtNumber, symbol string> */
-    static Table<StmtNumber, StmtSymbol> stmtlistTable_;                            /* map<stmtNumber, symbol string> */
+    static Table<StmtNumber, VariableIndex> controlVariableTable_;
+    static Table<StmtNumber, ProcedureIndex> callTable_;
+    static Table<StmtNumber, Symbol> stmtTable_;
+    static Table<StmtNumber, Symbol> stmtlistTable_;
 
-    static Table<Priority, TableSymbol> priorityTable_;                             /* map<priority, symbol string>   */
+    static Table<Priority, Symbol> priorityTable_;
 
-    static Table<StmtNumber, Expression> expressionTable_;                          /* map<stmtNumber, exact expression>    */
-    static Table<StmtNumber, SubExpressions> subExpressionTable_;                   /* map<stmtNumber, set(subExpressions)> */
+    static Table<StmtNumber, Expression> expressionTable_;
+    static Table<StmtNumber, SubExpression> subExpressionTable_;
 
-    static Table<ProcedureName, ProcedureName> callsTable_;                         /* map<procedureName, set(procedureNames)> */
-    static TransitiveTable<ProcedureName, ProcedureName> callsTransitiveTable_;     /* map<procedureName, set(procedureNames)> */
+    static Table<ProcedureIndex, ProcedureIndex> callsTable_;
+    static TransitiveTable<ProcedureIndex, ProcedureIndex> callsTransitiveTable_;
 
-    static Table<StmtNumber, VariableName> modifiesTable_;                          /* map<stmtNumber, set(variableName)>    */
-    static Table<ProcedureName, VariableName> modifiesProcedureTable_;              /* map<procedureName, set(variableName)> */
+    static Table<StmtNumber, VariableIndex> modifiesTable_;
+    static Table<ProcedureIndex, VariableIndex> modifiesProcedureTable_;
 
-    static Table<StmtNumber, VariableName> usesTable_;                              /* map<stmtNumber, set(variableName)>    */
-    static Table<ProcedureName, VariableName> usesProcedureTable_;                  /* map<procedureName, set(variableName)> */
+    static Table<StmtNumber, VariableIndex> usesTable_;
+    static Table<ProcedureIndex, VariableIndex> usesProcedureTable_;
 
-    static Table<StmtNumber, StmtNumber> parentTable_;                              /* map<stmtNumber, set(stmtNumber)> */
-    static TransitiveTable<StmtNumber, StmtNumber> parentTransitiveTable_;          /* map<stmtNumber, set(stmtNumber)> */
+    static Table<StmtNumber, StmtNumber> parentTable_;
+    static TransitiveTable<StmtNumber, StmtNumber> parentTransitiveTable_;
 
-    static Table<StmtNumber, StmtNumber> followsTable_;                             /* map<stmtNumber, set(stmtNumber)> */
-    static TransitiveTable<StmtNumber, StmtNumber> followsTransitiveTable_;         /* map<stmtNumber, set(stmtNumber)> */
+    static Table<StmtNumber, StmtNumber> followsTable_;
+    static TransitiveTable<StmtNumber, StmtNumber> followsTransitiveTable_;
 
-    static Table<StmtNumber, StmtNumber> nextTable_;                                /* map<stmtNumber, set(stmtNumber)> */
-    static TransitiveTable<StmtNumber, StmtNumber> nextTransitiveTable_;            /* map<stmtNumber, set(stmtNumber)> */
+    static Table<StmtNumber, StmtNumber> nextTable_;
+    static TransitiveTable<StmtNumber, StmtNumber> nextTransitiveTable_;
 };

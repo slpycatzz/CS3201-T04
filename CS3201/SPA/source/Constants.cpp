@@ -28,6 +28,8 @@ string Constants::SymbolToString(Symbol symbol) {
         case ASSIGN:       return SYMBOL_ASSIGN;
         case WHILE:        return SYMBOL_WHILE;
         case IF:           return SYMBOL_IF;
+        case IF_THEN:      return SYMBOL_IF_THEN;
+        case IF_ELSE:      return SYMBOL_IF_ELSE;
         case CALL:         return SYMBOL_CALL;
 
         case SUCH_THAT:    return SYMBOL_SUCH_THAT;
@@ -79,6 +81,8 @@ Symbol Constants::StringToSymbol(string str) {
     if (str == SYMBOL_ASSIGN)    return ASSIGN;
     if (str == SYMBOL_WHILE)     return WHILE;
     if (str == SYMBOL_IF)        return IF;
+    if (str == SYMBOL_IF_THEN)   return IF_THEN;
+    if (str == SYMBOL_IF_ELSE)   return IF_ELSE;
     if (str == SYMBOL_CALL)      return CALL;
 
     if (str == SYMBOL_SUCH_THAT) return SUCH_THAT;

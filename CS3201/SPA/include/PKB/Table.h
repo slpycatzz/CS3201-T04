@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <utility>
 
+#include "Constants.h"
+
 template<typename K, typename V>
 class Table {
  public:
@@ -17,21 +19,19 @@ class Table {
 
     inline ~Table<K, V>() {}
 
-    inline void insert(K key, V value) {
-        keyToValuesMap[key].insert(value);
-        valueToKeysMap[value].insert(key);
-
-        numberOfRelationship++;
+    inline void insert(K key, std::set<V> values) {
+        for (V value : values) {
+            insert(key, value);
+        }
     }
 
-    inline void insert(K key, std::set<V> values) {
-        keyToValuesMap.insert(std::make_pair(key, values));
-
-        for (auto &value : values) {
+    inline void insert(K key, V value) {
+        if (!hasKeyToValue(key, value)) {
+            keyToValuesMap[key].insert(value);
             valueToKeysMap[value].insert(key);
-        }
 
-        numberOfRelationship += values.size();
+            numberOfRelationship++;
+        }
     }
 
     inline K getKey(V value) {

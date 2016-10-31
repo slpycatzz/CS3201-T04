@@ -23,7 +23,7 @@ vector<Candidate> QueryEvaluator::getCandidates(Symbol &synType) {
         case VARIABLE:
             return PKB::GetAllVariableNames();
         case PROCEDURE:
-            return PKB::GetAllProcedures();
+            return PKB::GetAllProcedureNames();
         case BOOLEAN:
             return vector<Candidate>{ SYMBOL_TRUE };
         case CONSTANT:
@@ -421,22 +421,22 @@ void QueryEvaluator::filterNoVarWith(Candidate const1, Candidate const2, TotalCo
 
 void QueryEvaluator::filterTwoVarsCallWith(Synonym & call0, Synonym & call1, TotalCombinationList & combinations) {
 	auto comp = [=](CandidateCombination combi) -> bool {
-		return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call0]))
-			== (PKB::GetCallProcedureName(Utils::StringToInt(combi[call1]))));
+		return (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call0]), "")
+			== (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call1]), "")));
 	};
 	combinations.mergeAndFilter(call0, call1, comp);
 }
 
 void QueryEvaluator::filterOneVarCallWith(Synonym & call, Synonym & var, TotalCombinationList & combinations) {
     auto comp = [=](CandidateCombination combi) -> bool {
-        return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call])) == combi[var]);
+        return (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call]), "") == combi[var]);
     };
     combinations.mergeAndFilter(call, var, comp);
 }
 
 void QueryEvaluator::filterNoVarCallWith(Synonym & call, Candidate cand, TotalCombinationList & combinations) {
     auto comp = [=](CandidateCombination combi) -> bool {
-        return (PKB::GetCallProcedureName(Utils::StringToInt(combi[call])) == cand);
+        return (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call]), "") == cand);
     };
     combinations.filter(call, comp);
 }
@@ -475,11 +475,11 @@ bool QueryEvaluator::evaluatePatternClause(Candidate stmt,
 
         } else {
             // stmtNo can be type assign/if/while
-            string stmtSymbol = PKB::GetStmtSymbol(stmtNo);
-            if ((stmtSymbol == SYMBOL_ASSIGN)) {
+            Symbol stmtSymbol = PKB::GetStmtSymbol(stmtNo);
+            if ((stmtSymbol == ASSIGN)) {
                 return PKB::IsModifies(stmtNo, lhsVar);
             } else {
-                return PKB::HasControlVariableAtStmtNumber(stmtNo, lhsVar);
+                return PKB::HasControlVariableNameAtStmtNumber(stmtNo, lhsVar);
             }
         }
 

@@ -25,194 +25,123 @@ namespace UnitTesting {
         }
 
         TEST_METHOD(PKB_ConstantTable) {
-            set<string> constants;
+            PKB::InsertConstantValue(1, "1");
+            PKB::InsertConstantValue(2, "10");
+            PKB::InsertConstantValue(3, "100");
 
-            constants.insert("1");
-            constants.insert("10");
-            constants.insert("100");
+            Assert::IsTrue(PKB::HasConstantValue("10"));
+            Assert::IsFalse(PKB::HasConstantValue("1000"));
 
-            PKB::GenerateConstantTable(constants);
+            Assert::AreNotEqual(PKB::GetConstantIndex("1"), static_cast<unsigned int>(0));
+            Assert::AreEqual(PKB::GetConstantIndex("10"), static_cast<unsigned int>(2));
+            Assert::AreEqual(PKB::GetConstantIndex("2000"), static_cast<unsigned int>(0));
 
-            Assert::IsTrue(PKB::HasConstant("10"));
-            Assert::IsFalse(PKB::HasConstant("1000"));
+            Assert::AreEqual(PKB::GetConstantValue(1), string("1"));
+            Assert::AreEqual(PKB::GetConstantValue(4), string(""));
 
-            for (const auto &index : PKB::GetConstantIndex("1")) {
-                Assert::AreNotEqual(index, static_cast<unsigned int>(0));
+            vector<string> constantValues = { "1", "10", "100" };
 
-                for (const auto &constant : PKB::GetConstantValue(index)) {
-                    Assert::AreEqual(constant, string("1"));
-                }
-            }
-
-            for (const auto &index : PKB::GetConstantIndex("2000")) {
-                Assert::AreEqual(index, static_cast<unsigned int>(0));
-            }
-
-            vector<string> vec = PKB::GetAllConstantValues();
-            set<string> tableConstants(vec.begin(), vec.end());
-
-            Assert::IsTrue(constants == tableConstants);
+            Assert::IsTrue(constantValues == PKB::GetAllConstantValues());
         }
 
         TEST_METHOD(PKB_VariableTable) {
-            set<string> variables;
+            PKB::InsertVariableName(1, "x");
+            PKB::InsertVariableName(2, "xyz");
+            PKB::InsertVariableName(3, "xyz12345");
 
-            variables.insert("x");
-            variables.insert("xyz");
-            variables.insert("xyz12345");
+            Assert::IsTrue(PKB::HasVariableName("x"));
+            Assert::IsFalse(PKB::HasVariableName("Xyz"));
 
-            PKB::GenerateVariableTable(variables);
+            Assert::AreNotEqual(PKB::GetVariableIndex("xyz"), static_cast<unsigned int>(0));
+            Assert::AreEqual(PKB::GetVariableIndex("xyz12345"), static_cast<unsigned int>(3));
+            Assert::AreEqual(PKB::GetVariableIndex("xyz1234"), static_cast<unsigned int>(0));
 
-            Assert::IsTrue(PKB::HasVariable("x"));
-            Assert::IsFalse(PKB::HasVariable("Xyz"));
+            Assert::AreEqual(PKB::GetVariableName(2), string("xyz"));
+            Assert::AreEqual(PKB::GetVariableName(10), string(""));
 
-            for (const auto &index : PKB::GetVariableIndex("xyz")) {
-                Assert::AreNotEqual(index, static_cast<unsigned int>(0));
+            vector<string> variableNames = { "x", "xyz", "xyz12345" };
 
-                for (const auto &variableName : PKB::GetVariableName(index)) {
-                    Assert::AreEqual(variableName, string("xyz"));
-                }
-            }
-
-            for (const auto &index : PKB::GetVariableIndex("xyz1234")) {
-                Assert::AreEqual(index, static_cast<unsigned int>(0));
-            }
-
-            vector<string> vec = PKB::GetAllVariableNames();
-            set<string> tableVariables(vec.begin(), vec.end());
-
-            Assert::IsTrue(variables == tableVariables);
+            Assert::IsTrue(variableNames == PKB::GetAllVariableNames());
         }
 
         TEST_METHOD(PKB_ProcedureTable) {
-            set<string> procedures;
+            PKB::InsertProcedureName(1, "Apple");
+            PKB::InsertProcedureName(2, "Pineapple");
+            PKB::InsertProcedureName(3, "Pen");
+            PKB::InsertProcedureName(4, "Kangaroo");
 
-            procedures.insert("Apple");
-            procedures.insert("Pineapple");
-            procedures.insert("Pen");
-            procedures.insert("Kangaroo");
+            Assert::IsTrue(PKB::HasProcedureName("Apple"));
+            Assert::IsFalse(PKB::HasProcedureName("apple"));
 
-            PKB::GenerateProcedureTable(procedures);
+            Assert::AreNotEqual(PKB::GetProcedureIndex("Pineapple"), static_cast<unsigned int>(0));
+            Assert::AreEqual(PKB::GetProcedureIndex("Kangaroo"), static_cast<unsigned int>(4));
+            Assert::AreEqual(PKB::GetProcedureIndex("PIneapple"), static_cast<unsigned int>(0));
 
-            Assert::IsTrue(PKB::HasProcedure("Apple"));
-            Assert::IsFalse(PKB::HasProcedure("apple"));
+            Assert::AreEqual(PKB::GetProcedureName(3), string("Pen"));
+            Assert::AreEqual(PKB::GetProcedureName(5), string(""));
 
-            for (const auto &index : PKB::GetProcedureIndex("Pineapple")) {
-                Assert::AreNotEqual(index, static_cast<unsigned int>(0));
+            vector<string> procedureNames = { "Apple", "Kangaroo", "Pen", "Pineapple" };
+            vector<unsigned int> procedureIndexes = { 1, 2, 3, 4 };
 
-                for (const auto &procedureName : PKB::GetProcedureName(index)) {
-                    Assert::AreEqual(procedureName, string("Pineapple"));
-                }
-            }
-
-            for (const auto &index : PKB::GetProcedureIndex("angaroo")) {
-                Assert::AreEqual(index, static_cast<unsigned int>(0));
-            }
-
-            vector<string> vec = PKB::GetAllProcedures();
-            set<string> tableProcedures(vec.begin(), vec.end());
-
-            Assert::IsTrue(procedures == tableProcedures);
+            Assert::IsTrue(procedureNames == PKB::GetAllProcedureNames());
+            Assert::IsTrue(procedureIndexes == PKB::GetAllProcedureIndexes());
         }
 
         TEST_METHOD(PKB_ControlVariableTable) {
-            vector<string> controlVariables;
-            map<unsigned int, string> controlVariablesMap;
+            PKB::InsertControlVariable(10, 1);
+            PKB::InsertControlVariable(11, 2);
+            PKB::InsertControlVariable(12, 6);
 
-            controlVariables.push_back("zyx");
-            controlVariables.push_back("zzzzz");
-            controlVariables.push_back("sleepy");
+            Assert::IsTrue(PKB::HasControlVariableIndex(1));
+            Assert::IsFalse(PKB::HasControlVariableIndex(5));
 
-            controlVariablesMap[10] = "zyx";
-            controlVariablesMap[11] = "zzzzz";
-            controlVariablesMap[12] = "sleepy";
+            Assert::IsTrue(PKB::HasControlVariableIndexAtStmtNumber(11, 2));
+            Assert::IsFalse(PKB::HasControlVariableIndexAtStmtNumber(12, 4));
+            Assert::IsFalse(PKB::HasControlVariableIndexAtStmtNumber(10, 3));
 
-            PKB::GenerateControlVariableTable(controlVariablesMap);
+            Assert::AreEqual(PKB::GetControlVariableIndex(11), static_cast<unsigned int>(2));
+            Assert::AreEqual(PKB::GetControlVariableIndex(12), static_cast<unsigned int>(6));
+            Assert::AreEqual(PKB::GetControlVariableIndex(1), static_cast<unsigned int>(0));
 
-            Assert::IsTrue(PKB::HasControlVariable("zzzzz"));
-            Assert::IsFalse(PKB::HasControlVariable("sleEpy"));
+            vector<unsigned int> controlVariableIndexes = { 1, 2, 6 };
 
-            Assert::IsTrue(PKB::HasControlVariableAtStmtNumber(11, "zzzzz"));
-            Assert::IsFalse(PKB::HasControlVariableAtStmtNumber(12, "sleep"));
-            Assert::IsFalse(PKB::HasControlVariableAtStmtNumber(10, "sleepy"));
-
-            for (const auto &controlVariable : PKB::GetControlVariable(10)) {
-                Assert::AreEqual(controlVariable, string("zyx"));
-            }
-            
-            for (const auto &controlVariable : PKB::GetControlVariable(13)) {
-                Assert::AreEqual(controlVariable, string(""));
-            }
-
-            vector<string> vec = PKB::GetAllControlVariables();
-            
-            std::sort(vec.begin(), vec.end());
-            std::sort(controlVariables.begin(), controlVariables.end());
-
-            Assert::IsTrue(vec == controlVariables);
+            Assert::IsTrue(controlVariableIndexes == PKB::GetAllControlVariableIndexes());
         }
 
         TEST_METHOD(PKB_CallTable) {
-            map<unsigned int, string> callMap;
+            PKB::InsertCallStmt(10, 100);
+            PKB::InsertCallStmt(11, 200);
+            PKB::InsertCallStmt(12, 300);
 
-            callMap[10] = "abc";
-            callMap[11] = "def";
-            callMap[12] = "abcd";
-
-            PKB::GenerateCallTable(callMap);
-
-            Assert::AreEqual(PKB::GetCallProcedureName(10), string("abc"));
-            Assert::AreEqual(PKB::GetCallProcedureName(11), string("def"));
-            Assert::AreEqual(PKB::GetCallProcedureName(12), string("abcd"));
-            Assert::AreEqual(PKB::GetCallProcedureName(13), string(""));
+            Assert::AreEqual(PKB::GetCallStmtProcedureIndex(10), static_cast<unsigned int>(100));
+            Assert::AreEqual(PKB::GetCallStmtProcedureIndex(11), static_cast<unsigned int>(200));
+            Assert::AreEqual(PKB::GetCallStmtProcedureIndex(12), static_cast<unsigned int>(300));
+            Assert::AreEqual(PKB::GetCallStmtProcedureIndex(13), static_cast<unsigned int>(0));
         }
 
         TEST_METHOD(PKB_StmtTable) {
-            vector<unsigned int> stmtNumbers;
-            map<unsigned int, string> stmtsMap;
+            PKB::InsertStmt(10, CALL);
+            PKB::InsertStmt(11, ASSIGN);
+            PKB::InsertStmt(12, ASSIGN);
+            PKB::InsertStmt(13, IF);
 
-            stmtNumbers.push_back(11);
-            stmtNumbers.push_back(12);
+            Assert::AreEqual(Constants::SymbolToString(PKB::GetStmtSymbol(10)).c_str(), SYMBOL_CALL);
+            Assert::AreEqual(Constants::SymbolToString(PKB::GetStmtSymbol(15)).c_str(), SYMBOL_INVALID);
 
-            stmtsMap[10] = SYMBOL_CALL;
-            stmtsMap[11] = SYMBOL_ASSIGN;
-            stmtsMap[12] = SYMBOL_ASSIGN;
-            stmtsMap[13] = SYMBOL_IF;
+            vector<unsigned int> assignStmtNumbers = { 11, 12 };
 
-            PKB::GenerateStmtTable(stmtsMap);
-
-            Assert::AreEqual(PKB::GetStmtSymbol(10), string(SYMBOL_CALL));
-            Assert::AreEqual(PKB::GetStmtSymbol(13), string(SYMBOL_IF));
-
-            vector<unsigned int> vec = PKB::GetSymbolStmtNumbers(ASSIGN);
-
-            std::sort(vec.begin(), vec.end());
-            std::sort(stmtNumbers.begin(), stmtNumbers.end());
-
-            Assert::IsTrue(vec == stmtNumbers);
+            Assert::IsTrue(assignStmtNumbers == PKB::GetSymbolStmtNumbers(ASSIGN));
             Assert::IsTrue(vector<unsigned int>() == PKB::GetSymbolStmtNumbers(WHILE));
         }
 
         TEST_METHOD(PKB_StmtlistTable) {
-            vector<unsigned int> stmtNumbers;
-            map<unsigned int, string> stmtlistsMap;
+            PKB::InsertStmtlist(10, PROCEDURE);
+            PKB::InsertStmtlist(11, WHILE);
+            PKB::InsertStmtlist(12, WHILE);
 
-            stmtNumbers.push_back(10);
-            stmtNumbers.push_back(11);
-            stmtNumbers.push_back(12);
+            vector<unsigned int> stmtlistStmtNumbers = { 10, 11, 12 };
 
-            stmtlistsMap[10] = SYMBOL_PROCEDURE;
-            stmtlistsMap[11] = SYMBOL_WHILE;
-            stmtlistsMap[12] = SYMBOL_WHILE;
-
-            PKB::GenerateStmtlistTable(stmtlistsMap);
-
-            vector<unsigned int> vec = PKB::GetAllStmtlistsStmtNumber();
-
-            std::sort(vec.begin(), vec.end());
-            std::sort(stmtNumbers.begin(), stmtNumbers.end());
-
-            Assert::IsTrue(vec == stmtNumbers);
+            Assert::IsTrue(stmtlistStmtNumbers == PKB::GetAllStmtlistsStmtNumber());
         }
   };
 }

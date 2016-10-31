@@ -46,7 +46,7 @@ void QueryProjector::projectResult(std::list<std::string>& results, std::unorder
             //Check for call.procName in Selected synonyms and convert to procName if found
             for (int i = 0; i < tuple.size(); i++) {
                 if (resultsInfo.find(selectList[i])->second == true) {
-                    result += PKB::GetCallProcedureName(stoi(tuple[i])) + " ";
+                    result += PKB::GetCallStmtProcedureName(stoi(tuple[i]), "") + " ";
                 }
                 else {
                     result += tuple[i] + " ";

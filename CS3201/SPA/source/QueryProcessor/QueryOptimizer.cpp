@@ -127,7 +127,7 @@ QueryTree QueryOptimizer::optimize(QueryTree qt) {
     }
 
     if (hasNextTransitiveClause) {
-        PKB::GenerateNextTransitiveTable();
+        PKB::PopulateNextTransitiveTable();
     }
 
     // Insert first clause into group if group is empty

@@ -32,88 +32,56 @@ unsigned int PKB::tableMaximumSize_  = 0;
 vector<CFGNode> PKB::controlFlowGraphs_;
 vector<vector<CFGNode>> PKB::controlFlowGraphsNodes_;
 
-Table<Index, ConstantValue> PKB::constantTable_  = Table<Index, ConstantValue>();
-Table<Index, VariableName>  PKB::variableTable_  = Table<Index, VariableName>();
-Table<Index, ProcedureName> PKB::procedureTable_ = Table<Index, ProcedureName>();
+Table<ConstantIndex, ConstantValue> PKB::constantTable_                     = Table<ConstantIndex, ConstantValue>();
+Table<VariableIndex, VariableName>  PKB::variableTable_                     = Table<VariableIndex, VariableName>();
+Table<ProcedureIndex, ProcedureName> PKB::procedureTable_                   = Table<ProcedureIndex, ProcedureName>();
 
-Table<StmtNumber, VariableName>  PKB::controlVariableTable_ = Table<StmtNumber, VariableName>();
-Table<StmtNumber, ProcedureName> PKB::callTable_            = Table<StmtNumber, ProcedureName>();
-Table<StmtNumber, StmtSymbol>    PKB::stmtTable_            = Table<StmtNumber, StmtSymbol>();
-Table<StmtNumber, StmtSymbol>    PKB::stmtlistTable_        = Table<StmtNumber, StmtSymbol>();
+Table<StmtNumber, VariableIndex>  PKB::controlVariableTable_                = Table<StmtNumber, VariableIndex>();
+Table<StmtNumber, ProcedureIndex> PKB::callTable_                           = Table<StmtNumber, ProcedureIndex>();
+Table<StmtNumber, Symbol>    PKB::stmtTable_                                = Table<StmtNumber, Symbol>();
+Table<StmtNumber, Symbol>    PKB::stmtlistTable_                            = Table<StmtNumber, Symbol>();
 
-Table<Priority, TableSymbol> PKB::priorityTable_ = Table<Priority, TableSymbol>();
+Table<Priority, Symbol> PKB::priorityTable_                                 = Table<Priority, Symbol>();
 
-Table<StmtNumber, Expression> PKB::expressionTable_        = Table<StmtNumber, Expression>();
-Table<StmtNumber, SubExpressions> PKB::subExpressionTable_ = Table<StmtNumber, SubExpressions>();
+Table<StmtNumber, Expression> PKB::expressionTable_                         = Table<StmtNumber, Expression>();
+Table<StmtNumber, SubExpression> PKB::subExpressionTable_                   = Table<StmtNumber, SubExpression>();
 
-Table<ProcedureName, ProcedureName> PKB::callsTable_                     = Table<ProcedureName, ProcedureName>();
-TransitiveTable<ProcedureName, ProcedureName> PKB::callsTransitiveTable_ = TransitiveTable<ProcedureName, ProcedureName>();
+Table<ProcedureIndex, ProcedureIndex> PKB::callsTable_                      = Table<ProcedureIndex, ProcedureIndex>();
+TransitiveTable<ProcedureIndex, ProcedureIndex> PKB::callsTransitiveTable_  = TransitiveTable<ProcedureIndex, ProcedureIndex>();
 
-Table<StmtNumber, VariableName> PKB::modifiesTable_             = Table<StmtNumber, VariableName>();
-Table<ProcedureName, VariableName> PKB::modifiesProcedureTable_ = Table<ProcedureName, VariableName>();
+Table<StmtNumber, VariableIndex> PKB::modifiesTable_                        = Table<StmtNumber, VariableIndex>();
+Table<ProcedureIndex, VariableIndex> PKB::modifiesProcedureTable_           = Table<ProcedureIndex, VariableIndex>();
 
-Table<StmtNumber, VariableName> PKB::usesTable_             = Table<StmtNumber, VariableName>();
-Table<ProcedureName, VariableName> PKB::usesProcedureTable_ = Table<ProcedureName, VariableName>();
+Table<StmtNumber, VariableIndex> PKB::usesTable_                            = Table<StmtNumber, VariableIndex>();
+Table<ProcedureIndex, VariableIndex> PKB::usesProcedureTable_               = Table<ProcedureIndex, VariableIndex>();
 
-Table<StmtNumber, StmtNumber> PKB::parentTable_                     = Table<StmtNumber, StmtNumber>();
-TransitiveTable<StmtNumber, StmtNumber> PKB::parentTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
+Table<StmtNumber, StmtNumber> PKB::parentTable_                             = Table<StmtNumber, StmtNumber>();
+TransitiveTable<StmtNumber, StmtNumber> PKB::parentTransitiveTable_         = TransitiveTable<StmtNumber, StmtNumber>();
 
-Table<StmtNumber, StmtNumber> PKB::followsTable_                     = Table<StmtNumber, StmtNumber>();
-TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
+Table<StmtNumber, StmtNumber> PKB::followsTable_                            = Table<StmtNumber, StmtNumber>();
+TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_        = TransitiveTable<StmtNumber, StmtNumber>();
 
-Table<StmtNumber, StmtNumber> PKB::nextTable_ = Table<StmtNumber, StmtNumber>();
-TransitiveTable<StmtNumber, StmtNumber> PKB::nextTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
+Table<StmtNumber, StmtNumber> PKB::nextTable_                               = Table<StmtNumber, StmtNumber>();
+TransitiveTable<StmtNumber, StmtNumber> PKB::nextTransitiveTable_           = TransitiveTable<StmtNumber, StmtNumber>();
 
-/* START - AST functions */
-
-void PKB::SetASTRoot(TreeNode *root) {
-    AST::getInstance()->setRoot(root);
-}
-
-TreeNode* PKB::GetASTRoot() {
-    return AST::getInstance()->getRoot();
-}
-
-TreeNode* PKB::CreateASTNode(Symbol symbol) {
-    return AST::getInstance()->createNode(symbol);
-}
-
-TreeNode* PKB::CreateASTNode(Symbol symbol, string value) {
-    return AST::getInstance()->createNode(symbol, value);
-}
-
-TreeNode* PKB::CreateASTNode(Symbol symbol, StmtNumber stmtNumber) {
-    return AST::getInstance()->createNode(symbol, stmtNumber);
-}
-
-TreeNode* PKB::CreateASTNode(Symbol symbol, StmtNumber stmtNumber, string value) {
-    return AST::getInstance()->createNode(symbol, stmtNumber, value);
-}
-
-void PKB::PrintASTTree() {
-    AST::getInstance()->printTree();
-}
-
-/* END   - AST functions */
 /* START - Constant table functions */
 
-void PKB::GenerateConstantTable(set<ConstantValue> constants) {
-    unsigned int i = 1;
-    for (auto &constant : constants) {
-        constantTable_.insert(i++, constant);
+void PKB::InsertConstantValue(ConstantIndex constantIndex, ConstantValue constantValue) {
+    if (!HasConstantValue(constantValue)) {
+        constantTable_.insert(constantIndex, constantValue);
     }
 }
 
-bool PKB::HasConstant(ConstantValue constantValue) {
+bool PKB::HasConstantValue(ConstantValue constantValue) {
     return constantTable_.hasValue(constantValue);
 }
 
-set<ConstantValue> PKB::GetConstantValue(Index index) {
-    return constantTable_.getValues(index);
+ConstantIndex PKB::GetConstantIndex(ConstantValue constantValue) {
+    return (constantTable_.hasValue(constantValue)) ? constantTable_.getKey(constantValue) : 0;
 }
 
-set<Index> PKB::GetConstantIndex(ConstantValue constantValue) {
-    return constantTable_.getKeys(constantValue);
+ConstantValue PKB::GetConstantValue(ConstantIndex constantIndex) {
+    return (constantTable_.hasKey(constantIndex)) ? constantTable_.getValue(constantIndex) : "";
 }
 
 vector<ConstantValue> PKB::GetAllConstantValues() {
@@ -132,23 +100,22 @@ void PKB::PrintConstantTable() {
 /* END   - Constant table functions */
 /* START - Variable table functions */
 
-void PKB::GenerateVariableTable(set<VariableName> variableNames) {
-    unsigned int i = 1;
-    for (auto &variableName : variableNames) {
-        variableTable_.insert(i++, variableName);
+void PKB::InsertVariableName(VariableIndex variableIndex, VariableName variableName) {
+    if (!HasVariableName(variableName)) {
+        variableTable_.insert(variableIndex, variableName);
     }
 }
 
-bool PKB::HasVariable(VariableName variableName) {
+bool PKB::HasVariableName(VariableName variableName) {
     return variableTable_.hasValue(variableName);
 }
 
-set<VariableName> PKB::GetVariableName(Index index) {
-    return variableTable_.getValues(index);
+VariableIndex PKB::GetVariableIndex(VariableName variableName) {
+    return (variableTable_.hasValue(variableName)) ? variableTable_.getKey(variableName) : 0;
 }
 
-set<Index> PKB::GetVariableIndex(VariableName variableName) {
-    return variableTable_.getKeys(variableName);
+VariableName PKB::GetVariableName(VariableIndex variableIndex) {
+    return (variableTable_.hasKey(variableIndex)) ? variableTable_.getValue(variableIndex) : "";
 }
 
 vector<VariableName> PKB::GetAllVariableNames() {
@@ -167,30 +134,38 @@ void PKB::PrintVariableTable() {
 /* END   - Variable table functions */
 /* START - Procedure table functions */
 
-void PKB::GenerateProcedureTable(set<ProcedureName> procedureNames) {
-    unsigned int i = 1;
-    for (auto &procedureName : procedureNames) {
+void PKB::InsertProcedureName(ProcedureIndex procedureIndex, ProcedureName procedureName) {
+    if (!HasProcedureName(procedureName)) {
         numberOfProcedure_++;
-        procedureTable_.insert(i++, procedureName);
+        procedureTable_.insert(procedureIndex, procedureName);
     }
 }
 
-bool PKB::HasProcedure(ProcedureName procedureName) {
+bool PKB::HasProcedureName(ProcedureName procedureName) {
     return procedureTable_.hasValue(procedureName);
 }
 
-set<ProcedureName> PKB::GetProcedureName(Index index) {
-    return procedureTable_.getValues(index);
+ProcedureIndex PKB::GetProcedureIndex(ProcedureName procedureName) {
+    return (procedureTable_.hasValue(procedureName)) ? procedureTable_.getKey(procedureName) : 0;
 }
 
-set<Index> PKB::GetProcedureIndex(ProcedureName procedureName) {
-    return procedureTable_.getKeys(procedureName);
+ProcedureName PKB::GetProcedureName(ProcedureIndex procedureIndex) {
+    return (procedureTable_.hasKey(procedureIndex)) ? procedureTable_.getValue(procedureIndex) : "";
 }
 
-vector<ProcedureName> PKB::GetAllProcedures() {
+vector<ProcedureName> PKB::GetAllProcedureNames() {
     set<ProcedureName> result = procedureTable_.getValues();
 
     vector<ProcedureName> vec(result.size());
+    std::copy(result.begin(), result.end(), vec.begin());
+
+    return vec;
+}
+
+vector<ProcedureIndex> PKB::GetAllProcedureIndexes() {
+    set<ProcedureIndex> result = procedureTable_.getKeys();
+
+    vector<ProcedureIndex> vec(result.size());
     std::copy(result.begin(), result.end(), vec.begin());
 
     return vec;
@@ -203,28 +178,26 @@ void PKB::PrintProcedureTable() {
 /* END   - Procedure table functions */
 /* START - Control variable table functions */
 
-void PKB::GenerateControlVariableTable(map<StmtNumber, VariableName> controlVariables) {
-    for (auto &controlVariable : controlVariables) {
-        controlVariableTable_.insert(controlVariable.first, controlVariable.second);
-    }
+void PKB::InsertControlVariable(StmtNumber stmtNumber, VariableIndex variableIndex) {
+    controlVariableTable_.insert(stmtNumber, variableIndex);
 }
 
-bool PKB::HasControlVariable(VariableName controlVariable) {
-    return controlVariableTable_.hasValue(controlVariable);
+bool PKB::HasControlVariableIndex(VariableIndex variableIndex) {
+    return controlVariableTable_.hasValue(variableIndex);
 }
 
-bool PKB::HasControlVariableAtStmtNumber(StmtNumber stmtNumber, VariableName controlVariable) {
-    return controlVariableTable_.hasKeyToValue(stmtNumber, controlVariable);
+bool PKB::HasControlVariableIndexAtStmtNumber(StmtNumber stmtNumber, VariableIndex variableIndex) {
+    return controlVariableTable_.hasKeyToValue(stmtNumber, variableIndex);
 }
 
-set<VariableName> PKB::GetControlVariable(StmtNumber stmtNumber) {
-    return controlVariableTable_.getValues(stmtNumber);
+VariableIndex PKB::GetControlVariableIndex(StmtNumber stmtNumber) {
+    return (controlVariableTable_.hasKey(stmtNumber)) ? controlVariableTable_.getValue(stmtNumber) : 0;
 }
 
-vector<VariableName> PKB::GetAllControlVariables() {
-    set<VariableName> result = controlVariableTable_.getValues();
+vector<VariableIndex> PKB::GetAllControlVariableIndexes() {
+    set<VariableIndex> result = controlVariableTable_.getValues();
 
-    vector<VariableName> vec(result.size());
+    vector<VariableIndex> vec(result.size());
     std::copy(result.begin(), result.end(), vec.begin());
 
     return vec;
@@ -237,14 +210,12 @@ void PKB::PrintControlVariableTable() {
 /* END   - Control variable table functions */
 /* START - Call table functions */
 
-void PKB::GenerateCallTable(map<StmtNumber, ProcedureName> callStmtNumbers) {
-    for (auto &pair : callStmtNumbers) {
-        callTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertCallStmt(StmtNumber stmtNumber, ProcedureIndex procedureIndex) {
+    callTable_.insert(stmtNumber, procedureIndex);
 }
 
-ProcedureName PKB::GetCallProcedureName(StmtNumber stmtNumber) {
-    return (callTable_.hasKey(stmtNumber)) ? callTable_.getValue(stmtNumber) : "";
+ProcedureIndex PKB::GetCallStmtProcedureIndex(StmtNumber stmtNumber) {
+    return (callTable_.hasKey(stmtNumber)) ? callTable_.getValue(stmtNumber) : 0;
 }
 
 void PKB::PrintCallTable() {
@@ -254,48 +225,42 @@ void PKB::PrintCallTable() {
 /* END   - Call table functions */
 /* START - Stmt table functions */
 
-void PKB::GenerateStmtTable(map<StmtNumber, StmtSymbol> stmts) {
-    for (auto &stmt : stmts) {
-        switch (Constants::StringToSymbol(stmt.second)) {
-            default:
-                break;
+void PKB::InsertStmt(StmtNumber stmtNumber, Symbol stmtSymbol) {
+    switch (stmtSymbol) {
+        default:
+            break;
 
-            case ASSIGN:
-                numberOfAssign_++;
-                break;
+        case ASSIGN:
+            numberOfAssign_++;
+            break;
 
-            case WHILE:
-                numberOfWhile_++;
-                break;
+        case WHILE:
+            numberOfWhile_++;
+            break;
 
-            case IF:
-                numberOfIf_++;
-                break;
+        case IF:
+            numberOfIf_++;
+            break;
 
-            case CALL:
-                numberOfCall_++;
-                break;
-        }
-
-        stmtTable_.insert(stmt.first, stmt.second);
+        case CALL:
+            numberOfCall_++;
+            break;
     }
+
+    stmtTable_.insert(stmtNumber, stmtSymbol);
 }
 
-StmtSymbol PKB::GetStmtSymbol(StmtNumber stmtNumber) {
-    return (stmtTable_.hasKey(stmtNumber)) ? stmtTable_.getValue(stmtNumber) : "";
+Symbol PKB::GetStmtSymbol(StmtNumber stmtNumber) {
+    return (stmtTable_.hasKey(stmtNumber)) ? stmtTable_.getValue(stmtNumber) : INVALID;
 }
 
-vector<StmtNumber> PKB::GetSymbolStmtNumbers(StmtSymbol symbol) {
-    set<StmtNumber> result = (symbol == SYMBOL_STMT) ? stmtTable_.getKeys() : stmtTable_.getKeys(symbol);
+vector<StmtNumber> PKB::GetSymbolStmtNumbers(Symbol stmtSymbol) {
+    set<StmtNumber> result = (stmtSymbol == STMT) ? stmtTable_.getKeys() : stmtTable_.getKeys(stmtSymbol);
 
     vector<StmtNumber> vec(result.size());
     std::copy(result.begin(), result.end(), vec.begin());
 
     return vec;
-}
-
-vector<StmtNumber> PKB::GetSymbolStmtNumbers(Symbol symbol) {
-    return GetSymbolStmtNumbers(Constants::SymbolToString(symbol));
 }
 
 void PKB::PrintStmtTable() {
@@ -305,10 +270,8 @@ void PKB::PrintStmtTable() {
 /* END   - Stmt table functions */
 /* START - Stmtlist table functions */
 
-void PKB::GenerateStmtlistTable(map<StmtNumber, StmtSymbol> stmtlists) {
-    for (auto &pair : stmtlists) {
-        stmtlistTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertStmtlist(StmtNumber stmtNumber, Symbol stmtSymbol) {
+    stmtlistTable_.insert(stmtNumber, stmtSymbol);
 }
 
 vector<StmtNumber> PKB::GetAllStmtlistsStmtNumber() {
@@ -327,23 +290,23 @@ void PKB::PrintStmtlistTable() {
 /* END   - Stmtlist table functions */
 /* START - Priority table functions */
 
-void PKB::GeneratePriorityTable() {
-    vector<std::pair<unsigned int, string>> tablesSize;
+void PKB::PopulatePriorityTable() {
+    vector<std::pair<unsigned int, Symbol>> tablesSize;
 
-    tablesSize.push_back(std::make_pair(callsTable_.getNumberOfRelationship(),   SYMBOL_CALLS));
-    tablesSize.push_back(std::make_pair(followsTable_.getNumberOfRelationship(), SYMBOL_FOLLOWS));
-    tablesSize.push_back(std::make_pair(parentTable_.getNumberOfRelationship(),  SYMBOL_PARENT));
+    tablesSize.push_back(std::make_pair(callsTable_.getNumberOfRelationship(),   CALLS));
+    tablesSize.push_back(std::make_pair(followsTable_.getNumberOfRelationship(), FOLLOWS));
+    tablesSize.push_back(std::make_pair(parentTable_.getNumberOfRelationship(),  PARENT));
 
-    tablesSize.push_back(std::make_pair(callsTransitiveTable_.getNumberOfRelationship(),   SYMBOL_CALLS_TRANSITIVE));
-    tablesSize.push_back(std::make_pair(followsTransitiveTable_.getNumberOfRelationship(), SYMBOL_FOLLOWS_TRANSITIVE));
-    tablesSize.push_back(std::make_pair(parentTransitiveTable_.getNumberOfRelationship(),  SYMBOL_PARENT_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(callsTransitiveTable_.getNumberOfRelationship(),   CALLS_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(followsTransitiveTable_.getNumberOfRelationship(), FOLLOWS_TRANSITIVE));
+    tablesSize.push_back(std::make_pair(parentTransitiveTable_.getNumberOfRelationship(),  PARENT_TRANSITIVE));
 
-    tablesSize.push_back(std::make_pair(nextTable_.getNumberOfRelationship(), SYMBOL_NEXT));
+    tablesSize.push_back(std::make_pair(nextTable_.getNumberOfRelationship(), NEXT));
 
-    tablesSize.push_back(std::make_pair(modifiesTable_.getNumberOfRelationship(),          SYMBOL_MODIFIES));
-    tablesSize.push_back(std::make_pair(modifiesProcedureTable_.getNumberOfRelationship(), SYMBOL_MODIFIES_PROCEDURE));
-    tablesSize.push_back(std::make_pair(usesTable_.getNumberOfRelationship(),              SYMBOL_USES));
-    tablesSize.push_back(std::make_pair(usesProcedureTable_.getNumberOfRelationship(),     SYMBOL_USES_PROCEDURE));
+    tablesSize.push_back(std::make_pair(modifiesTable_.getNumberOfRelationship(),          MODIFIES));
+    tablesSize.push_back(std::make_pair(modifiesProcedureTable_.getNumberOfRelationship(), MODIFIES_PROCEDURE));
+    tablesSize.push_back(std::make_pair(usesTable_.getNumberOfRelationship(),              USES));
+    tablesSize.push_back(std::make_pair(usesProcedureTable_.getNumberOfRelationship(),     USES_PROCEDURE));
 
     /* Sort the size in ascending order to determine the priority. */
     std::sort(tablesSize.begin(), tablesSize.end(), ComparePairAscending);
@@ -354,15 +317,11 @@ void PKB::GeneratePriorityTable() {
     }
 
     /* Assign lower priority to compute on demand design abstractions. */
-    priorityTable_.insert(i + 1, SYMBOL_NEXT_TRANSITIVE);
+    priorityTable_.insert(i + 1, NEXT_TRANSITIVE);
 }
 
-Priority PKB::GetPriority(TableSymbol symbol) {
-    return (priorityTable_.hasValue(symbol)) ? priorityTable_.getKey(symbol) : 0;
-}
-
-Priority PKB::GetPriority(Symbol symbol) {
-    return GetPriority(Constants::SymbolToString(symbol));
+Priority PKB::GetPriority(Symbol designAbstractionSymbol) {
+    return (priorityTable_.hasValue(designAbstractionSymbol)) ? priorityTable_.getKey(designAbstractionSymbol) : 0;
 }
 
 void PKB::PrintPriorityTable() {
@@ -372,43 +331,45 @@ void PKB::PrintPriorityTable() {
 /* END   - Priority table functions */
 /* START - Expression table functions */
 
-void PKB::GenerateExpressionTable(map<StmtNumber, Expression> expressions) {
-    for (auto &pair : expressions) {
-        expressionTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertExpression(StmtNumber stmtNumber, Expression expression) {
+    expressionTable_.insert(stmtNumber, expression);
 }
 
-void PKB::GenerateSubExpressionTable(map<StmtNumber, set<SubExpressions>> subExpressions) {
-    for (auto &pair : subExpressions) {
-        subExpressionTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertSubExpression(StmtNumber stmtNumber, SubExpression subExpression) {
+    subExpressionTable_.insert(stmtNumber, subExpression);
 }
 
-bool PKB::IsExactPattern(StmtNumber stmtNumber, VariableName variableName, Expression expression) {
-    string stmtSymbol = GetStmtSymbol(stmtNumber);
+bool PKB::IsExactPattern(StmtNumber stmtNumber, VariableIndex variableIndex, Expression expression) {
+    switch (GetStmtSymbol(stmtNumber)) {
+        default:
+            break;
 
-    if (stmtSymbol == SYMBOL_WHILE || stmtSymbol == SYMBOL_IF) {
-        return HasControlVariableAtStmtNumber(stmtNumber, variableName);
+        case WHILE:
+        case IF:
+            return HasControlVariableIndexAtStmtNumber(stmtNumber, variableIndex);
 
-    } else if (stmtSymbol == SYMBOL_ASSIGN) {
-        if (HasControlVariableAtStmtNumber(stmtNumber, variableName)) {
-            return IsExactExpression(stmtNumber, expression);
-        }
+        case ASSIGN:
+            if (HasControlVariableIndexAtStmtNumber(stmtNumber, variableIndex)) {
+                return IsExactExpression(stmtNumber, expression);
+            }
     }
 
     return false;
 }
 
-bool PKB::IsSubPattern(StmtNumber stmtNumber, VariableName variableName, SubExpressions subExpression) {
-    string stmtSymbol = GetStmtSymbol(stmtNumber);
+bool PKB::IsSubPattern(StmtNumber stmtNumber, VariableIndex variableIndex, SubExpression subExpression) {
+    switch (GetStmtSymbol(stmtNumber)) {
+        default:
+            break;
 
-    if (stmtSymbol == SYMBOL_WHILE || stmtSymbol == SYMBOL_IF) {
-        return HasControlVariableAtStmtNumber(stmtNumber, variableName);
+        case WHILE:
+        case IF:
+            return HasControlVariableIndexAtStmtNumber(stmtNumber, variableIndex);
 
-    } else if (stmtSymbol == SYMBOL_ASSIGN) {
-        if (HasControlVariableAtStmtNumber(stmtNumber, variableName)) {
-            return IsSubExpression(stmtNumber, subExpression);
-        }
+        case ASSIGN:
+            if (HasControlVariableIndexAtStmtNumber(stmtNumber, variableIndex)) {
+                return IsSubExpression(stmtNumber, subExpression);
+            }
     }
 
     return false;
@@ -418,7 +379,7 @@ bool PKB::HasExactExpression(Expression expression) {
     return expressionTable_.hasValue(expression);
 }
 
-bool PKB::HasSubExpression(SubExpressions subExpression) {
+bool PKB::HasSubExpression(SubExpression subExpression) {
     return subExpressionTable_.hasValue(subExpression);
 }
 
@@ -426,7 +387,7 @@ bool PKB::IsExactExpression(StmtNumber stmtNumber, Expression expression) {
     return expressionTable_.hasKeyToValue(stmtNumber, expression);
 }
 
-bool PKB::IsSubExpression(StmtNumber stmtNumber, SubExpressions subExpression) {
+bool PKB::IsSubExpression(StmtNumber stmtNumber, SubExpression subExpression) {
     return subExpressionTable_.hasKeyToValue(stmtNumber, subExpression);
 }
 
@@ -441,43 +402,43 @@ void PKB::PrintSubExpressionTable() {
 /* END   - Expression table functions */
 /* START - Calls table functions */
 
-void PKB::GenerateCallsTable(map<ProcedureName, set<ProcedureName>> calls) {
-    for (auto &pair : calls) {
-        callsTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertCalls(ProcedureIndex calling, ProcedureIndex called) {
+    callsTable_.insert(calling, called);
+}
 
+void PKB::PopulateCallsTransitiveTable() {
     callsTransitiveTable_.generateTransitiveTable(callsTable_);
 }
 
-bool PKB::IsCalls(ProcedureName calling, ProcedureName called) {
+bool PKB::IsCalls(ProcedureIndex calling, ProcedureIndex called) {
     return callsTable_.hasKeyToValue(calling, called);
 }
 
-bool PKB::IsCalls(ProcedureName calling, set<ProcedureName> called) {
-    return callsTable_.hasKeyToValues(calling, called);
+bool PKB::IsCalls(ProcedureIndex calling, set<ProcedureIndex> calleds) {
+    return callsTable_.hasKeyToValues(calling, calleds);
 }
 
-bool PKB::IsCallsTransitive(ProcedureName calling, ProcedureName called) {
+bool PKB::IsCallsTransitive(ProcedureIndex calling, ProcedureIndex called) {
     return callsTransitiveTable_.hasKeyToValue(calling, called);
 }
 
-bool PKB::IsCallsTransitive(ProcedureName calling, set<ProcedureName> called) {
-    return callsTransitiveTable_.hasKeyToValues(calling, called);
+bool PKB::IsCallsTransitive(ProcedureIndex calling, set<ProcedureIndex> calleds) {
+    return callsTransitiveTable_.hasKeyToValues(calling, calleds);
 }
 
-set<ProcedureName> PKB::GetCalling(ProcedureName called) {
+set<ProcedureIndex> PKB::GetCalling(ProcedureIndex called) {
     return callsTable_.getKeys(called);
 }
 
-set<ProcedureName> PKB::GetCalled(ProcedureName calling) {
+set<ProcedureIndex> PKB::GetCalled(ProcedureIndex calling) {
     return callsTable_.getValues(calling);
 }
 
-set<ProcedureName> PKB::GetCallingTransitive(ProcedureName called) {
+set<ProcedureIndex> PKB::GetCallingTransitive(ProcedureIndex called) {
     return callsTransitiveTable_.getKeys(called);
 }
 
-set<ProcedureName> PKB::GetCalledTransitive(ProcedureName calling) {
+set<ProcedureIndex> PKB::GetCalledTransitive(ProcedureIndex calling) {
     return callsTransitiveTable_.getValues(calling);
 }
 
@@ -500,48 +461,44 @@ void PKB::PrintCallsTransitiveTable() {
 /* END   - Calls table functions */
 /* START - Modifies table functions */
 
-void PKB::GenerateModifiesTable(map<StmtNumber, set<VariableName>> modifies) {
-    for (auto &pair : modifies) {
-        modifiesTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertModifies(StmtNumber stmtNumber, VariableIndex variableIndex) {
+    modifiesTable_.insert(stmtNumber, variableIndex);
 }
 
-void PKB::GenerateModifiesProcedureTable(map<ProcedureName, set<VariableName>> modifiesProcedure) {
-    for (auto &pair : modifiesProcedure) {
-        modifiesProcedureTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertModifiesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex) {
+    modifiesProcedureTable_.insert(procedureIndex, variableIndex);
 }
 
-bool PKB::IsModifies(StmtNumber stmtNumber, VariableName variableName) {
-    return modifiesTable_.hasKeyToValue(stmtNumber, variableName);
+bool PKB::IsModifies(StmtNumber stmtNumber, VariableIndex variableIndex) {
+    return modifiesTable_.hasKeyToValue(stmtNumber, variableIndex);
 }
 
-bool PKB::IsModifies(StmtNumber stmtNumber, set<VariableName> variableNames) {
-    return modifiesTable_.hasKeyToValues(stmtNumber, variableNames);
+bool PKB::IsModifies(StmtNumber stmtNumber, set<VariableIndex> variableIndexes) {
+    return modifiesTable_.hasKeyToValues(stmtNumber, variableIndexes);
 }
 
-bool PKB::IsModifiesProcedure(ProcedureName procedureName, VariableName variableName) {
-    return modifiesProcedureTable_.hasKeyToValue(procedureName, variableName);
+bool PKB::IsModifiesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex) {
+    return modifiesProcedureTable_.hasKeyToValue(procedureIndex, variableIndex);
 }
 
-bool PKB::IsModifiesProcedure(ProcedureName procedureName, set<VariableName> variableNames) {
-    return modifiesProcedureTable_.hasKeyToValues(procedureName, variableNames);
+bool PKB::IsModifiesProcedure(ProcedureIndex procedureIndex, set<VariableIndex> variableIndexes) {
+    return modifiesProcedureTable_.hasKeyToValues(procedureIndex, variableIndexes);
 }
 
-set<VariableName> PKB::GetModifiedVariables(StmtNumber stmtNumber) {
+set<VariableIndex> PKB::GetModifiedVariables(StmtNumber stmtNumber) {
     return modifiesTable_.getValues(stmtNumber);
 }
 
-set<StmtNumber> PKB::GetStmtNumberModifying(VariableName variableName) {
-    return modifiesTable_.getKeys(variableName);
+set<StmtNumber> PKB::GetStmtNumberModifying(VariableIndex variableIndex) {
+    return modifiesTable_.getKeys(variableIndex);
 }
 
-set<VariableName> PKB::GetProcedureModifiedVariables(ProcedureName procedureName) {
-    return modifiesProcedureTable_.getValues(procedureName);
+set<VariableIndex> PKB::GetProcedureModifiedVariables(ProcedureIndex procedureIndex) {
+    return modifiesProcedureTable_.getValues(procedureIndex);
 }
 
-set<ProcedureName> PKB::GetProceduresNameModifying(VariableName variableName) {
-    return modifiesProcedureTable_.getKeys(variableName);
+set<ProcedureIndex> PKB::GetProceduresNameModifying(VariableIndex variableIndex) {
+    return modifiesProcedureTable_.getKeys(variableIndex);
 }
 
 unsigned int PKB::GetNumberOfModifiesRelationship() {
@@ -563,48 +520,44 @@ void PKB::PrintModifiesProcedureTable() {
 /* END   - Modifies table functions */
 /* START - Uses table functions */
 
-void PKB::GenerateUsesTable(map<StmtNumber, set<VariableName>> uses) {
-    for (auto &pair : uses) {
-        usesTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertUses(StmtNumber stmtNumber, VariableIndex variableIndex) {
+    usesTable_.insert(stmtNumber, variableIndex);
 }
 
-void PKB::GenerateUsesProcedureTable(map<ProcedureName, set<VariableName>> usesProcedure) {
-    for (auto &pair : usesProcedure) {
-        usesProcedureTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertUsesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex) {
+    usesProcedureTable_.insert(procedureIndex, variableIndex);
 }
 
-bool PKB::IsUses(StmtNumber stmtNumber, VariableName variableName) {
-    return usesTable_.hasKeyToValue(stmtNumber, variableName);
+bool PKB::IsUses(StmtNumber stmtNumber, VariableIndex variableIndex) {
+    return usesTable_.hasKeyToValue(stmtNumber, variableIndex);
 }
 
-bool PKB::IsUses(StmtNumber stmtNumber, set<VariableName> variableNames) {
-    return usesTable_.hasKeyToValues(stmtNumber, variableNames);
+bool PKB::IsUses(StmtNumber stmtNumber, set<VariableIndex> variableIndexes) {
+    return usesTable_.hasKeyToValues(stmtNumber, variableIndexes);
 }
 
-bool PKB::IsUsesProcedure(ProcedureName procedureName, VariableName variableName) {
-    return usesProcedureTable_.hasKeyToValue(procedureName, variableName);
+bool PKB::IsUsesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex) {
+    return usesProcedureTable_.hasKeyToValue(procedureIndex, variableIndex);
 }
 
-bool PKB::IsUsesProcedure(ProcedureName procedureName, set<VariableName> variableNames) {
-    return usesProcedureTable_.hasKeyToValues(procedureName, variableNames);
+bool PKB::IsUsesProcedure(ProcedureIndex procedureIndex, set<VariableIndex> variableIndexes) {
+    return usesProcedureTable_.hasKeyToValues(procedureIndex, variableIndexes);
 }
 
-set<VariableName> PKB::GetUsedVariables(StmtNumber stmtNumber) {
+set<VariableIndex> PKB::GetUsedVariables(StmtNumber stmtNumber) {
     return usesTable_.getValues(stmtNumber);
 }
 
-set<StmtNumber> PKB::GetStmtNumberUsing(VariableName variableName) {
-    return usesTable_.getKeys(variableName);
+set<StmtNumber> PKB::GetStmtNumberUsing(VariableIndex variableIndex) {
+    return usesTable_.getKeys(variableIndex);
 }
 
-set<VariableName> PKB::GetProcedureUsedVariables(ProcedureName procedureName) {
-    return usesProcedureTable_.getValues(procedureName);
+set<VariableIndex> PKB::GetProcedureUsedVariables(ProcedureIndex procedureIndex) {
+    return usesProcedureTable_.getValues(procedureIndex);
 }
 
-set<ProcedureName> PKB::GetProceduresNameUsing(VariableName variableName) {
-    return usesProcedureTable_.getKeys(variableName);
+set<ProcedureIndex> PKB::GetProceduresNameUsing(VariableIndex variableIndex) {
+    return usesProcedureTable_.getKeys(variableIndex);
 }
 
 unsigned int PKB::GetNumberOfUsesRelationship() {
@@ -614,7 +567,6 @@ unsigned int PKB::GetNumberOfUsesRelationship() {
 unsigned int PKB::GetNumberOfUsesProcedureRelationship() {
     return usesProcedureTable_.getNumberOfRelationship();
 }
-
 
 void PKB::PrintUsesTable() {
     usesTable_.printTable();
@@ -627,11 +579,11 @@ void PKB::PrintUsesProcedureTable() {
 /* END   - Uses table functions */
 /* START - Parent table functions */
 
-void PKB::GenerateParentTable(map<StmtNumber, set<StmtNumber>> parent) {
-    for (auto &pair : parent) {
-        parentTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertParent(StmtNumber parent, StmtNumber child) {
+    parentTable_.insert(parent, child);
+}
 
+void PKB::PopulateParentTransitiveTable() {
     parentTransitiveTable_.generateTransitiveTable(parentTable_);
 }
 
@@ -686,11 +638,11 @@ void PKB::PrintParentTransitiveTable() {
 /* END   - Parent table functions */
 /* START - Follows table functions */
 
-void PKB::GenerateFollowsTable(map<StmtNumber, StmtNumber> follows) {
-    for (auto &pair : follows) {
-        followsTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertFollows(StmtNumber follows, StmtNumber following) {
+    followsTable_.insert(follows, following);
+}
 
+void PKB::PopulateFollowsTransitiveTable() {
     followsTransitiveTable_.generateTransitiveTable(followsTable_);
 }
 
@@ -745,48 +697,44 @@ void PKB::PrintFollowsTransitiveTable() {
 /* END   - Follows table functions */
 /* START - Next table functions */
 
-void PKB::SetControlFlowGraphs(vector<CFGNode> controlFlowGraphs) {
-    controlFlowGraphs_ = controlFlowGraphs;
+void PKB::InsertControlFlowGraph(CFGNode controlFlowGraph) {
+    controlFlowGraphs_.push_back(controlFlowGraph);
 
-    /* Get all the nodes in the control flow graphs. */
-    for (CFGNode rootNode : controlFlowGraphs_) {
-        set<CFGNode> visitedNodes;
+    /* Get all the nodes in the control flow graph. */
+    set<CFGNode> visitedNodes;
 
-        rootNode->setVisited(true);
-        visitedNodes.insert(rootNode);
+    controlFlowGraph->setVisited(true);
+    visitedNodes.insert(controlFlowGraph);
 
-        queue<CFGNode> queue;
-        queue.push(rootNode);
+    queue<CFGNode> queue;
+    queue.push(controlFlowGraph);
 
-        while (!queue.empty()) {
-            vector<CFGNode> children = queue.front()->getChildren();
-            queue.pop();
+    while (!queue.empty()) {
+        vector<CFGNode> children = queue.front()->getChildren();
+        queue.pop();
 
-            for (CFGNode child : children) {
-                if (!child->isVisited()) {
-                    queue.push(child);
+        for (CFGNode child : children) {
+            if (!child->isVisited()) {
+                queue.push(child);
 
-                    child->setVisited(true);
-                    visitedNodes.insert(child);
-                }
+                child->setVisited(true);
+                visitedNodes.insert(child);
             }
         }
-
-        for (CFGNode node : visitedNodes) {
-            node->setVisited(false);
-        }
-
-        controlFlowGraphsNodes_.push_back(vector<CFGNode>(visitedNodes.begin(), visitedNodes.end()));
     }
+
+    for (CFGNode node : visitedNodes) {
+        node->setVisited(false);
+    }
+
+    controlFlowGraphsNodes_.push_back(vector<CFGNode>(visitedNodes.begin(), visitedNodes.end()));
 }
 
-void PKB::GenerateNextTable(map<StmtNumber, set<StmtNumber>> next) {
-    for (auto &pair : next) {
-        nextTable_.insert(pair.first, pair.second);
-    }
+void PKB::InsertNext(StmtNumber current, StmtNumber next) {
+    nextTable_.insert(current, next);
 }
 
-void PKB::GenerateNextTransitiveTable() {
+void PKB::PopulateNextTransitiveTable() {
     for (vector<CFGNode> treeNodes : controlFlowGraphsNodes_) {
         /* DFS all the nodes in the control flow graph. */
         for (CFGNode node : treeNodes) {
@@ -901,41 +849,163 @@ void PKB::Clear() {
     controlFlowGraphs_.clear();
     controlFlowGraphsNodes_.clear();
 
-    constantTable_  = Table<Index, ConstantValue>();
-    variableTable_  = Table<Index, VariableName>();
-    procedureTable_ = Table<Index, ProcedureName>();
+    constantTable_          = Table<ConstantIndex, ConstantValue>();
+    procedureTable_         = Table<ProcedureIndex, ProcedureName>();
+    variableTable_          = Table<VariableIndex, VariableName>();
 
-    controlVariableTable_ = Table<StmtNumber, VariableName>();
-    callTable_            = Table<StmtNumber, ProcedureName>();
-    stmtTable_            = Table<StmtNumber, StmtSymbol>();
-    stmtlistTable_        = Table<StmtNumber, StmtSymbol>();
+    controlVariableTable_   = Table<StmtNumber, VariableIndex>();
+    callTable_              = Table<StmtNumber, ProcedureIndex>();
+    stmtTable_              = Table<StmtNumber, Symbol>();
+    stmtlistTable_          = Table<StmtNumber, Symbol>();
 
-    priorityTable_ = Table<Priority, TableSymbol>();
+    priorityTable_          = Table<Priority, Symbol>();
 
-    expressionTable_    = Table<StmtNumber, Expression>();
-    subExpressionTable_ = Table<StmtNumber, SubExpressions>();
+    expressionTable_        = Table<StmtNumber, Expression>();
+    subExpressionTable_     = Table<StmtNumber, SubExpression>();
 
-    callsTable_           = Table<ProcedureName, ProcedureName>();
-    callsTransitiveTable_ = TransitiveTable<ProcedureName, ProcedureName>();
+    callsTable_             = Table<ProcedureIndex, ProcedureIndex>();
+    callsTransitiveTable_   = TransitiveTable<ProcedureIndex, ProcedureIndex>();
 
-    modifiesTable_          = Table<StmtNumber, VariableName>();
-    modifiesProcedureTable_ = Table<ProcedureName, VariableName>();
+    modifiesTable_          = Table<StmtNumber, VariableIndex>();
+    modifiesProcedureTable_ = Table<ProcedureIndex, VariableIndex>();
 
-    usesTable_          = Table<StmtNumber, VariableName>();
-    usesProcedureTable_ = Table<ProcedureName, VariableName>();
+    usesTable_              = Table<StmtNumber, VariableIndex>();
+    usesProcedureTable_     = Table<ProcedureIndex, VariableIndex>();
 
-    parentTable_           = Table<StmtNumber, StmtNumber>();
-    parentTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
+    parentTable_            = Table<StmtNumber, StmtNumber>();
+    parentTransitiveTable_  = TransitiveTable<StmtNumber, StmtNumber>();
 
     followsTable_           = Table<StmtNumber, StmtNumber>();
     followsTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 
-    nextTable_           = Table<StmtNumber, StmtNumber>();
-    nextTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
+    nextTable_              = Table<StmtNumber, StmtNumber>();
+    nextTransitiveTable_    = TransitiveTable<StmtNumber, StmtNumber>();
 }
 
-bool PKB::ComparePairAscending(const std::pair<unsigned int, string> &pairOne, const std::pair<unsigned int, string> &pairTwo) {
+bool PKB::ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo) {
     return pairOne.first < pairTwo.first;
 }
 
 /* START - Miscellaneous functions */
+
+/* START - Deprecated functions */
+bool PKB::HasControlVariableNameAtStmtNumber(StmtNumber stmtNumber, VariableName controlVariable) {
+    return controlVariableTable_.hasKeyToValue(stmtNumber, GetVariableIndex(controlVariable));
+}
+
+ProcedureName PKB::GetCallStmtProcedureName(StmtNumber stmtNumber, std::string deprecatedFiller) {
+    return (callTable_.hasKey(stmtNumber)) ? PKB::GetProcedureName(callTable_.getValue(stmtNumber)) : 0;
+}
+
+bool PKB::IsExactPattern(StmtNumber stmtNumber, VariableName variableName, Expression expression) {
+    switch (GetStmtSymbol(stmtNumber)) {
+        default:
+            break;
+
+        case WHILE:
+        case IF:
+            return HasControlVariableNameAtStmtNumber(stmtNumber, variableName);
+
+        case ASSIGN:
+            if (HasControlVariableNameAtStmtNumber(stmtNumber, variableName)) {
+                return IsExactExpression(stmtNumber, expression);
+            }
+    }
+
+    return false;
+}
+
+bool PKB::IsSubPattern(StmtNumber stmtNumber, VariableName variableName, SubExpression subExpression) {
+    switch (GetStmtSymbol(stmtNumber)) {
+        default:
+            break;
+
+        case WHILE:
+        case IF:
+            return HasControlVariableNameAtStmtNumber(stmtNumber, variableName);
+
+        case ASSIGN:
+            if (HasControlVariableNameAtStmtNumber(stmtNumber, variableName)) {
+                return IsSubExpression(stmtNumber, subExpression);
+            }
+    }
+
+    return false;
+}
+
+bool PKB::IsCalls(ProcedureName calling, ProcedureName called) {
+    return callsTable_.hasKeyToValue(PKB::GetProcedureIndex(calling), PKB::GetProcedureIndex(called));
+}
+
+bool PKB::IsCallsTransitive(ProcedureName calling, ProcedureName called) {
+    return callsTransitiveTable_.hasKeyToValue(PKB::GetProcedureIndex(calling), PKB::GetProcedureIndex(called));
+}
+
+set<ProcedureName> PKB::GetCalling(ProcedureName called) {
+    set<ProcedureName> names;
+    set<ProcedureIndex> indexes = callsTable_.getKeys(PKB::GetProcedureIndex(called));
+
+    for (ProcedureIndex index : indexes) {
+        names.insert(PKB::GetProcedureName(index));
+    }
+
+    return names;
+}
+
+set<ProcedureName> PKB::GetCalled(ProcedureName calling) {
+    set<ProcedureName> names;
+    set<ProcedureIndex> indexes = callsTable_.getValues(PKB::GetProcedureIndex(calling));
+
+    for (ProcedureIndex index : indexes) {
+        names.insert(PKB::GetProcedureName(index));
+    }
+
+    return names;
+}
+
+bool PKB::IsModifies(StmtNumber stmtNumber, VariableName variableName) {
+    return modifiesTable_.hasKeyToValue(stmtNumber, PKB::GetVariableIndex(variableName));
+}
+
+bool PKB::IsModifiesProcedure(ProcedureName procedureName, VariableName variableName) {
+    return modifiesProcedureTable_.hasKeyToValue(PKB::GetProcedureIndex(procedureName), PKB::GetVariableIndex(variableName));
+}
+
+set<StmtNumber> PKB::GetStmtNumberModifying(VariableName variableName) {
+    return modifiesTable_.getKeys(PKB::GetVariableIndex(variableName));
+}
+
+set<VariableName> PKB::GetProcedureModifiedVariables(ProcedureName procedureName) {
+    set<VariableName> names;
+    set<VariableIndex> indexes = modifiesProcedureTable_.getValues(PKB::GetProcedureIndex(procedureName));
+
+    for (VariableIndex index : indexes) {
+        names.insert(PKB::GetVariableName(index));
+    }
+
+    return names;
+}
+
+bool PKB::IsUses(StmtNumber stmtNumber, VariableName variableName) {
+    return usesTable_.hasKeyToValue(stmtNumber, PKB::GetVariableIndex(variableName));
+}
+
+bool PKB::IsUsesProcedure(ProcedureName procedureName, VariableName variableName) {
+    return usesProcedureTable_.hasKeyToValue(PKB::GetProcedureIndex(procedureName), PKB::GetVariableIndex(variableName));
+}
+
+set<StmtNumber> PKB::GetStmtNumberUsing(VariableName variableName) {
+    return usesTable_.getKeys(PKB::GetVariableIndex(variableName));
+}
+
+set<VariableName> PKB::GetProcedureUsedVariables(ProcedureName procedureName) {
+    set<VariableName> names;
+    set<VariableIndex> indexes = usesProcedureTable_.getValues(PKB::GetProcedureIndex(procedureName));
+
+    for (VariableIndex index : indexes) {
+        names.insert(PKB::GetVariableName(index));
+    }
+
+    return names;
+}
+/* END   - Deprecated functions */
