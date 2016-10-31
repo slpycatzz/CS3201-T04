@@ -228,5 +228,18 @@ namespace UnitTesting {
 
             Assert::AreEqual(isSuccessful, true);
         }
+
+        TEST_METHOD(FrontendParser_ValidProgramMixTabsAndSpaces) {
+            string filePath = frontendTestcasesDirectory + "ValidProgramMixTabsAndSpaces.txt";
+
+            bool isSuccessful = true;
+            try {
+                frontendParser.parseProgram(filePath);
+            } catch (std::exception &ex) {
+                isSuccessful = false;
+            }
+
+            Assert::AreEqual(isSuccessful, true);
+        }
     };
 }
