@@ -113,9 +113,6 @@ void DesignExtractor::populateDesignAbstractionTables() {
     precomputeParent();
     precomputeFollows();
     precomputeNext();
-
-    /* Initialize compute on demand matrixes. */
-    PKB::InitializeNextTransitiveMatrixSize();
 }
 
 void DesignExtractor::setProcedureData(ProcedureName procedureName, StmtNumber firstStmtNumber, StmtNumber lastStmtNumber) {

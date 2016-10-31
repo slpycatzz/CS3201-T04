@@ -54,16 +54,20 @@ Table<ProcedureIndex, VariableIndex> PKB::modifiesProcedureTable_           = Ta
 Table<StmtNumber, VariableIndex> PKB::usesTable_                            = Table<StmtNumber, VariableIndex>();
 Table<ProcedureIndex, VariableIndex> PKB::usesProcedureTable_               = Table<ProcedureIndex, VariableIndex>();
 
+vector<vector<StmtNumber>> PKB::parentMatrix_;
+vector<vector<StmtNumber>> PKB::parentTransitiveMatrix_;
 Table<StmtNumber, StmtNumber> PKB::parentTable_                             = Table<StmtNumber, StmtNumber>();
 TransitiveTable<StmtNumber, StmtNumber> PKB::parentTransitiveTable_         = TransitiveTable<StmtNumber, StmtNumber>();
 
+vector<vector<StmtNumber>> PKB::followsMatrix_;
+vector<vector<StmtNumber>> PKB::followsTransitiveMatrix_;
 Table<StmtNumber, StmtNumber> PKB::followsTable_                            = Table<StmtNumber, StmtNumber>();
 TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_        = TransitiveTable<StmtNumber, StmtNumber>();
 
+vector<vector<StmtNumber>> PKB::nextMatrix_;
+vector<vector<StmtNumber>> PKB::nextTransitiveMatrix_;
 Table<StmtNumber, StmtNumber> PKB::nextTable_                               = Table<StmtNumber, StmtNumber>();
 TransitiveTable<StmtNumber, StmtNumber> PKB::nextTransitiveTable_           = TransitiveTable<StmtNumber, StmtNumber>();
-
-vector<vector<StmtNumber>> PKB::nextTransitiveMatrix_;
 
 /* START - Constant table functions */
 
@@ -415,16 +419,8 @@ bool PKB::IsCalls(ProcedureIndex calling, ProcedureIndex called) {
     return callsTable_.hasKeyToValue(calling, called);
 }
 
-bool PKB::IsCalls(ProcedureIndex calling, set<ProcedureIndex> calleds) {
-    return callsTable_.hasKeyToValues(calling, calleds);
-}
-
 bool PKB::IsCallsTransitive(ProcedureIndex calling, ProcedureIndex called) {
     return callsTransitiveTable_.hasKeyToValue(calling, called);
-}
-
-bool PKB::IsCallsTransitive(ProcedureIndex calling, set<ProcedureIndex> calleds) {
-    return callsTransitiveTable_.hasKeyToValues(calling, calleds);
 }
 
 set<ProcedureIndex> PKB::GetCalling(ProcedureIndex called) {
@@ -474,16 +470,8 @@ bool PKB::IsModifies(StmtNumber stmtNumber, VariableIndex variableIndex) {
     return modifiesTable_.hasKeyToValue(stmtNumber, variableIndex);
 }
 
-bool PKB::IsModifies(StmtNumber stmtNumber, set<VariableIndex> variableIndexes) {
-    return modifiesTable_.hasKeyToValues(stmtNumber, variableIndexes);
-}
-
 bool PKB::IsModifiesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex) {
     return modifiesProcedureTable_.hasKeyToValue(procedureIndex, variableIndex);
-}
-
-bool PKB::IsModifiesProcedure(ProcedureIndex procedureIndex, set<VariableIndex> variableIndexes) {
-    return modifiesProcedureTable_.hasKeyToValues(procedureIndex, variableIndexes);
 }
 
 set<VariableIndex> PKB::GetModifiedVariables(StmtNumber stmtNumber) {
@@ -533,16 +521,8 @@ bool PKB::IsUses(StmtNumber stmtNumber, VariableIndex variableIndex) {
     return usesTable_.hasKeyToValue(stmtNumber, variableIndex);
 }
 
-bool PKB::IsUses(StmtNumber stmtNumber, set<VariableIndex> variableIndexes) {
-    return usesTable_.hasKeyToValues(stmtNumber, variableIndexes);
-}
-
 bool PKB::IsUsesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex) {
     return usesProcedureTable_.hasKeyToValue(procedureIndex, variableIndex);
-}
-
-bool PKB::IsUsesProcedure(ProcedureIndex procedureIndex, set<VariableIndex> variableIndexes) {
-    return usesProcedureTable_.hasKeyToValues(procedureIndex, variableIndexes);
 }
 
 set<VariableIndex> PKB::GetUsedVariables(StmtNumber stmtNumber) {
@@ -582,26 +562,35 @@ void PKB::PrintUsesProcedureTable() {
 
 void PKB::InsertParent(StmtNumber parent, StmtNumber child) {
     parentTable_.insert(parent, child);
+    parentMatrix_[parent][child] = 1;
 }
 
 void PKB::PopulateParentTransitiveTable() {
-    parentTransitiveTable_.generateTransitiveTable(parentTable_);
+    parentTransitiveTable_.generateTransitiveTable(parentTable_, parentTransitiveMatrix_);
 }
 
 bool PKB::IsParent(StmtNumber parent, StmtNumber child) {
-    return parentTable_.hasKeyToValue(parent, child);
-}
+    if (parent > tableMaximumSize_ || parent <= 0) {
+        return false;
+    }
 
-bool PKB::IsParent(StmtNumber parent, set<StmtNumber> children) {
-    return parentTable_.hasKeyToValues(parent, children);
+    if (child > tableMaximumSize_ || child <= 0) {
+        return false;
+    }
+
+    return (parentMatrix_[parent][child] == 1);
 }
 
 bool PKB::IsParentTransitive(StmtNumber parent, StmtNumber child) {
-    return parentTransitiveTable_.hasKeyToValue(parent, child);
-}
+    if (parent > tableMaximumSize_ || parent <= 0) {
+        return false;
+    }
 
-bool PKB::IsParentTransitive(StmtNumber parent, set<StmtNumber> children) {
-    return parentTransitiveTable_.hasKeyToValues(parent, children);
+    if (child > tableMaximumSize_ || child <= 0) {
+        return false;
+    }
+
+    return (parentTransitiveMatrix_[parent][child] == 1);
 }
 
 set<StmtNumber> PKB::GetParent(StmtNumber child) {
@@ -641,26 +630,35 @@ void PKB::PrintParentTransitiveTable() {
 
 void PKB::InsertFollows(StmtNumber follows, StmtNumber following) {
     followsTable_.insert(follows, following);
+    followsMatrix_[follows][following] = 1;
 }
 
 void PKB::PopulateFollowsTransitiveTable() {
-    followsTransitiveTable_.generateTransitiveTable(followsTable_);
+    followsTransitiveTable_.generateTransitiveTable(followsTable_, followsTransitiveMatrix_);
 }
 
 bool PKB::IsFollows(StmtNumber follows, StmtNumber following) {
-    return followsTable_.hasKeyToValue(follows, following);
-}
+    if (follows > tableMaximumSize_ || follows <= 0) {
+        return false;
+    }
 
-bool PKB::IsFollows(StmtNumber follows, set<StmtNumber> followings) {
-    return followsTable_.hasKeyToValues(follows, followings);
+    if (following > tableMaximumSize_ || following <= 0) {
+        return false;
+    }
+
+    return (followsMatrix_[follows][following] == 1);
 }
 
 bool PKB::IsFollowsTransitive(StmtNumber follows, StmtNumber following) {
-    return followsTransitiveTable_.hasKeyToValue(follows, following);
-}
+    if (follows > tableMaximumSize_ || follows <= 0) {
+        return false;
+    }
 
-bool PKB::IsFollowsTransitive(StmtNumber follows, set<StmtNumber> followings) {
-    return followsTransitiveTable_.hasKeyToValues(follows, followings);
+    if (following > tableMaximumSize_ || following <= 0) {
+        return false;
+    }
+
+    return (followsTransitiveMatrix_[follows][following] == 1);
 }
 
 set<StmtNumber> PKB::GetFollows(StmtNumber following) {
@@ -733,11 +731,7 @@ void PKB::InsertControlFlowGraph(CFGNode controlFlowGraph) {
 
 void PKB::InsertNext(StmtNumber current, StmtNumber next) {
     nextTable_.insert(current, next);
-}
-
-void PKB::InitializeNextTransitiveMatrixSize() {
-    /* Initialize next transitive table space. */
-    nextTransitiveMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
+    nextMatrix_[current][next] = 1;
 }
 
 void PKB::PopulateNextTransitiveTable() {
@@ -774,7 +768,15 @@ void PKB::PopulateNextTransitiveTable() {
 }
 
 bool PKB::IsNext(StmtNumber current, StmtNumber next) {
-    return nextTable_.hasKeyToValue(current, next);
+    if (current > tableMaximumSize_ || current <= 0) {
+        return false;
+    }
+
+    if (next > tableMaximumSize_ || next <= 0) {
+        return false;
+    }
+
+    return (nextMatrix_[current][next] == 1);
 }
 
 bool PKB::IsNextTransitive(StmtNumber current, StmtNumber next) {
@@ -851,6 +853,13 @@ unsigned int PKB::GetNumberOfContainerStmt() {
 
 void PKB::SetTableMaximumSize(unsigned int tableMaximumSize) {
     tableMaximumSize_ = tableMaximumSize;
+
+    parentMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
+    parentTransitiveMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
+    followsMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
+    followsTransitiveMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
+    nextMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
+    nextTransitiveMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
 }
 
 void PKB::Clear() {
@@ -888,21 +897,28 @@ void PKB::Clear() {
     usesTable_              = Table<StmtNumber, VariableIndex>();
     usesProcedureTable_     = Table<ProcedureIndex, VariableIndex>();
 
+    parentMatrix_.clear();
+    parentTransitiveMatrix_.clear();
     parentTable_            = Table<StmtNumber, StmtNumber>();
     parentTransitiveTable_  = TransitiveTable<StmtNumber, StmtNumber>();
 
+    followsMatrix_.clear();
+    followsTransitiveMatrix_.clear();
     followsTable_           = Table<StmtNumber, StmtNumber>();
     followsTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 
+    nextMatrix_.clear();
+    nextTransitiveMatrix_.clear();
     nextTable_              = Table<StmtNumber, StmtNumber>();
     nextTransitiveTable_    = TransitiveTable<StmtNumber, StmtNumber>();
-    
-    nextTransitiveMatrix_.clear();
 }
 
 void PKB::ClearComputeOnDemandTables() {
+    for (vector<StmtNumber> vec : nextTransitiveMatrix_) {
+        vec.assign(vec.size(), 0);
+    }
+
     nextTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
-    nextTransitiveMatrix_.clear();
 }
 
 bool PKB::ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo) {

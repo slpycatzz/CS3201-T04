@@ -83,9 +83,7 @@ class PKB {
     static void InsertCalls(ProcedureIndex calling, ProcedureIndex called);
     static void PopulateCallsTransitiveTable();
     static bool IsCalls(ProcedureIndex calling, ProcedureIndex called);
-    static bool IsCalls(ProcedureIndex calling, std::set<ProcedureIndex> calleds);
     static bool IsCallsTransitive(ProcedureIndex calling, ProcedureIndex called);
-    static bool IsCallsTransitive(ProcedureIndex calling, std::set<ProcedureIndex> calleds);
     static std::set<ProcedureIndex> GetCalling(ProcedureIndex called);
     static std::set<ProcedureIndex> GetCalled(ProcedureIndex calling);
     static std::set<ProcedureIndex> GetCallingTransitive(ProcedureIndex called);
@@ -98,9 +96,7 @@ class PKB {
     static void InsertModifies(StmtNumber stmtNumber, VariableIndex variableIndex);
     static void InsertModifiesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
     static bool IsModifies(StmtNumber stmtNumber, VariableIndex variableIndex);
-    static bool IsModifies(StmtNumber stmtNumber, std::set<VariableIndex> variableIndexes);
     static bool IsModifiesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
-    static bool IsModifiesProcedure(ProcedureIndex procedureIndex, std::set<VariableIndex> variableIndexes);
     static std::set<VariableIndex> GetModifiedVariables(StmtNumber stmtNumber);
     static std::set<StmtNumber> GetStmtNumberModifying(VariableIndex variableIndex);
     static std::set<VariableIndex> GetProcedureModifiedVariables(ProcedureIndex procedureIndex);
@@ -113,9 +109,7 @@ class PKB {
     static void InsertUses(StmtNumber stmtNumber, VariableIndex variableIndex);
     static void InsertUsesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
     static bool IsUses(StmtNumber stmtNumber, VariableIndex variableIndex);
-    static bool IsUses(StmtNumber stmtNumber, std::set<VariableIndex> variableIndexes);
     static bool IsUsesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
-    static bool IsUsesProcedure(ProcedureIndex procedureIndex, std::set<VariableIndex> variableIndexes);
     static std::set<VariableIndex> GetUsedVariables(StmtNumber stmtNumber);
     static std::set<StmtNumber> GetStmtNumberUsing(VariableIndex variableIndex);
     static std::set<VariableIndex> GetProcedureUsedVariables(ProcedureIndex procedureIndex);
@@ -128,9 +122,7 @@ class PKB {
     static void InsertParent(StmtNumber parent, StmtNumber child);
     static void PopulateParentTransitiveTable();
     static bool IsParent(StmtNumber parent, StmtNumber child);
-    static bool IsParent(StmtNumber parent, std::set<StmtNumber> children);
     static bool IsParentTransitive(StmtNumber parent, StmtNumber child);
-    static bool IsParentTransitive(StmtNumber parent, std::set<StmtNumber> children);
     static std::set<StmtNumber> GetParent(StmtNumber child);
     static std::set<StmtNumber> GetChildren(StmtNumber parent);
     static std::set<StmtNumber> GetParentsTransitive(StmtNumber child);
@@ -143,9 +135,7 @@ class PKB {
     static void InsertFollows(StmtNumber follows, StmtNumber following);
     static void PopulateFollowsTransitiveTable();
     static bool IsFollows(StmtNumber follows, StmtNumber following);
-    static bool IsFollows(StmtNumber follows, std::set<StmtNumber> followings);
     static bool IsFollowsTransitive(StmtNumber follows, StmtNumber following);
-    static bool IsFollowsTransitive(StmtNumber follows, std::set<StmtNumber> followings);
     static std::set<StmtNumber> GetFollows(StmtNumber following);
     static std::set<StmtNumber> GetFollowing(StmtNumber follows);
     static std::set<StmtNumber> GetFollowsTransitive(StmtNumber following);
@@ -157,7 +147,7 @@ class PKB {
 
     static void InsertControlFlowGraph(CFGNode controlFlowGraph);
     static void InsertNext(StmtNumber current, StmtNumber next);
-    static void InitializeNextTransitiveMatrixSize();
+    
     static void PopulateNextTransitiveTable();
     static bool IsNext(StmtNumber current, StmtNumber next);
     static bool IsNextTransitive(StmtNumber current, StmtNumber next);
@@ -178,7 +168,7 @@ class PKB {
     static unsigned int GetNumberOfContainerStmt();
 
     static void SetTableMaximumSize(unsigned int tableMaximumSize);
-
+    
     static void Clear();
     static void ClearComputeOnDemandTables();
 
@@ -243,15 +233,18 @@ class PKB {
     static Table<StmtNumber, VariableIndex> usesTable_;
     static Table<ProcedureIndex, VariableIndex> usesProcedureTable_;
 
+    static std::vector<std::vector<StmtNumber>> parentMatrix_;
+    static std::vector<std::vector<StmtNumber>> parentTransitiveMatrix_;
     static Table<StmtNumber, StmtNumber> parentTable_;
     static TransitiveTable<StmtNumber, StmtNumber> parentTransitiveTable_;
 
+    static std::vector<std::vector<StmtNumber>> followsMatrix_;
+    static std::vector<std::vector<StmtNumber>> followsTransitiveMatrix_;
     static Table<StmtNumber, StmtNumber> followsTable_;
     static TransitiveTable<StmtNumber, StmtNumber> followsTransitiveTable_;
 
+    static std::vector<std::vector<StmtNumber>> nextMatrix_;
+    static std::vector<std::vector<StmtNumber>> nextTransitiveMatrix_;
     static Table<StmtNumber, StmtNumber> nextTable_;
     static TransitiveTable<StmtNumber, StmtNumber> nextTransitiveTable_;
-
-    static std::vector<std::vector<StmtNumber>> nextTransitiveMatrix_;
-
 };
