@@ -9,7 +9,6 @@
 
 #include "Constants.h"
 #include "Frontend/DesignExtractor.h"
-#include "PKB/AST.h"
 #include "PKB/PKB.h"
 #include "PKB/Table.h"
 #include "PKB/TransitiveTable.h"
