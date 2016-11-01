@@ -32,29 +32,36 @@ void QueryProjector::projectResult(std::list<std::string>& results, std::unorder
     std::vector<std::vector<std::string>> tupleList = resultList.second;
     std::string result;
 
-    if (selectList[0] == "BOOLEAN") {
+    if (selectList[0] == SYMBOL_BOOLEAN) {
         result = tupleList[0][0];
-        for (int i = 0; i < result.length(); i++) {
-            result[i] = toupper(result[i]);
-        }
         results.emplace_back(result);
     }
     else {
+        std::set<int> positionToConvert;
+
+        for (int i = 0; i < selectList.size(); i++) {
+            if (resultsInfo.find(selectList[i])->second == true) {
+                positionToConvert.insert(i);
+            }
+        }
+
         for (std::vector<std::string> tuple : tupleList) {
             result = "";
-            
-            //Check for call.procName in Selected synonyms and convert to procName if found
+
             for (int i = 0; i < tuple.size(); i++) {
-                if (resultsInfo.find(selectList[i])->second == true) {
-                    result += PKB::GetCallStmtProcedureName(stoi(tuple[i]), "") + " ";
+                if (positionToConvert.find(i) != positionToConvert.end()) {
+                    result += PKB::GetCallStmtProcedureName(stoi(tuple[i]), "");
                 }
                 else {
-                    result += tuple[i] + " ";
+                    result += tuple[i];
+                }
+                if (i != tuple.size() - 1) {
+                    result += " ";
                 }
             }
 
-            results.emplace_back(result.substr(0, result.length() - 1));
+            results.emplace_back(result);
         }
-        
+
     }
 }

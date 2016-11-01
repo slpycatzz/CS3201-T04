@@ -34,7 +34,7 @@ int Clause::getArgCount() {
 string Clause::toString() {
     string sb;
 
-    if (Constants::StringToSymbol(getClauseType()) == PATTERN) {
+    if (getClauseType() == SYMBOL_PATTERN) {
         sb += getClauseType() + " " + getArg()[0] + "(";
 
         for (int i = 1; i < getArg().size(); i++) {
@@ -45,7 +45,7 @@ string Clause::toString() {
         }
         sb += ")";
     }
-    else if (Constants::StringToSymbol(getClauseType()) == WITH) {
+    else if (getClauseType() == SYMBOL_WITH) {
         sb += getClauseType() + " " + getArg()[0] + "=" + getArg()[1];
     }
     else {
@@ -67,7 +67,7 @@ string Clause::toString() {
 vector<string> Clause::getSynonyms() {
     vector<string> synonyms;
 
-    if (getClauseType() == Constants::SymbolToString(WITH)) {
+    if (getClauseType() == SYMBOL_WITH) {
         for (unsigned int i = 0; i < 2; i++) {
             string arg = getArg()[i];
             if (QueryUtils::IsSynonym(arg)) {

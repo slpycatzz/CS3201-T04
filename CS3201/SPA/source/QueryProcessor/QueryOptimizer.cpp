@@ -90,9 +90,9 @@ struct SortByPriority {
     }
 
     bool operator()(Clause& x, Clause& y) const {
-        if (x.getClauseType() == Constants::SymbolToString(WITH)) {
+        if (x.getClauseType() == SYMBOL_WITH) {
             return true;
-        } else if (y.getClauseType() == Constants::SymbolToString(WITH)) {
+        } else if (y.getClauseType() == SYMBOL_WITH) {
             return false;
         } else {
             // Both are not WITH clauses
@@ -333,10 +333,28 @@ std::pair<vector<string>, vector<Clause>> QueryOptimizer::sortGroup(vector<Claus
             group.clear();
         }
     }
+    
+    //Remove duplicate clauses
+    vector<Clause> uniqueGroup;
+
+    vector<Clause>::iterator iter = sortedGroup.begin();
+    while (iter != sortedGroup.end()) {
+        bool hasClause = false;
+        for (Clause clause : uniqueGroup) {
+            if ((*iter).toString() == clause.toString()) {
+                hasClause = true;
+                break;
+            }
+        }
+        if (!hasClause) {
+            uniqueGroup.push_back(*iter);
+        }
+        iter = sortedGroup.erase(iter);
+    }
 
     vector<string> synonymsInGroup;
     synonymsInGroup.assign(evaluatedSynonyms.begin(), evaluatedSynonyms.end());
-    std::pair<vector<string>, vector<Clause>> pair({ synonymsInGroup, sortedGroup });
+    std::pair<vector<string>, vector<Clause>> pair({ synonymsInGroup, uniqueGroup });
 
     return pair;
 }
