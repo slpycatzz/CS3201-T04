@@ -7,17 +7,17 @@
 class Matrix {
  public:
     inline Matrix() {
-        populated_ = false;
         size_ = 0;
 
-        matrix_ = std::vector<std::vector<unsigned int>>();
+        rowPopulated_ = std::vector<unsigned char>();
+        matrix_ = std::vector<std::vector<unsigned char>>();
     }
 
     inline Matrix(unsigned int size) {
-        populated_ = false;
         size_ = size;
 
-        matrix_.resize(size_, std::vector<unsigned int>(size_, 0));
+        rowPopulated_.resize(size_, 0);
+        matrix_.resize(size_, std::vector<unsigned char>(size_, 0));
     }
 
     inline ~Matrix() {}
@@ -30,12 +30,12 @@ class Matrix {
         return (matrix_[row][column] == 1);
     }
 
-    inline void setPopulated(bool populated) {
-        populated_ = populated;
+    inline void setPopulated(unsigned int row) {
+        rowPopulated_[row] = 1;
     }
 
-    inline bool isPopulated() {
-        return populated_;
+    inline bool isRowPopulated(unsigned int row) {
+        return (rowPopulated_[row] == 1);
     }
 
     inline unsigned int getSize() {
@@ -43,15 +43,14 @@ class Matrix {
     }
 
     inline void clear() {
-        populated_ = false;
-
-        matrix_.resize(size_, std::vector<unsigned int>(size_, 0));
+        rowPopulated_.resize(size_, 0);
+        matrix_.resize(size_, std::vector<unsigned char>(size_, 0));
     }
 
  private:
-    bool populated_;
     unsigned int size_;
 
-    std::vector<std::vector<unsigned int>> matrix_;
+    std::vector<unsigned char> rowPopulated_;
+    std::vector<std::vector<unsigned char>> matrix_;
 };
 

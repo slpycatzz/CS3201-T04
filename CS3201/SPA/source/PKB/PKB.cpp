@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <unordered_map>
 #include <vector>
 
 #include "Constants.h"
@@ -16,6 +17,7 @@ using std::map;
 using std::queue;
 using std::set;
 using std::string;
+using std::unordered_map;
 using std::vector;
 
 unsigned int PKB::numberOfProcedure_ = 0;
@@ -28,8 +30,8 @@ unsigned int PKB::tableMaximumSize_  = 0;
 
 unsigned int PKB::numberOfNextTransitiveRelationship_ = 0;
 
-map<StmtNumber, set<CFGNode*>> PKB::controlFlowGraphsNodes_;
-map<StmtNumber, StmtNumber> PKB::procedureFirstAndLastStmtNumber_;
+unordered_map<StmtNumber, CFGNode*> PKB::controlFlowGraphNodes_;
+unordered_map<StmtNumber, StmtNumber> PKB::procedureFirstAndLastStmtNumber_;
 
 Table<ConstantIndex, ConstantValue> PKB::constantTable_   = Table<ConstantIndex, ConstantValue>();
 Table<VariableIndex, VariableName> PKB::variableTable_    = Table<VariableIndex, VariableName>();
@@ -67,10 +69,9 @@ Table<StmtNumber, StmtNumber> PKB::followsTable_                     = Table<Stm
 TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 
 Matrix PKB::nextMatrix_ = Matrix();
-map<StmtNumber, Matrix> PKB::nextTransitiveMatrixes_;
+Matrix PKB::nextTransitiveMatrix_ = Matrix();
 
 Table<StmtNumber, StmtNumber> PKB::nextTable_ = Table<StmtNumber, StmtNumber>();
-map<StmtNumber, TransitiveTable<StmtNumber, StmtNumber>> PKB::nextTransitiveTables_;
 
 map<StmtNumber, Matrix> PKB::affectsMatrixes_;
 map<StmtNumber, Matrix> PKB::affectsTransitiveMatrixes_;
@@ -699,8 +700,8 @@ void PKB::PrintFollowsTransitiveTable() {
 /* END   - Follows table functions */
 /* START - Next table functions */
 
-void PKB::InsertControlFlowGraph(StmtNumber procedureFirstStmtNumber, set<CFGNode*> controlFlowGraphNodes) {
-    controlFlowGraphsNodes_.insert(std::make_pair(procedureFirstStmtNumber, controlFlowGraphNodes));
+void PKB::InsertControlFlowGraphNode(StmtNumber stmtNumber, CFGNode* controlFlowGraphNode) {
+    controlFlowGraphNodes_.insert(std::make_pair(stmtNumber, controlFlowGraphNode));
 }
 
 void PKB::InsertNext(StmtNumber current, StmtNumber next) {
@@ -726,28 +727,20 @@ bool PKB::IsNextTransitive(StmtNumber current, StmtNumber next) {
         return false;
     }
 
-    StmtNumber stmtNumber = 0;
+    /* Validate if "current" and "next" is in same procedure. */
     for (auto &pair : procedureFirstAndLastStmtNumber_) {
         if (current >= pair.first && current <= pair.second && next >= pair.first && next <= pair.second) {
-            stmtNumber = pair.first;
-            break;
+            if (!nextTransitiveMatrix_.isRowPopulated(current)) {
+                nextTransitiveMatrix_.setPopulated(current);
+
+                DesignExtractor::getInstance().computeNextTransitive(controlFlowGraphNodes_[current], nextTransitiveMatrix_);
+            }
+
+            return nextTransitiveMatrix_.isRowColumnToggled(current, next);
         }
     }
 
-    /* Validate if "current" and "next" is in same procedure. */
-    if (stmtNumber == 0) {
-        return false;
-    }
-
-    if (!nextTransitiveMatrixes_[stmtNumber].isPopulated()) {
-        nextTransitiveMatrixes_[stmtNumber].setPopulated(true);
-
-        DesignExtractor::getInstance().computeNextTransitive(controlFlowGraphsNodes_[stmtNumber],
-            nextTransitiveMatrixes_[stmtNumber], nextTransitiveTables_[stmtNumber]);
-    }
-
-    /* Worst case is O(1) time complexity. */
-    return nextTransitiveMatrixes_[stmtNumber].isRowColumnToggled(current, next);
+    return false;
 }
 
 set<StmtNumber> PKB::GetNext(StmtNumber current) {
@@ -756,44 +749,6 @@ set<StmtNumber> PKB::GetNext(StmtNumber current) {
 
 set<StmtNumber> PKB::GetPrevious(StmtNumber next) {
     return nextTable_.getKeys(next);
-}
-
-set<StmtNumber> PKB::GetNextTransitive(StmtNumber current) {
-    StmtNumber stmtNumber = 0;
-    for (auto &pair : procedureFirstAndLastStmtNumber_) {
-        if (current >= pair.first && current <= pair.second) {
-            stmtNumber = pair.first;
-            break;
-        }
-    }
-
-    if (!nextTransitiveMatrixes_[stmtNumber].isPopulated()) {
-        nextTransitiveMatrixes_[stmtNumber].setPopulated(true);
-
-        DesignExtractor::getInstance().computeNextTransitive(controlFlowGraphsNodes_[stmtNumber],
-            nextTransitiveMatrixes_[stmtNumber], nextTransitiveTables_[stmtNumber]);
-    }
-
-    return nextTransitiveTables_[stmtNumber].getValues(current);
-}
-
-set<StmtNumber> PKB::GetPreviousTransitive(StmtNumber next) {
-    StmtNumber stmtNumber = 0;
-    for (auto &pair : procedureFirstAndLastStmtNumber_) {
-        if (next >= pair.first && next <= pair.second) {
-            stmtNumber = pair.first;
-            break;
-        }
-    }
-
-    if (!nextTransitiveMatrixes_[stmtNumber].isPopulated()) {
-        nextTransitiveMatrixes_[stmtNumber].setPopulated(true);
-
-        DesignExtractor::getInstance().computeNextTransitive(controlFlowGraphsNodes_[stmtNumber],
-            nextTransitiveMatrixes_[stmtNumber], nextTransitiveTables_[stmtNumber]);
-    }
-
-    return nextTransitiveTables_[stmtNumber].getKeys(next);
 }
 
 unsigned int PKB::GetNumberOfNextRelationship() {
@@ -847,13 +802,12 @@ void PKB::SetTableMaximumSize(unsigned int tableMaximumSize) {
     followsMatrix_ = Matrix(tableMaximumSize_);
     followsTransitiveMatrix_ = Matrix(tableMaximumSize_);
     nextMatrix_ = Matrix(tableMaximumSize_);
+
+    nextTransitiveMatrix_ = Matrix(tableMaximumSize_);
 }
 
 void PKB::SetProcedureFirstAndLastStmtNumber(StmtNumber firstStmtNumber, StmtNumber lastStmtNumber) {
     procedureFirstAndLastStmtNumber_.insert(std::make_pair(firstStmtNumber, lastStmtNumber));
-
-    nextTransitiveMatrixes_.insert(std::make_pair(firstStmtNumber, Matrix(tableMaximumSize_)));
-    nextTransitiveTables_.insert(std::make_pair(firstStmtNumber, TransitiveTable<StmtNumber, StmtNumber>()));
 
     affectsMatrixes_.insert(std::make_pair(firstStmtNumber, Matrix(tableMaximumSize_)));
     affectsTransitiveMatrixes_.insert(std::make_pair(firstStmtNumber, Matrix(tableMaximumSize_)));
@@ -875,7 +829,7 @@ void PKB::Clear() {
 
     numberOfNextTransitiveRelationship_ = 0;
 
-    controlFlowGraphsNodes_.clear();
+    controlFlowGraphNodes_.clear();
     procedureFirstAndLastStmtNumber_.clear();
 
     constantTable_          = Table<ConstantIndex, ConstantValue>();
@@ -914,10 +868,9 @@ void PKB::Clear() {
     followsTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 
     nextMatrix_ = Matrix();
-    nextTransitiveMatrixes_.clear();
-    
+    nextTransitiveMatrix_ = Matrix();
+
     nextTable_              = Table<StmtNumber, StmtNumber>();
-    nextTransitiveTables_.clear();
 
     affectsMatrixes_.clear();
     affectsTransitiveMatrixes_.clear();
@@ -927,11 +880,10 @@ void PKB::Clear() {
 }
 
 void PKB::ClearComputeOnDemands() {
+    nextTransitiveMatrix_.clear();
+
     for (auto &pair : procedureFirstAndLastStmtNumber_) {
         StmtNumber stmtNumber = pair.first;
-
-        nextTransitiveMatrixes_[stmtNumber].clear();
-        nextTransitiveTables_[stmtNumber] = TransitiveTable<StmtNumber, StmtNumber>();
 
         affectsMatrixes_[stmtNumber].clear();
         affectsTransitiveMatrixes_[stmtNumber].clear();

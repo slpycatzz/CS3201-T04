@@ -4,6 +4,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <unordered_map>
 #include <vector>
 
 #include "Constants.h"
@@ -144,14 +145,12 @@ class PKB {
     static void PrintFollowsTable();
     static void PrintFollowsTransitiveTable();
 
-    static void InsertControlFlowGraph(StmtNumber procedureFirstStmtNumber, std::set<CFGNode*> controlFlowGraphNodes);
+    static void InsertControlFlowGraphNode(StmtNumber stmtNumber, CFGNode* controlFlowGraphNode);
     static void InsertNext(StmtNumber current, StmtNumber next);
     static bool IsNext(StmtNumber current, StmtNumber next);
     static bool IsNextTransitive(StmtNumber current, StmtNumber next);
     static std::set<StmtNumber> GetNext(StmtNumber current);
     static std::set<StmtNumber> GetPrevious(StmtNumber next);
-    static std::set<StmtNumber> GetNextTransitive(StmtNumber current);
-    static std::set<StmtNumber> GetPreviousTransitive(StmtNumber next);
     static unsigned int GetNumberOfNextRelationship();
     static void IncreaseNumberOfNextTransitiveRelationship(unsigned int number);
     static unsigned int GetNumberOfNextTransitiveRelationship();
@@ -207,8 +206,8 @@ class PKB {
 
     static unsigned int numberOfNextTransitiveRelationship_;
 
-    static std::map<StmtNumber, std::set<CFGNode*>> controlFlowGraphsNodes_;
-    static std::map<StmtNumber, StmtNumber> procedureFirstAndLastStmtNumber_;
+    static std::unordered_map<StmtNumber, CFGNode*> controlFlowGraphNodes_;
+    static std::unordered_map<StmtNumber, StmtNumber> procedureFirstAndLastStmtNumber_;
 
     static Table<ConstantIndex, ConstantValue> constantTable_;
     static Table<VariableIndex, VariableName> variableTable_;
@@ -246,10 +245,9 @@ class PKB {
     static TransitiveTable<StmtNumber, StmtNumber> followsTransitiveTable_;
 
     static Matrix nextMatrix_;
-    static std::map<StmtNumber, Matrix> nextTransitiveMatrixes_;
+    static Matrix nextTransitiveMatrix_;
 
     static Table<StmtNumber, StmtNumber> nextTable_;
-    static std::map<StmtNumber, TransitiveTable<StmtNumber, StmtNumber>> nextTransitiveTables_;
 
     static std::map<StmtNumber, Matrix> affectsMatrixes_;
     static std::map<StmtNumber, Matrix> affectsTransitiveMatrixes_;

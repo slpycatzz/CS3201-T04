@@ -502,35 +502,31 @@ void DesignExtractor::precomputeNext() {
             }
         }
 
-        /* Populate CFG nodes for current procedure. */
-        PKB::InsertControlFlowGraph(pair.first, visitedNodes);
+        /* Populate CFG nodes. */
+        for (CFGNode* visitedNode : visitedNodes) {
+            PKB::InsertControlFlowGraphNode(visitedNode->getStmtNumber(), visitedNode);
+        }
     }
 }
 
-void DesignExtractor::computeNextTransitive(set<CFGNode*> controlFlowGraphNodes,
-    Matrix &nextTransitiveMatrix, TransitiveTable<StmtNumber, StmtNumber> &nextTransitiveTable) {
+void DesignExtractor::computeNextTransitive(CFGNode* controlFlowGraphNode, Matrix &nextTransitiveMatrix) {
+    queue<CFGNode*> queue;
+    queue.push(controlFlowGraphNode);
 
-    /* DFS all the nodes in the control flow graph. */
-    for (CFGNode* node : controlFlowGraphNodes) {
-        queue<CFGNode*> queue;
-        queue.push(node);
+    StmtNumber nodeStmtNumber = controlFlowGraphNode->getStmtNumber();
+    while (!queue.empty()) {
+        CFGNode* currentNode = queue.front();
+        vector<CFGNode*> children = currentNode->getChildren();
 
-        StmtNumber nodeStmtNumber = node->getStmtNumber();
-        while (!queue.empty()) {
-            CFGNode* currentNode = queue.front();
-            vector<CFGNode*> children = currentNode->getChildren();
+        queue.pop();
 
-            queue.pop();
+        for (CFGNode* child : children) {
+            StmtNumber childStmtNumber = child->getStmtNumber();
 
-            for (CFGNode* child : children) {
-                StmtNumber childStmtNumber = child->getStmtNumber();
-
-                if (!nextTransitiveMatrix.isRowColumnToggled(nodeStmtNumber, childStmtNumber)) {
-                    nextTransitiveTable.insert(nodeStmtNumber, childStmtNumber);
-                    nextTransitiveMatrix.toggleRowColumn(nodeStmtNumber, childStmtNumber);
-
-                    queue.push(child);
-                }
+            if (!nextTransitiveMatrix.isRowColumnToggled(nodeStmtNumber, childStmtNumber)) {
+                nextTransitiveMatrix.toggleRowColumn(nodeStmtNumber, childStmtNumber);
+                
+                queue.push(child);
             }
         }
     }
