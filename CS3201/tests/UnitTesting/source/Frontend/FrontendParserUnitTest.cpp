@@ -18,6 +18,7 @@ namespace UnitTesting {
 
      public:
         TEST_METHOD_INITIALIZE(Initialize) {
+            PKB::Clear();
             frontendParser = FrontendParser();
         }
 

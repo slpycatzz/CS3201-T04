@@ -24,6 +24,9 @@ class DesignExtractor {
     void setAssignStmtData(Symbol stmtSymbol, StmtNumber stmtNumber, VariableName variable);
     void setAssignExpressionData(StmtNumber stmtNumber, std::vector<std::string> expression);
 
+    void computeNextTransitive(std::set<CFGNode> controlFlowGraphNodes,
+        Matrix &nextTransitiveMatrix, TransitiveTable<StmtNumber, StmtNumber> &nextTransitiveTable);
+
  private:
     void populateGenericTables();
     void populateStmtRelatedTables();

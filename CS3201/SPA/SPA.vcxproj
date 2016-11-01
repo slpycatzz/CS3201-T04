@@ -23,6 +23,7 @@
     <ClInclude Include="include\Exceptions.h" />
     <ClInclude Include="include\Frontend\DesignExtractor.h" />
     <ClInclude Include="include\frontend\FrontendParser.h" />
+    <ClInclude Include="include\PKB\Matrix.h" />
     <ClInclude Include="include\PKB\Table.h" />
     <ClInclude Include="include\PKB\PKB.h" />
     <ClInclude Include="include\PKB\TransitiveTable.h" />

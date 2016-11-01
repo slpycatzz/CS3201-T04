@@ -8,7 +8,6 @@
 #include "Constants.h"
 #include "Frontend/DesignExtractor.h"
 #include "PKB/PKB.h"
-#include "PKB/Table.h"
 #include "Utils.h"
 
 using std::map;
@@ -17,22 +16,49 @@ using std::set;
 using std::string;
 using std::vector;
 
-DesignExtractor DesignExtractor::instance;
-
 DesignExtractor::DesignExtractor() {}
 
 DesignExtractor& DesignExtractor::getInstance() {
+    static DesignExtractor instance;
     return instance;
 }
 
 void DesignExtractor::resetInstance() {
-    instance = DesignExtractor();
+    stmtsLevels_.clear();
+    thenLastStmt_.clear();
+    elseFirstStmt_.clear();
+    proceduresLastStmt_.clear();
+
+    constants_.clear();
+    procedureNames_.clear();
+    variableNames_.clear();
+    controlVariableNames_.clear();
+    call_.clear();
+    stmts_.clear();
+    stmtlists_.clear();
+    proceduresFirstStmt_.clear();
+
+    expressions_.clear();
+
+    calls_.clear();
+    modifies_.clear();
+    uses_.clear();
 }
 
 void DesignExtractor::populatePKB(map<StmtNumber, unsigned int> stmtsLevels, unsigned int tableMaximumSize) {
     stmtsLevels_ = stmtsLevels;
 
     PKB::SetTableMaximumSize(tableMaximumSize);
+
+    /* Have dependencies on table maximum size. */
+    for (auto &pairOne : proceduresFirstStmt_) {
+        for (auto &pairTwo : proceduresLastStmt_) {
+            if (pairOne.second == pairTwo.second) {
+                PKB::SetProcedureFirstAndLastStmtNumber(pairOne.first, pairTwo.first);
+                break;
+            }
+        }
+    }
 
     /* Generic tables population. */
     populateGenericTables();
@@ -428,6 +454,7 @@ void DesignExtractor::precomputeNext() {
             set<unsigned int> nextStmtNumbers = getNextStmtNumbers(currentNode->getStmtNumber());
 
             for (StmtNumber stmtNumber : nextStmtNumbers) {
+                /* Populate next table. */
                 PKB::InsertNext(currentNode->getStmtNumber(), stmtNumber);
 
                 CFGNode newNode = NULL;
@@ -452,7 +479,42 @@ void DesignExtractor::precomputeNext() {
             visitedNodes.insert(nextNodes.begin(), nextNodes.end());
         }
 
-        PKB::InsertControlFlowGraph(rootNode);
+        /* Populate CFG nodes for current procedure. */
+        PKB::InsertControlFlowGraph(pair.first, visitedNodes);
+    }
+}
+
+void DesignExtractor::computeNextTransitive(std::set<CFGNode> controlFlowGraphNodes,
+    Matrix &nextTransitiveMatrix, TransitiveTable<StmtNumber, StmtNumber> &nextTransitiveTable) {
+
+    /* DFS all the nodes in the control flow graph. */
+    for (CFGNode node : controlFlowGraphNodes) {
+        vector<CFGNode> visitedNodes;
+        queue<CFGNode> queue;
+
+        queue.push(node);
+        while (!queue.empty()) {
+            CFGNode currentNode = queue.front();
+            vector<CFGNode> children = currentNode->getChildren();
+
+            queue.pop();
+
+            for (CFGNode child : children) {
+                if (!child->isVisited()) {
+                    child->setVisited(true);
+
+                    nextTransitiveTable.insert(node->getStmtNumber(), child->getStmtNumber());
+                    nextTransitiveMatrix.toggleRowColumn(node->getStmtNumber(), child->getStmtNumber());
+
+                    visitedNodes.push_back(child);
+                    queue.push(child);
+                }
+            }
+        }
+
+        for (CFGNode visited : visitedNodes) {
+            visited->setVisited(false);
+        }
     }
 }
 

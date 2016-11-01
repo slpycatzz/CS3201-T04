@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Constants.h"
+#include "PKB/Matrix.h"
 #include "PKB/Table.h"
 #include "PKB/TransitiveTable.h"
 #include "TreeNode.h"
@@ -145,10 +146,8 @@ class PKB {
     static void PrintFollowsTable();
     static void PrintFollowsTransitiveTable();
 
-    static void InsertControlFlowGraph(CFGNode controlFlowGraph);
+    static void InsertControlFlowGraph(StmtNumber procedureFirstStmtNumber, std::set<CFGNode> controlFlowGraphNodes);
     static void InsertNext(StmtNumber current, StmtNumber next);
-    
-    static void PopulateNextTransitiveTable();
     static bool IsNext(StmtNumber current, StmtNumber next);
     static bool IsNextTransitive(StmtNumber current, StmtNumber next);
     static std::set<StmtNumber> GetNext(StmtNumber current);
@@ -156,9 +155,9 @@ class PKB {
     static std::set<StmtNumber> GetNextTransitive(StmtNumber current);
     static std::set<StmtNumber> GetPreviousTransitive(StmtNumber next);
     static unsigned int GetNumberOfNextRelationship();
+    static void IncreaseNumberOfNextTransitiveRelationship(unsigned int number);
     static unsigned int GetNumberOfNextTransitiveRelationship();
     static void PrintNextTable();
-    static void PrintNextTransitiveTable();
 
     static unsigned int GetNumberOfProcedure();
     static unsigned int GetNumberOfAssign();
@@ -168,9 +167,10 @@ class PKB {
     static unsigned int GetNumberOfContainerStmt();
 
     static void SetTableMaximumSize(unsigned int tableMaximumSize);
-    
+    static void SetProcedureFirstAndLastStmtNumber(StmtNumber firstStmtNumber, StmtNumber lastStmtNumber);
+
     static void Clear();
-    static void ClearComputeOnDemandTables();
+    static void ClearComputeOnDemands();
 
     /* START - Deprecated functions */
     static bool HasControlVariableNameAtStmtNumber(StmtNumber stmtNumber, VariableName controlVariable);
@@ -207,8 +207,10 @@ class PKB {
 
     static unsigned int tableMaximumSize_;
 
-    static std::vector<CFGNode> controlFlowGraphs_;
-    static std::vector<std::vector<CFGNode>> controlFlowGraphsNodes_;
+    static unsigned int numberOfNextTransitiveRelationship_;
+
+    static std::map<StmtNumber, std::set<CFGNode>> controlFlowGraphsNodes_;
+    static std::map<StmtNumber, StmtNumber> procedureFirstAndLastStmtNumber_;
 
     static Table<ConstantIndex, ConstantValue> constantTable_;
     static Table<VariableIndex, VariableName> variableTable_;
@@ -233,18 +235,21 @@ class PKB {
     static Table<StmtNumber, VariableIndex> usesTable_;
     static Table<ProcedureIndex, VariableIndex> usesProcedureTable_;
 
-    static std::vector<std::vector<StmtNumber>> parentMatrix_;
-    static std::vector<std::vector<StmtNumber>> parentTransitiveMatrix_;
+    static Matrix parentMatrix_;
+    static Matrix parentTransitiveMatrix_;
+
     static Table<StmtNumber, StmtNumber> parentTable_;
     static TransitiveTable<StmtNumber, StmtNumber> parentTransitiveTable_;
 
-    static std::vector<std::vector<StmtNumber>> followsMatrix_;
-    static std::vector<std::vector<StmtNumber>> followsTransitiveMatrix_;
+    static Matrix followsMatrix_;
+    static Matrix followsTransitiveMatrix_;
+
     static Table<StmtNumber, StmtNumber> followsTable_;
     static TransitiveTable<StmtNumber, StmtNumber> followsTransitiveTable_;
 
-    static std::vector<std::vector<StmtNumber>> nextMatrix_;
-    static std::vector<std::vector<StmtNumber>> nextTransitiveMatrix_;
+    static Matrix nextMatrix_;
+    static std::map<StmtNumber, Matrix> nextTransitiveMatrixes_;
+
     static Table<StmtNumber, StmtNumber> nextTable_;
-    static TransitiveTable<StmtNumber, StmtNumber> nextTransitiveTable_;
+    static std::map<StmtNumber, TransitiveTable<StmtNumber, StmtNumber>> nextTransitiveTables_;
 };

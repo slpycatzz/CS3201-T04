@@ -42,6 +42,8 @@ class Table {
         for (const auto &key : valueToKeysMap.at(value)) {
             return key;
         }
+
+        return static_cast<K>(0);
     }
 
     inline std::set<K> getKeys() {
@@ -70,6 +72,8 @@ class Table {
         for (const auto &value : keyToValuesMap.at(key)) {
             return value;
         }
+
+        return static_cast<V>(0);
     }
 
     inline std::set<V> getValues() {

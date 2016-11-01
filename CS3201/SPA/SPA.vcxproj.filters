@@ -90,6 +90,9 @@
     <ClInclude Include="include\QueryProcessor\QueryProcessor.h">
       <Filter>Header Files\QueryProcessor</Filter>
     </ClInclude>
+    <ClInclude Include="include\PKB\Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Utils.cpp">

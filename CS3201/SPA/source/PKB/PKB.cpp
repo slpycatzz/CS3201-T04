@@ -10,8 +10,6 @@
 #include "Constants.h"
 #include "Frontend/DesignExtractor.h"
 #include "PKB/PKB.h"
-#include "PKB/Table.h"
-#include "PKB/TransitiveTable.h"
 #include "TreeNode.h"
 
 using std::map;
@@ -28,46 +26,51 @@ unsigned int PKB::numberOfCall_      = 0;
 
 unsigned int PKB::tableMaximumSize_  = 0;
 
-vector<CFGNode> PKB::controlFlowGraphs_;
-vector<vector<CFGNode>> PKB::controlFlowGraphsNodes_;
+unsigned int PKB::numberOfNextTransitiveRelationship_ = 0;
 
-Table<ConstantIndex, ConstantValue> PKB::constantTable_                     = Table<ConstantIndex, ConstantValue>();
-Table<VariableIndex, VariableName>  PKB::variableTable_                     = Table<VariableIndex, VariableName>();
-Table<ProcedureIndex, ProcedureName> PKB::procedureTable_                   = Table<ProcedureIndex, ProcedureName>();
+map<StmtNumber, set<CFGNode>> PKB::controlFlowGraphsNodes_;
+map<StmtNumber, StmtNumber> PKB::procedureFirstAndLastStmtNumber_;
 
-Table<StmtNumber, VariableIndex>  PKB::controlVariableTable_                = Table<StmtNumber, VariableIndex>();
-Table<StmtNumber, ProcedureIndex> PKB::callTable_                           = Table<StmtNumber, ProcedureIndex>();
-Table<StmtNumber, Symbol>    PKB::stmtTable_                                = Table<StmtNumber, Symbol>();
-Table<StmtNumber, Symbol>    PKB::stmtlistTable_                            = Table<StmtNumber, Symbol>();
+Table<ConstantIndex, ConstantValue> PKB::constantTable_   = Table<ConstantIndex, ConstantValue>();
+Table<VariableIndex, VariableName> PKB::variableTable_    = Table<VariableIndex, VariableName>();
+Table<ProcedureIndex, ProcedureName> PKB::procedureTable_ = Table<ProcedureIndex, ProcedureName>();
 
-Table<Priority, Symbol> PKB::priorityTable_                                 = Table<Priority, Symbol>();
+Table<StmtNumber, VariableIndex>  PKB::controlVariableTable_ = Table<StmtNumber, VariableIndex>();
+Table<StmtNumber, ProcedureIndex> PKB::callTable_            = Table<StmtNumber, ProcedureIndex>();
+Table<StmtNumber, Symbol> PKB::stmtTable_                    = Table<StmtNumber, Symbol>();
+Table<StmtNumber, Symbol> PKB::stmtlistTable_                = Table<StmtNumber, Symbol>();
 
-Table<StmtNumber, Expression> PKB::expressionTable_                         = Table<StmtNumber, Expression>();
-Table<StmtNumber, SubExpression> PKB::subExpressionTable_                   = Table<StmtNumber, SubExpression>();
+Table<Priority, Symbol> PKB::priorityTable_ = Table<Priority, Symbol>();
 
-Table<ProcedureIndex, ProcedureIndex> PKB::callsTable_                      = Table<ProcedureIndex, ProcedureIndex>();
-TransitiveTable<ProcedureIndex, ProcedureIndex> PKB::callsTransitiveTable_  = TransitiveTable<ProcedureIndex, ProcedureIndex>();
+Table<StmtNumber, Expression> PKB::expressionTable_       = Table<StmtNumber, Expression>();
+Table<StmtNumber, SubExpression> PKB::subExpressionTable_ = Table<StmtNumber, SubExpression>();
 
-Table<StmtNumber, VariableIndex> PKB::modifiesTable_                        = Table<StmtNumber, VariableIndex>();
-Table<ProcedureIndex, VariableIndex> PKB::modifiesProcedureTable_           = Table<ProcedureIndex, VariableIndex>();
+Table<ProcedureIndex, ProcedureIndex> PKB::callsTable_                     = Table<ProcedureIndex, ProcedureIndex>();
+TransitiveTable<ProcedureIndex, ProcedureIndex> PKB::callsTransitiveTable_ = TransitiveTable<ProcedureIndex, ProcedureIndex>();
 
-Table<StmtNumber, VariableIndex> PKB::usesTable_                            = Table<StmtNumber, VariableIndex>();
-Table<ProcedureIndex, VariableIndex> PKB::usesProcedureTable_               = Table<ProcedureIndex, VariableIndex>();
+Table<StmtNumber, VariableIndex> PKB::modifiesTable_              = Table<StmtNumber, VariableIndex>();
+Table<ProcedureIndex, VariableIndex> PKB::modifiesProcedureTable_ = Table<ProcedureIndex, VariableIndex>();
 
-vector<vector<StmtNumber>> PKB::parentMatrix_;
-vector<vector<StmtNumber>> PKB::parentTransitiveMatrix_;
-Table<StmtNumber, StmtNumber> PKB::parentTable_                             = Table<StmtNumber, StmtNumber>();
-TransitiveTable<StmtNumber, StmtNumber> PKB::parentTransitiveTable_         = TransitiveTable<StmtNumber, StmtNumber>();
+Table<StmtNumber, VariableIndex> PKB::usesTable_              = Table<StmtNumber, VariableIndex>();
+Table<ProcedureIndex, VariableIndex> PKB::usesProcedureTable_ = Table<ProcedureIndex, VariableIndex>();
 
-vector<vector<StmtNumber>> PKB::followsMatrix_;
-vector<vector<StmtNumber>> PKB::followsTransitiveMatrix_;
-Table<StmtNumber, StmtNumber> PKB::followsTable_                            = Table<StmtNumber, StmtNumber>();
-TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_        = TransitiveTable<StmtNumber, StmtNumber>();
+Matrix PKB::parentMatrix_           = Matrix();
+Matrix PKB::parentTransitiveMatrix_ = Matrix();
 
-vector<vector<StmtNumber>> PKB::nextMatrix_;
-vector<vector<StmtNumber>> PKB::nextTransitiveMatrix_;
-Table<StmtNumber, StmtNumber> PKB::nextTable_                               = Table<StmtNumber, StmtNumber>();
-TransitiveTable<StmtNumber, StmtNumber> PKB::nextTransitiveTable_           = TransitiveTable<StmtNumber, StmtNumber>();
+Table<StmtNumber, StmtNumber> PKB::parentTable_                      = Table<StmtNumber, StmtNumber>();
+TransitiveTable<StmtNumber, StmtNumber> PKB::parentTransitiveTable_  = TransitiveTable<StmtNumber, StmtNumber>();
+
+Matrix PKB::followsMatrix_           = Matrix();
+Matrix PKB::followsTransitiveMatrix_ = Matrix();
+
+Table<StmtNumber, StmtNumber> PKB::followsTable_                     = Table<StmtNumber, StmtNumber>();
+TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
+
+Matrix PKB::nextMatrix_ = Matrix();
+map<StmtNumber, Matrix> PKB::nextTransitiveMatrixes_;
+
+Table<StmtNumber, StmtNumber> PKB::nextTable_ = Table<StmtNumber, StmtNumber>();
+map<StmtNumber, TransitiveTable<StmtNumber, StmtNumber>> PKB::nextTransitiveTables_;
 
 /* START - Constant table functions */
 
@@ -561,8 +564,11 @@ void PKB::PrintUsesProcedureTable() {
 /* START - Parent table functions */
 
 void PKB::InsertParent(StmtNumber parent, StmtNumber child) {
+    if (!parentTable_.hasKeyToValue(parent, child)) {
+        parentMatrix_.toggleRowColumn(parent, child);
+    }
+
     parentTable_.insert(parent, child);
-    parentMatrix_[parent][child] = 1;
 }
 
 void PKB::PopulateParentTransitiveTable() {
@@ -570,27 +576,21 @@ void PKB::PopulateParentTransitiveTable() {
 }
 
 bool PKB::IsParent(StmtNumber parent, StmtNumber child) {
-    if (parent > tableMaximumSize_ || parent <= 0) {
+    /* Validate if exceed matrix's range. */
+    if (parent > tableMaximumSize_ || parent <= 0 || child > tableMaximumSize_ || child <= 0) {
         return false;
     }
 
-    if (child > tableMaximumSize_ || child <= 0) {
-        return false;
-    }
-
-    return (parentMatrix_[parent][child] == 1);
+    return parentMatrix_.isRowColumnToggled(parent, child);
 }
 
 bool PKB::IsParentTransitive(StmtNumber parent, StmtNumber child) {
-    if (parent > tableMaximumSize_ || parent <= 0) {
+    /* Validate if exceed matrix's range. */
+    if (parent > tableMaximumSize_ || parent <= 0 || child > tableMaximumSize_ || child <= 0) {
         return false;
     }
 
-    if (child > tableMaximumSize_ || child <= 0) {
-        return false;
-    }
-
-    return (parentTransitiveMatrix_[parent][child] == 1);
+    return parentTransitiveMatrix_.isRowColumnToggled(parent, child);
 }
 
 set<StmtNumber> PKB::GetParent(StmtNumber child) {
@@ -629,8 +629,11 @@ void PKB::PrintParentTransitiveTable() {
 /* START - Follows table functions */
 
 void PKB::InsertFollows(StmtNumber follows, StmtNumber following) {
+    if (!followsTable_.hasKeyToValue(follows, following)) {
+        followsMatrix_.toggleRowColumn(follows, following);
+    }
+
     followsTable_.insert(follows, following);
-    followsMatrix_[follows][following] = 1;
 }
 
 void PKB::PopulateFollowsTransitiveTable() {
@@ -638,27 +641,21 @@ void PKB::PopulateFollowsTransitiveTable() {
 }
 
 bool PKB::IsFollows(StmtNumber follows, StmtNumber following) {
-    if (follows > tableMaximumSize_ || follows <= 0) {
+    /* Validate if exceed matrix's range. */
+    if (follows > tableMaximumSize_ || follows <= 0 || following > tableMaximumSize_ || following <= 0) {
         return false;
     }
 
-    if (following > tableMaximumSize_ || following <= 0) {
-        return false;
-    }
-
-    return (followsMatrix_[follows][following] == 1);
+    return followsMatrix_.isRowColumnToggled(follows, following);
 }
 
 bool PKB::IsFollowsTransitive(StmtNumber follows, StmtNumber following) {
-    if (follows > tableMaximumSize_ || follows <= 0) {
+    /* Validate if exceed matrix's range. */
+    if (follows > tableMaximumSize_ || follows <= 0 || following > tableMaximumSize_ || following <= 0) {
         return false;
     }
 
-    if (following > tableMaximumSize_ || following <= 0) {
-        return false;
-    }
-
-    return (followsTransitiveMatrix_[follows][following] == 1);
+    return followsTransitiveMatrix_.isRowColumnToggled(follows, following);
 }
 
 set<StmtNumber> PKB::GetFollows(StmtNumber following) {
@@ -696,100 +693,55 @@ void PKB::PrintFollowsTransitiveTable() {
 /* END   - Follows table functions */
 /* START - Next table functions */
 
-void PKB::InsertControlFlowGraph(CFGNode controlFlowGraph) {
-    controlFlowGraphs_.push_back(controlFlowGraph);
-
-    /* Get all the nodes in the control flow graph. */
-    set<CFGNode> visitedNodes;
-
-    controlFlowGraph->setVisited(true);
-    visitedNodes.insert(controlFlowGraph);
-
-    queue<CFGNode> queue;
-    queue.push(controlFlowGraph);
-
-    while (!queue.empty()) {
-        vector<CFGNode> children = queue.front()->getChildren();
-        queue.pop();
-
-        for (CFGNode child : children) {
-            if (!child->isVisited()) {
-                queue.push(child);
-
-                child->setVisited(true);
-                visitedNodes.insert(child);
-            }
-        }
-    }
-
-    for (CFGNode node : visitedNodes) {
-        node->setVisited(false);
-    }
-
-    controlFlowGraphsNodes_.push_back(vector<CFGNode>(visitedNodes.begin(), visitedNodes.end()));
+void PKB::InsertControlFlowGraph(StmtNumber procedureFirstStmtNumber, set<CFGNode> controlFlowGraphNodes) {
+    controlFlowGraphsNodes_.insert(std::make_pair(procedureFirstStmtNumber, controlFlowGraphNodes));
 }
 
 void PKB::InsertNext(StmtNumber current, StmtNumber next) {
-    nextTable_.insert(current, next);
-    nextMatrix_[current][next] = 1;
-}
-
-void PKB::PopulateNextTransitiveTable() {
-    for (vector<CFGNode> treeNodes : controlFlowGraphsNodes_) {
-        /* DFS all the nodes in the control flow graph. */
-        for (CFGNode node : treeNodes) {
-            vector<CFGNode> visitedNodes;
-            queue<CFGNode> queue;
-
-            queue.push(node);
-            while (!queue.empty()) {
-                CFGNode currentNode = queue.front();
-                vector<CFGNode> children = currentNode->getChildren();
-
-                queue.pop();
-
-                for (CFGNode child : children) {
-                    if (!child->isVisited()) {
-                        child->setVisited(true);
-
-                        nextTransitiveTable_.insert(node->getStmtNumber(), child->getStmtNumber());
-                        nextTransitiveMatrix_[node->getStmtNumber()][child->getStmtNumber()] = 1;
-                        visitedNodes.push_back(child);
-                        queue.push(child);
-                    }
-                }
-            }
-
-            for (CFGNode visited : visitedNodes) {
-                visited->setVisited(false);
-            }
-        }
+    if (!nextTable_.hasKeyToValue(current, next)) {
+        nextMatrix_.toggleRowColumn(current, next);
     }
+
+    nextTable_.insert(current, next);
 }
 
 bool PKB::IsNext(StmtNumber current, StmtNumber next) {
-    if (current > tableMaximumSize_ || current <= 0) {
+    /* Validate if exceed matrix's range. */
+    if (current > tableMaximumSize_ || current <= 0 || next > tableMaximumSize_ || next <= 0) {
         return false;
     }
 
-    if (next > tableMaximumSize_ || next <= 0) {
-        return false;
-    }
-
-    return (nextMatrix_[current][next] == 1);
+    return nextMatrix_.isRowColumnToggled(current, next);
 }
 
 bool PKB::IsNextTransitive(StmtNumber current, StmtNumber next) {
-    if (current > tableMaximumSize_ || current <= 0) {
+    /* Validate if exceed matrix's range. */
+    if (current > tableMaximumSize_ || current <= 0 || next > tableMaximumSize_ || next <= 0) {
         return false;
     }
 
-    if (next > tableMaximumSize_ || next <= 0) {
+    StmtNumber stmtNumber = 0;
+    for (auto &pair : procedureFirstAndLastStmtNumber_) {
+        if (current >= pair.first && current <= pair.second && next >= pair.first && next <= pair.second) {
+            stmtNumber = pair.first;
+            break;
+        }
+    }
+
+    /* Validate if "current" and "next" is in same procedure. */
+    if (stmtNumber == 0) {
         return false;
+    }
+
+    if (!nextTransitiveMatrixes_[stmtNumber].isPopulated()) {
+        nextTransitiveMatrixes_[stmtNumber].setPopulated(true);
+
+        DesignExtractor::getInstance().computeNextTransitive(controlFlowGraphsNodes_[stmtNumber],
+            nextTransitiveMatrixes_[stmtNumber], nextTransitiveTables_[stmtNumber]);
     }
 
     /* Worst case is O(1) time complexity. */
-    return (nextTransitiveMatrix_[current][next] == 1);
+    return nextTransitiveMatrixes_[stmtNumber].isRowColumnToggled(current, next);
 }
 
 set<StmtNumber> PKB::GetNext(StmtNumber current) {
@@ -801,27 +753,57 @@ set<StmtNumber> PKB::GetPrevious(StmtNumber next) {
 }
 
 set<StmtNumber> PKB::GetNextTransitive(StmtNumber current) {
-    return nextTransitiveTable_.getValues(current);
+    StmtNumber stmtNumber = 0;
+    for (auto &pair : procedureFirstAndLastStmtNumber_) {
+        if (current >= pair.first && current <= pair.second) {
+            stmtNumber = pair.first;
+            break;
+        }
+    }
+
+    if (!nextTransitiveMatrixes_[stmtNumber].isPopulated()) {
+        nextTransitiveMatrixes_[stmtNumber].setPopulated(true);
+
+        DesignExtractor::getInstance().computeNextTransitive(controlFlowGraphsNodes_[stmtNumber],
+            nextTransitiveMatrixes_[stmtNumber], nextTransitiveTables_[stmtNumber]);
+    }
+
+    return nextTransitiveTables_[stmtNumber].getValues(current);
 }
 
 set<StmtNumber> PKB::GetPreviousTransitive(StmtNumber next) {
-    return nextTransitiveTable_.getKeys(next);
+    StmtNumber stmtNumber = 0;
+    for (auto &pair : procedureFirstAndLastStmtNumber_) {
+        if (next >= pair.first && next <= pair.second) {
+            stmtNumber = pair.first;
+            break;
+        }
+    }
+
+    if (!nextTransitiveMatrixes_[stmtNumber].isPopulated()) {
+        nextTransitiveMatrixes_[stmtNumber].setPopulated(true);
+
+        DesignExtractor::getInstance().computeNextTransitive(controlFlowGraphsNodes_[stmtNumber],
+            nextTransitiveMatrixes_[stmtNumber], nextTransitiveTables_[stmtNumber]);
+    }
+
+    return nextTransitiveTables_[stmtNumber].getKeys(next);
 }
 
 unsigned int PKB::GetNumberOfNextRelationship() {
     return nextTable_.getNumberOfRelationship();
 }
 
+void PKB::IncreaseNumberOfNextTransitiveRelationship(unsigned int number) {
+    numberOfNextTransitiveRelationship_ += number;
+}
+
 unsigned int PKB::GetNumberOfNextTransitiveRelationship() {
-    return nextTransitiveTable_.getNumberOfRelationship();
+    return numberOfNextTransitiveRelationship_;
 }
 
 void PKB::PrintNextTable() {
     nextTable_.printTable();
-}
-
-void PKB::PrintNextTransitiveTable() {
-    nextTransitiveTable_.printTable();
 }
 
 /* END   - Next table functions */
@@ -854,15 +836,23 @@ unsigned int PKB::GetNumberOfContainerStmt() {
 void PKB::SetTableMaximumSize(unsigned int tableMaximumSize) {
     tableMaximumSize_ = tableMaximumSize;
 
-    parentMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
-    parentTransitiveMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
-    followsMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
-    followsTransitiveMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
-    nextMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
-    nextTransitiveMatrix_.resize(tableMaximumSize_, vector<StmtNumber>(tableMaximumSize_, 0));
+    parentMatrix_ = Matrix(tableMaximumSize_);
+    parentTransitiveMatrix_ = Matrix(tableMaximumSize_);
+    followsMatrix_ = Matrix(tableMaximumSize_);
+    followsTransitiveMatrix_ = Matrix(tableMaximumSize_);
+    nextMatrix_ = Matrix(tableMaximumSize_);
+}
+
+void PKB::SetProcedureFirstAndLastStmtNumber(StmtNumber firstStmtNumber, StmtNumber lastStmtNumber) {
+    procedureFirstAndLastStmtNumber_.insert(std::make_pair(firstStmtNumber, lastStmtNumber));
+
+    nextTransitiveMatrixes_.insert(std::make_pair(firstStmtNumber, Matrix(tableMaximumSize_)));
+    nextTransitiveTables_.insert(std::make_pair(firstStmtNumber, TransitiveTable<StmtNumber, StmtNumber>()));
 }
 
 void PKB::Clear() {
+    DesignExtractor::getInstance().resetInstance();
+
     numberOfProcedure_ = 0;
     numberOfAssign_ = 0;
     numberOfWhile_ = 0;
@@ -871,8 +861,10 @@ void PKB::Clear() {
 
     tableMaximumSize_ = 0;
 
-    controlFlowGraphs_.clear();
+    numberOfNextTransitiveRelationship_ = 0;
+
     controlFlowGraphsNodes_.clear();
+    procedureFirstAndLastStmtNumber_.clear();
 
     constantTable_          = Table<ConstantIndex, ConstantValue>();
     procedureTable_         = Table<ProcedureIndex, ProcedureName>();
@@ -897,28 +889,33 @@ void PKB::Clear() {
     usesTable_              = Table<StmtNumber, VariableIndex>();
     usesProcedureTable_     = Table<ProcedureIndex, VariableIndex>();
 
-    parentMatrix_.clear();
-    parentTransitiveMatrix_.clear();
+    parentMatrix_ = Matrix();
+    parentTransitiveMatrix_ = Matrix();
+
     parentTable_            = Table<StmtNumber, StmtNumber>();
     parentTransitiveTable_  = TransitiveTable<StmtNumber, StmtNumber>();
 
-    followsMatrix_.clear();
-    followsTransitiveMatrix_.clear();
+    followsMatrix_ = Matrix();
+    followsTransitiveMatrix_ = Matrix();
+    
     followsTable_           = Table<StmtNumber, StmtNumber>();
     followsTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 
-    nextMatrix_.clear();
-    nextTransitiveMatrix_.clear();
+    nextMatrix_ = Matrix();
+    nextTransitiveMatrixes_.clear();
+    
     nextTable_              = Table<StmtNumber, StmtNumber>();
-    nextTransitiveTable_    = TransitiveTable<StmtNumber, StmtNumber>();
+    nextTransitiveTables_.clear();
 }
 
-void PKB::ClearComputeOnDemandTables() {
-    for (vector<StmtNumber> vec : nextTransitiveMatrix_) {
-        vec.assign(vec.size(), 0);
+void PKB::ClearComputeOnDemands() {
+    for (auto &pair : nextTransitiveMatrixes_) {
+        pair.second.clear();
     }
 
-    nextTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
+    for (auto &pair : nextTransitiveTables_) {
+        pair.second = TransitiveTable<StmtNumber, StmtNumber>();
+    }
 }
 
 bool PKB::ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo) {

@@ -23,7 +23,7 @@ class TransitiveTable {
         generateValueToKeysTransitiveMap(table);
     }
 
-    inline void generateTransitiveTable(Table<K, V> table, std::vector<std::vector<V>> &matrix) {
+    inline void generateTransitiveTable(Table<K, V> table, Matrix &matrix) {
         generateKeyToValuesTransitiveMap(table, matrix);
         generateValueToKeysTransitiveMap(table);
     }
@@ -60,7 +60,7 @@ class TransitiveTable {
         }
     }
 
-    inline void generateKeyToValuesTransitiveMap(Table<K, V> table, std::vector<std::vector<V>> &matrix) {
+    inline void generateKeyToValuesTransitiveMap(Table<K, V> table, Matrix &matrix) {
         std::set<K> keys = table.getKeys();
 
         if (keys.empty()) {
@@ -88,8 +88,7 @@ class TransitiveTable {
                 for (const auto &value : values) {
                     keyStack.push(value);
 
-                    /* Populate the matrix. */
-                    matrix[key][value] = 1;
+                    matrix.toggleRowColumn(key, value);
                 }
             }
         }
@@ -153,6 +152,10 @@ class TransitiveTable {
 
     inline unsigned int getNumberOfRelationship() {
         return numberOfRelationship;
+    }
+
+    inline bool isEmpty() {
+        return (keyToValuesTransitiveMap.empty && valueToKeysTransitiveMap.empty);
     }
 
     inline bool hasKey(K key) {

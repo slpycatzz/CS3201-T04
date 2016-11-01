@@ -126,10 +126,6 @@ QueryTree QueryOptimizer::optimize(QueryTree qt) {
         }
     }
 
-    if (hasNextTransitiveClause) {
-        PKB::PopulateNextTransitiveTable();
-    }
-
     // Insert first clause into group if group is empty
     if (genericGroups.empty() && !allClauses.empty()) {
         vector<Clause> group;
