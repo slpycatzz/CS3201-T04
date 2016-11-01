@@ -250,4 +250,10 @@ class PKB {
 
     static Table<StmtNumber, StmtNumber> nextTable_;
     static std::map<StmtNumber, TransitiveTable<StmtNumber, StmtNumber>> nextTransitiveTables_;
+
+    static std::map<StmtNumber, Matrix> affectsMatrixes_;
+    static std::map<StmtNumber, Matrix> affectsTransitiveMatrixes_;
+
+    static std::map<StmtNumber, Table<StmtNumber, StmtNumber>> affectsTables_;
+    static std::map<StmtNumber, TransitiveTable<StmtNumber, StmtNumber>> affectsTransitiveTables_;
 };

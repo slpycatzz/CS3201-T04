@@ -72,6 +72,12 @@ map<StmtNumber, Matrix> PKB::nextTransitiveMatrixes_;
 Table<StmtNumber, StmtNumber> PKB::nextTable_ = Table<StmtNumber, StmtNumber>();
 map<StmtNumber, TransitiveTable<StmtNumber, StmtNumber>> PKB::nextTransitiveTables_;
 
+map<StmtNumber, Matrix> PKB::affectsMatrixes_;
+map<StmtNumber, Matrix> PKB::affectsTransitiveMatrixes_;
+
+map<StmtNumber, Table<StmtNumber, StmtNumber>> PKB::affectsTables_;
+map<StmtNumber, TransitiveTable<StmtNumber, StmtNumber>> PKB::affectsTransitiveTables_;
+
 /* START - Constant table functions */
 
 void PKB::InsertConstantValue(ConstantIndex constantIndex, ConstantValue constantValue) {
@@ -848,6 +854,12 @@ void PKB::SetProcedureFirstAndLastStmtNumber(StmtNumber firstStmtNumber, StmtNum
 
     nextTransitiveMatrixes_.insert(std::make_pair(firstStmtNumber, Matrix(tableMaximumSize_)));
     nextTransitiveTables_.insert(std::make_pair(firstStmtNumber, TransitiveTable<StmtNumber, StmtNumber>()));
+
+    affectsMatrixes_.insert(std::make_pair(firstStmtNumber, Matrix(tableMaximumSize_)));
+    affectsTransitiveMatrixes_.insert(std::make_pair(firstStmtNumber, Matrix(tableMaximumSize_)));
+
+    affectsTables_.insert(std::make_pair(firstStmtNumber, Table<StmtNumber, StmtNumber>()));
+    affectsTransitiveTables_.insert(std::make_pair(firstStmtNumber, TransitiveTable<StmtNumber, StmtNumber>()));
 }
 
 void PKB::Clear() {
@@ -906,15 +918,26 @@ void PKB::Clear() {
     
     nextTable_              = Table<StmtNumber, StmtNumber>();
     nextTransitiveTables_.clear();
+
+    affectsMatrixes_.clear();
+    affectsTransitiveMatrixes_.clear();
+
+    affectsTables_.clear();
+    affectsTransitiveTables_.clear();
 }
 
 void PKB::ClearComputeOnDemands() {
-    for (auto &pair : nextTransitiveMatrixes_) {
-        pair.second.clear();
-    }
+    for (auto &pair : procedureFirstAndLastStmtNumber_) {
+        StmtNumber stmtNumber = pair.first;
 
-    for (auto &pair : nextTransitiveTables_) {
-        pair.second = TransitiveTable<StmtNumber, StmtNumber>();
+        nextTransitiveMatrixes_[stmtNumber].clear();
+        nextTransitiveTables_[stmtNumber] = TransitiveTable<StmtNumber, StmtNumber>();
+
+        affectsMatrixes_[stmtNumber].clear();
+        affectsTransitiveMatrixes_[stmtNumber].clear();
+
+        affectsTables_[stmtNumber] = Table<StmtNumber, StmtNumber>();
+        affectsTransitiveTables_[stmtNumber] = TransitiveTable<StmtNumber, StmtNumber>();
     }
 }
 
