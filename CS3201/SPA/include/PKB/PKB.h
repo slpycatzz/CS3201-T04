@@ -10,10 +10,8 @@
 #include "PKB/Matrix.h"
 #include "PKB/Table.h"
 #include "PKB/TransitiveTable.h"
-#include "TreeNode.h"
+#include "CFGNode.h"
 #include "Utils.h"
-
-typedef TreeNode*    CFGNode;
 
 typedef std::string  Expression, SubExpression;
 typedef std::string  ConstantValue, ProcedureName, VariableName;
@@ -146,7 +144,7 @@ class PKB {
     static void PrintFollowsTable();
     static void PrintFollowsTransitiveTable();
 
-    static void InsertControlFlowGraph(StmtNumber procedureFirstStmtNumber, std::set<CFGNode> controlFlowGraphNodes);
+    static void InsertControlFlowGraph(StmtNumber procedureFirstStmtNumber, std::set<CFGNode*> controlFlowGraphNodes);
     static void InsertNext(StmtNumber current, StmtNumber next);
     static bool IsNext(StmtNumber current, StmtNumber next);
     static bool IsNextTransitive(StmtNumber current, StmtNumber next);
@@ -209,7 +207,7 @@ class PKB {
 
     static unsigned int numberOfNextTransitiveRelationship_;
 
-    static std::map<StmtNumber, std::set<CFGNode>> controlFlowGraphsNodes_;
+    static std::map<StmtNumber, std::set<CFGNode*>> controlFlowGraphsNodes_;
     static std::map<StmtNumber, StmtNumber> procedureFirstAndLastStmtNumber_;
 
     static Table<ConstantIndex, ConstantValue> constantTable_;

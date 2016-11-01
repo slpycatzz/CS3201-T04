@@ -10,7 +10,7 @@
 #include "Constants.h"
 #include "Frontend/DesignExtractor.h"
 #include "PKB/PKB.h"
-#include "TreeNode.h"
+#include "CFGNode.h"
 
 using std::map;
 using std::queue;
@@ -28,7 +28,7 @@ unsigned int PKB::tableMaximumSize_  = 0;
 
 unsigned int PKB::numberOfNextTransitiveRelationship_ = 0;
 
-map<StmtNumber, set<CFGNode>> PKB::controlFlowGraphsNodes_;
+map<StmtNumber, set<CFGNode*>> PKB::controlFlowGraphsNodes_;
 map<StmtNumber, StmtNumber> PKB::procedureFirstAndLastStmtNumber_;
 
 Table<ConstantIndex, ConstantValue> PKB::constantTable_   = Table<ConstantIndex, ConstantValue>();
@@ -693,7 +693,7 @@ void PKB::PrintFollowsTransitiveTable() {
 /* END   - Follows table functions */
 /* START - Next table functions */
 
-void PKB::InsertControlFlowGraph(StmtNumber procedureFirstStmtNumber, set<CFGNode> controlFlowGraphNodes) {
+void PKB::InsertControlFlowGraph(StmtNumber procedureFirstStmtNumber, set<CFGNode*> controlFlowGraphNodes) {
     controlFlowGraphsNodes_.insert(std::make_pair(procedureFirstStmtNumber, controlFlowGraphNodes));
 }
 

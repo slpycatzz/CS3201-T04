@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "CFGNode.h"
 #include "Constants.h"
 #include "Frontend/DesignExtractor.h"
 #include "PKB/PKB.h"
@@ -436,30 +437,31 @@ void DesignExtractor::precomputeFollows() {
 
 void DesignExtractor::precomputeNext() {
     for (auto &pair : proceduresFirstStmt_) {
-        set<unsigned int> visitedStmtNumbers;
-        set<CFGNode> visitedNodes;
+        set<CFGNode*> visitedNodes;
 
-        queue<CFGNode> queue;
+        queue<CFGNode*> queue;
 
-        CFGNode rootNode = new TreeNode(pair.first);
+        CFGNode* rootNode = new CFGNode(stmts_[pair.first], pair.first);
+
         queue.push(rootNode);
-
         visitedNodes.insert(rootNode);
 
         while (!queue.empty()) {
-            CFGNode currentNode = queue.front();
+            CFGNode* currentNode = queue.front();
+            StmtNumber currentStmtNumber = currentNode->getStmtNumber();
             queue.pop();
 
-            set<CFGNode> nextNodes;
-            set<unsigned int> nextStmtNumbers = getNextStmtNumbers(currentNode->getStmtNumber());
+            map<StmtNumber, Symbol> next = getNextStmtNumbers(currentStmtNumber);
 
-            for (StmtNumber stmtNumber : nextStmtNumbers) {
+            for (auto &pair : next) {
+                StmtNumber stmtNumber = pair.first;
+
                 /* Populate next table. */
-                PKB::InsertNext(currentNode->getStmtNumber(), stmtNumber);
+                PKB::InsertNext(currentStmtNumber, stmtNumber);
 
-                CFGNode newNode = NULL;
+                CFGNode* newNode = NULL;
 
-                for (CFGNode visitedNode : visitedNodes) {
+                for (CFGNode* visitedNode : visitedNodes) {
                     if (visitedNode->getStmtNumber() == stmtNumber) {
                         newNode = visitedNode;
                         break;
@@ -467,16 +469,31 @@ void DesignExtractor::precomputeNext() {
                 }
 
                 if (newNode == NULL) {
-                    newNode = new TreeNode(stmtNumber);
+                    newNode = new CFGNode(pair.second, stmtNumber);
+
+                    switch (pair.second) {
+                        default:
+                            break;
+
+                        case ASSIGN:
+                        case CALL:
+                            /* Only expect one modified variable. */
+                            for (VariableIndex variableIndex : PKB::GetModifiedVariables(stmtNumber)) {
+                                newNode->setModifies(variableIndex);
+                            }
+
+                        case WHILE:
+                        case IF:
+                            newNode->setUses(PKB::GetUsedVariables(stmtNumber));
+                            break;
+                    }
 
                     queue.push(newNode);
-                    nextNodes.insert(newNode);
+                    visitedNodes.insert(newNode);
                 }
 
                 currentNode->addChild(newNode);
             }
-
-            visitedNodes.insert(nextNodes.begin(), nextNodes.end());
         }
 
         /* Populate CFG nodes for current procedure. */
@@ -484,22 +501,22 @@ void DesignExtractor::precomputeNext() {
     }
 }
 
-void DesignExtractor::computeNextTransitive(std::set<CFGNode> controlFlowGraphNodes,
+void DesignExtractor::computeNextTransitive(std::set<CFGNode*> controlFlowGraphNodes,
     Matrix &nextTransitiveMatrix, TransitiveTable<StmtNumber, StmtNumber> &nextTransitiveTable) {
 
     /* DFS all the nodes in the control flow graph. */
-    for (CFGNode node : controlFlowGraphNodes) {
-        vector<CFGNode> visitedNodes;
-        queue<CFGNode> queue;
+    for (CFGNode* node : controlFlowGraphNodes) {
+        vector<CFGNode*> visitedNodes;
+        queue<CFGNode*> queue;
 
         queue.push(node);
         while (!queue.empty()) {
-            CFGNode currentNode = queue.front();
-            vector<CFGNode> children = currentNode->getChildren();
+            CFGNode* currentNode = queue.front();
+            vector<CFGNode*> children = currentNode->getChildren();
 
             queue.pop();
 
-            for (CFGNode child : children) {
+            for (CFGNode* child : children) {
                 if (!child->isVisited()) {
                     child->setVisited(true);
 
@@ -512,7 +529,7 @@ void DesignExtractor::computeNextTransitive(std::set<CFGNode> controlFlowGraphNo
             }
         }
 
-        for (CFGNode visited : visitedNodes) {
+        for (CFGNode* visited : visitedNodes) {
             visited->setVisited(false);
         }
     }
@@ -624,20 +641,20 @@ int DesignExtractor::getFollowingOfStmtNumber(StmtNumber stmtNumber) {
     return 0;
 }
 
-set<unsigned int> DesignExtractor::getNextStmtNumbers(unsigned int stmtNumber) {
-    set<unsigned int> stmtNumbers;
+map<StmtNumber, Symbol> DesignExtractor::getNextStmtNumbers(StmtNumber stmtNumber) {
+    map<StmtNumber, Symbol> stmtNumbers;
 
     switch (stmts_[stmtNumber]) {
         default:
             break;
 
         case WHILE:
-            stmtNumbers.insert(stmtNumber + 1);
+            stmtNumbers.insert(std::make_pair(stmtNumber + 1, stmts_[stmtNumber + 1]));
             break;
 
         case IF:
-            stmtNumbers.insert(stmtNumber + 1);
-            stmtNumbers.insert(elseFirstStmt_[stmtNumber]);
+            stmtNumbers.insert(std::make_pair(stmtNumber + 1, stmts_[stmtNumber + 1]));
+            stmtNumbers.insert(std::make_pair(elseFirstStmt_[stmtNumber], stmts_[elseFirstStmt_[stmtNumber]]));
 
             /* Don't need check for following or parent flow path. */
             return stmtNumbers;
@@ -648,7 +665,7 @@ set<unsigned int> DesignExtractor::getNextStmtNumbers(unsigned int stmtNumber) {
 
         /* While, assign and call not at the end of flow path is caught here.*/
         if (followingStmtNumber > 0) {
-            stmtNumbers.insert(followingStmtNumber);
+            stmtNumbers.insert(std::make_pair(followingStmtNumber, stmts_[followingStmtNumber]));
             return stmtNumbers;
         }
 
@@ -665,7 +682,7 @@ set<unsigned int> DesignExtractor::getNextStmtNumbers(unsigned int stmtNumber) {
                 break;
 
             case WHILE:
-                stmtNumbers.insert(parentStmtNumber);
+                stmtNumbers.insert(std::make_pair(parentStmtNumber, stmts_[parentStmtNumber]));
                 return stmtNumbers;
 
             /* Loop up to parent to look for next flow path. */

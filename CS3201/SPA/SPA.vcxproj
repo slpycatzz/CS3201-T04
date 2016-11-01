@@ -37,7 +37,7 @@
     <ClInclude Include="include\QueryProcessor\QueryUtils.h" />
     <ClInclude Include="include\QueryProcessor\RelationTable.h" />
     <ClInclude Include="include\QueryProcessor\TotalCombinationList.h" />
-    <ClInclude Include="include\TreeNode.h" />
+    <ClInclude Include="include\CFGNode.h" />
     <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -55,7 +55,7 @@
     <ClCompile Include="source\QueryProcessor\QueryUtils.cpp" />
     <ClCompile Include="source\QueryProcessor\RelationTable.cpp" />
     <ClCompile Include="source\QueryProcessor\TotalCombinationList.cpp" />
-    <ClCompile Include="source\TreeNode.cpp" />
+    <ClCompile Include="source\CFGNode.cpp" />
     <ClCompile Include="source\Utils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

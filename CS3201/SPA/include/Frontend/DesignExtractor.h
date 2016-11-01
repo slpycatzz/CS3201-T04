@@ -24,7 +24,7 @@ class DesignExtractor {
     void setAssignStmtData(Symbol stmtSymbol, StmtNumber stmtNumber, VariableName variable);
     void setAssignExpressionData(StmtNumber stmtNumber, std::vector<std::string> expression);
 
-    void computeNextTransitive(std::set<CFGNode> controlFlowGraphNodes,
+    void computeNextTransitive(std::set<CFGNode*> controlFlowGraphNodes,
         Matrix &nextTransitiveMatrix, TransitiveTable<StmtNumber, StmtNumber> &nextTransitiveTable);
 
  private:
@@ -43,7 +43,7 @@ class DesignExtractor {
     int getParentOfStmtNumber(StmtNumber stmtNumber);
     int getFollowOfStmtNumber(StmtNumber stmtNumber);
     int getFollowingOfStmtNumber(StmtNumber stmtNumber);
-    std::set<unsigned int> getNextStmtNumbers(unsigned int stmtNumber);
+    std::map<StmtNumber, Symbol> getNextStmtNumbers(StmtNumber stmtNumber);
 
     static DesignExtractor instance;
 

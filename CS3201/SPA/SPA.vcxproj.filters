@@ -39,9 +39,6 @@
     <ClInclude Include="include\Exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\TreeNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\frontend\FrontendParser.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
@@ -93,15 +90,15 @@
     <ClInclude Include="include\PKB\Matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\CFGNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Constants.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\TreeNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\PKB\PKB.cpp">
@@ -142,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="source\QueryProcessor\QueryProcessor.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CFGNode.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
