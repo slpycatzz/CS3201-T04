@@ -14,21 +14,21 @@ CFGNode::CFGNode(Symbol symbol) {
     symbol_ = symbol;
     stmtNumber_ = 0;
     visited_ = false;
-    modifies_ = 0;
+    modify_ = 0;
 }
 
 CFGNode::CFGNode(unsigned int stmtNumber) {
     symbol_ = INVALID;
     stmtNumber_ = stmtNumber;
     visited_ = false;
-    modifies_ = 0;
+    modify_ = 0;
 }
 
 CFGNode::CFGNode(Symbol symbol, unsigned int stmtNumber) {
     symbol_ = symbol;
     stmtNumber_ = stmtNumber;
     visited_ = false;
-    modifies_ = 0;
+    modify_ = 0;
 }
 
 CFGNode::~CFGNode() {}
@@ -69,11 +69,20 @@ unsigned int CFGNode::getNumberOfChildren() {
     return children_.size();
 }
 
-void CFGNode::setModifies(unsigned int modifies) {
+void CFGNode::setModify(unsigned int modify) {
+    modify_ = modify;
+    modifies_.insert(modify);
+}
+
+unsigned int CFGNode::getModify() {
+    return modify_;
+}
+
+void CFGNode::setModifies(set<unsigned int> modifies) {
     modifies_ = modifies;
 }
 
-unsigned int CFGNode::getModifies() {
+set<unsigned int> CFGNode::getModifies() {
     return modifies_;
 }
 
@@ -93,8 +102,14 @@ void CFGNode::printCFGNode(unsigned int indent) {
         std::cout << stmtNumber_ << ". ";
     }
 
-    if (modifies_ != 0) {
-        std::cout << "Modifies: { " << modifies_ << " } ";
+    if (!modifies_.empty()) {
+        std::cout << "Modifies : { ";
+
+        for (unsigned int variableIndex : modifies_) {
+            std::cout << variableIndex << " ";
+        }
+
+        std::cout << "}";
     }
 
     if (!uses_.empty()) {

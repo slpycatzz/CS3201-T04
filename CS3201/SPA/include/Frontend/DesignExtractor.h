@@ -26,6 +26,10 @@ class DesignExtractor {
 
     void computeNextTransitive(std::set<CFGNode*> controlFlowGraphNodes,
         Matrix &nextTransitiveMatrix, TransitiveTable<StmtNumber, StmtNumber> &nextTransitiveTable);
+    
+    void computeAffects(std::set<CFGNode*> controlFlowGraphNodes,
+        Matrix &affectsMatrix, Table<StmtNumber, StmtNumber> &affectsTable);
+
 
  private:
     void populateGenericTables();

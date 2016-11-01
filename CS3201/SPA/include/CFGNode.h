@@ -26,8 +26,11 @@ class CFGNode {
     std::vector<CFGNode*> getChildren();
     unsigned int getNumberOfChildren();
 
-    void setModifies(unsigned int modifies);
-    unsigned int getModifies();
+    void setModify(unsigned int modify);
+    unsigned int getModify();
+
+    void setModifies(std::set<unsigned int> modifies);
+    std::set<unsigned int> getModifies();
 
     void setUses(std::set<unsigned int> uses);
     std::set<unsigned int> getUses();
@@ -40,6 +43,7 @@ class CFGNode {
     bool visited_;
     std::vector<CFGNode*> children_;
 
-    unsigned int modifies_;
+    unsigned int modify_;
+    std::set<unsigned int> modifies_;
     std::set<unsigned int> uses_;
 };
