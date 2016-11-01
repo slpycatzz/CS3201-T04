@@ -17,7 +17,7 @@ class Matrix {
         populated_ = false;
         size_ = size;
 
-        matrix_.resize(size, std::vector<unsigned int>(size, 0));
+        matrix_.resize(size_, std::vector<unsigned int>(size_, 0));
     }
 
     inline ~Matrix() {}
@@ -41,7 +41,7 @@ class Matrix {
     inline void clear() {
         populated_ = false;
 
-        matrix_.clear();
+        matrix_.resize(size_, std::vector<unsigned int>(size_, 0));
     }
 
  private:

@@ -21,6 +21,7 @@ void QueryProcessor::process(std::string query, std::list<std::string>& results)
     ResultList queryResult = queryEvaluator.selectQueryResults(queryTree);
     queryProjector.projectResult(results, queryTree.getResultsInfo(), queryResult);
     
+    PKB::ClearComputeOnDemands();
     // For testing
     //queryTree.printGroups();
 }
