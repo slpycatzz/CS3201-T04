@@ -506,7 +506,6 @@ void DesignExtractor::computeNextTransitive(std::set<CFGNode*> controlFlowGraphN
 
     /* DFS all the nodes in the control flow graph. */
     for (CFGNode* node : controlFlowGraphNodes) {
-        vector<CFGNode*> visitedNodes;
         queue<CFGNode*> queue;
 
         queue.push(node);
@@ -517,20 +516,13 @@ void DesignExtractor::computeNextTransitive(std::set<CFGNode*> controlFlowGraphN
             queue.pop();
 
             for (CFGNode* child : children) {
-                if (!child->isVisited()) {
-                    child->setVisited(true);
-
+                if (!nextTransitiveMatrix.isRowColumnToggled(node->getStmtNumber(), child->getStmtNumber())) {
                     nextTransitiveTable.insert(node->getStmtNumber(), child->getStmtNumber());
                     nextTransitiveMatrix.toggleRowColumn(node->getStmtNumber(), child->getStmtNumber());
 
-                    visitedNodes.push_back(child);
                     queue.push(child);
                 }
             }
-        }
-
-        for (CFGNode* visited : visitedNodes) {
-            visited->setVisited(false);
         }
     }
 }

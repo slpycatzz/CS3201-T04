@@ -38,6 +38,10 @@ class Matrix {
         return populated_;
     }
 
+    inline unsigned int getSize() {
+        return size_;
+    }
+
     inline void clear() {
         populated_ = false;
 
