@@ -28,8 +28,6 @@ unsigned int PKB::numberOfCall_      = 0;
 
 unsigned int PKB::tableMaximumSize_  = 0;
 
-unsigned int PKB::numberOfNextTransitiveRelationship_ = 0;
-
 unordered_map<StmtNumber, CFGNode*> PKB::controlFlowGraphNodes_;
 unordered_map<StmtNumber, StmtNumber> PKB::procedureFirstAndLastStmtNumber_;
 
@@ -755,19 +753,14 @@ unsigned int PKB::GetNumberOfNextRelationship() {
     return nextTable_.getNumberOfRelationship();
 }
 
-void PKB::IncreaseNumberOfNextTransitiveRelationship(unsigned int number) {
-    numberOfNextTransitiveRelationship_ += number;
-}
-
-unsigned int PKB::GetNumberOfNextTransitiveRelationship() {
-    return numberOfNextTransitiveRelationship_;
-}
-
 void PKB::PrintNextTable() {
     nextTable_.printTable();
 }
 
 /* END   - Next table functions */
+/* START - Affects table functions */
+
+/* END   - Affects table functions */
 /* START - Miscellaneous functions */
 
 unsigned int PKB::GetNumberOfProcedure() {
@@ -826,8 +819,6 @@ void PKB::Clear() {
     numberOfCall_ = 0;
 
     tableMaximumSize_ = 0;
-
-    numberOfNextTransitiveRelationship_ = 0;
 
     controlFlowGraphNodes_.clear();
     procedureFirstAndLastStmtNumber_.clear();

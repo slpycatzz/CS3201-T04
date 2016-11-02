@@ -152,8 +152,6 @@ class PKB {
     static std::set<StmtNumber> GetNext(StmtNumber current);
     static std::set<StmtNumber> GetPrevious(StmtNumber next);
     static unsigned int GetNumberOfNextRelationship();
-    static void IncreaseNumberOfNextTransitiveRelationship(unsigned int number);
-    static unsigned int GetNumberOfNextTransitiveRelationship();
     static void PrintNextTable();
 
     static unsigned int GetNumberOfProcedure();
@@ -203,8 +201,6 @@ class PKB {
     static unsigned int numberOfCall_;
 
     static unsigned int tableMaximumSize_;
-
-    static unsigned int numberOfNextTransitiveRelationship_;
 
     static std::unordered_map<StmtNumber, CFGNode*> controlFlowGraphNodes_;
     static std::unordered_map<StmtNumber, StmtNumber> procedureFirstAndLastStmtNumber_;
