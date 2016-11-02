@@ -147,6 +147,7 @@ class PKB {
     static unsigned int GetNumberOfNextRelationship();
     static void PrintNextTable();
 
+    static bool IsAffects();
     static bool IsAffects(StmtNumber affecting, StmtNumber affected);
     static std::vector<StmtNumber> GetAffecting(StmtNumber affecting);
     static std::vector<StmtNumber> GetAffected(StmtNumber affected);

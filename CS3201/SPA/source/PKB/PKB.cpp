@@ -722,6 +722,19 @@ void PKB::PrintNextTable() {
 /* END   - Next table functions */
 /* START - Affects table functions */
 
+bool PKB::IsAffects() {
+    /* If nothing is affecting yet, try all those not populated ones. */
+    for (auto &pair : controlFlowGraphNodes_) {
+        if (affectsTable_.getNumberOfRelationship() > 0) {
+            return true;
+        }
+
+        GetAffecting(pair.first);
+    }
+
+    return false;
+}
+
 bool PKB::IsAffects(StmtNumber affecting, StmtNumber affected) {
     /* Validate if exceed matrix's range. */
     if (affecting > tableMaximumSize_ || affecting <= 0 || affected > tableMaximumSize_ || affected <= 0) {
@@ -736,6 +749,10 @@ bool PKB::IsAffects(StmtNumber affecting, StmtNumber affected) {
                 return false;
             }
 
+            if (affectsMatrix_.isRowPopulated(affecting)) {
+                return affectsMatrix_.isRowColumnToggled(affecting, affected);
+            }
+
             CFGNode* node = controlFlowGraphNodes_[affecting];
             vector<StmtNumber> isolatedProcUses = GetIsolatedProcedureStmtNumberUsing(node->getModify());
 
@@ -748,11 +765,9 @@ bool PKB::IsAffects(StmtNumber affecting, StmtNumber affected) {
                 return false;
             }
 
-            if (!affectsMatrix_.isRowPopulated(affecting)) {
-                affectsMatrix_.setPopulated(affecting);
+            affectsMatrix_.setPopulated(affecting);
 
-                DesignExtractor::getInstance().computeAffects(node, affectsMatrix_, affectsTable_);
-            }
+            DesignExtractor::getInstance().computeAffects(node, affectsMatrix_, affectsTable_);
 
             return affectsMatrix_.isRowColumnToggled(affecting, affected);
         }
@@ -770,6 +785,10 @@ vector<StmtNumber> PKB::GetAffecting(StmtNumber affecting) {
     /* Validate only assign statements are allowed. */
     if (GetStmtSymbol(affecting) != ASSIGN) {
         return vector<StmtNumber>();
+    }
+
+    if (affectsMatrix_.isRowPopulated(affecting)) {
+        return affectsTable_.getValues(affecting);
     }
 
     CFGNode* node = controlFlowGraphNodes_[affecting];
@@ -791,11 +810,9 @@ vector<StmtNumber> PKB::GetAffecting(StmtNumber affecting) {
         }
     }
 
-    if (!affectsMatrix_.isRowPopulated(affecting)) {
-        affectsMatrix_.setPopulated(affecting);
+    affectsMatrix_.setPopulated(affecting);
 
-        DesignExtractor::getInstance().computeAffects(node, affectsMatrix_, affectsTable_);
-    }
+    DesignExtractor::getInstance().computeAffects(node, affectsMatrix_, affectsTable_);
 
     return affectsTable_.getValues(affecting);
 }
@@ -849,6 +866,8 @@ vector<StmtNumber> PKB::GetAffected(StmtNumber affected) {
 
     return vector<StmtNumber>();
 }
+
+
 
 void PKB::PrintAffectsTable() {
     affectsTable_.print();
