@@ -82,7 +82,7 @@ class VectorTable {
     }
 
     inline bool hasValueToKey(K key, V value) {
-        std::set<K> keys = valueToKeysMap.at(value);
+        std::set<K> keys = valueToKeysMap[value];
 
         return (std::find(keys.begin(), keys.end(), key) != keys.end());
     }

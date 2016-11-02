@@ -21,9 +21,13 @@ class CFGNode {
     void setVisited(bool visited);
     bool isVisited();
 
-    void addChild(CFGNode *child);
+    void addChild(CFGNode* child);
     std::vector<CFGNode*> getChildren();
     unsigned int getNumberOfChildren();
+
+    void addParent(CFGNode* parent);
+    std::vector<CFGNode*> getParents();
+    unsigned int getNumberOfParents();
 
     void setModify(unsigned int modify);
     unsigned int getModify();
@@ -40,7 +44,9 @@ class CFGNode {
     Symbol symbol_;
     unsigned int stmtNumber_;
     bool visited_;
+
     std::vector<CFGNode*> children_;
+    std::vector<CFGNode*> parents_;
 
     unsigned int modify_;
     std::vector<unsigned int> modifies_;

@@ -27,6 +27,8 @@ class DesignExtractor {
     void computeNextTransitive(CFGNode* controlFlowGraphNode, Matrix &nextTransitiveMatrix);
 
     void computeAffects(CFGNode* controlFlowGraphNode, Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable);
+    bool computeAffecting(CFGNode* controlFlowGraphNode, VariableIndex use,
+        Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable);
 
  private:
     void populateGenericTables();

@@ -55,7 +55,7 @@ bool CFGNode::isVisited() {
     return visited_;
 }
 
-void CFGNode::addChild(CFGNode *child) {
+void CFGNode::addChild(CFGNode* child) {
     children_.push_back(child);
 }
 
@@ -65,6 +65,18 @@ vector<CFGNode*> CFGNode::getChildren() {
 
 unsigned int CFGNode::getNumberOfChildren() {
     return children_.size();
+}
+
+void CFGNode::addParent(CFGNode* parent) {
+    parents_.push_back(parent);
+}
+
+vector<CFGNode*> CFGNode::getParents() {
+    return parents_;
+}
+
+unsigned int CFGNode::getNumberOfParents() {
+    parents_.size();
 }
 
 void CFGNode::setModify(unsigned int modify) {

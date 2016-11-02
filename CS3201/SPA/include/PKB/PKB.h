@@ -89,12 +89,14 @@ class PKB {
 
     static void InsertModifies(StmtNumber stmtNumber, VariableIndex variableIndex);
     static void InsertModifiesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
+    static void InsertModifiesProcedureIsolated(StmtNumber firstStmtNumber, VariableIndex variableIndex);
     static bool IsModifies(StmtNumber stmtNumber, VariableIndex variableIndex);
     static bool IsModifiesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
     static std::vector<VariableIndex> GetModifiedVariables(StmtNumber stmtNumber);
     static std::vector<StmtNumber> GetStmtNumberModifying(VariableIndex variableIndex);
     static std::vector<VariableIndex> GetProcedureModifiedVariables(ProcedureIndex procedureIndex);
     static std::vector<ProcedureIndex> GetProceduresNameModifying(VariableIndex variableIndex);
+    static std::vector<StmtNumber> GetIsolatedProcedureStmtNumberModifying(VariableIndex variableIndex);
     static unsigned int GetNumberOfModifiesRelationship();
     static unsigned int GetNumberOfModifiesProcedureRelationship();
     static void PrintModifiesTable();
@@ -102,12 +104,14 @@ class PKB {
 
     static void InsertUses(StmtNumber stmtNumber, VariableIndex variableIndex);
     static void InsertUsesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
+    static void InsertUsesProcedureIsolated(StmtNumber firstStmtNumber, VariableIndex variableIndex);
     static bool IsUses(StmtNumber stmtNumber, VariableIndex variableIndex);
     static bool IsUsesProcedure(ProcedureIndex procedureIndex, VariableIndex variableIndex);
     static std::vector<VariableIndex> GetUsedVariables(StmtNumber stmtNumber);
     static std::vector<StmtNumber> GetStmtNumberUsing(VariableIndex variableIndex);
     static std::vector<VariableIndex> GetProcedureUsedVariables(ProcedureIndex procedureIndex);
     static std::vector<ProcedureIndex> GetProceduresNameUsing(VariableIndex variableIndex);
+    static std::vector<StmtNumber> GetIsolatedProcedureStmtNumberUsing(VariableIndex variableIndex);
     static unsigned int GetNumberOfUsesRelationship();
     static unsigned int GetNumberOfUsesProcedureRelationship();
     static void PrintUsesTable();
@@ -119,8 +123,8 @@ class PKB {
     static bool IsParentTransitive(StmtNumber parent, StmtNumber child);
     static std::vector<StmtNumber> GetParent(StmtNumber child);
     static std::vector<StmtNumber> GetChildren(StmtNumber parent);
-    static std::set<StmtNumber> GetParentsTransitive(StmtNumber child);
-    static std::set<StmtNumber> GetChildrenTransitive(StmtNumber parent);
+    static std::vector<StmtNumber> GetParentsTransitive(StmtNumber child);
+    static std::vector<StmtNumber> GetChildrenTransitive(StmtNumber parent);
     static unsigned int GetNumberOfParentRelationship();
     static void PrintParentTable();
     static void PrintParentTransitiveTable();
@@ -133,7 +137,6 @@ class PKB {
     static std::vector<StmtNumber> GetFollowing(StmtNumber follows);
     static unsigned int GetNumberOfFollowsRelationship();
     static void PrintFollowsTable();
-    static void PrintFollowsTransitiveTable();
 
     static void InsertControlFlowGraphNode(StmtNumber stmtNumber, CFGNode* controlFlowGraphNode);
     static void InsertNext(StmtNumber current, StmtNumber next);
@@ -145,6 +148,8 @@ class PKB {
     static void PrintNextTable();
 
     static bool IsAffects(StmtNumber affecting, StmtNumber affected);
+    static std::vector<StmtNumber> GetAffecting(StmtNumber affecting);
+    static std::vector<StmtNumber> GetAffected(StmtNumber affected);
     static void PrintAffectsTable();
 
     static unsigned int GetNumberOfProcedure();
@@ -217,9 +222,11 @@ class PKB {
 
     static VectorTable<StmtNumber, VariableIndex> modifiesTable_;
     static VectorTable<ProcedureIndex, VariableIndex> modifiesProcedureTable_;
+    static VectorTable<StmtNumber, VariableIndex> modifiesProcedureIsolatedTable_;
 
     static VectorTable<StmtNumber, VariableIndex> usesTable_;
     static VectorTable<ProcedureIndex, VariableIndex> usesProcedureTable_;
+    static VectorTable<StmtNumber, VariableIndex> usesProcedureIsolatedTable_;
 
     static Matrix parentMatrix_;
     static Matrix parentTransitiveMatrix_;

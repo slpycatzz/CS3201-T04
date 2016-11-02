@@ -49,11 +49,11 @@ class Table {
     }
 
     inline bool hasKey(K key) {
-        return (keyToValueMap.count(key) == 1);
+        return (keyToValueMap.find(key) != keyToValueMap.end());
     }
 
     inline bool hasValue(V value) {
-        return (valueToKeyMap.count(value) == 1);
+        return (valueToKeyMap.find(value) != valueToKeyMap.end());
     }
 
     inline bool hasKeyToValue(K key, V value) {

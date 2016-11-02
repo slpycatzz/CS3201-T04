@@ -259,6 +259,7 @@ void DesignExtractor::precomputeModifies() {
         for (auto iter = proceduresFirstStmt_.rbegin(); iter != proceduresFirstStmt_.rend(); iter++) {
             if (iter->first <= pair.first) {
                 PKB::InsertModifiesProcedure(PKB::GetProcedureIndex(iter->second), PKB::GetVariableIndex(variableName));
+                PKB::InsertModifiesProcedureIsolated(iter->first, PKB::GetVariableIndex(variableName));
                 break;
             }
         }
@@ -338,6 +339,7 @@ void DesignExtractor::precomputeUses() {
             if (iter->first <= pair.first) {
                 for (VariableName variableName : variableNames) {
                     PKB::InsertUsesProcedure(PKB::GetProcedureIndex(iter->second), PKB::GetVariableIndex(variableName));
+                    PKB::InsertUsesProcedureIsolated(iter->first, PKB::GetVariableIndex(variableName));
                 }
 
                 break;
@@ -511,6 +513,7 @@ void DesignExtractor::precomputeNext() {
                     visitedNodes.insert(node);
                 }
 
+                node->addParent(currentNode);
                 currentNode->addChild(node);
             }
         }
@@ -549,7 +552,7 @@ void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affe
     vector<CFGNode*> visitedNodes;
     queue<CFGNode*> queue;
 
-    /* Initial CFG node is definitely an assign. */
+    /* Caller have already ensured node is an assign statement. */
     VariableIndex modify = controlFlowGraphNode->getModify();
     StmtNumber stmtNumber = controlFlowGraphNode->getStmtNumber();
 
@@ -575,7 +578,7 @@ void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affe
                     vector<unsigned int> childUses = child->getUses();
                     vector<unsigned int> childModifies = child->getModifies();
 
-                    if (childSymbol == (ASSIGN && std::find(childUses.begin(), childUses.end(), modify) != childUses.end())) {
+                    if (childSymbol == ASSIGN && (std::find(childUses.begin(), childUses.end(), modify) != childUses.end())) {
                         if (!affectsMatrix.isRowColumnToggled(stmtNumber, childStmtNumber)) {
                             affectsMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
                             affectsTable.insert(stmtNumber, childStmtNumber);
@@ -593,9 +596,61 @@ void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affe
         }
     }
 
-    for (CFGNode* child : visitedNodes) {
-        child->setVisited(false);
+    for (CFGNode* visitedNode : visitedNodes) {
+        visitedNode->setVisited(false);
     }
+}
+
+/* Only have to traverse one uses base on our implementation. */
+bool DesignExtractor::computeAffecting(CFGNode* controlFlowGraphNode, VariableIndex use,
+    Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable) {
+    vector<CFGNode*> visitedNodes;
+    queue<CFGNode*> queue;
+
+    StmtNumber stmtNumber = controlFlowGraphNode->getStmtNumber();
+
+    queue.push(controlFlowGraphNode);
+
+    bool isAffecting = false;
+    while (!queue.empty()) {
+        CFGNode* currentNode = queue.front();
+        vector<CFGNode*> parents = currentNode->getParents();
+
+        queue.pop();
+
+        for (CFGNode* parent : parents) {
+            StmtNumber parentStmtNumber = parent->getStmtNumber();
+            Symbol parentSymbol = parent->getSymbol();
+
+            if (!parent->isVisited()) {
+                parent->setVisited(true);
+                visitedNodes.push_back(parent);
+
+                if (parentSymbol == ASSIGN) {
+                    vector<unsigned int> parentModifies = parent->getModifies();
+
+                    /* If modified, mark this path and break. */
+                    if (std::find(parentModifies.begin(), parentModifies.end(), use) != parentModifies.end()) {
+                        affectsMatrix.toggleRowColumn(parentStmtNumber, stmtNumber);
+                        affectsTable.insert(parentStmtNumber, stmtNumber);
+
+                        isAffecting = true;
+
+                        queue = {};
+                        break;
+                    }
+                }
+
+                queue.push(parent);
+            }
+        }
+    }
+
+    for (CFGNode* visitedNode : visitedNodes) {
+        visitedNode->setVisited(false);
+    }
+
+    return isAffecting;
 }
 
 int DesignExtractor::getParentOfStmtNumber(StmtNumber stmtNumber) {

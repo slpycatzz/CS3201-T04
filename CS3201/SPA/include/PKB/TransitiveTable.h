@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <set>
 #include <stack>
 #include <unordered_map>
 #include <vector>
@@ -47,7 +46,7 @@ class TransitiveTable {
                     continue;
                 }
 
-                keyToValuesTransitiveMap[key].insert(values.begin(), values.end());
+                keyToValuesTransitiveMap[key].insert(keyToValuesTransitiveMap[key].end(), values.begin(), values.end());
                 numberOfRelationship += values.size();
 
                 for (const auto &value : values) {
@@ -79,7 +78,7 @@ class TransitiveTable {
                     continue;
                 }
 
-                valueToKeysTransitiveMap[value].insert(keys.begin(), keys.end());
+                valueToKeysTransitiveMap[value].insert(valueToKeysTransitiveMap[value].end(), keys.begin(), keys.end());
 
                 for (const auto &key : keys) {
                     valueStack.push(key);
@@ -95,19 +94,19 @@ class TransitiveTable {
         numberOfRelationship++;
     }
 
-    inline std::set<K> getKeys(V value) {
+    inline std::vector<K> getKeys(V value) {
         /* If does not exist, return empty set. */
         if (!hasValue(value)) {
-            return std::set<K>();
+            return std::vector<K>();
         }
 
         return valueToKeysTransitiveMap[value];
     }
 
-    inline std::set<V> getValues(K key) {
+    inline std::vector<V> getValues(K key) {
         /* If does not exist, return empty set. */
         if (!hasKey(key)) {
-            return std::set<V>();
+            return std::vector<V>();
         }
 
         return keyToValuesTransitiveMap[key];
@@ -122,47 +121,17 @@ class TransitiveTable {
     }
 
     inline bool hasKey(K key) {
-        return (keyToValuesTransitiveMap.count(key) == 1);
+        return (keyToValuesTransitiveMap.find(key) != keyToValuesTransitiveMap.end());
     }
 
     inline bool hasValue(V value) {
-        return (valueToKeysTransitiveMap.count(value) == 1);
+        return (valueToKeysTransitiveMap.find(value) != valueToKeysTransitiveMap.end());
     }
 
     inline bool hasKeyToValue(K key, V value) {
-        std::set<V> values = keyToValuesTransitiveMap[key];
+        std::vector<V> values = keyToValuesTransitiveMap[key];
 
-        return (values.count(value) == 1);
-    }
-
-    inline bool hasKeyToValues(K key, std::set<V> subvalues) {
-        std::set<V> values = keyToValuesTransitiveMap[key];
-
-        for (auto &value : subvalues) {
-            if (values.count(value) != 1) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    inline bool hasValueToKey(K key, V value) {
-        std::set<K> keys = valueToKeysTransitiveMap[value];
-
-        return (keys.count(key) == 1);
-    }
-
-    inline bool hasValueToKeys(std::set<K> subkeys, V value) {
-        std::set<K> keys = valueToKeysTransitiveMap[value];
-
-        for (auto &key : subkeys) {
-            if (keys.count(key) != 1) {
-                return false;
-            }
-        }
-
-        return true;
+        return (std::find(values.begin(), values.end(), value) != values.end());
     }
 
     inline void printTable() {
@@ -192,6 +161,6 @@ class TransitiveTable {
  private:
     unsigned int numberOfRelationship;
 
-    std::unordered_map<K, std::set<V>> keyToValuesTransitiveMap;
-    std::unordered_map<V, std::set<K>> valueToKeysTransitiveMap;
+    std::unordered_map<K, std::vector<V>> keyToValuesTransitiveMap;
+    std::unordered_map<V, std::vector<K>> valueToKeysTransitiveMap;
 };

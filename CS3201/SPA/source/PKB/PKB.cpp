@@ -48,11 +48,13 @@ VectorTable<StmtNumber, SubExpression> PKB::subExpressionTable_ = VectorTable<St
 VectorTable<ProcedureIndex, ProcedureIndex> PKB::callsTable_               = VectorTable<ProcedureIndex, ProcedureIndex>();
 TransitiveTable<ProcedureIndex, ProcedureIndex> PKB::callsTransitiveTable_ = TransitiveTable<ProcedureIndex, ProcedureIndex>();
 
-VectorTable<StmtNumber, VariableIndex> PKB::modifiesTable_              = VectorTable<StmtNumber, VariableIndex>();
-VectorTable<ProcedureIndex, VariableIndex> PKB::modifiesProcedureTable_ = VectorTable<ProcedureIndex, VariableIndex>();
+VectorTable<StmtNumber, VariableIndex> PKB::modifiesTable_                  = VectorTable<StmtNumber, VariableIndex>();
+VectorTable<ProcedureIndex, VariableIndex> PKB::modifiesProcedureTable_     = VectorTable<ProcedureIndex, VariableIndex>();
+VectorTable<StmtNumber, VariableIndex> PKB::modifiesProcedureIsolatedTable_ = VectorTable<StmtNumber, VariableIndex>();
 
-VectorTable<StmtNumber, VariableIndex> PKB::usesTable_              = VectorTable<StmtNumber, VariableIndex>();
-VectorTable<ProcedureIndex, VariableIndex> PKB::usesProcedureTable_ = VectorTable<ProcedureIndex, VariableIndex>();
+VectorTable<StmtNumber, VariableIndex> PKB::usesTable_                  = VectorTable<StmtNumber, VariableIndex>();
+VectorTable<ProcedureIndex, VariableIndex> PKB::usesProcedureTable_     = VectorTable<ProcedureIndex, VariableIndex>();
+VectorTable<StmtNumber, VariableIndex> PKB::usesProcedureIsolatedTable_ = VectorTable<StmtNumber, VariableIndex>();
 
 Matrix PKB::parentMatrix_;
 Matrix PKB::parentTransitiveMatrix_;
@@ -437,6 +439,10 @@ void PKB::InsertModifiesProcedure(ProcedureIndex procedureIndex, VariableIndex v
     modifiesProcedureTable_.insert(procedureIndex, variableIndex);
 }
 
+void PKB::InsertModifiesProcedureIsolated(StmtNumber firstStmtNumber, VariableIndex variableIndex) {
+    modifiesProcedureIsolatedTable_.insert(firstStmtNumber, variableIndex);
+}
+
 bool PKB::IsModifies(StmtNumber stmtNumber, VariableIndex variableIndex) {
     return modifiesTable_.hasKeyToValue(stmtNumber, variableIndex);
 }
@@ -459,6 +465,10 @@ vector<VariableIndex> PKB::GetProcedureModifiedVariables(ProcedureIndex procedur
 
 vector<ProcedureIndex> PKB::GetProceduresNameModifying(VariableIndex variableIndex) {
     return modifiesProcedureTable_.getKeys(variableIndex);
+}
+
+vector<StmtNumber> PKB::GetIsolatedProcedureStmtNumberModifying(VariableIndex variableIndex) {
+    return modifiesProcedureIsolatedTable_.getKeys(variableIndex);
 }
 
 unsigned int PKB::GetNumberOfModifiesRelationship() {
@@ -488,6 +498,10 @@ void PKB::InsertUsesProcedure(ProcedureIndex procedureIndex, VariableIndex varia
     usesProcedureTable_.insert(procedureIndex, variableIndex);
 }
 
+void PKB::InsertUsesProcedureIsolated(StmtNumber firstStmtNumber, VariableIndex variableIndex) {
+    usesProcedureIsolatedTable_.insert(firstStmtNumber, variableIndex);
+}
+
 bool PKB::IsUses(StmtNumber stmtNumber, VariableIndex variableIndex) {
     return usesTable_.hasKeyToValue(stmtNumber, variableIndex);
 }
@@ -510,6 +524,10 @@ vector<VariableIndex> PKB::GetProcedureUsedVariables(ProcedureIndex procedureInd
 
 vector<ProcedureIndex> PKB::GetProceduresNameUsing(VariableIndex variableIndex) {
     return usesProcedureTable_.getKeys(variableIndex);
+}
+
+vector<StmtNumber> PKB::GetIsolatedProcedureStmtNumberUsing(VariableIndex variableIndex) {
+    return usesProcedureIsolatedTable_.getKeys(variableIndex);
 }
 
 unsigned int PKB::GetNumberOfUsesRelationship() {
@@ -570,11 +588,11 @@ vector<StmtNumber> PKB::GetChildren(StmtNumber parent) {
     return parentTable_.getValues(parent);
 }
 
-set<StmtNumber> PKB::GetParentsTransitive(StmtNumber child) {
+vector<StmtNumber> PKB::GetParentsTransitive(StmtNumber child) {
     return parentTransitiveTable_.getKeys(child);
 }
 
-set<StmtNumber> PKB::GetChildrenTransitive(StmtNumber parent) {
+vector<StmtNumber> PKB::GetChildrenTransitive(StmtNumber parent) {
     return parentTransitiveTable_.getValues(parent);
 }
 
@@ -718,10 +736,22 @@ bool PKB::IsAffects(StmtNumber affecting, StmtNumber affected) {
                 return false;
             }
 
+            CFGNode* node = controlFlowGraphNodes_[affecting];
+            vector<StmtNumber> isolatedProcUses = GetIsolatedProcedureStmtNumberUsing(node->getModify());
+
+            /* Validate if there is any assign in procedure that is using the modify variable. */
+            if (isolatedProcUses.empty()) {
+                return false;
+            }
+
+            if (std::find(isolatedProcUses.begin(), isolatedProcUses.end(), pair.first) == isolatedProcUses.end()) {
+                return false;
+            }
+
             if (!affectsMatrix_.isRowPopulated(affecting)) {
                 affectsMatrix_.setPopulated(affecting);
 
-                DesignExtractor::getInstance().computeAffects(controlFlowGraphNodes_[affecting], affectsMatrix_, affectsTable_);
+                DesignExtractor::getInstance().computeAffects(node, affectsMatrix_, affectsTable_);
             }
 
             return affectsMatrix_.isRowColumnToggled(affecting, affected);
@@ -729,6 +759,95 @@ bool PKB::IsAffects(StmtNumber affecting, StmtNumber affected) {
     }
 
     return false;
+}
+
+vector<StmtNumber> PKB::GetAffecting(StmtNumber affecting) {
+    /* Validate if exceed matrix's range. */
+    if (affecting > tableMaximumSize_ || affecting <= 0) {
+        return vector<StmtNumber>();
+    }
+
+    /* Validate only assign statements are allowed. */
+    if (GetStmtSymbol(affecting) != ASSIGN) {
+        return vector<StmtNumber>();
+    }
+
+    CFGNode* node = controlFlowGraphNodes_[affecting];
+
+    /* Validate if there is any assign in procedure that is using the modify variable. */
+    for (auto &pair : procedureFirstAndLastStmtNumber_) {
+        if (affecting >= pair.first && affecting <= pair.second) {
+            vector<StmtNumber> isolatedProcUses = GetIsolatedProcedureStmtNumberUsing(node->getModify());
+
+            if (isolatedProcUses.empty()) {
+                return vector<StmtNumber>();
+            }
+
+            if (std::find(isolatedProcUses.begin(), isolatedProcUses.end(), pair.first) == isolatedProcUses.end()) {
+                return vector<StmtNumber>();
+            }
+
+            break;
+        }
+    }
+
+    if (!affectsMatrix_.isRowPopulated(affecting)) {
+        affectsMatrix_.setPopulated(affecting);
+
+        DesignExtractor::getInstance().computeAffects(node, affectsMatrix_, affectsTable_);
+    }
+
+    return affectsTable_.getValues(affecting);
+}
+
+vector<StmtNumber> PKB::GetAffected(StmtNumber affected) {
+    /* Validate if exceed matrix's range. */
+    if (affected > tableMaximumSize_ || affected <= 0) {
+        return vector<StmtNumber>();
+    }
+
+    /* Validate only assign statements are allowed. */
+    if (GetStmtSymbol(affected) != ASSIGN) {
+        return vector<StmtNumber>();
+    }
+
+    /* If already computed. */
+    if (affectsTable_.hasValue(affected)) {
+        return affectsTable_.getKeys(affected);
+    }
+
+    CFGNode* node = controlFlowGraphNodes_[affected];
+
+    /* Validate if uses is empty, nothing can be affecting it. */
+    if (node->getUses().empty()) {
+        return vector<StmtNumber>();
+    }
+
+    for (auto &pair : procedureFirstAndLastStmtNumber_) {
+        if (affected >= pair.first && affected <= pair.second) {
+            vector<VariableIndex> uses = node->getUses();
+
+            for (VariableIndex variableIndex : uses) {
+                vector<StmtNumber> isolatedProcModifies = GetIsolatedProcedureStmtNumberUsing(variableIndex);
+
+                if (isolatedProcModifies.empty()) {
+                    continue;
+                }
+
+                if (std::find(isolatedProcModifies.begin(), isolatedProcModifies.end(), pair.first) == isolatedProcModifies.end()) {
+                    continue;
+                }
+
+                if (DesignExtractor::getInstance().computeAffecting(node, variableIndex, affectsMatrix_, affectsTable_)) {
+                    return affectsTable_.getKeys(affected);
+                }
+            }
+
+            break;
+        }
+    }
+
+    return vector<StmtNumber>();
 }
 
 void PKB::PrintAffectsTable() {
@@ -812,11 +931,13 @@ void PKB::Clear() {
     callsTable_             = VectorTable<ProcedureIndex, ProcedureIndex>();
     callsTransitiveTable_   = TransitiveTable<ProcedureIndex, ProcedureIndex>();
 
-    modifiesTable_          = VectorTable<StmtNumber, VariableIndex>();
-    modifiesProcedureTable_ = VectorTable<ProcedureIndex, VariableIndex>();
+    modifiesTable_                  = VectorTable<StmtNumber, VariableIndex>();
+    modifiesProcedureTable_         = VectorTable<ProcedureIndex, VariableIndex>();
+    modifiesProcedureIsolatedTable_ = VectorTable<StmtNumber, VariableIndex>();
 
-    usesTable_              = VectorTable<StmtNumber, VariableIndex>();
-    usesProcedureTable_     = VectorTable<ProcedureIndex, VariableIndex>();
+    usesTable_                  = VectorTable<StmtNumber, VariableIndex>();
+    usesProcedureTable_         = VectorTable<ProcedureIndex, VariableIndex>();
+    usesProcedureIsolatedTable_ = VectorTable<StmtNumber, VariableIndex>();
 
     parentMatrix_ = Matrix();
     parentTransitiveMatrix_ = Matrix();
