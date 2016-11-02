@@ -66,16 +66,14 @@ Matrix PKB::followsTransitiveMatrix_ = Matrix();
 Table<StmtNumber, StmtNumber> PKB::followsTable_                     = Table<StmtNumber, StmtNumber>();
 TransitiveTable<StmtNumber, StmtNumber> PKB::followsTransitiveTable_ = TransitiveTable<StmtNumber, StmtNumber>();
 
-Matrix PKB::nextMatrix_ = Matrix();
-Matrix PKB::nextTransitiveMatrix_ = Matrix();
+Matrix PKB::nextMatrix_;
+Matrix PKB::nextTransitiveMatrix_;
 
 Table<StmtNumber, StmtNumber> PKB::nextTable_ = Table<StmtNumber, StmtNumber>();
 
-map<StmtNumber, Matrix> PKB::affectsMatrixes_;
-map<StmtNumber, Matrix> PKB::affectsTransitiveMatrixes_;
+Matrix PKB::affectsMatrix_;
 
-map<StmtNumber, Table<StmtNumber, StmtNumber>> PKB::affectsTables_;
-map<StmtNumber, TransitiveTable<StmtNumber, StmtNumber>> PKB::affectsTransitiveTables_;
+Table<StmtNumber, StmtNumber> PKB::affectsTable_ = Table<StmtNumber, StmtNumber>();
 
 /* START - Constant table functions */
 
@@ -760,6 +758,38 @@ void PKB::PrintNextTable() {
 /* END   - Next table functions */
 /* START - Affects table functions */
 
+bool PKB::IsAffects(StmtNumber affecting, StmtNumber affected) {
+    /* Validate if exceed matrix's range. */
+    if (affecting > tableMaximumSize_ || affecting <= 0 || affected > tableMaximumSize_ || affected <= 0) {
+        return false;
+    }
+
+    /* Validate if "affecting" and "affected" is in same procedure. */
+    for (auto &pair : procedureFirstAndLastStmtNumber_) {
+        if (affecting >= pair.first && affecting <= pair.second && affected >= pair.first && affected <= pair.second) {
+            
+            /* Validate only assign statements are allowed. */
+            if (stmtTable_.getValue(affecting) != ASSIGN || stmtTable_.getValue(affected) != ASSIGN) {
+                return false;
+            }
+
+            if (!affectsMatrix_.isRowPopulated(affecting)) {
+                affectsMatrix_.setPopulated(affecting);
+
+                DesignExtractor::getInstance().computeAffects(controlFlowGraphNodes_[affecting], affectsMatrix_, affectsTable_);
+            }
+
+            return affectsMatrix_.isRowColumnToggled(affecting, affected);
+        }
+    }
+
+    return false;
+}
+
+void PKB::PrintAffectsTable() {
+    affectsTable_.printTable();
+}
+
 /* END   - Affects table functions */
 /* START - Miscellaneous functions */
 
@@ -792,21 +822,18 @@ void PKB::SetTableMaximumSize(unsigned int tableMaximumSize) {
 
     parentMatrix_ = Matrix(tableMaximumSize_);
     parentTransitiveMatrix_ = Matrix(tableMaximumSize_);
+
     followsMatrix_ = Matrix(tableMaximumSize_);
     followsTransitiveMatrix_ = Matrix(tableMaximumSize_);
+    
     nextMatrix_ = Matrix(tableMaximumSize_);
-
     nextTransitiveMatrix_ = Matrix(tableMaximumSize_);
+
+    affectsMatrix_ = Matrix(tableMaximumSize_);
 }
 
 void PKB::SetProcedureFirstAndLastStmtNumber(StmtNumber firstStmtNumber, StmtNumber lastStmtNumber) {
     procedureFirstAndLastStmtNumber_.insert(std::make_pair(firstStmtNumber, lastStmtNumber));
-
-    affectsMatrixes_.insert(std::make_pair(firstStmtNumber, Matrix(tableMaximumSize_)));
-    affectsTransitiveMatrixes_.insert(std::make_pair(firstStmtNumber, Matrix(tableMaximumSize_)));
-
-    affectsTables_.insert(std::make_pair(firstStmtNumber, Table<StmtNumber, StmtNumber>()));
-    affectsTransitiveTables_.insert(std::make_pair(firstStmtNumber, TransitiveTable<StmtNumber, StmtNumber>()));
 }
 
 void PKB::Clear() {
@@ -861,27 +888,19 @@ void PKB::Clear() {
     nextMatrix_ = Matrix();
     nextTransitiveMatrix_ = Matrix();
 
-    nextTable_              = Table<StmtNumber, StmtNumber>();
+    nextTable_ = Table<StmtNumber, StmtNumber>();
 
-    affectsMatrixes_.clear();
-    affectsTransitiveMatrixes_.clear();
+    affectsMatrix_ = Matrix();
 
-    affectsTables_.clear();
-    affectsTransitiveTables_.clear();
+    affectsTable_ = Table<StmtNumber, StmtNumber>();
 }
 
 void PKB::ClearComputeOnDemands() {
     nextTransitiveMatrix_.clear();
 
-    for (auto &pair : procedureFirstAndLastStmtNumber_) {
-        StmtNumber stmtNumber = pair.first;
+    affectsMatrix_.clear();
 
-        affectsMatrixes_[stmtNumber].clear();
-        affectsTransitiveMatrixes_[stmtNumber].clear();
-
-        affectsTables_[stmtNumber] = Table<StmtNumber, StmtNumber>();
-        affectsTransitiveTables_[stmtNumber] = TransitiveTable<StmtNumber, StmtNumber>();
-    }
+    affectsTable_ = Table<StmtNumber, StmtNumber>();
 }
 
 bool PKB::ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo) {

@@ -154,6 +154,9 @@ class PKB {
     static unsigned int GetNumberOfNextRelationship();
     static void PrintNextTable();
 
+    static bool IsAffects(StmtNumber affecting, StmtNumber affected);
+    static void PrintAffectsTable();
+
     static unsigned int GetNumberOfProcedure();
     static unsigned int GetNumberOfAssign();
     static unsigned int GetNumberOfWhile();
@@ -245,9 +248,7 @@ class PKB {
 
     static Table<StmtNumber, StmtNumber> nextTable_;
 
-    static std::map<StmtNumber, Matrix> affectsMatrixes_;
-    static std::map<StmtNumber, Matrix> affectsTransitiveMatrixes_;
+    static Matrix affectsMatrix_;
 
-    static std::map<StmtNumber, Table<StmtNumber, StmtNumber>> affectsTables_;
-    static std::map<StmtNumber, TransitiveTable<StmtNumber, StmtNumber>> affectsTransitiveTables_;
+    static Table<StmtNumber, StmtNumber> affectsTable_;
 };

@@ -443,6 +443,24 @@ void DesignExtractor::precomputeNext() {
 
         CFGNode* rootNode = new CFGNode(stmts_[pair.first], pair.first);
 
+        switch (stmts_[pair.first]) {
+            default:
+                break;
+
+            case ASSIGN:
+                for (VariableIndex variableIndex : PKB::GetModifiedVariables(pair.first)) {
+                    rootNode->setModify(variableIndex);
+                }
+
+                break;
+
+            case CALL:
+                rootNode->setModifies(PKB::GetModifiedVariables(pair.first));
+                break;
+        }
+
+        rootNode->setUses(PKB::GetUsedVariables(pair.first));
+
         queue.push(rootNode);
         visitedNodes.insert(rootNode);
 
@@ -459,17 +477,17 @@ void DesignExtractor::precomputeNext() {
                 /* Populate next table. */
                 PKB::InsertNext(currentStmtNumber, stmtNumber);
 
-                CFGNode* newNode = NULL;
+                CFGNode* node = NULL;
 
                 for (CFGNode* visitedNode : visitedNodes) {
                     if (visitedNode->getStmtNumber() == stmtNumber) {
-                        newNode = visitedNode;
+                        node = visitedNode;
                         break;
                     }
                 }
 
-                if (newNode == NULL) {
-                    newNode = new CFGNode(pair.second, stmtNumber);
+                if (node == NULL) {
+                    node = new CFGNode(pair.second, stmtNumber);
 
                     switch (pair.second) {
                         default:
@@ -477,28 +495,23 @@ void DesignExtractor::precomputeNext() {
 
                         case ASSIGN:
                             for (VariableIndex variableIndex : PKB::GetModifiedVariables(stmtNumber)) {
-                                newNode->setModify(variableIndex);
+                                node->setModify(variableIndex);
                             }
 
-                            newNode->setUses(PKB::GetUsedVariables(stmtNumber));
                             break;
 
                         case CALL:
-                            newNode->setModifies(PKB::GetModifiedVariables(stmtNumber));
-                            newNode->setUses(PKB::GetUsedVariables(stmtNumber));
-                            break;
-
-                        case WHILE:
-                        case IF:
-                            newNode->setUses(PKB::GetUsedVariables(stmtNumber));
+                            node->setModifies(PKB::GetModifiedVariables(stmtNumber));
                             break;
                     }
 
-                    queue.push(newNode);
-                    visitedNodes.insert(newNode);
+                    node->setUses(PKB::GetUsedVariables(stmtNumber));
+
+                    queue.push(node);
+                    visitedNodes.insert(node);
                 }
 
-                currentNode->addChild(newNode);
+                currentNode->addChild(node);
             }
         }
 
@@ -513,7 +526,7 @@ void DesignExtractor::computeNextTransitive(CFGNode* controlFlowGraphNode, Matri
     queue<CFGNode*> queue;
     queue.push(controlFlowGraphNode);
 
-    StmtNumber nodeStmtNumber = controlFlowGraphNode->getStmtNumber();
+    StmtNumber stmtNumber = controlFlowGraphNode->getStmtNumber();
     while (!queue.empty()) {
         CFGNode* currentNode = queue.front();
         vector<CFGNode*> children = currentNode->getChildren();
@@ -523,8 +536,8 @@ void DesignExtractor::computeNextTransitive(CFGNode* controlFlowGraphNode, Matri
         for (CFGNode* child : children) {
             StmtNumber childStmtNumber = child->getStmtNumber();
 
-            if (!nextTransitiveMatrix.isRowColumnToggled(nodeStmtNumber, childStmtNumber)) {
-                nextTransitiveMatrix.toggleRowColumn(nodeStmtNumber, childStmtNumber);
+            if (!nextTransitiveMatrix.isRowColumnToggled(stmtNumber, childStmtNumber)) {
+                nextTransitiveMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
                 
                 queue.push(child);
             }
@@ -532,57 +545,52 @@ void DesignExtractor::computeNextTransitive(CFGNode* controlFlowGraphNode, Matri
     }
 }
 
-void DesignExtractor::computeAffects(set<CFGNode*> controlFlowGraphNodes,
-    Matrix &affectsMatrix, Table<StmtNumber, StmtNumber> &affectsTable) {
+void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affectsMatrix, Table<StmtNumber, StmtNumber> &affectsTable) {
+    vector<CFGNode*> visitedNodes;
+    queue<CFGNode*> queue;
+    
+    /* Initial CFG node is definitely an assign. */
+    VariableIndex modify = controlFlowGraphNode->getModify();
+    StmtNumber stmtNumber = controlFlowGraphNode->getStmtNumber();
 
-    /* DFS all the nodes in the control flow graph. */
-    for (CFGNode* node : controlFlowGraphNodes) {
-        if (node->getSymbol() == ASSIGN) {
-            VariableIndex modify = node->getModify();
-            StmtNumber nodeStmtNumber = node->getStmtNumber();
+    queue.push(controlFlowGraphNode);
+    
+    while (!queue.empty()) {
+        CFGNode* currentNode = queue.front();
+        vector<CFGNode*> children = currentNode->getChildren();
 
-            vector<CFGNode*> visitedNodes;
-            queue<CFGNode*> queue;
+        queue.pop();
 
-            for (CFGNode* child : node->getChildren()) {
-                queue.push(child);
-            }
+        for (CFGNode* child : children) {
+            StmtNumber childStmtNumber = child->getStmtNumber();
+            Symbol childSymbol = child->getSymbol();
 
-            while (!queue.empty()) {
-                CFGNode* currentNode = queue.front();
-                StmtNumber currentStmtNumber = currentNode->getStmtNumber();
-                vector<CFGNode*> children = currentNode->getChildren();
+            if (!child->isVisited()) {
+                child->setVisited(true);
+                visitedNodes.push_back(child);
 
-                queue.pop();
+                if (childSymbol == ASSIGN || childSymbol == CALL) {
+                    /* If uses, include this assign statement. */
+                    if (childSymbol == ASSIGN && child->getUses().count(modify) == 1) {
+                        if (!affectsMatrix.isRowColumnToggled(stmtNumber, childStmtNumber)) {
+                            affectsMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
+                            affectsTable.insert(stmtNumber, childStmtNumber);
+                        }
+                    }
 
-                Symbol currentSymbol = currentNode->getSymbol();
-                if (currentSymbol == ASSIGN || currentSymbol == CALL) {
-                    if (currentNode->getModifies().count(modify) == 1) {
+                    /* If modified, skip this path. */
+                    if (child->getModifies().count(modify) == 1) {
                         continue;
                     }
                 }
-
-                if (currentNode->getUses().count(modify) == 1) {
-                    if (!affectsMatrix.isRowColumnToggled(nodeStmtNumber, currentStmtNumber)) {
-                        affectsMatrix.toggleRowColumn(nodeStmtNumber, currentStmtNumber);
-                        affectsTable.insert(nodeStmtNumber, currentStmtNumber);
-                    }
-                }
-
-                for (CFGNode* child : children) {
-                    if (!child->isVisited()) {
-                        child->setVisited(true);
-
-                        visitedNodes.push_back(child);
-                        queue.push(child);
-                    }
-                }
-            }
-
-            for (CFGNode* visited : visitedNodes) {
-                visited->setVisited(false);
+                
+                queue.push(child);
             }
         }
+    }
+
+    for (CFGNode* child : visitedNodes) {
+        child->setVisited(false);
     }
 }
 
