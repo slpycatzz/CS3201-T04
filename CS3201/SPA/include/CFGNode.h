@@ -1,6 +1,5 @@
 #pragma once
 
-#include <set>
 #include <string>
 #include <vector>
 
@@ -29,11 +28,11 @@ class CFGNode {
     void setModify(unsigned int modify);
     unsigned int getModify();
 
-    void setModifies(std::set<unsigned int> modifies);
-    std::set<unsigned int> getModifies();
+    void setModifies(std::vector<unsigned int> modifies);
+    std::vector<unsigned int> getModifies();
 
-    void setUses(std::set<unsigned int> uses);
-    std::set<unsigned int> getUses();
+    void setUses(std::vector<unsigned int> uses);
+    std::vector<unsigned int> getUses();
 
     void printCFGNode(unsigned int indent);
 
@@ -44,6 +43,6 @@ class CFGNode {
     std::vector<CFGNode*> children_;
 
     unsigned int modify_;
-    std::set<unsigned int> modifies_;
-    std::set<unsigned int> uses_;
+    std::vector<unsigned int> modifies_;
+    std::vector<unsigned int> uses_;
 };

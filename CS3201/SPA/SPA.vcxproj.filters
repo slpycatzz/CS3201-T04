@@ -93,6 +93,9 @@
     <ClInclude Include="include\CFGNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\PKB\VectorTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Utils.cpp">

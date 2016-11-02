@@ -2,9 +2,11 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <queue>
 #include <vector>
 
 #include "PKB/PKB.h"
+#include "PKB/VectorTable.h"
 
 class Matrix {
  public:
@@ -25,6 +27,40 @@ class Matrix {
     }
 
     inline ~Matrix() {}
+
+    inline void generateMatrix(VectorTable<unsigned int, unsigned int> table) {
+        std::vector<unsigned int> keys = table.getKeys();
+
+        if (keys.empty()) {
+            return;
+        }
+
+        /* Perform DFS on the table to get transitive table. */
+        for (const auto &key : keys) {
+            std::queue<unsigned int> queue;
+            queue.push(key);
+
+            while (!queue.empty()) {
+                std::vector<unsigned int> values = table.getValues(queue.front());
+
+                queue.pop();
+
+                /* End of the transitive closure for the key. */
+                if (values.empty()) {
+                    continue;
+                }
+
+                for (const auto &value : values) {
+                    queue.push(value);
+
+                    if (!isRowColumnToggled(key, value)) {
+                        toggleRowColumn(key, value);
+                        numberOfRelationship_++;
+                    }
+                }
+            }
+        }
+    }
 
     inline void toggleRowColumn(unsigned int row, unsigned int column) {
         matrix_[row - 1][column - 1] = 1;

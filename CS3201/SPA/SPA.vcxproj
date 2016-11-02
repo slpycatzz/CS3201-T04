@@ -27,6 +27,7 @@
     <ClInclude Include="include\PKB\Table.h" />
     <ClInclude Include="include\PKB\PKB.h" />
     <ClInclude Include="include\PKB\TransitiveTable.h" />
+    <ClInclude Include="include\PKB\VectorTable.h" />
     <ClInclude Include="include\QueryProcessor\Clause.h" />
     <ClInclude Include="include\QueryProcessor\QueryEvaluator.h" />
     <ClInclude Include="include\QueryProcessor\QueryOptimizer.h" />

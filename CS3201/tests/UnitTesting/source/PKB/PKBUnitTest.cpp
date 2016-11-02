@@ -25,9 +25,6 @@ namespace UnitTesting {
             PKB::InsertConstantValue(2, "10");
             PKB::InsertConstantValue(3, "100");
 
-            Assert::IsTrue(PKB::HasConstantValue("10"));
-            Assert::IsFalse(PKB::HasConstantValue("1000"));
-
             Assert::AreNotEqual(PKB::GetConstantIndex("1"), static_cast<unsigned int>(0));
             Assert::AreEqual(PKB::GetConstantIndex("10"), static_cast<unsigned int>(2));
             Assert::AreEqual(PKB::GetConstantIndex("2000"), static_cast<unsigned int>(0));
@@ -36,17 +33,18 @@ namespace UnitTesting {
             Assert::AreEqual(PKB::GetConstantValue(4), string(""));
 
             vector<string> constantValues = { "1", "10", "100" };
+            vector<string> result = PKB::GetAllConstantValues();
 
-            Assert::IsTrue(constantValues == PKB::GetAllConstantValues());
+            std::sort(constantValues.begin(), constantValues.end());
+            std::sort(result.begin(), result.end());
+
+            Assert::IsTrue(constantValues == result);
         }
 
         TEST_METHOD(PKB_VariableTable) {
             PKB::InsertVariableName(1, "x");
             PKB::InsertVariableName(2, "xyz");
             PKB::InsertVariableName(3, "xyz12345");
-
-            Assert::IsTrue(PKB::HasVariableName("x"));
-            Assert::IsFalse(PKB::HasVariableName("Xyz"));
 
             Assert::AreNotEqual(PKB::GetVariableIndex("xyz"), static_cast<unsigned int>(0));
             Assert::AreEqual(PKB::GetVariableIndex("xyz12345"), static_cast<unsigned int>(3));
@@ -66,9 +64,6 @@ namespace UnitTesting {
             PKB::InsertProcedureName(3, "Pen");
             PKB::InsertProcedureName(4, "Kangaroo");
 
-            Assert::IsTrue(PKB::HasProcedureName("Apple"));
-            Assert::IsFalse(PKB::HasProcedureName("apple"));
-
             Assert::AreNotEqual(PKB::GetProcedureIndex("Pineapple"), static_cast<unsigned int>(0));
             Assert::AreEqual(PKB::GetProcedureIndex("Kangaroo"), static_cast<unsigned int>(4));
             Assert::AreEqual(PKB::GetProcedureIndex("PIneapple"), static_cast<unsigned int>(0));
@@ -76,20 +71,19 @@ namespace UnitTesting {
             Assert::AreEqual(PKB::GetProcedureName(3), string("Pen"));
             Assert::AreEqual(PKB::GetProcedureName(5), string(""));
 
-            vector<string> procedureNames = { "Apple", "Kangaroo", "Pen", "Pineapple" };
             vector<unsigned int> procedureIndexes = { 1, 2, 3, 4 };
+            vector<unsigned int> result = PKB::GetAllProcedureIndexes();
 
-            Assert::IsTrue(procedureNames == PKB::GetAllProcedureNames());
-            Assert::IsTrue(procedureIndexes == PKB::GetAllProcedureIndexes());
+            std::sort(procedureIndexes.begin(), procedureIndexes.end());
+            std::sort(result.begin(), result.end());
+
+            Assert::IsTrue(procedureIndexes == result);
         }
 
         TEST_METHOD(PKB_ControlVariableTable) {
             PKB::InsertControlVariable(10, 1);
             PKB::InsertControlVariable(11, 2);
             PKB::InsertControlVariable(12, 6);
-
-            Assert::IsTrue(PKB::HasControlVariableIndex(1));
-            Assert::IsFalse(PKB::HasControlVariableIndex(5));
 
             Assert::IsTrue(PKB::HasControlVariableIndexAtStmtNumber(11, 2));
             Assert::IsFalse(PKB::HasControlVariableIndexAtStmtNumber(12, 4));

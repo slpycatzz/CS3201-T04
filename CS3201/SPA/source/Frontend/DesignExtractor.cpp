@@ -244,7 +244,7 @@ void DesignExtractor::precomputeCalls() {
         }
     }
 
-    PKB::PopulateCallsTransitiveTable();
+    PKB::PopulateCallsTransitive();
 }
 
 void DesignExtractor::precomputeModifies() {
@@ -267,7 +267,7 @@ void DesignExtractor::precomputeModifies() {
     /* Populate modifies that are from other procedures. */
     vector<ProcedureIndex> procedureIndexes = PKB::GetAllProcedureIndexes();
     for (const auto &procedureIndex : procedureIndexes) {
-        set<ProcedureIndex> procedures = PKB::GetCalled(procedureIndex);
+        vector<ProcedureIndex> procedures = PKB::GetCalled(procedureIndex);
 
         /* Procedure does not have any call. */
         if (procedures.empty()) {
@@ -275,7 +275,7 @@ void DesignExtractor::precomputeModifies() {
         }
 
         for (const auto &index : procedures) {
-            set<VariableIndex> variableIndexes = PKB::GetProcedureModifiedVariables(index);
+            vector<VariableIndex> variableIndexes = PKB::GetProcedureModifiedVariables(index);
 
             /* If called procedure does not modify anything. */
             if (variableIndexes.empty()) {
@@ -290,7 +290,7 @@ void DesignExtractor::precomputeModifies() {
 
     for (auto iter = modifies_.begin(); iter != modifies_.end();) {
         unsigned int stmtNumber = iter->first;
-        set<VariableIndex> variableIndexes;
+        vector<VariableIndex> variableIndexes;
 
         /* If call statement, get variables from modifies procedure table. */
         if (call_.count(stmtNumber) == 1) {
@@ -304,7 +304,7 @@ void DesignExtractor::precomputeModifies() {
             }
 
         } else {
-            variableIndexes.insert(PKB::GetVariableIndex(iter->second));
+            variableIndexes.push_back(PKB::GetVariableIndex(iter->second));
         }
 
         /* Populate container statements. */
@@ -348,7 +348,7 @@ void DesignExtractor::precomputeUses() {
     /* Populate uses that are from other procedures. */
     vector<ProcedureIndex> procedureIndexes = PKB::GetAllProcedureIndexes();
     for (const auto &procedureIndex : procedureIndexes) {
-        set<ProcedureIndex> procedures = PKB::GetCalled(procedureIndex);
+        vector<ProcedureIndex> procedures = PKB::GetCalled(procedureIndex);
 
         /* Procedure does not have any call. */
         if (procedures.empty()) {
@@ -356,7 +356,7 @@ void DesignExtractor::precomputeUses() {
         }
 
         for (const auto &index : procedures) {
-            set<VariableIndex> variableIndexes = PKB::GetProcedureUsedVariables(index);
+            vector<VariableIndex> variableIndexes = PKB::GetProcedureUsedVariables(index);
 
             if (variableIndexes.empty()) {
                 continue;
@@ -370,7 +370,7 @@ void DesignExtractor::precomputeUses() {
 
     for (auto iter = uses_.begin(); iter != uses_.end();) {
         unsigned int stmtNumber = iter->first;
-        set<VariableIndex> variableIndexes;
+        vector<VariableIndex> variableIndexes;
 
         /* If call statement, get variables from uses procedure table. */
         if (call_.count(stmtNumber) == 1) {
@@ -385,7 +385,7 @@ void DesignExtractor::precomputeUses() {
 
         } else {
             for (VariableName variableName : iter->second) {
-                variableIndexes.insert(PKB::GetVariableIndex(variableName));
+                variableIndexes.push_back(PKB::GetVariableIndex(variableName));
             }
         }
 
@@ -420,7 +420,7 @@ void DesignExtractor::precomputeParent() {
         }
     }
 
-    PKB::PopulateParentTransitiveTable();
+    PKB::PopulateParentTransitive();
 }
 
 void DesignExtractor::precomputeFollows() {
@@ -432,7 +432,7 @@ void DesignExtractor::precomputeFollows() {
         }
     }
 
-    PKB::PopulateFollowsTransitiveTable();
+    PKB::PopulateFollowsTransitive();
 }
 
 void DesignExtractor::precomputeNext() {
@@ -538,23 +538,23 @@ void DesignExtractor::computeNextTransitive(CFGNode* controlFlowGraphNode, Matri
 
             if (!nextTransitiveMatrix.isRowColumnToggled(stmtNumber, childStmtNumber)) {
                 nextTransitiveMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
-                
+
                 queue.push(child);
             }
         }
     }
 }
 
-void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affectsMatrix, Table<StmtNumber, StmtNumber> &affectsTable) {
+void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable) {
     vector<CFGNode*> visitedNodes;
     queue<CFGNode*> queue;
-    
+
     /* Initial CFG node is definitely an assign. */
     VariableIndex modify = controlFlowGraphNode->getModify();
     StmtNumber stmtNumber = controlFlowGraphNode->getStmtNumber();
 
     queue.push(controlFlowGraphNode);
-    
+
     while (!queue.empty()) {
         CFGNode* currentNode = queue.front();
         vector<CFGNode*> children = currentNode->getChildren();
@@ -571,7 +571,11 @@ void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affe
 
                 if (childSymbol == ASSIGN || childSymbol == CALL) {
                     /* If uses, include this assign statement. */
-                    if (childSymbol == ASSIGN && child->getUses().count(modify) == 1) {
+
+                    vector<unsigned int> childUses = child->getUses();
+                    vector<unsigned int> childModifies = child->getModifies();
+
+                    if (childSymbol == (ASSIGN && std::find(childUses.begin(), childUses.end(), modify) != childUses.end())) {
                         if (!affectsMatrix.isRowColumnToggled(stmtNumber, childStmtNumber)) {
                             affectsMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
                             affectsTable.insert(stmtNumber, childStmtNumber);
@@ -579,11 +583,11 @@ void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affe
                     }
 
                     /* If modified, skip this path. */
-                    if (child->getModifies().count(modify) == 1) {
+                    if (std::find(childModifies.begin(), childModifies.end(), modify) != childModifies.end()) {
                         continue;
                     }
                 }
-                
+
                 queue.push(child);
             }
         }

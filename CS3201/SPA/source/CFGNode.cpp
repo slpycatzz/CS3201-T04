@@ -1,12 +1,10 @@
 #include <iomanip>
 #include <iostream>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "CFGNode.h"
 
-using std::set;
 using std::string;
 using std::vector;
 
@@ -71,26 +69,26 @@ unsigned int CFGNode::getNumberOfChildren() {
 
 void CFGNode::setModify(unsigned int modify) {
     modify_ = modify;
-    modifies_.insert(modify);
+    modifies_.push_back(modify);
 }
 
 unsigned int CFGNode::getModify() {
     return modify_;
 }
 
-void CFGNode::setModifies(set<unsigned int> modifies) {
+void CFGNode::setModifies(vector<unsigned int> modifies) {
     modifies_ = modifies;
 }
 
-set<unsigned int> CFGNode::getModifies() {
+vector<unsigned int> CFGNode::getModifies() {
     return modifies_;
 }
 
-void CFGNode::setUses(set<unsigned int> uses) {
+void CFGNode::setUses(vector<unsigned int> uses) {
     uses_ = uses;
 }
 
-set<unsigned int> CFGNode::getUses() {
+vector<unsigned int> CFGNode::getUses() {
     return uses_;
 }
 

@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "VectorTable.h"
+
 template<typename K, typename V>
 class TransitiveTable {
  public:
@@ -18,18 +20,13 @@ class TransitiveTable {
 
     inline ~TransitiveTable<K, V>() {}
 
-    inline void generateTransitiveTable(Table<K, V> table) {
+    inline void generateTransitiveTable(VectorTable<K, V> table) {
         generateKeyToValuesTransitiveMap(table);
         generateValueToKeysTransitiveMap(table);
     }
 
-    inline void generateTransitiveTable(Table<K, V> table, Matrix &matrix) {
-        generateKeyToValuesTransitiveMap(table, matrix);
-        generateValueToKeysTransitiveMap(table);
-    }
-
-    inline void generateKeyToValuesTransitiveMap(Table<K, V> table) {
-        std::set<K> keys = table.getKeys();
+    inline void generateKeyToValuesTransitiveMap(VectorTable<K, V> table) {
+        std::vector<K> keys = table.getKeys();
 
         if (keys.empty()) {
             return;
@@ -41,7 +38,7 @@ class TransitiveTable {
             keyStack.push(key);
 
             while (!keyStack.empty()) {
-                std::set<V> values = table.getValues(keyStack.top());
+                std::vector<V> values = table.getValues(keyStack.top());
 
                 keyStack.pop();
 
@@ -60,42 +57,8 @@ class TransitiveTable {
         }
     }
 
-    inline void generateKeyToValuesTransitiveMap(Table<K, V> table, Matrix &matrix) {
-        std::set<K> keys = table.getKeys();
-
-        if (keys.empty()) {
-            return;
-        }
-
-        /* Perform DFS on the table to get transitive table. */
-        for (const auto &key : keys) {
-            std::stack<K> keyStack;
-            keyStack.push(key);
-
-            while (!keyStack.empty()) {
-                std::set<V> values = table.getValues(keyStack.top());
-
-                keyStack.pop();
-
-                /* End of the transitive closure for the key. */
-                if (values.empty()) {
-                    continue;
-                }
-
-                keyToValuesTransitiveMap[key].insert(values.begin(), values.end());
-                numberOfRelationship += values.size();
-
-                for (const auto &value : values) {
-                    keyStack.push(value);
-
-                    matrix.toggleRowColumn(key, value);
-                }
-            }
-        }
-    }
-
-    inline void generateValueToKeysTransitiveMap(Table<K, V> table) {
-        std::set<V> values = table.getValues();
+    inline void generateValueToKeysTransitiveMap(VectorTable<K, V> table) {
+        std::vector<V> values = table.getValues();
 
         if (values.empty()) {
             return;
@@ -107,7 +70,7 @@ class TransitiveTable {
             valueStack.push(value);
 
             while (!valueStack.empty()) {
-                std::set<K> keys = table.getKeys(valueStack.top());
+                std::vector<K> keys = table.getKeys(valueStack.top());
 
                 valueStack.pop();
 
