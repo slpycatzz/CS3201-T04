@@ -17,5 +17,6 @@ class QueryOptimizer {
      QueryTree queryTree;
 
      std::pair<std::vector<std::string>, std::vector<Clause>> sortGroup(std::vector<Clause> group);
+     std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> uniqueSimplifiedPairs(std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>>unselectedPairs);
 };
 

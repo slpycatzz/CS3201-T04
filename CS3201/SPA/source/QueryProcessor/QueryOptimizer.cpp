@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "QueryProcessor/QueryOptimizer.h"
+#include "QueryProcessor/QueryUtils.h"
 #include "QueryProcessor/Clause.h"
 #include "PKB/PKB.h"
 #include "Utils.h"
@@ -249,6 +250,9 @@ QueryTree QueryOptimizer::optimize(QueryTree qt) {
         unselectedPairs.push_back(synonymsClausesPair);
     }
 
+    //Remove duplicate unselected groups with same simplified clauses
+    unselectedPairs = uniqueSimplifiedPairs(unselectedPairs);
+
     for (vector<vector<Clause>>::iterator it = selectedGroups.begin(); it != selectedGroups.end(); ++it) {
         std::pair<vector<string>, vector<Clause>> synonymsClausesPair = sortGroup(*it);
         selectedPairs.push_back(synonymsClausesPair);
@@ -334,27 +338,131 @@ std::pair<vector<string>, vector<Clause>> QueryOptimizer::sortGroup(vector<Claus
         }
     }
     
+    //Change all single occurance synonyms of stmt/prog_line type to underscore
+    for (set<string>::iterator it = evaluatedSynonyms.begin(); it != evaluatedSynonyms.end();) {
+        string synonym = *it;
+
+        bool isSelected = false;
+        for (string var : queryTree.getResults()) {
+            if (var == synonym) {
+                isSelected = true;
+                break;
+            }
+        }
+
+        if (!isSelected) {
+            //Check if stmt/prog_line type
+            if (queryTree.getVarMap().find(synonym)->second == STMT || queryTree.getVarMap().find(synonym)->second == PROGRAM_LINE) {
+                int count = 0;
+
+                for (Clause clause : sortedGroup) {
+                    for (string syn : clause.getSynonyms()) {
+                        if (synonym == syn) {
+                            count++;
+                        }
+                    }
+                }
+
+                if (count == 1) {
+                    evaluatedSynonyms.erase(it);
+
+                    //Find synonym and replace with underscore
+                    for (vector<Clause>::iterator iter = sortedGroup.begin(); iter != sortedGroup.end(); iter++) {
+                        Clause clause = *iter;
+                        if (clause.getClauseType() != SYMBOL_WITH) {
+                            vector<string> clauseSyns = clause.getSynonyms();
+                            if (std::find(clauseSyns.begin(), clauseSyns.end(), synonym) != clauseSyns.end()) {
+                                //replace with underscore
+                                vector<string> newArgList;
+                                Clause newClause;
+
+                                for (string arg : clause.getArg()) {
+                                    if (arg == synonym) {
+                                        newArgList.push_back("_");
+                                    }
+                                    else {
+                                        newArgList.push_back(arg);
+                                    }
+                                }
+
+                                newClause.setClauseType(clause.getClauseType());
+                                newClause.setArg(newArgList);
+
+                                *iter = newClause;
+                            }
+                        }
+                    }
+                }
+                else {
+                    ++it;
+                }
+            }
+        }
+        ++it;
+    }
+    
     //Remove duplicate clauses
-    vector<Clause> uniqueGroup;
+    vector<Clause> uniqueClauseGroup;
 
     vector<Clause>::iterator iter = sortedGroup.begin();
     while (iter != sortedGroup.end()) {
         bool hasClause = false;
-        for (Clause clause : uniqueGroup) {
+        for (Clause clause : uniqueClauseGroup) {
             if ((*iter).toString() == clause.toString()) {
                 hasClause = true;
                 break;
             }
         }
         if (!hasClause) {
-            uniqueGroup.push_back(*iter);
+            uniqueClauseGroup.push_back(*iter);
         }
         iter = sortedGroup.erase(iter);
     }
 
     vector<string> synonymsInGroup;
-    synonymsInGroup.assign(evaluatedSynonyms.begin(), evaluatedSynonyms.end());
-    std::pair<vector<string>, vector<Clause>> pair({ synonymsInGroup, uniqueGroup });
+
+    for (Clause clause : uniqueClauseGroup) {
+        for (string synonym : clause.getSynonyms()) {
+            synonymsInGroup.push_back(synonym);
+        }
+    }
+
+    std::pair<vector<string>, vector<Clause>> pair({ synonymsInGroup, uniqueClauseGroup });
 
     return pair;
+}
+
+std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> QueryOptimizer::uniqueSimplifiedPairs(std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>>unselectedPairs) {
+    std::vector<std::pair<std::vector<std::string>, std::vector<Clause>>> uniquePairs;
+
+    vector<std::pair<vector<string>, vector<Clause>>>::iterator iter = unselectedPairs.begin();
+    while (iter != unselectedPairs.end()) {
+        bool hasPair = false;
+        for (std::pair<vector<string>, vector<Clause>> pair : uniquePairs) {
+            //If same set of synonyms
+            if ((*iter).first == pair.first) {
+                string myString = "";
+                string pairString = "";
+
+                for (Clause clause : (*iter).second) {
+                    myString += clause.toString();
+                }
+                for (Clause clause : pair.second) {
+                    pairString += clause.toString();
+                }
+
+                if (myString == pairString) {
+                    hasPair = true;
+                    break;
+                }
+            }
+        }
+        if (!hasPair) {
+            uniquePairs.push_back(*iter);
+        }
+
+        iter = unselectedPairs.erase(iter);
+    }
+
+    return uniquePairs;
 }
