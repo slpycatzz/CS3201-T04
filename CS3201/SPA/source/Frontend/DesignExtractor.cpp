@@ -445,7 +445,7 @@ void DesignExtractor::precomputeNext() {
 
         queue<CFGNode*> queue;
 
-        CFGNode* rootNode = new CFGNode(stmts_[pair.first], pair.first);
+        CFGNode* rootNode = new CFGNode(stmts_[pair.first], pair.first, stmtsLevels_[pair.first]);
 
         switch (stmts_[pair.first]) {
             default:
@@ -491,7 +491,7 @@ void DesignExtractor::precomputeNext() {
                 }
 
                 if (node == NULL) {
-                    node = new CFGNode(pair.second, stmtNumber);
+                    node = new CFGNode(pair.second, stmtNumber, stmtsLevels_[stmtNumber]);
 
                     switch (pair.second) {
                         default:
@@ -527,11 +527,11 @@ void DesignExtractor::precomputeNext() {
     }
 }
 
-void DesignExtractor::computeNextTransitive(CFGNode* controlFlowGraphNode, Matrix &nextTransitiveMatrix) {
+void DesignExtractor::computeNextTransitive(CFGNode* assignNode, Matrix &nextTransitiveMatrix) {
     queue<CFGNode*> queue;
-    queue.push(controlFlowGraphNode);
+    queue.push(assignNode);
 
-    StmtNumber stmtNumber = controlFlowGraphNode->getStmtNumber();
+    StmtNumber stmtNumber = assignNode->getStmtNumber();
     while (!queue.empty()) {
         CFGNode* currentNode = queue.front();
         vector<CFGNode*> children = currentNode->getChildren();
@@ -550,15 +550,15 @@ void DesignExtractor::computeNextTransitive(CFGNode* controlFlowGraphNode, Matri
     }
 }
 
-void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable) {
+void DesignExtractor::computeAffects(CFGNode* assignNode, Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable) {
     vector<CFGNode*> visitedNodes;
     queue<CFGNode*> queue;
 
     /* Caller have already ensured node is an assign statement. */
-    VariableIndex modify = controlFlowGraphNode->getModify();
-    StmtNumber stmtNumber = controlFlowGraphNode->getStmtNumber();
+    VariableIndex modify = assignNode->getModify();
+    StmtNumber stmtNumber = assignNode->getStmtNumber();
 
-    queue.push(controlFlowGraphNode);
+    queue.push(assignNode);
 
     while (!queue.empty()) {
         CFGNode* currentNode = queue.front();
@@ -608,14 +608,14 @@ void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affe
 }
 
 /* Only have to traverse one uses base on our implementation. */
-bool DesignExtractor::computeAffecting(CFGNode* controlFlowGraphNode, VariableIndex use,
+bool DesignExtractor::computeAffecting(CFGNode* assignNode, VariableIndex use,
     Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable) {
     vector<CFGNode*> visitedNodes;
     queue<CFGNode*> queue;
 
-    StmtNumber stmtNumber = controlFlowGraphNode->getStmtNumber();
+    StmtNumber stmtNumber = assignNode->getStmtNumber();
 
-    queue.push(controlFlowGraphNode);
+    queue.push(assignNode);
 
     bool isAffecting = false;
     while (!queue.empty()) {
@@ -661,64 +661,89 @@ bool DesignExtractor::computeAffecting(CFGNode* controlFlowGraphNode, VariableIn
     return isAffecting;
 }
 
-bool DesignExtractor::computeAffectsTransitive(CFGNode* controlFlowGraphNode, Matrix &affectsTransitiveMatrix) {
+bool DesignExtractor::computeAffectsTransitive(CFGNode* assignNode, Matrix &affectsTransitiveMatrix) {
     vector<CFGNode*> visitedNodes;
     queue<CFGNode*> queue;
-    unordered_set<VariableIndex> modifies;
+    unordered_set<VariableIndex> modifies_;
 
-    VariableIndex modify = controlFlowGraphNode->getModify();
-    StmtNumber stmtNumber = controlFlowGraphNode->getStmtNumber();
+    VariableIndex modify = assignNode->getModify();
+    StmtNumber stmtNumber = assignNode->getStmtNumber();
 
-    queue.push(controlFlowGraphNode);
-    modifies.insert(modify);
+    for (CFGNode* child : assignNode->getChildren()) {
+        queue.push(child);
+    }
+
+    modifies_.insert(modify);
 
     while (!queue.empty()) {
         CFGNode* currentNode = queue.front();
-        vector<CFGNode*> children = currentNode->getChildren();
-
         queue.pop();
 
-        for (CFGNode* child : children) {
-            if (!child->isVisited()) {
-                child->setVisited(true);
-                visitedNodes.push_back(child);
+        currentNode->setVisited(true);
+        visitedNodes.push_back(currentNode);
 
-                StmtNumber childStmtNumber = child->getStmtNumber();
-                Symbol childSymbol = child->getSymbol();
-                vector<unsigned int> childModifies = child->getModifies();
-                vector<unsigned int> childUses = child->getUses();
+        StmtNumber currentStmtNumber = currentNode->getStmtNumber();
+        Symbol currentSymbol = currentNode->getSymbol();
+        vector<unsigned int> currentModifies = currentNode->getModifies();
+        vector<unsigned int> currentUses = currentNode->getUses();
 
-                bool isUsesAndModifies = false;
+        bool isUsesAndModifies = false;
 
-                /* Catch calls. */
-                switch (childSymbol) {
-                    default:
-                        break;
+        /* Catch calls. */
+        switch (currentSymbol) {
+            default:
+                break;
 
-                    case ASSIGN:
-                        for (VariableIndex variableIndex : childUses) {
-                            if  (modifies.find(variableIndex) != modifies.end()) {
-                                modifies.insert(child->getModify());
-                                affectsTransitiveMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
+            case IF:
+            {
+                StmtNumber followingStmtNumber = PKB::GetFollowing(currentStmtNumber);
 
-                                isUsesAndModifies = (std::find(childUses.begin(), childUses.end(), modify) != childUses.end());
-                                break;
-                            }
-                        }
+                vector<CFGNode*> ifChildren = currentNode->getChildren();
 
-                        if (isUsesAndModifies) {
-                            break;
-                        }
+                /* Settle the children of if statement in another function. */
+                unordered_set<VariableIndex> thenModifies = computeAffectsTransitiveIf(assignNode,
+                    ifChildren[0], affectsTransitiveMatrix, modifies_, followingStmtNumber);
 
-                    case CALL:
-                        /* If modified, skip this path. */
-                        if (std::find(childModifies.begin(), childModifies.end(), modify) != childModifies.end()) {
-                            continue;
-                        }
+                unordered_set<VariableIndex> elseModifies = computeAffectsTransitiveIf(assignNode,
+                    ifChildren[1], affectsTransitiveMatrix, modifies_, followingStmtNumber);
 
-                        break;
+                modifies_.insert(thenModifies.begin(), thenModifies.end());
+                modifies_.insert(elseModifies.begin(), elseModifies.end());
+
+                /* Move on to next node. */
+                if (followingStmtNumber != 0) {
+                    queue.push(PKB::GetCFGNodeByStmtNumber(followingStmtNumber));
                 }
 
+                continue;
+            }
+            case ASSIGN:
+                for (VariableIndex variableIndex : currentUses) {
+                    if (modifies_.find(variableIndex) != modifies_.end()) {
+                        modifies_.insert(currentNode->getModify());
+                        affectsTransitiveMatrix.toggleRowColumn(stmtNumber, currentStmtNumber);
+
+                        isUsesAndModifies = (std::find(currentUses.begin(), currentUses.end(), modify) != currentUses.end());
+                        break;
+                    }
+                }
+
+                if (isUsesAndModifies) {
+                    break;
+                }
+
+            case CALL:
+                /* If modified, skip this path. */
+                if (std::find(currentModifies.begin(), currentModifies.end(), modify) != currentModifies.end()) {
+                    continue;
+                }
+
+                break;
+        }
+
+        vector<CFGNode*> children = currentNode->getChildren();
+        for (CFGNode* child : children) {
+            if (!child->isVisited()) {
                 queue.push(child);
             }
         }
@@ -729,6 +754,106 @@ bool DesignExtractor::computeAffectsTransitive(CFGNode* controlFlowGraphNode, Ma
     }
 
     return true;
+}
+
+unordered_set<VariableIndex> DesignExtractor::computeAffectsTransitiveIf(CFGNode* assignNode, CFGNode* node,
+    Matrix &affectsTransitiveMatrix, unordered_set<VariableIndex> modifies, StmtNumber terminator) {
+
+    vector<CFGNode*> visitedNodes;
+    queue<CFGNode*> queue;
+    unordered_set<VariableIndex> modifies_ = modifies;
+
+    VariableIndex modify = assignNode->getModify();
+    StmtNumber stmtNumber = assignNode->getStmtNumber();
+
+    queue.push(node);
+
+    while (!queue.empty()) {
+        CFGNode* currentNode = queue.front();
+        queue.pop();
+
+        StmtNumber currentStmtNumber = currentNode->getStmtNumber();
+
+        if (currentNode->getStmtLevel() == 1) {
+            if (currentStmtNumber == terminator) {
+                break;
+            }
+        }
+
+        currentNode->setVisited(true);
+        visitedNodes.push_back(currentNode);
+
+        Symbol currentSymbol = currentNode->getSymbol();
+        vector<unsigned int> currentModifies = currentNode->getModifies();
+        vector<unsigned int> currentUses = currentNode->getUses();
+
+        bool isUsesAndModifies = false;
+
+        /* Catch calls. */
+        switch (currentSymbol) {
+            default:
+                break;
+
+            case IF:
+            {
+                StmtNumber followingStmtNumber = PKB::GetFollowing(currentStmtNumber);
+
+                vector<CFGNode*> ifChildren = currentNode->getChildren();
+
+                /* Settle the children of if statement in another function. */
+                unordered_set<VariableIndex> thenModifies = computeAffectsTransitiveIf(assignNode,
+                    ifChildren[0], affectsTransitiveMatrix, modifies_, followingStmtNumber);
+
+                unordered_set<VariableIndex> elseModifies = computeAffectsTransitiveIf(assignNode,
+                    ifChildren[1], affectsTransitiveMatrix, modifies_, followingStmtNumber);
+
+                modifies_.insert(thenModifies.begin(), thenModifies.end());
+                modifies_.insert(elseModifies.begin(), elseModifies.end());
+
+                /* Move on to next node. */
+                if (followingStmtNumber != 0) {
+                    queue.push(PKB::GetCFGNodeByStmtNumber(followingStmtNumber));
+                }
+
+                continue;
+            }
+            case ASSIGN:
+                for (VariableIndex variableIndex : currentUses) {
+                    if (modifies.find(variableIndex) != modifies.end()) {
+                        modifies.insert(currentNode->getModify());
+                        affectsTransitiveMatrix.toggleRowColumn(stmtNumber, currentStmtNumber);
+
+                        isUsesAndModifies = (std::find(currentUses.begin(), currentUses.end(), modify) != currentUses.end());
+                        break;
+                    }
+                }
+
+                if (isUsesAndModifies) {
+                    break;
+                }
+
+            case CALL:
+                /* If modified, skip this path. */
+                if (std::find(currentModifies.begin(), currentModifies.end(), modify) != currentModifies.end()) {
+                    continue;
+                }
+
+                break;
+        }
+
+        vector<CFGNode*> children = currentNode->getChildren();
+        for (CFGNode* child : children) {
+            if (!child->isVisited()) {
+                queue.push(child);
+            }
+        }
+    }
+
+    for (CFGNode* visitedNode : visitedNodes) {
+        visitedNode->setVisited(false);
+    }
+
+    return modifies_;
 }
 
 int DesignExtractor::getParentOfStmtNumber(StmtNumber stmtNumber) {

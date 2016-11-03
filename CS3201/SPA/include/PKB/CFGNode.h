@@ -10,6 +10,7 @@ class CFGNode {
     CFGNode(Symbol symbol);
     CFGNode(unsigned int stmtNumber);
     CFGNode(Symbol symbol, unsigned int stmtNumber);
+    CFGNode(Symbol symbol, unsigned int stmtNumber, unsigned int stmtLevel);
     ~CFGNode();
 
     void setSymbol(Symbol symbol);
@@ -17,6 +18,9 @@ class CFGNode {
 
     void setStmtNumber(unsigned int stmtNumber);
     unsigned int getStmtNumber();
+
+    void setStmtLevel(unsigned int stmtLevel);
+    unsigned int getStmtLevel();
 
     void setVisited(bool visited);
     bool isVisited();
@@ -43,6 +47,7 @@ class CFGNode {
  private:
     Symbol symbol_;
     unsigned int stmtNumber_;
+    unsigned int stmtLevel_;
     bool visited_;
 
     std::vector<CFGNode*> children_;

@@ -11,6 +11,7 @@ using std::vector;
 CFGNode::CFGNode(Symbol symbol) {
     symbol_ = symbol;
     stmtNumber_ = 0;
+    stmtLevel_ = 0;
     visited_ = false;
     modify_ = 0;
 }
@@ -18,6 +19,7 @@ CFGNode::CFGNode(Symbol symbol) {
 CFGNode::CFGNode(unsigned int stmtNumber) {
     symbol_ = INVALID;
     stmtNumber_ = stmtNumber;
+    stmtLevel_ = 0;
     visited_ = false;
     modify_ = 0;
 }
@@ -25,6 +27,15 @@ CFGNode::CFGNode(unsigned int stmtNumber) {
 CFGNode::CFGNode(Symbol symbol, unsigned int stmtNumber) {
     symbol_ = symbol;
     stmtNumber_ = stmtNumber;
+    stmtLevel_ = 0;
+    visited_ = false;
+    modify_ = 0;
+}
+
+CFGNode::CFGNode(Symbol symbol, unsigned int stmtNumber, unsigned int stmtLevel) {
+    symbol_ = symbol;
+    stmtNumber_ = stmtNumber;
+    stmtLevel_ = stmtLevel;
     visited_ = false;
     modify_ = 0;
 }
@@ -45,6 +56,14 @@ void CFGNode::setStmtNumber(unsigned int stmtNumber) {
 
 unsigned int CFGNode::getStmtNumber() {
     return stmtNumber_;
+}
+
+void CFGNode::setStmtLevel(unsigned int stmtLevel) {
+    stmtLevel_ = stmtLevel;
+}
+
+unsigned int CFGNode::getStmtLevel() {
+    return stmtLevel_;
 }
 
 void CFGNode::setVisited(bool visited) {

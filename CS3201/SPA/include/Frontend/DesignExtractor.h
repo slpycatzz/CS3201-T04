@@ -3,6 +3,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "Constants.h"
@@ -26,11 +27,13 @@ class DesignExtractor {
 
     void computeNextTransitive(CFGNode* controlFlowGraphNode, Matrix &nextTransitiveMatrix);
 
-    void computeAffects(CFGNode* controlFlowGraphNode, Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable);
-    bool computeAffecting(CFGNode* controlFlowGraphNode, VariableIndex use,
+    void computeAffects(CFGNode* assignNode, Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable);
+    bool computeAffecting(CFGNode* assignNode, VariableIndex use,
         Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable);
 
-    bool computeAffectsTransitive(CFGNode* controlFlowGraphNode, Matrix &affectsTransitiveMatrix);
+    bool computeAffectsTransitive(CFGNode* assignNode, Matrix &affectsTransitiveMatrix);
+    std::unordered_set<VariableIndex> computeAffectsTransitiveIf(CFGNode* assignNode, CFGNode* node,
+        Matrix &affectsTransitiveMatrix, std::unordered_set<VariableIndex> modifies, StmtNumber terminator);
 
  private:
     void populateGenericTables();
