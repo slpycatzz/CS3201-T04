@@ -420,13 +420,15 @@ std::pair<vector<string>, vector<Clause>> QueryOptimizer::sortGroup(vector<Claus
     }
 
     vector<string> synonymsInGroup;
+    set<string> newEvaluatedSynonyms;
 
     for (Clause clause : uniqueClauseGroup) {
         for (string synonym : clause.getSynonyms()) {
-            synonymsInGroup.push_back(synonym);
+            newEvaluatedSynonyms.insert(synonym);
         }
     }
 
+    synonymsInGroup.assign(newEvaluatedSynonyms.begin(), newEvaluatedSynonyms.end());
     std::pair<vector<string>, vector<Clause>> pair({ synonymsInGroup, uniqueClauseGroup });
 
     return pair;
