@@ -681,24 +681,38 @@ bool DesignExtractor::computeAffectsTransitive(CFGNode* controlFlowGraphNode, Ma
                 child->setVisited(true);
                 visitedNodes.push_back(child);
 
-                if (childSymbol == ASSIGN || childSymbol == CALL) {
-                    vector<unsigned int> childUses = child->getUses();
-                    vector<unsigned int> childModifies = child->getModifies();
+                vector<unsigned int> childModifies = child->getModifies();
+                vector<unsigned int> childUses = child->getUses();
 
-                    if (childSymbol == ASSIGN) {
+                bool isUsesAndModifies = false;
+
+                /* Catch calls. */
+                switch (childSymbol) {
+                    default:
+                        break;
+                    
+                    case ASSIGN:
                         for (VariableIndex variableIndex : childUses) {
-                            if (modifies.find(variableIndex) != modifies.end()) {
+                            if  (modifies.find(variableIndex) != modifies.end()) {
                                 modifies.insert(child->getModify());
-
                                 affectsTransitiveMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
+
+                                isUsesAndModifies = (std::find(childUses.begin(), childUses.end(), modify) != childUses.end());
+                                break;  
                             }
                         }
-                    }
 
-                    /* If modified, skip this path. */
-                    if (std::find(childModifies.begin(), childModifies.end(), modify) != childModifies.end()) {
-                        continue;
-                    }
+                        if (isUsesAndModifies) {
+                            break;
+                        }
+
+                    case CALL:
+                        /* If modified, skip this path. */
+                        if (std::find(childModifies.begin(), childModifies.end(), modify) != childModifies.end()) {
+                            continue;
+                        }
+
+                        break;
                 }
 
                 queue.push(child);
