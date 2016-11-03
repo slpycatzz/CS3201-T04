@@ -32,6 +32,7 @@ start /wait %runDir%AutoTester.exe %testDir%clauseTesting\SourceOne.txt %testDir
 start /wait %runDir%AutoTester.exe %testDir%clauseTesting\SourceOne.txt %testDir%clauseTesting\ParentStar.txt %testDir%clauseTesting\output\ParentStar.xml
 start /wait %runDir%AutoTester.exe %testDir%clauseTesting\SourceOne.txt %testDir%clauseTesting\Pattern.txt %testDir%clauseTesting\output\Pattern.xml
 start /wait %runDir%AutoTester.exe %testDir%clauseTesting\SourceOne.txt %testDir%clauseTesting\Uses.txt %testDir%clauseTesting\output\Uses.xml
+start /wait %runDir%AutoTester.exe %testDir%clauseTesting\SourceOne.txt %testDir%clauseTesting\Affects.txt %testDir%clauseTesting\output\Affects.xml
 
 setlocal enabledelayedexpansion
 
