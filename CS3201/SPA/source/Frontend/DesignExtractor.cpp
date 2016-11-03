@@ -627,15 +627,17 @@ bool DesignExtractor::computeAffecting(CFGNode* controlFlowGraphNode, VariableIn
                 parent->setVisited(true);
                 visitedNodes.push_back(parent);
 
-                if (parentSymbol == ASSIGN) {
+                if (parentSymbol == ASSIGN || parentSymbol == CALL) {
                     vector<VariableIndex> parentModifies = parent->getModifies();
 
                     /* If modified, mark this path and break. */
                     if (std::find(parentModifies.begin(), parentModifies.end(), use) != parentModifies.end()) {
-                        affectsMatrix.toggleRowColumn(parentStmtNumber, stmtNumber);
-                        affectsTable.insert(parentStmtNumber, stmtNumber);
+                        if (parentSymbol == ASSIGN) {
+                            affectsMatrix.toggleRowColumn(parentStmtNumber, stmtNumber);
+                            affectsTable.insert(parentStmtNumber, stmtNumber);
 
-                        isAffecting = true;
+                            isAffecting = true;
+                        }
 
                         queue = {};
                         break;
@@ -707,6 +709,8 @@ bool DesignExtractor::computeAffectsTransitive(CFGNode* controlFlowGraphNode, Ma
     for (CFGNode* visitedNode : visitedNodes) {
         visitedNode->setVisited(false);
     }
+
+    return true;
 }
 
 int DesignExtractor::getParentOfStmtNumber(StmtNumber stmtNumber) {

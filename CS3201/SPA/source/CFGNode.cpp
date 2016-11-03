@@ -76,7 +76,7 @@ vector<CFGNode*> CFGNode::getParents() {
 }
 
 unsigned int CFGNode::getNumberOfParents() {
-    parents_.size();
+    return parents_.size();
 }
 
 void CFGNode::setModify(unsigned int modify) {

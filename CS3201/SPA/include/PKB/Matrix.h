@@ -89,8 +89,10 @@ class Matrix {
     }
 
     inline void clear() {
-        std::memset(&rowPopulated_[0], 0, sizeof(rowPopulated_));
-        std::memset(&matrix_[0][0], 0, sizeof(matrix_));
+        numberOfRelationship_ = 0;
+
+        rowPopulated_.resize(size_, 0);
+        matrix_.resize(size_, std::vector<unsigned char>(size_, 0));
     }
 
     inline void print() {
