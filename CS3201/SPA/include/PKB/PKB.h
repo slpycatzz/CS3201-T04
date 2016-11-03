@@ -149,9 +149,11 @@ class PKB {
 
     static bool IsAffects();
     static bool IsAffects(StmtNumber affecting, StmtNumber affected);
+    static bool IsAffectsTransitive(StmtNumber affecting, StmtNumber affected);
     static std::vector<StmtNumber> GetAffecting(StmtNumber affecting);
     static std::vector<StmtNumber> GetAffected(StmtNumber affected);
     static void PrintAffectsTable();
+    static void PrintAffectsTransitiveMatrix();
 
     static unsigned int GetNumberOfProcedure();
     static unsigned int GetNumberOfAssign();
@@ -246,6 +248,7 @@ class PKB {
     static VectorTable<StmtNumber, StmtNumber> nextTable_;
 
     static Matrix affectsMatrix_;
+    static Matrix affectsTransitiveMatrix_;
 
     static VectorTable<StmtNumber, StmtNumber> affectsTable_;
 };

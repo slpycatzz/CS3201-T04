@@ -2,6 +2,7 @@
 #include <queue>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,7 @@ using std::map;
 using std::queue;
 using std::set;
 using std::string;
+using std::unordered_set;
 using std::vector;
 
 DesignExtractor::DesignExtractor() {}
@@ -573,11 +575,10 @@ void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affe
                 visitedNodes.push_back(child);
 
                 if (childSymbol == ASSIGN || childSymbol == CALL) {
+                    vector<VariableIndex> childUses = child->getUses();
+                    vector<VariableIndex> childModifies = child->getModifies();
+
                     /* If uses, include this assign statement. */
-
-                    vector<unsigned int> childUses = child->getUses();
-                    vector<unsigned int> childModifies = child->getModifies();
-
                     if (childSymbol == ASSIGN && (std::find(childUses.begin(), childUses.end(), modify) != childUses.end())) {
                         if (!affectsMatrix.isRowColumnToggled(stmtNumber, childStmtNumber)) {
                             affectsMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
@@ -627,7 +628,7 @@ bool DesignExtractor::computeAffecting(CFGNode* controlFlowGraphNode, VariableIn
                 visitedNodes.push_back(parent);
 
                 if (parentSymbol == ASSIGN) {
-                    vector<unsigned int> parentModifies = parent->getModifies();
+                    vector<VariableIndex> parentModifies = parent->getModifies();
 
                     /* If modified, mark this path and break. */
                     if (std::find(parentModifies.begin(), parentModifies.end(), use) != parentModifies.end()) {
@@ -651,6 +652,61 @@ bool DesignExtractor::computeAffecting(CFGNode* controlFlowGraphNode, VariableIn
     }
 
     return isAffecting;
+}
+
+bool DesignExtractor::computeAffectsTransitive(CFGNode* controlFlowGraphNode, Matrix &affectsTransitiveMatrix) {
+    vector<CFGNode*> visitedNodes;
+    queue<CFGNode*> queue;
+    unordered_set<VariableIndex> modifies;
+
+    VariableIndex modify = controlFlowGraphNode->getModify();
+    StmtNumber stmtNumber = controlFlowGraphNode->getStmtNumber();
+
+    queue.push(controlFlowGraphNode);
+    modifies.insert(modify);
+
+    while (!queue.empty()) {
+        CFGNode* currentNode = queue.front();
+        vector<CFGNode*> children = currentNode->getChildren();
+
+        queue.pop();
+
+        for (CFGNode* child : children) {
+            StmtNumber childStmtNumber = child->getStmtNumber();
+            Symbol childSymbol = child->getSymbol();
+
+            if (!child->isVisited()) {
+                child->setVisited(true);
+                visitedNodes.push_back(child);
+
+                if (childSymbol == ASSIGN || childSymbol == CALL) {
+                    vector<unsigned int> childUses = child->getUses();
+                    vector<unsigned int> childModifies = child->getModifies();
+
+                    if (childSymbol == ASSIGN) {
+                        for (VariableIndex variableIndex : childUses) {
+                            if (modifies.find(variableIndex) != modifies.end()) {
+                                modifies.insert(child->getModify());
+
+                                affectsTransitiveMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
+                            }
+                        }
+                    }
+
+                    /* If modified, skip this path. */
+                    if (std::find(childModifies.begin(), childModifies.end(), modify) != childModifies.end()) {
+                        continue;
+                    }
+                }
+
+                queue.push(child);
+            }
+        }
+    }
+
+    for (CFGNode* visitedNode : visitedNodes) {
+        visitedNode->setVisited(false);
+    }
 }
 
 int DesignExtractor::getParentOfStmtNumber(StmtNumber stmtNumber) {

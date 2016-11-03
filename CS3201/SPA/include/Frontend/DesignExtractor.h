@@ -30,6 +30,8 @@ class DesignExtractor {
     bool computeAffecting(CFGNode* controlFlowGraphNode, VariableIndex use,
         Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable);
 
+    bool computeAffectsTransitive(CFGNode* controlFlowGraphNode, Matrix &affectsTransitiveMatrix);
+
  private:
     void populateGenericTables();
     void populateStmtRelatedTables();

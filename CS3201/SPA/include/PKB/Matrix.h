@@ -96,7 +96,7 @@ class Matrix {
     inline void print() {
         for (unsigned int i = 0; i < matrix_.size(); i++) {
             for (unsigned int k = 0; k < matrix_.size(); k++) {
-                std::cout << matrix_[i][k] << " ";
+                std::cout << (unsigned int) matrix_[i][k] << " ";
             }
 
             std::cout << std::endl;

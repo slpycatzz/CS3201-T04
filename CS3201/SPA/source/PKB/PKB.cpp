@@ -73,6 +73,7 @@ Matrix PKB::nextTransitiveMatrix_;
 VectorTable<StmtNumber, StmtNumber> PKB::nextTable_ = VectorTable<StmtNumber, StmtNumber>();
 
 Matrix PKB::affectsMatrix_;
+Matrix PKB::affectsTransitiveMatrix_;
 
 VectorTable<StmtNumber, StmtNumber> PKB::affectsTable_ = VectorTable<StmtNumber, StmtNumber>();
 
@@ -776,6 +777,47 @@ bool PKB::IsAffects(StmtNumber affecting, StmtNumber affected) {
     return false;
 }
 
+bool PKB::IsAffectsTransitive(StmtNumber affecting, StmtNumber affected) {
+    /* Validate if exceed matrix's range. */
+    if (affecting > tableMaximumSize_ || affecting <= 0 || affected > tableMaximumSize_ || affected <= 0) {
+        return false;
+    }
+
+    /* Validate if "affecting" and "affected" is in same procedure. */
+    for (auto &pair : procedureFirstAndLastStmtNumber_) {
+        if (affecting >= pair.first && affecting <= pair.second && affected >= pair.first && affected <= pair.second) {
+            /* Validate only assign statements are allowed. */
+            if (GetStmtSymbol(affecting) != ASSIGN || GetStmtSymbol(affected) != ASSIGN) {
+                return false;
+            }
+
+            if (affectsTransitiveMatrix_.isRowPopulated(affecting)) {
+                return affectsTransitiveMatrix_.isRowColumnToggled(affecting, affected);
+            }
+
+            CFGNode* node = controlFlowGraphNodes_[affecting];
+            vector<StmtNumber> isolatedProcUses = GetIsolatedProcedureStmtNumberUsing(node->getModify());
+
+            /* Validate if there is any assign in procedure that is using the modify variable. */
+            if (isolatedProcUses.empty()) {
+                return false;
+            }
+
+            if (std::find(isolatedProcUses.begin(), isolatedProcUses.end(), pair.first) == isolatedProcUses.end()) {
+                return false;
+            }
+
+            affectsMatrix_.setPopulated(affecting);
+
+            DesignExtractor::getInstance().computeAffectsTransitive(node, affectsTransitiveMatrix_);
+
+            return affectsTransitiveMatrix_.isRowColumnToggled(affecting, affected);
+        }
+    }
+
+    return false;
+}
+
 vector<StmtNumber> PKB::GetAffecting(StmtNumber affecting) {
     /* Validate if exceed matrix's range. */
     if (affecting > tableMaximumSize_ || affecting <= 0) {
@@ -867,10 +909,12 @@ vector<StmtNumber> PKB::GetAffected(StmtNumber affected) {
     return vector<StmtNumber>();
 }
 
-
-
 void PKB::PrintAffectsTable() {
     affectsTable_.print();
+}
+
+void PKB::PrintAffectsTransitiveMatrix() {
+    affectsTransitiveMatrix_.print();
 }
 
 /* END   - Affects table functions */
@@ -913,6 +957,7 @@ void PKB::SetTableMaximumSize(unsigned int tableMaximumSize) {
     nextTransitiveMatrix_ = Matrix(tableMaximumSize_);
 
     affectsMatrix_ = Matrix(tableMaximumSize_);
+    affectsTransitiveMatrix_ = Matrix(tableMaximumSize_);
 }
 
 void PKB::SetProcedureFirstAndLastStmtNumber(StmtNumber firstStmtNumber, StmtNumber lastStmtNumber) {
@@ -975,6 +1020,7 @@ void PKB::Clear() {
     nextTable_ = VectorTable<StmtNumber, StmtNumber>();
 
     affectsMatrix_ = Matrix();
+    affectsTransitiveMatrix_ = Matrix();
 
     affectsTable_ = VectorTable<StmtNumber, StmtNumber>();
 }
@@ -983,6 +1029,7 @@ void PKB::ClearComputeOnDemands() {
     nextTransitiveMatrix_.clear();
 
     affectsMatrix_.clear();
+    affectsTransitiveMatrix_.clear();
 
     affectsTable_ = VectorTable<StmtNumber, StmtNumber>();
 }
