@@ -567,29 +567,34 @@ void DesignExtractor::computeAffects(CFGNode* controlFlowGraphNode, Matrix &affe
         queue.pop();
 
         for (CFGNode* child : children) {
-            StmtNumber childStmtNumber = child->getStmtNumber();
-            Symbol childSymbol = child->getSymbol();
-
             if (!child->isVisited()) {
                 child->setVisited(true);
                 visitedNodes.push_back(child);
 
-                if (childSymbol == ASSIGN || childSymbol == CALL) {
-                    vector<VariableIndex> childUses = child->getUses();
-                    vector<VariableIndex> childModifies = child->getModifies();
+                StmtNumber childStmtNumber = child->getStmtNumber();
+                Symbol childSymbol = child->getSymbol();
+                vector<VariableIndex> childUses = child->getUses();
+                vector<VariableIndex> childModifies = child->getModifies();
 
-                    /* If uses, include this assign statement. */
-                    if (childSymbol == ASSIGN && (std::find(childUses.begin(), childUses.end(), modify) != childUses.end())) {
-                        if (!affectsMatrix.isRowColumnToggled(stmtNumber, childStmtNumber)) {
-                            affectsMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
-                            affectsTable.insert(stmtNumber, childStmtNumber);
+                switch (childSymbol) {
+                    default:
+                        break;
+
+                    case ASSIGN:
+                        if (std::find(childUses.begin(), childUses.end(), modify) != childUses.end()) {
+                            if (!affectsMatrix.isRowColumnToggled(stmtNumber, childStmtNumber)) {
+                                affectsMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
+                                affectsTable.insert(stmtNumber, childStmtNumber);
+                            }
                         }
-                    }
 
-                    /* If modified, skip this path. */
-                    if (std::find(childModifies.begin(), childModifies.end(), modify) != childModifies.end()) {
-                        continue;
-                    }
+                    case CALL:
+                        /* If modified, skip this path. */
+                        if (std::find(childModifies.begin(), childModifies.end(), modify) != childModifies.end()) {
+                            continue;
+                        }
+
+                        break;
                 }
 
                 queue.push(child);
@@ -674,13 +679,12 @@ bool DesignExtractor::computeAffectsTransitive(CFGNode* controlFlowGraphNode, Ma
         queue.pop();
 
         for (CFGNode* child : children) {
-            StmtNumber childStmtNumber = child->getStmtNumber();
-            Symbol childSymbol = child->getSymbol();
-
             if (!child->isVisited()) {
                 child->setVisited(true);
                 visitedNodes.push_back(child);
 
+                StmtNumber childStmtNumber = child->getStmtNumber();
+                Symbol childSymbol = child->getSymbol();
                 vector<unsigned int> childModifies = child->getModifies();
                 vector<unsigned int> childUses = child->getUses();
 
@@ -690,7 +694,7 @@ bool DesignExtractor::computeAffectsTransitive(CFGNode* controlFlowGraphNode, Ma
                 switch (childSymbol) {
                     default:
                         break;
-                    
+
                     case ASSIGN:
                         for (VariableIndex variableIndex : childUses) {
                             if  (modifies.find(variableIndex) != modifies.end()) {
@@ -698,7 +702,7 @@ bool DesignExtractor::computeAffectsTransitive(CFGNode* controlFlowGraphNode, Ma
                                 affectsTransitiveMatrix.toggleRowColumn(stmtNumber, childStmtNumber);
 
                                 isUsesAndModifies = (std::find(childUses.begin(), childUses.end(), modify) != childUses.end());
-                                break;  
+                                break;
                             }
                         }
 
