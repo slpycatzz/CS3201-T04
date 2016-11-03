@@ -150,8 +150,8 @@ class PKB {
     static bool IsAffects();
     static bool IsAffects(StmtNumber affecting, StmtNumber affected);
     static bool IsAffectsTransitive(StmtNumber affecting, StmtNumber affected);
-    static std::vector<StmtNumber> GetAffected(StmtNumber affecting);
-    static std::vector<StmtNumber> GetAffecting(StmtNumber affected);
+    static std::vector<StmtNumber> GetAffecting(StmtNumber affecting);
+    static std::vector<StmtNumber> GetAffected(StmtNumber affected);
     static void PrintAffectsTable();
     static void PrintAffectsTransitiveMatrix();
 
