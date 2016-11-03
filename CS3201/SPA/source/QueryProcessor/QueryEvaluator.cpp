@@ -9,6 +9,7 @@
 #include "QueryProcessor/QueryEvaluator.h"
 #include "QueryProcessor/QueryUtils.h"
 #include "Utils.h"
+#include "PKB/PKB.h"
 
 using std::string;
 using std::unordered_map;
@@ -752,15 +753,45 @@ bool QueryEvaluator::evaluateCallsStar(Candidate proc1, Candidate proc2) {
 }
 
 bool QueryEvaluator::evaluateAffects(Candidate assign1, Candidate assign2) {
-    int stmtNo1(Utils::StringToInt(assign1));
-    int stmtNo2(Utils::StringToInt(assign2));
-    // return PKB::IsAffects(stmtNo1, stmtNo2);
-    return false;
+    if (assign1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+        if (assign2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+            return PKB::IsAffects();
+        }
+        else {
+            int stmtNo2(Utils::StringToInt(assign2));
+            return (!PKB::GetAffecting(stmtNo2).empty());
+        }
+    }
+    else {
+        int stmtNo1(Utils::StringToInt(assign1));
+        if (assign2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+            return (!PKB::GetAffected(stmtNo1).empty());
+        }
+        else {
+            int stmtNo2(Utils::StringToInt(assign2));
+            return PKB::IsAffects(stmtNo1, stmtNo2);
+        }
+    }
 }
 
 bool QueryEvaluator::evaluateAffectsStar(Candidate assign1, Candidate assign2) {
-    int stmtNo1(Utils::StringToInt(assign1));
-    int stmtNo2(Utils::StringToInt(assign2));
-    // return PKB::IsAffectsTransitive(stmtNo1, stmtNo2);
-    return false;
+    if (assign1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+        if (assign2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+            return PKB::IsAffects();
+        }
+        else {
+            int stmtNo2(Utils::StringToInt(assign2));
+            return (!PKB::GetAffecting(stmtNo2).empty());
+        }
+    }
+    else {
+        int stmtNo1(Utils::StringToInt(assign1));
+        if (assign2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+            return (!PKB::GetAffected(stmtNo1).empty());
+        }
+        else {
+            int stmtNo2(Utils::StringToInt(assign2));
+            return PKB::IsAffectsTransitive(stmtNo1, stmtNo2);
+        }
+    }
 }
