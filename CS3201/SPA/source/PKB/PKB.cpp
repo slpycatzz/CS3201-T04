@@ -818,7 +818,7 @@ bool PKB::IsAffectsTransitive(StmtNumber affecting, StmtNumber affected) {
     return false;
 }
 
-vector<StmtNumber> PKB::GetAffecting(StmtNumber affecting) {
+vector<StmtNumber> PKB::GetAffected(StmtNumber affecting) {
     /* Validate if exceed matrix's range. */
     if (affecting > tableMaximumSize_ || affecting <= 0) {
         return vector<StmtNumber>();
@@ -859,7 +859,7 @@ vector<StmtNumber> PKB::GetAffecting(StmtNumber affecting) {
     return affectsTable_.getValues(affecting);
 }
 
-vector<StmtNumber> PKB::GetAffected(StmtNumber affected) {
+vector<StmtNumber> PKB::GetAffecting(StmtNumber affected) {
     /* Validate if exceed matrix's range. */
     if (affected > tableMaximumSize_ || affected <= 0) {
         return vector<StmtNumber>();
