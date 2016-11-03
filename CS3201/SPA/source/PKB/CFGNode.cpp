@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "CFGNode.h"
+#include "PKB/CFGNode.h"
 
 using std::string;
 using std::vector;

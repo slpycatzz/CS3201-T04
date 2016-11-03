@@ -6,9 +6,9 @@
 #include <utility>
 #include <vector>
 
-#include "CFGNode.h"
 #include "Constants.h"
 #include "Frontend/DesignExtractor.h"
+#include "PKB/CFGNode.h"
 #include "PKB/PKB.h"
 #include "Utils.h"
 

@@ -10,8 +10,8 @@
 
 #include "Constants.h"
 #include "Frontend/DesignExtractor.h"
+#include "PKB/CFGNode.h"
 #include "PKB/PKB.h"
-#include "CFGNode.h"
 
 using std::map;
 using std::queue;

@@ -23,6 +23,7 @@
     <ClInclude Include="include\Exceptions.h" />
     <ClInclude Include="include\Frontend\DesignExtractor.h" />
     <ClInclude Include="include\frontend\FrontendParser.h" />
+    <ClInclude Include="include\PKB\CFGNode.h" />
     <ClInclude Include="include\PKB\Matrix.h" />
     <ClInclude Include="include\PKB\Table.h" />
     <ClInclude Include="include\PKB\PKB.h" />
@@ -38,13 +39,13 @@
     <ClInclude Include="include\QueryProcessor\QueryUtils.h" />
     <ClInclude Include="include\QueryProcessor\RelationTable.h" />
     <ClInclude Include="include\QueryProcessor\TotalCombinationList.h" />
-    <ClInclude Include="include\CFGNode.h" />
     <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Constants.cpp" />
     <ClCompile Include="source\Frontend\DesignExtractor.cpp" />
     <ClCompile Include="source\frontend\FrontendParser.cpp" />
+    <ClCompile Include="source\PKB\CFGNode.cpp" />
     <ClCompile Include="source\PKB\PKB.cpp" />
     <ClCompile Include="source\QueryProcessor\Clause.cpp" />
     <ClCompile Include="source\QueryProcessor\QueryEvaluator.cpp" />
@@ -56,7 +57,6 @@
     <ClCompile Include="source\QueryProcessor\QueryUtils.cpp" />
     <ClCompile Include="source\QueryProcessor\RelationTable.cpp" />
     <ClCompile Include="source\QueryProcessor\TotalCombinationList.cpp" />
-    <ClCompile Include="source\CFGNode.cpp" />
     <ClCompile Include="source\Utils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -87,13 +87,13 @@
     <ClInclude Include="include\QueryProcessor\QueryProcessor.h">
       <Filter>Header Files\QueryProcessor</Filter>
     </ClInclude>
-    <ClInclude Include="include\CFGNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\PKB\Matrix.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
     <ClInclude Include="include\PKB\VectorTable.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PKB\CFGNode.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
   </ItemGroup>
@@ -143,8 +143,8 @@
     <ClCompile Include="source\QueryProcessor\QueryProcessor.cpp">
       <Filter>Source Files\QueryProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="source\CFGNode.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="source\PKB\CFGNode.cpp">
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

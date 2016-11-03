@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "Constants.h"
+#include "PKB/CFGNode.h"
 #include "PKB/Matrix.h"
 #include "PKB/Table.h"
 #include "PKB/TransitiveTable.h"
 #include "PKB/VectorTable.h"
-#include "CFGNode.h"
 #include "Utils.h"
 
 typedef std::string  Expression, SubExpression;
@@ -211,7 +211,7 @@ class PKB {
     static Table<ConstantIndex, ConstantValue> constantTable_;
     static Table<VariableIndex, VariableName> variableTable_;
     static Table<ProcedureIndex, ProcedureName> procedureTable_;
-    
+
     static VectorTable<StmtNumber, VariableIndex> controlVariableTable_;
     static VectorTable<StmtNumber, ProcedureIndex> callTable_;
     static VectorTable<StmtNumber, Symbol> stmtTable_;
