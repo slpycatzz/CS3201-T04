@@ -642,12 +642,30 @@ bool PKB::IsFollowsTransitive(StmtNumber follows, StmtNumber following) {
     return followsTransitiveMatrix_.isRowColumnToggled(follows, following);
 }
 
-vector<StmtNumber> PKB::GetFollows(StmtNumber following) {
-    return followsTable_.getKeys(following);
+StmtNumber PKB::GetFollows(StmtNumber following) {
+    if (followsTable_.hasValue(following)) {
+        vector<StmtNumber> followings = followsTable_.getKeys(following);
+
+        /* It is expected that a statement can only be followed by one statement. */
+        for (StmtNumber stmtNumber : followings) {
+            return stmtNumber;
+        }
+    }
+
+    return 0;
 }
 
-vector<StmtNumber> PKB::GetFollowing(StmtNumber follows) {
-    return followsTable_.getValues(follows);
+StmtNumber PKB::GetFollowing(StmtNumber follows) {
+    if (followsTable_.hasKey(follows)) {
+        vector<StmtNumber> followses = followsTable_.getValues(follows);
+
+        /* It is expected that a statement can only follow one statement. */
+        for (StmtNumber stmtNumber : followses) {
+            return stmtNumber;
+        }
+    }
+
+    return 0;
 }
 
 unsigned int PKB::GetNumberOfFollowsRelationship() {
@@ -942,6 +960,10 @@ unsigned int PKB::GetNumberOfCall() {
 
 unsigned int PKB::GetNumberOfContainerStmt() {
     return (numberOfWhile_ + numberOfIf_);
+}
+
+CFGNode* PKB::GetCFGNodeByStmtNumber(StmtNumber stmtNumber) {
+    return controlFlowGraphNodes_.at(stmtNumber);
 }
 
 void PKB::SetTableMaximumSize(unsigned int tableMaximumSize) {

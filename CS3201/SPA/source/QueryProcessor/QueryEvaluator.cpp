@@ -633,13 +633,13 @@ bool QueryEvaluator::evaluateFollows(Candidate stmt1, Candidate stmt2) {
 			return (PKB::GetNumberOfFollowsRelationship() > 0);
         } else {
             int stmtNo2(Utils::StringToInt(stmt2));
-            return (!PKB::GetFollows(stmtNo2).empty());
+            return (PKB::GetFollows(stmtNo2) > 0);
         }
     }
 	else {
         int stmtNo1(Utils::StringToInt(stmt1));
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
-            return (!PKB::GetFollowing(stmtNo1).empty());
+            return (PKB::GetFollowing(stmtNo1) > 0);
         }
 		else {
             int stmtNo2(Utils::StringToInt(stmt2));
@@ -655,13 +655,13 @@ bool QueryEvaluator::evaluateFollowsStar(Candidate stmt1, Candidate stmt2) {
         }
 		else {
             int stmtNo2(Utils::StringToInt(stmt2));
-            return (!PKB::GetFollows(stmtNo2).empty());
+            return (PKB::GetFollows(stmtNo2) > 0);
         }
     }
 	else {
         int stmtNo1(Utils::StringToInt(stmt1));
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
-            return (!PKB::GetFollowing(stmtNo1).empty());
+            return (PKB::GetFollowing(stmtNo1) > 0);
         }
 		else {
             int stmtNo2(Utils::StringToInt(stmt2));

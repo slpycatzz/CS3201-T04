@@ -133,8 +133,8 @@ class PKB {
     static void PopulateFollowsTransitive();
     static bool IsFollows(StmtNumber follows, StmtNumber following);
     static bool IsFollowsTransitive(StmtNumber follows, StmtNumber following);
-    static std::vector<StmtNumber> GetFollows(StmtNumber following);
-    static std::vector<StmtNumber> GetFollowing(StmtNumber follows);
+    static StmtNumber GetFollows(StmtNumber following);
+    static StmtNumber GetFollowing(StmtNumber follows);
     static unsigned int GetNumberOfFollowsRelationship();
     static void PrintFollowsTable();
 
@@ -161,6 +161,8 @@ class PKB {
     static unsigned int GetNumberOfIf();
     static unsigned int GetNumberOfCall();
     static unsigned int GetNumberOfContainerStmt();
+
+    static CFGNode* GetCFGNodeByStmtNumber(StmtNumber stmtNumber);
 
     static void SetTableMaximumSize(unsigned int tableMaximumSize);
     static void SetProcedureFirstAndLastStmtNumber(StmtNumber firstStmtNumber, StmtNumber lastStmtNumber);
