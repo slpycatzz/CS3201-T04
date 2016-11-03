@@ -91,6 +91,9 @@ class Matrix {
     inline void clear() {
         numberOfRelationship_ = 0;
 
+        rowPopulated_ = std::vector<unsigned char>();
+        matrix_ = std::vector<std::vector<unsigned char>>();
+
         rowPopulated_.resize(size_, 0);
         matrix_.resize(size_, std::vector<unsigned char>(size_, 0));
     }
