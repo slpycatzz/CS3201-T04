@@ -20,6 +20,8 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 
+bool PKB::isAffectsDone = false;
+
 unsigned int PKB::numberOfProcedure_ = 0;
 unsigned int PKB::numberOfAssign_    = 0;
 unsigned int PKB::numberOfWhile_     = 0;
@@ -825,9 +827,57 @@ bool PKB::IsAffectsTransitive(StmtNumber affecting, StmtNumber affected) {
                 return false;
             }
 
-            affectsMatrix_.setPopulated(affecting);
+            if (!isAffectsDone) {
+                for (auto &pair : controlFlowGraphNodes_) {
+                    GetAffecting(pair.first);
+                }
 
-            DesignExtractor::getInstance().computeAffectsTransitive(node, affectsTransitiveMatrix_);
+                isAffectsDone = true;
+            }
+
+            affectsTransitiveMatrix_.setPopulated(affecting);
+
+            vector<StmtNumber> keys = affectsTable_.getKeys();
+
+            if (keys.empty()) {
+                return false;
+            }
+
+            vector<CFGNode*> visitedNodes;
+
+            /* Perform DFS on the table to get transitive table. */
+            for (const auto &key : keys) {
+                
+                queue<StmtNumber> queue_;
+                queue_.push(key);
+
+                while (!queue_.empty()) {
+                    std::vector<StmtNumber> values = affectsTable_.getValues(queue_.front());
+
+                    queue_.pop();
+
+                    /* End of the transitive closure for the key. */
+                    if (values.empty()) {
+                        continue;
+                    }
+
+                    for (const auto &value : values) {
+                        CFGNode* node = PKB::GetCFGNodeByStmtNumber(value);
+
+                        if (!node->isVisited()) {
+                            node->setVisited(true);
+                            visitedNodes.push_back(node);
+                            
+                            queue_.push(value);
+                            affectsTransitiveMatrix_.toggleRowColumn(affecting, value);
+                        }
+                    }
+                }
+            }
+
+            for (CFGNode* node : visitedNodes) {
+                node->setVisited(false);
+            }
 
             return affectsTransitiveMatrix_.isRowColumnToggled(affecting, affected);
         }
@@ -989,6 +1039,8 @@ void PKB::SetProcedureFirstAndLastStmtNumber(StmtNumber firstStmtNumber, StmtNum
 void PKB::Clear() {
     DesignExtractor::getInstance().resetInstance();
 
+    isAffectsDone = false;
+
     numberOfProcedure_ = 0;
     numberOfAssign_ = 0;
     numberOfWhile_ = 0;
@@ -1048,6 +1100,8 @@ void PKB::Clear() {
 }
 
 void PKB::ClearComputeOnDemands() {
+    isAffectsDone = false;
+    
     nextTransitiveMatrix_.clear();
 
     affectsMatrix_.clear();

@@ -20,6 +20,7 @@ class DesignExtractor {
     void setProcedureData(ProcedureName procedureName, StmtNumber firstStmtNumber, StmtNumber lastStmtNumber);
     void setStmtListData(Symbol stmtSymbol, StmtNumber stmtNumber);
     void setContainerStmtData(Symbol stmtSymbol, StmtNumber stmtNumber, VariableName controlVariableName);
+    void setWhileStmtData(StmtNumber stmtNumber, StmtNumber whileNextStmtNumber);
     void setIfStmtData(StmtNumber stmtNumber, StmtNumber thenLastStmtNumber, StmtNumber elseFirstStmtNumber);
     void setCallStmtData(StmtNumber stmtNumber, ProcedureName currentProcedureName, ProcedureName procedureName);
     void setAssignStmtData(Symbol stmtSymbol, StmtNumber stmtNumber, VariableName variable);
@@ -30,10 +31,6 @@ class DesignExtractor {
     void computeAffects(CFGNode* assignNode, Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable);
     bool computeAffecting(CFGNode* assignNode, VariableIndex use,
         Matrix &affectsMatrix, VectorTable<StmtNumber, StmtNumber> &affectsTable);
-
-    bool computeAffectsTransitive(CFGNode* assignNode, Matrix &affectsTransitiveMatrix);
-    std::unordered_set<VariableIndex> computeAffectsTransitiveIf(CFGNode* assignNode, CFGNode* node,
-        Matrix &affectsTransitiveMatrix, std::unordered_set<VariableIndex> modifies, unsigned int stmtLevel);
 
  private:
     void populateGenericTables();
@@ -57,6 +54,7 @@ class DesignExtractor {
 
     /* PKB tables helper variables. */
     std::map<StmtNumber, unsigned int> stmtsLevels_;
+    std::map<StmtNumber, StmtNumber> whileNextStmt_;
     std::map<StmtNumber, StmtNumber> thenLastStmt_;
     std::map<StmtNumber, StmtNumber> elseFirstStmt_;
     std::map<StmtNumber, ProcedureName> proceduresLastStmt_;

@@ -12,6 +12,7 @@ CFGNode::CFGNode(Symbol symbol) {
     symbol_ = symbol;
     stmtNumber_ = 0;
     stmtLevel_ = 0;
+    whileNext_ = 0;
     visited_ = false;
     modify_ = 0;
 }
@@ -20,6 +21,7 @@ CFGNode::CFGNode(unsigned int stmtNumber) {
     symbol_ = INVALID;
     stmtNumber_ = stmtNumber;
     stmtLevel_ = 0;
+    whileNext_ = 0;
     visited_ = false;
     modify_ = 0;
 }
@@ -28,6 +30,7 @@ CFGNode::CFGNode(Symbol symbol, unsigned int stmtNumber) {
     symbol_ = symbol;
     stmtNumber_ = stmtNumber;
     stmtLevel_ = 0;
+    whileNext_ = 0;
     visited_ = false;
     modify_ = 0;
 }
@@ -36,6 +39,7 @@ CFGNode::CFGNode(Symbol symbol, unsigned int stmtNumber, unsigned int stmtLevel)
     symbol_ = symbol;
     stmtNumber_ = stmtNumber;
     stmtLevel_ = stmtLevel;
+    whileNext_ = 0;
     visited_ = false;
     modify_ = 0;
 }
@@ -64,6 +68,14 @@ void CFGNode::setStmtLevel(unsigned int stmtLevel) {
 
 unsigned int CFGNode::getStmtLevel() {
     return stmtLevel_;
+}
+
+void CFGNode::setWhileNext(unsigned int whileNext) {
+    whileNext_ = whileNext;
+}
+
+unsigned int CFGNode::getWhileNext() {
+    return whileNext_;
 }
 
 void CFGNode::setVisited(bool visited) {

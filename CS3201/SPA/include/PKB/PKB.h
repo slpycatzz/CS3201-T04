@@ -197,6 +197,8 @@ class PKB {
  private:
     static bool ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo);
 
+    static bool isAffectsDone;
+
     static unsigned int numberOfProcedure_;
     static unsigned int numberOfAssign_;
     static unsigned int numberOfWhile_;

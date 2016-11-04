@@ -22,6 +22,9 @@ class CFGNode {
     void setStmtLevel(unsigned int stmtLevel);
     unsigned int getStmtLevel();
 
+    void setWhileNext(unsigned int whileNext);
+    unsigned int getWhileNext();
+
     void setVisited(bool visited);
     bool isVisited();
 
@@ -48,6 +51,7 @@ class CFGNode {
     Symbol symbol_;
     unsigned int stmtNumber_;
     unsigned int stmtLevel_;
+    unsigned int whileNext_;
     bool visited_;
 
     std::vector<CFGNode*> children_;

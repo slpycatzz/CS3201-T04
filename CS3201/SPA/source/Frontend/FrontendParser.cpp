@@ -216,6 +216,7 @@ void FrontendParser::callWhileRecognizer() {
     callStmtListRecognizer(WHILE);
 
     designExtractor.setContainerStmtData(WHILE, stmtNumber, controlVariableName);
+    designExtractor.setWhileStmtData(stmtNumber, stmtNumber_);
 }
 
 void FrontendParser::callIfRecognizer() {
