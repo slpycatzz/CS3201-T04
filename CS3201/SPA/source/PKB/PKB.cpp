@@ -744,6 +744,10 @@ void PKB::PrintNextTable() {
 /* START - Affects table functions */
 
 bool PKB::IsAffects() {
+    if (isAffectsDone) {
+        return true;
+    }
+    
     /* If nothing is affecting yet, try all those not populated ones. */
     for (auto &pair : controlFlowGraphNodes_) {
         if (affectsTable_.getNumberOfRelationship() > 0) {
@@ -770,7 +774,7 @@ bool PKB::IsAffects(StmtNumber affecting, StmtNumber affected) {
                 return false;
             }
 
-            if (affectsMatrix_.isRowPopulated(affecting)) {
+            if (affectsMatrix_.isRowPopulated(affecting) || isAffectsDone) {
                 return affectsMatrix_.isRowColumnToggled(affecting, affected);
             }
 
@@ -897,7 +901,7 @@ vector<StmtNumber> PKB::GetAffected(StmtNumber affecting) {
         return vector<StmtNumber>();
     }
 
-    if (affectsMatrix_.isRowPopulated(affecting)) {
+    if (affectsMatrix_.isRowPopulated(affecting) || isAffectsDone) {
         return affectsTable_.getValues(affecting);
     }
 
@@ -939,7 +943,7 @@ vector<StmtNumber> PKB::GetAffecting(StmtNumber affected) {
     }
 
     /* If already computed. */
-    if (affectsTable_.hasValue(affected)) {
+    if (affectsTable_.hasValue(affected) || isAffectsDone) {
         return affectsTable_.getKeys(affected);
     }
 
