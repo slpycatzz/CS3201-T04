@@ -833,7 +833,7 @@ bool PKB::IsAffectsTransitive(StmtNumber affecting, StmtNumber affected) {
 
             if (!isAffectsDone) {
                 for (auto &pair : controlFlowGraphNodes_) {
-                    GetAffecting(pair.first);
+                    GetAffected(pair.first);
                 }
 
                 isAffectsDone = true;
@@ -841,22 +841,18 @@ bool PKB::IsAffectsTransitive(StmtNumber affecting, StmtNumber affected) {
 
             affectsTransitiveMatrix_.setPopulated(affecting);
 
-            vector<StmtNumber> keys = affectsTable_.getKeys();
+            vector<StmtNumber> rowValues = affectsTable_.getValues(affecting);
 
-            if (keys.empty()) {
-                return false;
-            }
+            for (StmtNumber rowValue : rowValues) {
+                affectsTransitiveMatrix_.toggleRowColumn(affecting, rowValue);
 
-            vector<CFGNode*> visitedNodes;
+                vector<CFGNode*> visitedNodes;
 
-            /* Perform DFS on the table to get transitive table. */
-            for (const auto &key : keys) {
-                
                 queue<StmtNumber> queue_;
-                queue_.push(key);
+                queue_.push(rowValue);
 
                 while (!queue_.empty()) {
-                    std::vector<StmtNumber> values = affectsTable_.getValues(queue_.front());
+                    vector<StmtNumber> values = affectsTable_.getValues(queue_.front());
 
                     queue_.pop();
 
@@ -871,16 +867,16 @@ bool PKB::IsAffectsTransitive(StmtNumber affecting, StmtNumber affected) {
                         if (!node->isVisited()) {
                             node->setVisited(true);
                             visitedNodes.push_back(node);
-                            
+
                             queue_.push(value);
                             affectsTransitiveMatrix_.toggleRowColumn(affecting, value);
                         }
                     }
                 }
-            }
 
-            for (CFGNode* node : visitedNodes) {
-                node->setVisited(false);
+                for (CFGNode* node : visitedNodes) {
+                    node->setVisited(false);
+                }
             }
 
             return affectsTransitiveMatrix_.isRowColumnToggled(affecting, affected);
