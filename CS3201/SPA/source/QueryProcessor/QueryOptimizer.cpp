@@ -350,6 +350,8 @@ std::pair<vector<string>, vector<Clause>> QueryOptimizer::sortGroup(vector<Claus
             }
         }
 
+        bool replacedSynonym = false;
+
         if (!isSelected) {
             //Check if stmt/prog_line type
             if (queryTree.getVarMap().find(synonym)->second == STMT || queryTree.getVarMap().find(synonym)->second == PROGRAM_LINE) {
@@ -364,7 +366,8 @@ std::pair<vector<string>, vector<Clause>> QueryOptimizer::sortGroup(vector<Claus
                 }
 
                 if (count == 1) {
-                    evaluatedSynonyms.erase(it);
+                    replacedSynonym = true;
+                    it = evaluatedSynonyms.erase(it);
 
                     //Find synonym and replace with underscore
                     for (vector<Clause>::iterator iter = sortedGroup.begin(); iter != sortedGroup.end(); iter++) {
@@ -393,12 +396,12 @@ std::pair<vector<string>, vector<Clause>> QueryOptimizer::sortGroup(vector<Claus
                         }
                     }
                 }
-                else {
-                    ++it;
-                }
             }
         }
-        ++it;
+
+        if (!replacedSynonym) {
+            ++it;
+        }
     }
     
     //Remove duplicate clauses
