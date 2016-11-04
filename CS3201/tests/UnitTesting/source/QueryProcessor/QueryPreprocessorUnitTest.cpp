@@ -19,13 +19,12 @@ using std::vector;
 namespace UnitTesting {
     TEST_CLASS(QueryPreprocessorUnitTest) {
      public:
-
         TEST_METHOD(QueryPreprocessor_aSelect) {
             string expected, actual, query;
             QueryPreprocessor qp;
             QueryTree qt;
 
-            query = "assign a,a1; while w1,w2;call c;Select c.procName";
+            query = "assign a,a1; while w1,w2,w#,w2w#;call c;Select <a,w# , w#.stmt#>";
             try {
                 qp.preprocessQuery(query);
             } catch (std::exception& ex) {
@@ -35,7 +34,7 @@ namespace UnitTesting {
             vector<string> varList;
 
             varList = qt.getResults();
-            expected = "c ";
+            expected = "a w# w# ";
             for (unsigned int i = 0; i < varList.size(); i++) {
                 actual += varList[i] + " ";
             }
@@ -1026,7 +1025,7 @@ namespace UnitTesting {
                     if (actual.size() > querySyntaxErrorMsg.size()) {
                         actual = actual.substr(0, querySyntaxErrorMsg.size());
                     }
-                    Assert::AreEqual(queryNo + querySyntaxErrorMsg, queryNo + actual);                
+                    Assert::AreEqual(queryNo + querySyntaxErrorMsg, queryNo + actual);
                     continue;
                 }
             }
