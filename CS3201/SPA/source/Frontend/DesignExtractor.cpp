@@ -702,10 +702,10 @@ bool DesignExtractor::computeAffectsTransitive(CFGNode* assignNode, Matrix &affe
 
                 /* Settle the children of if statement in another function. */
                 unordered_set<VariableIndex> thenModifies = computeAffectsTransitiveIf(assignNode,
-                    ifChildren[0], affectsTransitiveMatrix, modifies_, followingStmtNumber);
+                    ifChildren[0], affectsTransitiveMatrix, modifies_, currentNode->getStmtLevel());
 
                 unordered_set<VariableIndex> elseModifies = computeAffectsTransitiveIf(assignNode,
-                    ifChildren[1], affectsTransitiveMatrix, modifies_, followingStmtNumber);
+                    ifChildren[1], affectsTransitiveMatrix, modifies_, currentNode->getStmtLevel());
 
                 modifies_.insert(thenModifies.begin(), thenModifies.end());
                 modifies_.insert(elseModifies.begin(), elseModifies.end());
@@ -757,7 +757,7 @@ bool DesignExtractor::computeAffectsTransitive(CFGNode* assignNode, Matrix &affe
 }
 
 unordered_set<VariableIndex> DesignExtractor::computeAffectsTransitiveIf(CFGNode* assignNode, CFGNode* node,
-    Matrix &affectsTransitiveMatrix, unordered_set<VariableIndex> modifies, StmtNumber terminator) {
+    Matrix &affectsTransitiveMatrix, unordered_set<VariableIndex> modifies, unsigned int stmtLevel) {
 
     vector<CFGNode*> visitedNodes;
     queue<CFGNode*> queue;
@@ -772,17 +772,14 @@ unordered_set<VariableIndex> DesignExtractor::computeAffectsTransitiveIf(CFGNode
         CFGNode* currentNode = queue.front();
         queue.pop();
 
-        StmtNumber currentStmtNumber = currentNode->getStmtNumber();
-
-        if (currentNode->getStmtLevel() == 1) {
-            if (currentStmtNumber == terminator) {
-                break;
-            }
+        if (currentNode->getStmtLevel() == stmtLevel - 1) {
+            break;
         }
 
         currentNode->setVisited(true);
         visitedNodes.push_back(currentNode);
 
+        StmtNumber currentStmtNumber = currentNode->getStmtNumber();
         Symbol currentSymbol = currentNode->getSymbol();
         vector<unsigned int> currentModifies = currentNode->getModifies();
         vector<unsigned int> currentUses = currentNode->getUses();
@@ -802,10 +799,10 @@ unordered_set<VariableIndex> DesignExtractor::computeAffectsTransitiveIf(CFGNode
 
                 /* Settle the children of if statement in another function. */
                 unordered_set<VariableIndex> thenModifies = computeAffectsTransitiveIf(assignNode,
-                    ifChildren[0], affectsTransitiveMatrix, modifies_, followingStmtNumber);
+                    ifChildren[0], affectsTransitiveMatrix, modifies_, currentNode->getStmtLevel());
 
                 unordered_set<VariableIndex> elseModifies = computeAffectsTransitiveIf(assignNode,
-                    ifChildren[1], affectsTransitiveMatrix, modifies_, followingStmtNumber);
+                    ifChildren[1], affectsTransitiveMatrix, modifies_, currentNode->getStmtLevel());
 
                 modifies_.insert(thenModifies.begin(), thenModifies.end());
                 modifies_.insert(elseModifies.begin(), elseModifies.end());
@@ -819,8 +816,8 @@ unordered_set<VariableIndex> DesignExtractor::computeAffectsTransitiveIf(CFGNode
             }
             case ASSIGN:
                 for (VariableIndex variableIndex : currentUses) {
-                    if (modifies.find(variableIndex) != modifies.end()) {
-                        modifies.insert(currentNode->getModify());
+                    if (modifies_.find(variableIndex) != modifies_.end()) {
+                        modifies_.insert(currentNode->getModify());
                         affectsTransitiveMatrix.toggleRowColumn(stmtNumber, currentStmtNumber);
 
                         isUsesAndModifies = (std::find(currentUses.begin(), currentUses.end(), modify) != currentUses.end());

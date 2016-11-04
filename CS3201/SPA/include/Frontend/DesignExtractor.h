@@ -33,7 +33,7 @@ class DesignExtractor {
 
     bool computeAffectsTransitive(CFGNode* assignNode, Matrix &affectsTransitiveMatrix);
     std::unordered_set<VariableIndex> computeAffectsTransitiveIf(CFGNode* assignNode, CFGNode* node,
-        Matrix &affectsTransitiveMatrix, std::unordered_set<VariableIndex> modifies, StmtNumber terminator);
+        Matrix &affectsTransitiveMatrix, std::unordered_set<VariableIndex> modifies, unsigned int stmtLevel);
 
  private:
     void populateGenericTables();
