@@ -53,8 +53,8 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
         variableNames[i] = Utils::TrimSpaces(variableNames[i]);
 
         /* Validate if variable name follows naming convention. */
-        if (!Utils::IsValidNamingConvention(variableNames[i])) {
-            throw QuerySyntaxErrorException("3");
+        if (!isValidVarName(variableNames[i])) {
+            throw QuerySyntaxErrorException("3"+ variableNames[i]);
         }
 
         /* Validate if variable name has already been declared. */
@@ -690,12 +690,16 @@ bool QueryPreprocessor::isValidVarName(string varName) {
         return false;
     }
 
-    /* varName cannot be a token */
+    /* varName cannot be a token or BOOLEAN(also a token) */
     if (Constants::StringToSymbol(varName) != INVALID) {
         return false;
     }
 
-    const std::regex regex_pattern("^[a-zA-Z][a-zA-Z0-9_]*$");
+    if (Constants::StringToSymbol(varName) == BOOLEAN) {
+        return false;
+    }
+
+    const std::regex regex_pattern("^[a-zA-Z][a-zA-Z0-9_#]*$");
     return std::regex_match(varName, regex_pattern);
 }
 
