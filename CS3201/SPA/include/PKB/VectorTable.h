@@ -1,5 +1,6 @@
 #pragma once
 
+#include <exception>
 #include <iostream>
 #include <set>
 #include <vector>
@@ -38,11 +39,11 @@ class VectorTable {
 
     inline std::vector<K> getKeys(V value) {
         /* If does not exist, return empty set. */
-        if (!hasValue(value)) {
+        try {
+            return valueToKeysMap.at(value);
+        } catch (std::exception &ex) {
             return std::vector<K>();
         }
-
-        return valueToKeysMap.at(value);
     }
 
     inline std::vector<V> getValues() {
@@ -56,11 +57,11 @@ class VectorTable {
 
     inline std::vector<V> getValues(K key) {
         /* If does not exist, return empty set. */
-        if (!hasKey(key)) {
+        try {
+            return keyToValuesMap.at(key);
+        } catch (std::exception &ex) {
             return std::vector<V>();
         }
-
-        return keyToValuesMap.at(key);
     }
 
     inline unsigned int getNumberOfRelationship() {
