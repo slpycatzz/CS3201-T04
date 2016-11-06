@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <exception>
 #include <iostream>
 #include <map>
 #include <queue>
@@ -88,15 +89,27 @@ void PKB::InsertConstantValue(ConstantIndex constantIndex, ConstantValue constan
 }
 
 ConstantIndex PKB::GetConstantIndex(ConstantValue constantValue) {
-    return (constantTable_.hasValue(constantValue)) ? constantTable_.getKey(constantValue) : 0;
+    try {
+        return constantTable_.getKey(constantValue);
+    } catch (std::exception &ex) {
+        return 0;
+    }
 }
 
 ConstantValue PKB::GetConstantValue(ConstantIndex constantIndex) {
-    return (constantTable_.hasKey(constantIndex)) ? constantTable_.getValue(constantIndex) : "";
+    try {
+        return constantTable_.getValue(constantIndex);
+    } catch (std::exception &ex) {
+        return "";
+    }
 }
 
 vector<ConstantValue> PKB::GetAllConstantValues() {
     return constantTable_.getValues();
+}
+
+vector<ConstantIndex> PKB::GetAllConstantIndexes() {
+    return constantTable_.getKeys();
 }
 
 void PKB::PrintConstantTable() {
@@ -113,15 +126,27 @@ void PKB::InsertVariableName(VariableIndex variableIndex, VariableName variableN
 }
 
 VariableIndex PKB::GetVariableIndex(VariableName variableName) {
-    return (variableTable_.hasValue(variableName)) ? variableTable_.getKey(variableName) : 0;
+    try {
+        return variableTable_.getKey(variableName);
+    } catch (std::exception &ex) {
+        return 0;
+    }
 }
 
 VariableName PKB::GetVariableName(VariableIndex variableIndex) {
-    return (variableTable_.hasKey(variableIndex)) ? variableTable_.getValue(variableIndex) : "";
+    try {
+        return variableTable_.getValue(variableIndex);
+    } catch (std::exception &ex) {
+        return "";
+    }
 }
 
 vector<VariableName> PKB::GetAllVariableNames() {
     return variableTable_.getValues();
+}
+
+vector<VariableIndex> PKB::GetAllVariableIndexes() {
+    return variableTable_.getKeys();
 }
 
 void PKB::PrintVariableTable() {
@@ -139,11 +164,19 @@ void PKB::InsertProcedureName(ProcedureIndex procedureIndex, ProcedureName proce
 }
 
 ProcedureIndex PKB::GetProcedureIndex(ProcedureName procedureName) {
-    return (procedureTable_.hasValue(procedureName)) ? procedureTable_.getKey(procedureName) : 0;
+    try {
+        return procedureTable_.getKey(procedureName);
+    } catch (std::exception &ex) {
+        return 0;
+    }
 }
 
 ProcedureName PKB::GetProcedureName(ProcedureIndex procedureIndex) {
-    return (procedureTable_.hasKey(procedureIndex)) ? procedureTable_.getValue(procedureIndex) : "";
+    try {
+        return procedureTable_.getValue(procedureIndex);
+    } catch (std::exception &ex) {
+        return "";
+    }
 }
 
 vector<ProcedureName> PKB::GetAllProcedureNames() {
@@ -170,20 +203,14 @@ bool PKB::HasControlVariableIndexAtStmtNumber(StmtNumber stmtNumber, VariableInd
 }
 
 VariableIndex PKB::GetControlVariableIndex(StmtNumber stmtNumber) {
-    if (controlVariableTable_.hasKey(stmtNumber)) {
-        vector<VariableIndex> variableIndexes = controlVariableTable_.getValues(stmtNumber);
+    vector<VariableIndex> variableIndexes = controlVariableTable_.getValues(stmtNumber);
 
-        /* It is expected that one statement has only one control variable. */
-        for (VariableIndex variableIndex : variableIndexes) {
-            return variableIndex;
-        }
+    /* It is expected that one statement has only one control variable. */
+    for (VariableIndex variableIndex : variableIndexes) {
+        return variableIndex;
     }
 
     return 0;
-}
-
-vector<VariableIndex> PKB::GetAllControlVariableIndexes() {
-    return controlVariableTable_.getValues();
 }
 
 void PKB::PrintControlVariableTable() {
@@ -198,13 +225,11 @@ void PKB::InsertCallStmt(StmtNumber stmtNumber, ProcedureIndex procedureIndex) {
 }
 
 ProcedureIndex PKB::GetCallStmtProcedureIndex(StmtNumber stmtNumber) {
-    if (callTable_.hasKey(stmtNumber)) {
-        vector<ProcedureIndex> procedureIndexes = callTable_.getValues(stmtNumber);
+    vector<ProcedureIndex> procedureIndexes = callTable_.getValues(stmtNumber);
 
-        /* It is expected that one call statement calls only one procedure. */
-        for (ProcedureIndex procedureIndex : procedureIndexes) {
-            return procedureIndex;
-        }
+    /* It is expected that one call statement calls only one procedure. */
+    for (ProcedureIndex procedureIndex : procedureIndexes) {
+        return procedureIndex;
     }
 
     return 0;
@@ -243,13 +268,11 @@ void PKB::InsertStmt(StmtNumber stmtNumber, Symbol stmtSymbol) {
 }
 
 Symbol PKB::GetStmtSymbol(StmtNumber stmtNumber) {
-    if (stmtTable_.hasKey(stmtNumber)) {
-        vector<Symbol> symbols = stmtTable_.getValues(stmtNumber);
+    vector<Symbol> symbols = stmtTable_.getValues(stmtNumber);
 
-        /* It is expected that a statement can only be represented by one symbol. */
-        for (Symbol symbol : symbols) {
-            return symbol;
-        }
+    /* It is expected that a statement can only be represented by one symbol. */
+    for (Symbol symbol : symbols) {
+        return symbol;
     }
 
     return INVALID;
@@ -314,7 +337,11 @@ void PKB::PopulatePriorityTable() {
 }
 
 Priority PKB::GetPriority(Symbol designAbstractionSymbol) {
-    return (priorityTable_.hasValue(designAbstractionSymbol)) ? priorityTable_.getKey(designAbstractionSymbol) : 0;
+    try {
+        return priorityTable_.getKey(designAbstractionSymbol);
+    } catch (std::exception &ex) {
+        return 0;
+    }
 }
 
 void PKB::PrintPriorityTable() {

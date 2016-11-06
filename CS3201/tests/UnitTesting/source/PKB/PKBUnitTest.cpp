@@ -92,10 +92,6 @@ namespace UnitTesting {
             Assert::AreEqual(PKB::GetControlVariableIndex(11), static_cast<unsigned int>(2));
             Assert::AreEqual(PKB::GetControlVariableIndex(12), static_cast<unsigned int>(6));
             Assert::AreEqual(PKB::GetControlVariableIndex(1), static_cast<unsigned int>(0));
-
-            vector<unsigned int> controlVariableIndexes = { 1, 2, 6 };
-
-            Assert::IsTrue(controlVariableIndexes == PKB::GetAllControlVariableIndexes());
         }
 
         TEST_METHOD(PKB_CallTable) {

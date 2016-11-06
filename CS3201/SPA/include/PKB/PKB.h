@@ -28,12 +28,14 @@ class PKB {
     static ConstantIndex GetConstantIndex(ConstantValue constantValue);
     static ConstantValue GetConstantValue(ConstantIndex constantIndex);
     static std::vector<ConstantValue> GetAllConstantValues();
+    static std::vector<ConstantIndex> GetAllConstantIndexes();
     static void PrintConstantTable();
 
     static void InsertVariableName(VariableIndex variableIndex, VariableName variableName);
     static VariableIndex GetVariableIndex(VariableName variableName);
     static VariableName GetVariableName(VariableIndex variableIndex);
     static std::vector<VariableName> GetAllVariableNames();
+    static std::vector<VariableIndex> GetAllVariableIndexes();
     static void PrintVariableTable();
 
     static void InsertProcedureName(ProcedureIndex procedureIndex, ProcedureName procedureName);
@@ -46,7 +48,6 @@ class PKB {
     static void InsertControlVariable(StmtNumber stmtNumber, VariableIndex variableIndex);
     static bool HasControlVariableIndexAtStmtNumber(StmtNumber stmtNumber, VariableIndex variableIndex);
     static VariableIndex GetControlVariableIndex(StmtNumber stmtNumber);
-    static std::vector<VariableIndex> GetAllControlVariableIndexes();
     static void PrintControlVariableTable();
 
     static void InsertCallStmt(StmtNumber stmtNumber, ProcedureIndex procedureIndex);
