@@ -80,7 +80,7 @@ bool QueryPreprocessor::processQuery(string query) {
 
     /* parse [Select] ... */
     parseSelect();
-
+    
     if (cur >= queryList.size()) {
         return true;
     }
@@ -123,13 +123,19 @@ void QueryPreprocessor::parseSelect() {
     expect("Select");
     if (accept('<')) {
         while (accept('>') == 0) {
-            if (accept(VARIABLE)) {
+            if (accept(SYMBOL_BOOLEAN)) {
+                throw QuerySyntaxErrorException("001");
+            } else if (accept(VARIABLE)) {
                 string var1;
                 temp = getVar();
+                // Select <"a",noSuchVarDecl> are invalid
+                if (getVarType(temp) == INVALID) {
+                    throw QuerySyntaxErrorException("002");
+                }
                 var.push_back(temp);
                 varAttrMap[temp] = false;
                 queryList[cur] = peek().substr(getVar().size());
-
+                
                 if (accept('.')) {
                     string varAttribute1;
                     varAttribute1 = getVar();
@@ -149,8 +155,18 @@ void QueryPreprocessor::parseSelect() {
             accept(',');
         }
     } else {
-        if (accept(VARIABLE)) {
+        if (peek() == SYMBOL_BOOLEAN) {
+            queryList[cur] = peek().substr(7);
+            var.push_back(SYMBOL_BOOLEAN);
+            varSymbolMap[SYMBOL_BOOLEAN] = BOOLEAN;
+            // qt.insertBooleanDeclaration();
+            varAttrMap[SYMBOL_BOOLEAN] = false;
+        } else if (accept(VARIABLE)) {
             temp = getVar();
+            // Select <"a",noSuchVarDecl> are invalid
+            if (getVarType(temp) == INVALID) {
+                throw QuerySyntaxErrorException("002");
+            }
             var.push_back(temp);
             varAttrMap[temp] = false;
             queryList[cur] = peek().substr(getVar().size());
@@ -169,11 +185,6 @@ void QueryPreprocessor::parseSelect() {
                     throw QuerySyntaxErrorException("21b");
                 }
             }
-        } else if (accept(SYMBOL_BOOLEAN)) {
-            var.push_back(SYMBOL_BOOLEAN);
-            varSymbolMap[SYMBOL_BOOLEAN] = BOOLEAN;
-            // qt.insertBooleanDeclaration();
-            varAttrMap[SYMBOL_BOOLEAN] = false;
         } else {
             throw QuerySyntaxErrorException("6" + peek());
         }
@@ -690,14 +701,10 @@ bool QueryPreprocessor::isValidVarName(string varName) {
         return false;
     }
 
-    /* varName cannot be a token or BOOLEAN(also a token) */
-    if (Constants::StringToSymbol(varName) != INVALID) {
-        return false;
-    }
-
-    if (Constants::StringToSymbol(varName) == BOOLEAN) {
-        return false;
-    }
+    // varName may be token(e.g. assign assign; if if;) and BOOLEAN
+    // if (Constants::StringToSymbol(varName) != INVALID) {
+    //    return false;
+    //}
 
     const std::regex regex_pattern("^[a-zA-Z][a-zA-Z0-9_#]*$");
     return std::regex_match(varName, regex_pattern);
