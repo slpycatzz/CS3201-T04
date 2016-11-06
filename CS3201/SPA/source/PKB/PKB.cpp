@@ -610,8 +610,15 @@ bool PKB::IsParentTransitive(StmtNumber parent, StmtNumber child) {
     return parentTransitiveMatrix_.isRowColumnToggled(parent, child);
 }
 
-vector<StmtNumber> PKB::GetParent(StmtNumber child) {
-    return parentTable_.getKeys(child);
+StmtNumber PKB::GetParent(StmtNumber child) {
+    vector<StmtNumber> parents = parentTable_.getKeys(child);
+
+    /* It is expected that a child statement can only have one parent statement. */
+    for (StmtNumber stmtNumber : parents) {
+        return stmtNumber;
+    }
+
+    return 0;
 }
 
 vector<StmtNumber> PKB::GetChildren(StmtNumber parent) {
@@ -672,26 +679,22 @@ bool PKB::IsFollowsTransitive(StmtNumber follows, StmtNumber following) {
 }
 
 StmtNumber PKB::GetFollows(StmtNumber following) {
-    if (followsTable_.hasValue(following)) {
-        vector<StmtNumber> followings = followsTable_.getKeys(following);
+    vector<StmtNumber> followings = followsTable_.getKeys(following);
 
-        /* It is expected that a statement can only be followed by one statement. */
-        for (StmtNumber stmtNumber : followings) {
-            return stmtNumber;
-        }
+    /* It is expected that a statement can only be followed by one statement. */
+    for (StmtNumber stmtNumber : followings) {
+        return stmtNumber;
     }
 
     return 0;
 }
 
 StmtNumber PKB::GetFollowing(StmtNumber follows) {
-    if (followsTable_.hasKey(follows)) {
-        vector<StmtNumber> followses = followsTable_.getValues(follows);
+    vector<StmtNumber> followses = followsTable_.getValues(follows);
 
-        /* It is expected that a statement can only follow one statement. */
-        for (StmtNumber stmtNumber : followses) {
-            return stmtNumber;
-        }
+    /* It is expected that a statement can only follow one statement. */
+    for (StmtNumber stmtNumber : followses) {
+        return stmtNumber;
     }
 
     return 0;

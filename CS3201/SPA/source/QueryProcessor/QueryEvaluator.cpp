@@ -612,7 +612,7 @@ bool QueryEvaluator::evaluateParentStar(Candidate stmt1, Candidate stmt2) {
             return (PKB::GetNumberOfContainerStmt() > 0);
         } else {
             int stmtNo2(Utils::StringToInt(stmt2));
-            return (!PKB::GetParent(stmtNo2).empty());
+            return (PKB::GetParent(stmtNo2) > 0);
         }
     }
 	else {

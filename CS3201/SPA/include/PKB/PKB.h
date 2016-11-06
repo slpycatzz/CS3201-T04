@@ -122,7 +122,7 @@ class PKB {
     static void PopulateParentTransitive();
     static bool IsParent(StmtNumber parent, StmtNumber child);
     static bool IsParentTransitive(StmtNumber parent, StmtNumber child);
-    static std::vector<StmtNumber> GetParent(StmtNumber child);
+    static StmtNumber GetParent(StmtNumber child);
     static std::vector<StmtNumber> GetChildren(StmtNumber parent);
     static std::vector<StmtNumber> GetParentsTransitive(StmtNumber child);
     static std::vector<StmtNumber> GetChildrenTransitive(StmtNumber parent);
