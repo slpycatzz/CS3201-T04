@@ -51,7 +51,7 @@ namespace UnitTesting {
 
             projector.projectResult(results, varAttrMap, resultList);
 
-            expected = "TRUE";
+            expected = "true";
 
             for (string s : results) {
                 actual += s + ", ";
@@ -72,7 +72,7 @@ namespace UnitTesting {
 
             projector.projectResult(results, varAttrMap, resultList);
 
-            expected = "FALSE";
+            expected = "false";
 
             for (string s : results) {
                 actual += s + ", ";
