@@ -491,7 +491,8 @@ namespace UnitTesting {
                     qp.preprocessQuery(query);
                 } catch (std::exception& ex) {
                     actual = ex.what();
-                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    int len = querySyntaxErrorMsg.size();
+                    Assert::AreEqual(expectedList[i].substr(0, len) + " at:" + Utils::IntToString(i), actual.substr(0, len) + " at:" + Utils::IntToString(i));
                     i++;
                     continue;
                 }
@@ -546,7 +547,8 @@ namespace UnitTesting {
                     qp.preprocessQuery(query);
                 } catch (std::exception& ex) {
                     actual = ex.what();
-                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    int len = querySyntaxErrorMsg.size();
+                    Assert::AreEqual(expectedList[i].substr(0,len) + " at:" + Utils::IntToString(i), actual.substr(0,len) + " at:" + Utils::IntToString(i));
                     i++;
                     continue;
                 }
@@ -655,7 +657,8 @@ namespace UnitTesting {
                     qp.preprocessQuery(query);
                 } catch (std::exception& ex) {
                     actual = ex.what();
-                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    int len = querySyntaxErrorMsg.size();
+                    Assert::AreEqual(expectedList[i].substr(0, len) + " at:" + Utils::IntToString(i), actual.substr(0, len) + " at:" + Utils::IntToString(i));
                     i++;
                     continue;
                 }
@@ -820,7 +823,8 @@ namespace UnitTesting {
                     qp.preprocessQuery(query);
                 } catch (std::exception& ex) {
                     actual = ex.what();
-                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                    int len = querySyntaxErrorMsg.size();
+                    Assert::AreEqual(expectedList[i].substr(0, len) + " at:" + Utils::IntToString(i), actual.substr(0, len) + " at:" + Utils::IntToString(i));
                     i++;
                     continue;
                 }

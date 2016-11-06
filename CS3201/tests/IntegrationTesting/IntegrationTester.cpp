@@ -125,7 +125,7 @@ public:
 		QueryEvaluator qe;
 		
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<TRUE>>");
+		string expected("<<"+string(SYMBOL_TRUE)+">>");
 		Assert::AreEqual(expected, actual);
 	}
 
@@ -418,7 +418,7 @@ public:
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<TRUE>>");
+		string expected("<<"+string(SYMBOL_TRUE)+">>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_Follows_0var_Underscore) {
@@ -427,7 +427,7 @@ public:
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<TRUE>>");
+		string expected("<<"+string(SYMBOL_TRUE)+">>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_Next_2var) {
@@ -454,7 +454,7 @@ public:
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<TRUE>>");
+		string expected("<<"+string(SYMBOL_TRUE)+">>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_Next_1) {
@@ -490,7 +490,7 @@ public:
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<TRUE>>");
+		string expected("<<"+string(SYMBOL_TRUE)+">>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_With_2const) {
@@ -500,7 +500,7 @@ public:
 
 		string actual(format(qe.selectQueryResults(qt)));
 		Logger::WriteMessage(qe.log.c_str());
-		string expected("<<TRUE>>");
+		string expected("<<"+string(SYMBOL_TRUE)+">>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_Mixed_1) {

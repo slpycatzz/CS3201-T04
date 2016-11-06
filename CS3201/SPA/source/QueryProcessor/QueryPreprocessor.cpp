@@ -59,7 +59,7 @@ bool QueryPreprocessor::processDeclaration(string declaration) {
 
         /* Validate if variable name has already been declared. */
         if (isVarExist(variableNames[i])) {
-            throw QuerySyntaxErrorException("333");
+            throw QuerySyntaxErrorException("4");
         }
 
         /* contains declared vars, pass to queryTree */
@@ -75,7 +75,7 @@ bool QueryPreprocessor::processQuery(string query) {
     cur = 0;
     /* Expecting first token to be Select (case-sensitive) */
     if (queryList[cur] != SYMBOL_SELECT) {
-        throw QuerySyntaxErrorException("4");
+        throw QuerySyntaxErrorException("5");
     }
 
     /* parse [Select] ... */
@@ -124,13 +124,13 @@ void QueryPreprocessor::parseSelect() {
     if (accept('<')) {
         while (accept('>') == 0) {
             if (accept(SYMBOL_BOOLEAN)) {
-                throw QuerySyntaxErrorException("001");
+                throw QuerySyntaxErrorException("5");
             } else if (accept(VARIABLE)) {
                 string var1;
                 temp = getVar();
                 // Select <"a",noSuchVarDecl> are invalid
                 if (getVarType(temp) == INVALID) {
-                    throw QuerySyntaxErrorException("002");
+                    throw QuerySyntaxErrorException("6");
                 }
                 var.push_back(temp);
                 varAttrMap[temp] = false;
@@ -146,11 +146,11 @@ void QueryPreprocessor::parseSelect() {
                             varAttrMap[temp] = true;
                         }
                     } else {
-                        throw QuerySyntaxErrorException("21a" + varAttribute1);
+                        throw QuerySyntaxErrorException("7" + varAttribute1);
                     }
                 }
             } else {
-                throw QuerySyntaxErrorException("5");
+                throw QuerySyntaxErrorException("8");
             }
             accept(',');
         }
@@ -165,7 +165,7 @@ void QueryPreprocessor::parseSelect() {
             temp = getVar();
             // Select <"a",noSuchVarDecl> are invalid
             if (getVarType(temp) == INVALID) {
-                throw QuerySyntaxErrorException("002");
+                throw QuerySyntaxErrorException("9");
             }
             var.push_back(temp);
             varAttrMap[temp] = false;
@@ -182,16 +182,16 @@ void QueryPreprocessor::parseSelect() {
                         varAttrMap[temp] = true;
                     }
                 } else {
-                    throw QuerySyntaxErrorException("21b");
+                    throw QuerySyntaxErrorException("10");
                 }
             }
         } else {
-            throw QuerySyntaxErrorException("6" + peek());
+            throw QuerySyntaxErrorException("11" + peek());
         }
     }
     if (var.size() < 1) {
         // No QueryResult found
-        throw QuerySyntaxErrorException("7");
+        throw QuerySyntaxErrorException("12");
     }
 
 
@@ -204,18 +204,18 @@ void QueryPreprocessor::parseSuchThat() {
     vector<string> argList;
     Symbol relation;
     string relationString;
-    expect("such");
-    expect("that");
+    expect(SYMBOL_SUCH);
+    expect(SYMBOL_THAT);
     mergeSeparatedClauses();
     relationString = peek().substr(0, peek().find_first_of('('));
     relation = Constants::StringToSymbol(relationString);
     if (relation == INVALID) {
-        throw QuerySyntaxErrorException("8");
+        throw QuerySyntaxErrorException("13");
     }
 
     queryList[cur] = peek().substr(relationString.size());
     if (!r.isRelationValid(relation, SUCH_THAT)) {
-        throw QuerySyntaxErrorException("9");
+        throw QuerySyntaxErrorException("14");
     }
     /* case: uses(a1,1)*/
     expect('(');
@@ -239,27 +239,27 @@ void QueryPreprocessor::parseSuchThat() {
             if (isRelValid) {
                 argList.push_back(getVar());
             } else {
-                throw QuerySyntaxErrorException("10");
+                throw QuerySyntaxErrorException("15");
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(CONSTANT)) {
             if (r.isArgValid(relation, Constants::SymbolToString(CONSTANT), i)) {
                 argList.push_back(getVar());  // wm todo getVariable after validation for saving
             } else {
-                throw QuerySyntaxErrorException("11");
+                throw QuerySyntaxErrorException("16");
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(UNDERSCORE)) {
             if (r.isArgValid(relation, string(1, CHAR_SYMBOL_UNDERSCORE), i)) {
                 argList.push_back(string(1, CHAR_SYMBOL_UNDERSCORE));
             } else {
-                throw QuerySyntaxErrorException("12");
+                throw QuerySyntaxErrorException("17");
             }
 
             queryList[cur] = peek().substr(getVar().size());
 
         } else {
-            throw QuerySyntaxErrorException("13");
+            throw QuerySyntaxErrorException("18");
         }
         accept(',');
         i++;
@@ -277,7 +277,7 @@ void QueryPreprocessor::parsePattern() {
     string relation;
     vector<string> argList;
 
-    expect("pattern");
+    expect(SYMBOL_PATTERN);
     relation = peek();
     relation = relation.substr(0, relation.find_first_of('('));
 
@@ -285,10 +285,10 @@ void QueryPreprocessor::parsePattern() {
 
     if (isValidVarName(relation)) {
         if (!r.isRelationValid(varSymbolMap[relation], PATTERN)) {
-            throw QuerySyntaxErrorException("14");
+            throw QuerySyntaxErrorException("19");
         }
     } else {
-        throw QuerySyntaxErrorException("15" + queryList[cur] + "|" + queryList[cur + 1]);
+        throw QuerySyntaxErrorException("20" + queryList[cur] + "|" + queryList[cur + 1]);
     }
     mergeSeparatedClauses();
     expect('(');
@@ -304,28 +304,28 @@ void QueryPreprocessor::parsePattern() {
             if (r.isArgValid(varSymbolMap[relation], Constants::SymbolToString(varType), i)) {
                 argList.push_back(getVar());
             } else {
-                throw QuerySyntaxErrorException("16");
+                throw QuerySyntaxErrorException("21");
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(CONSTANT)) {
             if (r.isArgValid(varSymbolMap[relation], Constants::SymbolToString(CONSTANT), i)) {
                 argList.push_back(getVar());
             } else {
-                throw QuerySyntaxErrorException("17");
+                throw QuerySyntaxErrorException("22");
             }
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(UNDERSCORE)) {
             if (r.isArgValid(varSymbolMap[relation], string(1, CHAR_SYMBOL_UNDERSCORE), i)) {
                 argList.push_back(string(1, CHAR_SYMBOL_UNDERSCORE));
             } else {
-                throw QuerySyntaxErrorException("18");
+                throw QuerySyntaxErrorException("23");
             }
 
             queryList[cur] = peek().substr(getVar().size());
         } else if (accept(PATTERN)) {
             string expressionFront;
             // case: pattern expression string e.g. _"a+1"_, "a+1"
-            if (r.isArgValid(varSymbolMap[relation], "pattern", i)) {
+            if (r.isArgValid(varSymbolMap[relation], SYMBOL_PATTERN, i)) {
                 string expressionWithBrackets;
                 expressionFront = patternList[patternList.size() - 1];
                 string expressionBack = "\"";
@@ -335,42 +335,42 @@ void QueryPreprocessor::parsePattern() {
                 patternList.pop_back();
                 string patternBack = patternList[patternList.size() - 1];
                 if (patternBack == "+" || patternBack == "-" || patternBack == "*") {
-                    throw QuerySyntaxErrorException("invalid pattern found");
+                    throw QuerySyntaxErrorException("24 invalid pattern found");
                 }
                 expressionWithBrackets = Utils::GetExactExpressionWithBrackets(Utils::GetPostfixExpression(patternList));
                 argList.push_back(expressionFront + expressionWithBrackets + expressionBack);
                 patternList.clear();
             } else {
-                throw QuerySyntaxErrorException("19");
+                throw QuerySyntaxErrorException("25");
             }
 
             queryList[cur] = peek().substr(getPatternExpression().size() + expressionFront.size() - 1);
         } else {
-            throw QuerySyntaxErrorException("20");
+            throw QuerySyntaxErrorException("26");
         }
         i++;
     } while (accept(',') == 1 && i < 3);
     expect(')');
 
     argList.insert(argList.begin(), relation);
-    qt.insert(PATTERN, "pattern", argList);
+    qt.insert(PATTERN, SYMBOL_PATTERN, argList);
 }
 
 void QueryPreprocessor::parseAnd(Symbol prevClause) {
-    expect("and");
+    expect(SYMBOL_AND);
     switch (prevClause) {
     case SUCH_THAT:
-        queryList[--cur] = "that";
-        queryList[--cur] = "such";
+        queryList[--cur] = SYMBOL_THAT;
+        queryList[--cur] = SYMBOL_SUCH;
         parseSuchThat();
         break;
     case PATTERN:
         out += queryList[cur - 1];
-        queryList[--cur] = "pattern";
+        queryList[--cur] = SYMBOL_PATTERN;
         parsePattern();
         break;
     case WITH:
-        queryList[--cur] = "with";
+        queryList[--cur] = SYMBOL_WITH;
         parseWith();
     }
 }
@@ -378,7 +378,7 @@ void QueryPreprocessor::parseAnd(Symbol prevClause) {
 void QueryPreprocessor::parseWith() {
     string var, varAttribute;
     string var2, varAttribute2;
-    expect("with");
+    expect(SYMBOL_WITH);
     mergeSeparatedClauses();
     var = getVar();
     queryList[cur] = peek().substr(getVar().size());
@@ -388,7 +388,7 @@ void QueryPreprocessor::parseWith() {
         queryList[cur] = peek().substr(getVar().size());
         peek();
         if (!isAttributeValid(var, varAttribute)) {
-            throw QuerySyntaxErrorException(var + " does not have attribute " + varAttribute);
+            throw QuerySyntaxErrorException("27"+var + " does not have attribute " + varAttribute);
         }
     } else {
         varAttribute = "";
