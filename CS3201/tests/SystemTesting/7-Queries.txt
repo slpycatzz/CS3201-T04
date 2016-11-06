@@ -466,62 +466,62 @@ Select s with s.stmt# = c.value
 94
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN pattern ifstat ("i", _, _) with c.value = 2  
-TRUE
+true
 5000
 95
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (1, 2) 
-TRUE
+true
 5000
 96
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (7,9) 
-FALSE
+false
 5000
 97
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (9, 10) 
-TRUE
+true
 5000
 98
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (11, 12) 
-TRUE
+true
 5000
 99
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (12, 13) 
-TRUE
+true
 5000
 100
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (13, 12) 
-FALSE
+false
 5000
 101
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (14, 15) 
-FALSE
+false
 5000
 102
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (18, 11) 
-FALSE
+false
 5000
 103
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (18, 19) 
-FALSE
+false
 5000
 104
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (21, 27) 
-FALSE
+false
 5000
 105
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Next (27, 30) 
-FALSE
+false
 5000
 106
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
@@ -536,5 +536,5 @@ Select n such that Next* (n, n)
 108
 stmt s, s1; assign a, a1, a2; while w; if ifstat; procedure p; variable v; constant c; prog_line n, n1, n2;
 Select BOOLEAN such that Calls* ("Papa", p) and Modifies (p, "t")  
-TRUE
+true
 5000

@@ -6,17 +6,17 @@ B,C,Temp,i,tesVar,testVar
 2 - Uses(procName, varName)
 
 Select BOOLEAN such that Uses("C", "x")
-FALSE
+false
 5000
 3 - Uses(procName, procName) INVALID
 
 Select BOOLEAN such that Uses("C","C")
-TRUE
+true
 5000
 4 - Uses(procName, _) 
 
 Select BOOLEAN such that Uses("SourceOne",_)
-TRUE
+true
 5000
 5 - Uses(_, _) INVALID
 
@@ -56,12 +56,12 @@ B,C,Temp,i,testVar,x
 12 - Modifies(procName, varName)
 
 Select BOOLEAN such that Modifies("C", "testVar")
-TRUE
+true
 5000
 13 - Modifies(procName, _)
 
 Select BOOLEAN such that Modifies("B",_)
-TRUE
+true
 5000
 14 - Modifies(while, varName)
 while w;
@@ -171,7 +171,7 @@ C
 35 - Calls(procName, procName)
 
 Select BOOLEAN such that Calls("C","B")
-FALSE
+false
 5000
 36 - Calls(procName, call) INVALID
 call c;
@@ -231,7 +231,7 @@ Select a pattern a(" B ","testVar * i * Temp * testVar")
 47 - Pattern a(varName, subexpr)
 assign a;
 Select BOOLEAN pattern a ("  x    ", _"z - z"_)
-TRUE
+true
 5000
 48 - Pattern a(_, subexpr)
 assign a;
@@ -306,7 +306,7 @@ Select l with l = 20
 62 - with varName = varName
 
 Select BOOLEAN with "testVar"="   testVar    "
-TRUE
+true
 5000
 63 - with integer = integer
 stmt s;

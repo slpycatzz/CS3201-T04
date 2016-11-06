@@ -111,45 +111,45 @@ B,C,Temp,i,testVar,x
 23 - Modifies(num,v) select boolean
 variable v;
 Select BOOLEAN such that Modifies(1,v)
-TRUE
+true
 5000
 24 - Modifies(num,_) select boolean
 
 Select BOOLEAN such that Modifies(1,_)
-TRUE
+true
 5000
 25 - Modifies(stmt,v) select boolean
 stmt s; variable v;
 Select BOOLEAN such that Modifies(s,v)
-TRUE
+true
 5000
 26 - Modifies(stmt,_) select boolean
 stmt s;
 Select BOOLEAN such that Modifies(s,_)
-TRUE
+true
 5000
 27 - Modifies(while,_) select boolean
 while w;
 Select BOOLEAN such that Modifies(w,_)
-TRUE
+true
 5000
 28 - Modifies(assign,_) select boolean
 assign a;
 Select BOOLEAN such that Modifies(a,_)
-TRUE
+true
 5000
 29 - Modifies(if,_) select boolean
 if ifs;
 Select BOOLEAN such that Modifies(ifs,_)
-TRUE
+true
 5000
 30 - Modifies(call,_) select boolean
 call c;
 Select BOOLEAN such that Modifies(c,_)
-TRUE
+true
 5000
 31 - Modifies(proc,_) select boolean
 procedure p;
 Select BOOLEAN such that Modifies(p,_)
-TRUE
+true
 5000

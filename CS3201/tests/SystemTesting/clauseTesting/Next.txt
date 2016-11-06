@@ -301,25 +301,25 @@ Select c such that Next(c,c)
 61 - Next(stmt, stmt) select boolean
 stmt s1,s2;
 Select BOOLEAN such that Next(s1,s2)
-TRUE
+true
 5000
 62 - Next(_,_) select boolean
 
 Select BOOLEAN such that Next(_,_)
-TRUE
+true
 5000
 63 - Next(while,_) select boolean
 while w;
 Select BOOLEAN such that Next(w,_)
-TRUE
+true
 5000
 64 - Next(if,_) select boolean
 if ifs;
 Select BOOLEAN such that Next(ifs,_)
-TRUE
+true
 5000
 65 - Next(call,_) select boolean
 call c;
 Select BOOLEAN such that Next(c,_)
-TRUE
+true
 5000

@@ -186,20 +186,20 @@ Select ifs such that Parent(w,ifs)
 38 - Parent(stmt, stmt) select boolean
 stmt s1,s2;
 Select BOOLEAN such that Parent(s1,s2)
-TRUE
+true
 5000
 39 - Parent(_,_) select boolean
 
 Select BOOLEAN such that Parent(_,_)
-TRUE
+true
 5000
 40 - Parent(while,_) select boolean
 while w;
 Select BOOLEAN such that Parent(w,_)
-TRUE
+true
 5000
 41 - Parent(if,_) select boolean
 if ifs;
 Select BOOLEAN such that Parent(ifs,_)
-TRUE
+true
 5000

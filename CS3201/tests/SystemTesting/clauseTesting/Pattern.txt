@@ -31,15 +31,15 @@ Select w pattern w(v,_)
 7 - Pattern a(_,_) boolean
 assign a;
 Select BOOLEAN pattern a(_,_)
-TRUE
+true
 5000
 8 - Pattern if(_,_,_) boolean
 if ifs;
 Select BOOLEAN pattern ifs(_,_,_)
-TRUE
+true
 5000
 9 - Pattern w(_,_) boolean
 while w;
 Select BOOLEAN pattern w(_,_)
-TRUE
+true
 5000

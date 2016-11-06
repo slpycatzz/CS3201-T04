@@ -301,25 +301,25 @@ Select c such that Follows*(c,c)
 61 - Follows*(stmt, stmt) select boolean
 stmt s1,s2;
 Select BOOLEAN such that Follows*(s1,s2)
-TRUE
+true
 5000
 62 - Follows*(_,_) select boolean
 
 Select BOOLEAN such that Follows*(_,_)
-TRUE
+true
 5000
 63 - Follows*(while,_) select boolean
 while w;
 Select BOOLEAN such that Follows*(w,_)
-TRUE
+true
 5000
 64 - Follows*(if,_) select boolean
 if ifs;
 Select BOOLEAN such that Follows*(ifs,_)
-TRUE
+true
 5000
 65 - Follows*(call,_) select boolean
 call c;
 Select BOOLEAN such that Follows*(c,_)
-TRUE
+true
 5000

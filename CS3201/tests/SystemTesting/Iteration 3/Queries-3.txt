@@ -21,7 +21,7 @@ proc1,proc3,proc4,proc5,proc6,proc7,proc8
 5 - 
  
 Select BOOLEAN such that Calls(_,_)
-TRUE
+true
 5000
 6 - 
 procedure p, q; 
@@ -46,7 +46,7 @@ proc1,proc3,proc4,proc5,proc6,proc7,proc8
 10 - 
  
 Select BOOLEAN such that Calls*(_,_)
-TRUE
+true
 5000
 11 - 
 variable v; 
@@ -56,17 +56,17 @@ Select v such that Uses("a", v)
 12 - 
  
 Select BOOLEAN such that Uses("c", "g")
-FALSE
+false
 5000
 13 - 
  
 Select BOOLEAN such that Uses("c","c")
-FALSE
+false
 5000
 14 - 
  
 Select BOOLEAN such that Uses("proc1",_)
-TRUE
+true
 5000
 15 - 
  
@@ -106,12 +106,12 @@ a,b,d,e,f,g
 22 - 
  
 Select BOOLEAN such that Modifies("c", "d")
-FALSE
+false
 5000
 23 - 
  
 Select BOOLEAN such that Modifies("a",_)
-FALSE
+false
 5000
 24 - 
 while w; 
@@ -221,7 +221,7 @@ Select p such that Calls("a", p)
 45 - 
  
 Select BOOLEAN such that Calls("c","a")
-FALSE
+false
 5000
 46 - 
 call c; 
@@ -541,27 +541,27 @@ Select c such that Follows(c,c)
 109 - 
 stmt s1,s2; 
 Select BOOLEAN such that Follows(s1,s2)
-TRUE
+true
 5000
 110 - 
  
 Select BOOLEAN such that Follows(_,_)
-TRUE
+true
 5000
 111 - 
 while w; 
 Select BOOLEAN such that Follows(w,_)
-TRUE
+true
 5000
 112 - 
 if ifs; 
 Select BOOLEAN such that Follows(ifs,_)
-TRUE
+true
 5000
 113 - 
 call c; 
 Select BOOLEAN such that Follows(c,_)
-TRUE
+true
 5000
 114 - 
 stmt s; 
@@ -866,27 +866,27 @@ Select c such that Follows*(c,c)
 174 - 
 stmt s1,s2; 
 Select BOOLEAN such that Follows*(s1,s2)
-TRUE
+true
 5000
 175 - 
  
 Select BOOLEAN such that Follows*(_,_)
-TRUE
+true
 5000
 176 - 
 while w; 
 Select BOOLEAN such that Follows*(w,_)
-TRUE
+true
 5000
 177 - 
 if ifs; 
 Select BOOLEAN such that Follows*(ifs,_)
-TRUE
+true
 5000
 178 - 
 call c; 
 Select BOOLEAN such that Follows*(c,_)
-TRUE
+true
 5000
 179 - 
 stmt s; variable v; 
@@ -1001,47 +1001,47 @@ a,ab,b,c,d,e,f,g
 201 - 
 variable v; 
 Select BOOLEAN such that Modifies(1,v)
-TRUE
+true
 5000
 202 - 
  
 Select BOOLEAN such that Modifies(1,_)
-TRUE
+true
 5000
 203 - 
 stmt s; variable v; 
 Select BOOLEAN such that Modifies(s,v)
-TRUE
+true
 5000
 204 - 
 stmt s; 
 Select BOOLEAN such that Modifies(s,_)
-TRUE
+true
 5000
 205 - 
 while w; 
 Select BOOLEAN such that Modifies(w,_)
-TRUE
+true
 5000
 206 - 
 assign a; 
 Select BOOLEAN such that Modifies(a,_)
-TRUE
+true
 5000
 207 - 
 if ifs; 
 Select BOOLEAN such that Modifies(ifs,_)
-TRUE
+true
 5000
 208 - 
 call c; 
 Select BOOLEAN such that Modifies(c,_)
-TRUE
+true
 5000
 209 - 
 procedure p; 
 Select BOOLEAN such that Modifies(p,_)
-TRUE
+true
 5000
 210 - 
 stmt s; 
@@ -1346,27 +1346,27 @@ Select c such that Next(c,c)
 270 - 
 stmt s1,s2; 
 Select BOOLEAN such that Next(s1,s2)
-TRUE
+true
 5000
 271 - 
  
 Select BOOLEAN such that Next(_,_)
-TRUE
+true
 5000
 272 - 
 while w; 
 Select BOOLEAN such that Next(w,_)
-TRUE
+true
 5000
 273 - 
 if ifs; 
 Select BOOLEAN such that Next(ifs,_)
-TRUE
+true
 5000
 274 - 
 call c; 
 Select BOOLEAN such that Next(c,_)
-TRUE
+true
 5000
 275 - 
 stmt s; 
@@ -1671,27 +1671,27 @@ Select c such that Next*(c,c)
 335 - 
 stmt s1,s2; 
 Select BOOLEAN such that Next*(s1,s2)
-TRUE
+true
 5000
 336 - 
  
 Select BOOLEAN such that Next*(_,_)
-TRUE
+true
 5000
 337 - 
 while w; 
 Select BOOLEAN such that Next*(w,_)
-TRUE
+true
 5000
 338 - 
 if ifs; 
 Select BOOLEAN such that Next*(ifs,_)
-TRUE
+true
 5000
 339 - 
 call c; 
 Select BOOLEAN such that Next*(c,_)
-TRUE
+true
 5000
 340 - 
 stmt s; 
@@ -1881,22 +1881,22 @@ Select ifs such that Parent(w,ifs)
 377 - 
 stmt s1,s2; 
 Select BOOLEAN such that Parent(s1,s2)
-TRUE
+true
 5000
 378 - 
  
 Select BOOLEAN such that Parent(_,_)
-TRUE
+true
 5000
 379 - 
 while w; 
 Select BOOLEAN such that Parent(w,_)
-TRUE
+true
 5000
 380 - 
 if ifs; 
 Select BOOLEAN such that Parent(ifs,_)
-TRUE
+true
 5000
 381 - 
 stmt s; 
@@ -2086,22 +2086,22 @@ Select if such that Parent*(w,if)
 418 - 
 stmt s1,s2; 
 Select BOOLEAN such that Parent*(s1,s2)
-TRUE
+true
 5000
 419 - 
  
 Select BOOLEAN such that Parent*(_,_)
-TRUE
+true
 5000
 420 - 
 while w; 
 Select BOOLEAN such that Parent*(w,_)
-TRUE
+true
 5000
 421 - 
 if if; 
 Select BOOLEAN such that Parent*(if,_)
-TRUE
+true
 5000
 422 - 
 assign a; 
@@ -2136,17 +2136,17 @@ Select w pattern w(v,_)
 428 - 
 assign a; 
 Select BOOLEAN pattern a(_,_)
-TRUE
+true
 5000
 429 - 
 if ifs; 
 Select BOOLEAN pattern ifs(_,_,_)
-TRUE
+true
 5000
 430 - 
 while w; 
 Select BOOLEAN pattern w(_,_)
-TRUE
+true
 5000
 431 - 
 stmt s; variable v; 
@@ -2261,47 +2261,47 @@ a,ab,b,c,d,e,f,g
 453 - 
 variable v; 
 Select BOOLEAN such that Uses(1,v)
-TRUE
+true
 5000
 454 - 
  
 Select BOOLEAN such that Uses(1,_)
-TRUE
+true
 5000
 455 - 
 stmt s; variable v; 
 Select BOOLEAN such that Uses(s,v)
-TRUE
+true
 5000
 456 - 
 stmt s; 
 Select BOOLEAN such that Uses(s,_)
-TRUE
+true
 5000
 457 - 
 while w; 
 Select BOOLEAN such that Uses(w,_)
-TRUE
+true
 5000
 458 - 
 assign a; 
 Select BOOLEAN such that Uses(a,_)
-TRUE
+true
 5000
 459 - 
 if ifs; 
 Select BOOLEAN such that Uses(ifs,_)
-TRUE
+true
 5000
 460 - 
 call c; 
 Select BOOLEAN such that Uses(c,_)
-TRUE
+true
 5000
 461 - 
 procedure p; 
 Select BOOLEAN such that Uses(p,_)
-TRUE
+true
 5000
 462 - 
 assign a; 
@@ -2346,7 +2346,7 @@ Select a pattern a(" b ","d * i * e * d")
 470 - 
 assign a; 
 Select BOOLEAN pattern a ("  d    ", _"h - h"_)
-FALSE
+false
 5000
 471 - 
 assign a; 
@@ -2421,7 +2421,7 @@ Select l with l = 20
 485 - 
  
 Select BOOLEAN with "d"="   d    "
-TRUE
+true
 5000
 486 - 
 stmt s; 
