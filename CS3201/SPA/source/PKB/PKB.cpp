@@ -446,6 +446,10 @@ vector<ProcedureIndex> PKB::GetCalled(ProcedureIndex calling) {
     return callsTable_.getValues(calling);
 }
 
+vector<ProcedureIndex> PKB::GetCalledTransitive(ProcedureIndex calling) {
+    return callsTransitiveTable_.getValues(calling);
+}
+
 unsigned int PKB::GetNumberOfCallsRelationship() {
     return callsTable_.getNumberOfRelationship();
 }

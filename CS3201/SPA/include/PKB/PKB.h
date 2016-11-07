@@ -84,6 +84,7 @@ class PKB {
     static bool IsCallsTransitive(ProcedureIndex calling, ProcedureIndex called);
     static std::vector<ProcedureIndex> GetCalling(ProcedureIndex called);
     static std::vector<ProcedureIndex> GetCalled(ProcedureIndex calling);
+    static std::vector<ProcedureIndex> GetCalledTransitive(ProcedureIndex calling);
     static unsigned int GetNumberOfCallsRelationship();
     static void PrintCallsTable();
     static void PrintCallsTransitiveTable();
