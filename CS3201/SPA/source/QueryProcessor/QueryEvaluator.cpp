@@ -320,7 +320,13 @@ void QueryEvaluator::filterByClause(Clause &clause,
 			else {
 				if (QueryUtils::IsStringLiteral(var1)) {
 					var1 = QueryUtils::LiteralToCandidate(var1);
-					filterFirstVarWith(var0, var1, combinations);
+					Candidate v = (type1 == PROCEDURE) ? PKB::GetProcedureIndex(var1) : PKB::GetVariableIndex(var1);
+					if (v == 0) {
+						combinations.filter(false);
+					}
+					else {
+						filterFirstVarWith(var0, v, combinations);
+					}
 				}
 				else if (type1 == CALL) {
 					filterOneVarCallWith(var1, var0, combinations);
@@ -332,18 +338,18 @@ void QueryEvaluator::filterByClause(Clause &clause,
 		}
 		else if (args[2] == SYMBOL_CONSTANT) {
 			if (Utils::IsNonNegativeNumeric(var0)) {
-				var0 = QueryUtils::LiteralToCandidate(var0);
+				Candidate v0 = Utils::StringToInt(var0);
 				if (Utils::IsNonNegativeNumeric(var1)) {
-					filterNoVarWith(var0, QueryUtils::LiteralToCandidate(var1), combinations);
+					filterNoVarWith(v0, Utils::StringToInt(var1), combinations);
 				}
 				else {
-					filterSecondVarWith(var0, var1, combinations);
+					filterSecondVarWith(v0, var1, combinations);
 				}
 
 			}
 			else if (Utils::IsNonNegativeNumeric(var1)) {
-				var1 = QueryUtils::LiteralToCandidate(var1);
-				filterFirstVarWith(var0, var1, combinations);
+				Candidate v1 = Utils::StringToInt(var1);
+				filterFirstVarWith(var0, v1, combinations);
 			}
 			else {
 				filterTwoVarsWith(var0, var1, combinations);
@@ -356,14 +362,14 @@ void QueryEvaluator::filterByClause(Clause &clause,
         Synonym var0(args[0]), var1(args[1]);
         if (QueryUtils::IsLiteral(var0)) {
             if (QueryUtils::IsLiteral(var1)) {
-                filterNoVarClause(clauseType, QueryUtils::LiteralToCandidate(var0), QueryUtils::LiteralToCandidate(var1), combinations);
+                filterNoVarClause(clauseType, Utils::StringToInt(var0), Utils::StringToInt(var1), combinations);
             } else {
-                filterSecondVarClause(clauseType, QueryUtils::LiteralToCandidate(var0), var1, combinations);
+                filterSecondVarClause(clauseType, Utils::StringToInt(var0), var1, combinations);
             }
 
         } else {
             if (QueryUtils::IsLiteral(var1)) {
-                filterFirstVarClause(clauseType, var0, QueryUtils::LiteralToCandidate(var1), combinations);
+                filterFirstVarClause(clauseType, var0, Utils::StringToInt(var1), combinations);
             } else {
                 filterTwoVarsClause(clauseType, var0, var1, combinations);
             }
@@ -388,25 +394,24 @@ void QueryEvaluator::filterByClause(Clause &clause,
 	}
 }
 
-/*
 void QueryEvaluator::filterNoVarPattern(Synonym assignStmt, Candidate lhs,
-    Candidate expr, TotalCombinationList &combinations) {
+    string expr, TotalCombinationList &combinations) {
     auto matchPattern = [=](CandidateCombination &combi) -> bool {
         return evaluatePatternClause(combi[assignStmt], lhs, expr);
     };
     combinations.filter(assignStmt, matchPattern);
 }
 
-/*
+
 void QueryEvaluator::filterOneVarPattern(Synonym assignStmt, Synonym lhs,
-    Candidate expr, TotalCombinationList &combinations) {
+    string expr, TotalCombinationList &combinations) {
     auto matchPattern = [=](CandidateCombination combi) -> bool {
         return evaluatePatternClause(combi[assignStmt], combi[lhs], expr);
     };
     combinations.mergeAndFilter(assignStmt, lhs, matchPattern);
 }
 
-/*
+
 void QueryEvaluator::filterTwoVarsClause(string clauseType,
     Synonym &var0, Synonym &var1, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
@@ -415,7 +420,7 @@ void QueryEvaluator::filterTwoVarsClause(string clauseType,
     combinations.mergeAndFilter(var0, var1, evaluateClause);
 }
 
-/*
+
 void QueryEvaluator::filterFirstVarClause(string clauseType,
     Synonym var, Candidate constant, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
@@ -424,7 +429,7 @@ void QueryEvaluator::filterFirstVarClause(string clauseType,
     combinations.filter(var, evaluateClause);
 }
 
-/*
+
 void QueryEvaluator::filterSecondVarClause(string clauseType,
     Candidate constant, Synonym var, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
@@ -433,13 +438,13 @@ void QueryEvaluator::filterSecondVarClause(string clauseType,
     combinations.filter(var, evaluateClause);
 }
 
-/*
+
 void QueryEvaluator::filterNoVarClause(string clauseType,
     Candidate const1, Candidate const2, TotalCombinationList &combinations) {
     combinations.filter(evaluateSuchThatClause(clauseType, const1, const2));
 }
 
-/*
+
 void QueryEvaluator::filterTwoVarsWith(Synonym &var0, Synonym &var1, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
         return (combi[var0] == combi[var1]);
@@ -447,7 +452,7 @@ void QueryEvaluator::filterTwoVarsWith(Synonym &var0, Synonym &var1, TotalCombin
     combinations.mergeAndFilter(var0, var1, evaluateClause);
 }
 
-/*
+
 void QueryEvaluator::filterFirstVarWith(Synonym &var, Candidate constant, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
         return (combi[var] == constant);
@@ -455,18 +460,24 @@ void QueryEvaluator::filterFirstVarWith(Synonym &var, Candidate constant, TotalC
     combinations.filter(var, evaluateClause);
 }
 
-/*
+
 void QueryEvaluator::filterSecondVarWith(Candidate constant, Synonym &var, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
         return (combi[var] == constant);
     };
     combinations.filter(var, evaluateClause);
 }
-*/
+
 
 void QueryEvaluator::filterNoVarWith(Candidate const1, Candidate const2, TotalCombinationList &combinations) {
     combinations.filter(const1 == const2);
 }
+
+
+void QueryEvaluator::filterNoVarWith(string const1, string const2, TotalCombinationList &combinations) {
+	combinations.filter(const1 == const2);
+}
+
 
 void QueryEvaluator::filterTwoVarsCallWith(Synonym & call0, Synonym & call1, TotalCombinationList & combinations) {
 	auto comp = [=](CandidateCombination combi) -> bool {
@@ -485,7 +496,7 @@ void QueryEvaluator::filterOneVarCallWith(Synonym & call, Synonym & var, TotalCo
 
 void QueryEvaluator::filterNoVarCallWith(Synonym & call, Candidate cand, TotalCombinationList & combinations) {
     auto comp = [=](CandidateCombination combi) -> bool {
-        return (PKB::GetCallStmtProcedureIndex(combi[call])) == cand);
+        return (PKB::GetCallStmtProcedureIndex(combi[call]) == cand);
     };
     combinations.filter(call, comp);
 }
