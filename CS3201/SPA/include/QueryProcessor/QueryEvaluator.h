@@ -94,14 +94,16 @@ class QueryEvaluator {
 
  private:
     
-	bool evaluateClause(Clause &clause, CandidateCombination &candMap);
+	//bool evaluateClause(Clause &clause, CandidateCombination &candMap);
     bool evaluateSuchThatClause(std::string clauseType, Candidate var0, Candidate var1);
 	bool evaluatePatternClause(Candidate assignStmt, Candidate lhsVar, std::string expr);
     
 	bool evaluateCalls(Candidate var0, Candidate var1);
     bool evaluateCallsStar(Candidate var0, Candidate var1);
     bool evaluateModifies(Candidate var0, Candidate var1);
+	bool evaluateModifiesProcedure(Candidate var0, Candidate var1);
     bool evaluateUses(Candidate var0, Candidate var1);
+	bool evaluateUsesProcedure(Candidate var0, Candidate var1);
     bool evaluateParent(Candidate var0, Candidate var1);
     bool evaluateParentStar(Candidate var0, Candidate var1);
     bool evaluateFollows(Candidate var0, Candidate var1);

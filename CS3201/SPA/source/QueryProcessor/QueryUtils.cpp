@@ -46,6 +46,30 @@ bool QueryUtils::IsSynonym(std::string str) {
     }
 }
 
+bool QueryUtils::IsStringLiteral(string str) {
+	if (Utils::StartsWith(str, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(str, CHAR_SYMBOL_DOUBLEQUOTES)) {
+		return true;
+	}
+	else if (str == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+		return true;
+	}
+
+	return false;
+}
+
+bool QueryUtils::IsNonNegativeInt(std::string str)
+{
+	if (str == string(1, CHAR_SYMBOL_UNDERSCORE)) return true;
+	
+	for (unsigned int i = 0; i < str.length(); i++) {
+		if (!isdigit(str[i])) {
+			return false;
+		}
+	}
+
+	return !str.empty();
+}
+
 string QueryUtils::GetExpression(string expression) {
     stringstream res;
     for (char c : expression) {
@@ -64,14 +88,4 @@ string QueryUtils::GetSubExpression(string expression) {
         }
     }
     return res.str();
-}
-
-bool QueryUtils::IsStringLiteral(string str) {
-    if (Utils::StartsWith(str, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(str, CHAR_SYMBOL_DOUBLEQUOTES)) {
-        return true;
-    } else if (str == string(1, CHAR_SYMBOL_UNDERSCORE)) {
-        return true;
-    }
-
-    return false;
 }

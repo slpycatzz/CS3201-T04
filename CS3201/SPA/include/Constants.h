@@ -2,6 +2,8 @@
 
 #include <string>
 
+const unsigned int INT_UNDERSCORE = (unsigned)-1;
+
 const char SYMBOL_INVALID[]   = "Invalid";
 const char SYMBOL_COMMENT[]   = "\\\\";
 const char SYMBOL_PROGRAM[]   = "program";
