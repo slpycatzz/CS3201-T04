@@ -24,6 +24,10 @@ class Utils {
         std::unordered_map<std::string, std::string> &map1,
         std::unordered_map<std::string, std::string> &map2);
 
+	static std::unordered_map<std::string, unsigned> MergeMap(
+		std::unordered_map<std::string, unsigned> &map1,
+		std::unordered_map<std::string, unsigned> &map2);
+
     static std::unordered_map<std::string, std::string> ReduceMap(
         std::unordered_map<std::string, std::string> &map,
         std::vector<std::string> &selections);
@@ -31,8 +35,13 @@ class Utils {
     static std::unordered_map<std::string, std::string> GetSubMap(
         std::unordered_map<std::string, std::string> &map,
         const std::vector<std::string> &keyList);
+	
+	static std::unordered_map<std::string, unsigned> GetSubMap(
+		std::unordered_map<std::string, unsigned> &map,
+		const std::vector<std::string> &keyList);
 
     static std::string MapToString(std::unordered_map<std::string, std::string> &map);
+	static std::string MapToString(std::unordered_map<std::string, unsigned> &map);
     static std::string MapToValueString(std::unordered_map<std::string, std::string> &map);
 
     static std::string IntToString(unsigned int i);

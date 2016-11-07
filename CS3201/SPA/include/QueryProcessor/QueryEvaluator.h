@@ -11,7 +11,7 @@
 #include "PKB/PKB.h"
 #include "TotalCombinationList.h"
 
-typedef std::pair<std::vector<std::string>, std::vector<std::vector<Candidate>>> ResultList;
+typedef std::pair<std::vector<std::string>, std::vector<std::vector<std::string>>> ResultList;
 
 class QueryEvaluator {
  public:
@@ -22,29 +22,24 @@ class QueryEvaluator {
     ResultList selectQueryResults(QueryTree &query);
 
     // return the result list as a ResultList after evaluating the query
-    TotalCombinationList getQueryResults(QueryTree &query);
+    TotalCombinationList getQueryResults();
 
     // get results for clauses of selected synonyms
-    TotalCombinationList getSelectedGroupResult(std::vector<Synonym> &synList,
-        std::unordered_map<Synonym, Symbol> &varMap,
-        std::vector<Clause> &clauseGroup,
-        std::vector<Synonym> &selectList);
+    TotalCombinationList getSelectedGroupResult(std::vector<Synonym> &synList,std::vector<Clause> &clauseGroup);
 
     // get results for clauses of unselected synonyms
-    bool getUnselectedGroupResult(std::vector<Synonym> &synList,
-        std::unordered_map<Synonym, Symbol> &varMap,
-        std::vector<Clause> &clauseGroup);
+    bool getUnselectedGroupResult(std::vector<Synonym> &synList, std::vector<Clause> &clauseGroup);
 
     // get results for boolean clauses
-    bool getBooleanGroupResult(std::vector<Clause> &clauseGroup);
+    bool getBooleanGroupResult();
 
     // retrieve all possible candidates for a variable
     std::vector<Candidate> getCandidates(Symbol &synType);
 
-    TotalCombinationList getTotalCandidateList(std::unordered_map<std::string, Symbol> &varMap, std::vector<Synonym> &synList);
+    TotalCombinationList getTotalCandidateList(std::vector<Synonym> &synList);
 
     // use the clause to filter the tuple candidate list to its sublist
-    void filterByClause(Clause &clause, TotalCombinationList &combinations, std::unordered_map<Synonym, Symbol> &varMap);
+    void filterByClause(Clause &clause, TotalCombinationList &combinations);
 
     /* filter pattern clauses */
 
@@ -88,10 +83,9 @@ class QueryEvaluator {
 
     /* get results methods */
 
-    ResultList getResultsFromCombinationList(TotalCombinationList &combinations,
-        std::vector<Synonym> &selectList);
+    ResultList getResultsFromCombinationList(TotalCombinationList &combinations);
 
-    bool isBoolSelect(std::vector<std::string>& selectList);
+    bool isBoolSelect(std::vector<std::string>& synList);
 
     std::string log;
 
@@ -113,4 +107,10 @@ class QueryEvaluator {
     bool evaluateNextStar(Candidate var0, Candidate var1);
     bool evaluateAffects(Candidate var0, Candidate var1);
     bool evaluateAffectsStar(Candidate var0, Candidate var1);
+
+	std::vector<Synonym> selectList;
+	std::unordered_map<Synonym, Symbol> varMap;
+	std::vector<std::pair<std::vector<Synonym>, std::vector<Clause>>> unselectedGroups;
+	std::vector<std::pair<std::vector<Synonym>, std::vector<Clause>>> selectedGroups;
+	std::vector<Clause> booleanClauses;
 };

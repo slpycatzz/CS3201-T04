@@ -22,30 +22,29 @@ QueryEvaluator::~QueryEvaluator() {}
 vector<Candidate> QueryEvaluator::getCandidates(Symbol &synType) {
     switch (synType) {
         case VARIABLE:
-            return PKB::GetAllVariableNames();
+            return PKB::GetAllVariableIndexes();
         case PROCEDURE:
-            return PKB::GetAllProcedureNames();
+            return PKB::GetAllProcedureIndexes();
         case BOOLEAN:
-            return vector<Candidate>{ SYMBOL_TRUE };
+            return vector<Candidate>{ 1 };
         case CONSTANT:
-            return PKB::GetAllConstantValues();
+            return PKB::GetAllConstantIndexes();
 		case PROGRAM_LINE:
-			return Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(STMT));
+			return PKB::GetSymbolStmtNumbers(STMT);
 		case STMTLIST:
-			return Utils::IntsToStrings(PKB::GetAllStmtlistsStmtNumber());
+			return PKB::GetAllStmtlistsStmtNumber();
 		case CALL:
         case STMT:
         case ASSIGN:
         case IF:
         case WHILE:
-            return Utils::IntsToStrings(PKB::GetSymbolStmtNumbers(synType));
+            return PKB::GetSymbolStmtNumbers(synType);
         default:
             return vector<Candidate>();
     }
 }
 
-TotalCombinationList QueryEvaluator::getTotalCandidateList
-(unordered_map<string, Symbol> &varMap, vector<Synonym> &synList) {
+TotalCombinationList QueryEvaluator::getTotalCandidateList(vector<Synonym> &synList) {
     TotalCombinationList totalCandLst;
     for (Synonym &syn : synList) {
         vector<Candidate> candLst(getCandidates(varMap[syn]));
@@ -56,8 +55,13 @@ TotalCombinationList QueryEvaluator::getTotalCandidateList
 }
 
 ResultList QueryEvaluator::selectQueryResults(QueryTree &query) {
-    vector<Synonym> selectList(query.getResults());
-    TotalCombinationList queryResults(getQueryResults(query));
+	varMap = query.getVarMap();
+	selectList = query.getResults();
+	booleanClauses = query.getBooleanClauses();
+	unselectedGroups = query.getUnselectedGroups();
+	selectedGroups = query.getSelectedGroups();
+
+    TotalCombinationList queryResults(getQueryResults());
     if (isBoolSelect(selectList)) {
 		string resultBoolean = (queryResults.getFactorCount() > 0) ? SYMBOL_TRUE : SYMBOL_FALSE;
 
@@ -73,23 +77,31 @@ ResultList QueryEvaluator::selectQueryResults(QueryTree &query) {
             return resultList;
 
         } else {
-            ResultList resultList(getResultsFromCombinationList(queryResults, selectList));
+            ResultList resultList(getResultsFromCombinationList(queryResults));
             return resultList;
         }
     }
 }
 
-ResultList QueryEvaluator::getResultsFromCombinationList
-(TotalCombinationList &combinations, vector<Synonym> &selectList) {
-	PartialCombinationList
-		selectedCombinations(combinations.getCombinationList(selectList));
-	vector<vector<Candidate>> selectedCombinationList;
+ResultList QueryEvaluator::getResultsFromCombinationList(TotalCombinationList &combinations) {
+	PartialCombinationList selectedCombinations(combinations.getCombinationList(selectList));
+	vector<vector<string>> selectedCombinationList;
 
 	for (CandidateCombination combi : selectedCombinations) {
-		vector<Candidate> candidateTuple;
+		vector<string> candidateTuple;
 
 		for (Synonym syn : selectList) {
-			candidateTuple.push_back(combi[syn]);
+			string cand;
+			if (varMap[syn] == VARIABLE) {
+				cand = PKB::GetVariableName(combi[syn]);
+			}
+			else if (varMap[syn] == PROCEDURE) {
+				cand = PKB::GetProcedureName(combi[syn]);
+			}
+			else {
+				cand = Utils::IntToString(combi[syn]);
+			}
+			candidateTuple.push_back(cand);
 		}
 
 		selectedCombinationList.push_back(candidateTuple);
@@ -100,8 +112,8 @@ ResultList QueryEvaluator::getResultsFromCombinationList
 	return result;
 }
 
-bool QueryEvaluator::isBoolSelect(vector<string> &selectList) {
-	if (selectList.size() == 1 && selectList[0] == SYMBOL_BOOLEAN) {
+bool QueryEvaluator::isBoolSelect(vector<string> &synList) {
+	if (synList.size() == 1 && synList[0] == SYMBOL_BOOLEAN) {
 		return true;
 	}
 	else {
@@ -109,28 +121,24 @@ bool QueryEvaluator::isBoolSelect(vector<string> &selectList) {
 	}
 }
 
-TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
-    if (!getBooleanGroupResult(query.getBooleanClauses())) {
+TotalCombinationList QueryEvaluator::getQueryResults() {
+    if (!getBooleanGroupResult()) {
         return TotalCombinationList();
 
     } else {
-        vector<std::pair<vector<Synonym>, vector<Clause>>> unselectedGroups(query.getUnselectedGroups());
-        unordered_map<Synonym, Symbol> varMap(query.getVarMap());
 
         for (auto &pair : unselectedGroups) {
-            if (!getUnselectedGroupResult(pair.first, varMap, pair.second)) {
+            if (!getUnselectedGroupResult(pair.first, pair.second)) {
                 return TotalCombinationList();
             }
         }
 
         TotalCombinationList result;
-        vector<Synonym> selectList(query.getResults());
-        vector<std::pair<vector<Synonym>, vector<Clause>>> selectedGroups(query.getSelectedGroups());
 
         for (auto &pair : selectedGroups) {
             vector<Synonym> &synList(pair.first);
             vector<Clause> &group(pair.second);
-            TotalCombinationList &tempCombiList(getSelectedGroupResult(synList, varMap, group, selectList));
+            TotalCombinationList &tempCombiList(getSelectedGroupResult(synList, group));
 			if (tempCombiList.isEmpty() || tempCombiList.getFactorCount() == 0) {
 				return TotalCombinationList();
 			}
@@ -158,11 +166,11 @@ TotalCombinationList QueryEvaluator::getQueryResults(QueryTree &query) {
     }
 }
 
-bool QueryEvaluator::getBooleanGroupResult(vector<Clause> &clauseGroup) {
-    for (Clause clause : clauseGroup) {
+bool QueryEvaluator::getBooleanGroupResult() {
+    for (Clause clause : booleanClauses) {
         
-		Candidate arg0(QueryUtils::LiteralToCandidate(clause.getArg()[0]));
-        Candidate arg1(QueryUtils::LiteralToCandidate(clause.getArg()[1]));
+		string arg0(QueryUtils::LiteralToCandidate(clause.getArg()[0]));
+        string arg1(QueryUtils::LiteralToCandidate(clause.getArg()[1]));
         string clauseType(clause.getClauseType());
 		
 		if (clauseType == SYMBOL_WITH) {
@@ -170,14 +178,15 @@ bool QueryEvaluator::getBooleanGroupResult(vector<Clause> &clauseGroup) {
 				return false;
 			}
 		}
-        else if (!evaluateSuchThatClause(clauseType, arg0, arg1)) {
-            return false;
-        }
+		else if (clauseType == SYMBOL_MODIFIES_PROCEDURE) {
+			if (PKB::)
+		}
     }
 
     return true;
 }
 
+/*
 bool QueryEvaluator::getUnselectedGroupResult
 (vector<Synonym> &synList,
     unordered_map<Synonym, Symbol> &varMap,
@@ -195,6 +204,7 @@ bool QueryEvaluator::getUnselectedGroupResult
     return true;
 }
 
+/*
 TotalCombinationList QueryEvaluator::getSelectedGroupResult
 (vector<Synonym> &synList,
     unordered_map<Synonym, Symbol> &varMap,
@@ -202,7 +212,7 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
     vector<Synonym> &selectList) {
     TotalCombinationList combinations(getTotalCandidateList(varMap, synList));
 
-	/*LOG - DELETE AFTER DEBUGGING*/
+	
 	log.append("\n");
 	log.append("synList: ");
 	for (Synonym syn : synList) log.append(syn + " ");
@@ -227,12 +237,13 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
     return combinations;
 }
 
+/*
 void QueryEvaluator::filterByClause(Clause &clause,
     TotalCombinationList &combinations, unordered_map<Synonym, Symbol> &varMap) {
     string clauseType(clause.getClauseType());
 
 
-	/*LOG - DELETE AFTER DEBUGGING*/
+	
 	log.append("\n");
 	log.append("clause type: " + clause.getClauseType() + "\n");
 	log.append("args: " + clause.getArg()[0] + " " + clause.getArg()[1]);
@@ -333,7 +344,7 @@ void QueryEvaluator::filterByClause(Clause &clause,
     }
 
 
-	/*LOG - DELETE AFTER DEBUGGING*/
+	
 	log.append("\n");
 	log.append("totalCombinationList content: ");
 	for (auto kv : combinations.getContent()) log.append(kv.first + ":" + Utils::IntToString(kv.second) + " ");
@@ -350,6 +361,7 @@ void QueryEvaluator::filterByClause(Clause &clause,
 	}
 }
 
+/*
 void QueryEvaluator::filterNoVarPattern(Synonym assignStmt, Candidate lhs,
     Candidate expr, TotalCombinationList &combinations) {
     auto matchPattern = [=](CandidateCombination &combi) -> bool {
@@ -358,6 +370,7 @@ void QueryEvaluator::filterNoVarPattern(Synonym assignStmt, Candidate lhs,
     combinations.filter(assignStmt, matchPattern);
 }
 
+/*
 void QueryEvaluator::filterOneVarPattern(Synonym assignStmt, Synonym lhs,
     Candidate expr, TotalCombinationList &combinations) {
     auto matchPattern = [=](CandidateCombination combi) -> bool {
@@ -366,6 +379,7 @@ void QueryEvaluator::filterOneVarPattern(Synonym assignStmt, Synonym lhs,
     combinations.mergeAndFilter(assignStmt, lhs, matchPattern);
 }
 
+/*
 void QueryEvaluator::filterTwoVarsClause(string clauseType,
     Synonym &var0, Synonym &var1, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
@@ -374,6 +388,7 @@ void QueryEvaluator::filterTwoVarsClause(string clauseType,
     combinations.mergeAndFilter(var0, var1, evaluateClause);
 }
 
+/*
 void QueryEvaluator::filterFirstVarClause(string clauseType,
     Synonym var, Candidate constant, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
@@ -382,6 +397,7 @@ void QueryEvaluator::filterFirstVarClause(string clauseType,
     combinations.filter(var, evaluateClause);
 }
 
+/*
 void QueryEvaluator::filterSecondVarClause(string clauseType,
     Candidate constant, Synonym var, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
@@ -390,11 +406,13 @@ void QueryEvaluator::filterSecondVarClause(string clauseType,
     combinations.filter(var, evaluateClause);
 }
 
+/*
 void QueryEvaluator::filterNoVarClause(string clauseType,
     Candidate const1, Candidate const2, TotalCombinationList &combinations) {
     combinations.filter(evaluateSuchThatClause(clauseType, const1, const2));
 }
 
+/*
 void QueryEvaluator::filterTwoVarsWith(Synonym &var0, Synonym &var1, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
         return (combi[var0] == combi[var1]);
@@ -402,6 +420,7 @@ void QueryEvaluator::filterTwoVarsWith(Synonym &var0, Synonym &var1, TotalCombin
     combinations.mergeAndFilter(var0, var1, evaluateClause);
 }
 
+/*
 void QueryEvaluator::filterFirstVarWith(Synonym &var, Candidate constant, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
         return (combi[var] == constant);
@@ -409,6 +428,7 @@ void QueryEvaluator::filterFirstVarWith(Synonym &var, Candidate constant, TotalC
     combinations.filter(var, evaluateClause);
 }
 
+/*
 void QueryEvaluator::filterSecondVarWith(Candidate constant, Synonym &var, TotalCombinationList &combinations) {
     auto evaluateClause = [=](CandidateCombination combi) -> bool {
         return (combi[var] == constant);
@@ -416,10 +436,12 @@ void QueryEvaluator::filterSecondVarWith(Candidate constant, Synonym &var, Total
     combinations.filter(var, evaluateClause);
 }
 
+/*
 void QueryEvaluator::filterNoVarWith(Candidate const1, Candidate const2, TotalCombinationList &combinations) {
     combinations.filter(const1 == const2);
 }
 
+/*
 void QueryEvaluator::filterTwoVarsCallWith(Synonym & call0, Synonym & call1, TotalCombinationList & combinations) {
 	auto comp = [=](CandidateCombination combi) -> bool {
 		return (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call0]), "")
@@ -428,6 +450,7 @@ void QueryEvaluator::filterTwoVarsCallWith(Synonym & call0, Synonym & call1, Tot
 	combinations.mergeAndFilter(call0, call1, comp);
 }
 
+/*
 void QueryEvaluator::filterOneVarCallWith(Synonym & call, Synonym & var, TotalCombinationList & combinations) {
     auto comp = [=](CandidateCombination combi) -> bool {
         return (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call]), "") == combi[var]);
@@ -435,6 +458,7 @@ void QueryEvaluator::filterOneVarCallWith(Synonym & call, Synonym & var, TotalCo
     combinations.mergeAndFilter(call, var, comp);
 }
 
+/*
 void QueryEvaluator::filterNoVarCallWith(Synonym & call, Candidate cand, TotalCombinationList & combinations) {
     auto comp = [=](CandidateCombination combi) -> bool {
         return (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call]), "") == cand);
@@ -442,6 +466,7 @@ void QueryEvaluator::filterNoVarCallWith(Synonym & call, Candidate cand, TotalCo
     combinations.filter(call, comp);
 }
 
+/*
 bool QueryEvaluator::evaluateClause(Clause &clause, CandidateCombination &comb) {
     string type(clause.getClauseType());
     vector<string> args(clause.getArg());
@@ -461,6 +486,7 @@ bool QueryEvaluator::evaluateClause(Clause &clause, CandidateCombination &comb) 
     }
 }
 
+/*
 bool QueryEvaluator::evaluatePatternClause(Candidate stmt,
     Candidate lhsVar, string expr) {
     // Preprocessor will do the following:
@@ -500,6 +526,7 @@ bool QueryEvaluator::evaluatePatternClause(Candidate stmt,
     }
 }
 
+/*
 bool QueryEvaluator::evaluateSuchThatClause(
     string clauseType, Candidate var0, Candidate var1) {
     if (clauseType == SYMBOL_USES) {
@@ -531,6 +558,7 @@ bool QueryEvaluator::evaluateSuchThatClause(
     return false;
 }
 
+/*
 bool QueryEvaluator::evaluateUses(Candidate procOrStmtNo, Candidate varName) {
     if (Utils::IsNonNegativeNumeric(procOrStmtNo)) {
         if (varName == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -557,6 +585,7 @@ bool QueryEvaluator::evaluateUses(Candidate procOrStmtNo, Candidate varName) {
     }
 }
 
+/*
 bool QueryEvaluator::evaluateModifies(Candidate procOrStmtNo, Candidate varName) {
     if (Utils::IsNonNegativeNumeric(procOrStmtNo)) {
         int stmtNo(Utils::StringToInt(procOrStmtNo));
@@ -585,6 +614,7 @@ bool QueryEvaluator::evaluateModifies(Candidate procOrStmtNo, Candidate varName)
     }
 }
 
+/*
 bool QueryEvaluator::evaluateParent(Candidate stmt1, Candidate stmt2) {
     if (stmt1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -606,6 +636,7 @@ bool QueryEvaluator::evaluateParent(Candidate stmt1, Candidate stmt2) {
     }
 }
 
+/*
 bool QueryEvaluator::evaluateParentStar(Candidate stmt1, Candidate stmt2) {
     if (stmt1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -627,6 +658,7 @@ bool QueryEvaluator::evaluateParentStar(Candidate stmt1, Candidate stmt2) {
     }
 }
 
+/*
 bool QueryEvaluator::evaluateFollows(Candidate stmt1, Candidate stmt2) {
     if (stmt1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -648,6 +680,7 @@ bool QueryEvaluator::evaluateFollows(Candidate stmt1, Candidate stmt2) {
     }
 }
 
+/*
 bool QueryEvaluator::evaluateFollowsStar(Candidate stmt1, Candidate stmt2) {
     if (stmt1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
         if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -670,6 +703,7 @@ bool QueryEvaluator::evaluateFollowsStar(Candidate stmt1, Candidate stmt2) {
     }
 }
 
+/*
 bool QueryEvaluator::evaluateNext(Candidate stmt1, Candidate stmt2) {
 	if (stmt1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
 		if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -692,6 +726,7 @@ bool QueryEvaluator::evaluateNext(Candidate stmt1, Candidate stmt2) {
 	}
 }
 
+/*
 bool QueryEvaluator::evaluateNextStar(Candidate stmt1, Candidate stmt2) {
 	if (stmt1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
 		if (stmt2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -714,6 +749,7 @@ bool QueryEvaluator::evaluateNextStar(Candidate stmt1, Candidate stmt2) {
 	}
 }
 
+/*
 bool QueryEvaluator::evaluateCalls(Candidate proc1, Candidate proc2) {
 	if (proc1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
 		if (proc2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -733,6 +769,7 @@ bool QueryEvaluator::evaluateCalls(Candidate proc1, Candidate proc2) {
 	}
 }
 
+/*
 bool QueryEvaluator::evaluateCallsStar(Candidate proc1, Candidate proc2) {
 	if (proc1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
 		if (proc2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -752,6 +789,7 @@ bool QueryEvaluator::evaluateCallsStar(Candidate proc1, Candidate proc2) {
 	}
 }
 
+/*
 bool QueryEvaluator::evaluateAffects(Candidate assign1, Candidate assign2) {
     if (assign1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
         if (assign2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -774,6 +812,7 @@ bool QueryEvaluator::evaluateAffects(Candidate assign1, Candidate assign2) {
     }
 }
 
+/*
 bool QueryEvaluator::evaluateAffectsStar(Candidate assign1, Candidate assign2) {
     if (assign1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
         if (assign2 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
@@ -795,3 +834,4 @@ bool QueryEvaluator::evaluateAffectsStar(Candidate assign1, Candidate assign2) {
         }
     }
 }
+*/

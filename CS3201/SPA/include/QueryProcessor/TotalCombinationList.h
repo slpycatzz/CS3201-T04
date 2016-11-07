@@ -10,7 +10,7 @@
 #include "QueryTree.h"
 #include "QueryUtils.h"
 
-typedef std::string Candidate;
+typedef unsigned Candidate;
 typedef std::string Synonym;
 typedef int Cand;
 typedef std::unordered_map<Synonym, Candidate> CandidateCombination;

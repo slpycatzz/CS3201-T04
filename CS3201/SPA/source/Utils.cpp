@@ -104,6 +104,15 @@ unordered_map<string, string> Utils::MergeMap(unordered_map<string, string> &map
     return map;
 }
 
+unordered_map<string, unsigned> Utils::MergeMap(unordered_map<string, unsigned> &map1, unordered_map<string, unsigned> &map2) {
+	unordered_map<string, unsigned> map;
+
+	map.insert(map1.begin(), map1.end());
+	map.insert(map2.begin(), map2.end());
+
+	return map;
+}
+
 unordered_map<string, string> Utils::ReduceMap(unordered_map<string, string> &map, vector<string> &selections) {
     unordered_map<string, string> result;
     for (auto kv : map) {
@@ -124,6 +133,15 @@ unordered_map<string, string> Utils::GetSubMap(unordered_map<string, string>& ma
     return result;
 }
 
+unordered_map<string, unsigned> Utils::GetSubMap(unordered_map<string, unsigned> &map, const vector<string> &keyList) {
+	unordered_map<string, unsigned> result;
+	for (string key : keyList) {
+		result.insert_or_assign(key, map.at(key));
+	}
+
+	return result;
+}
+
 string Utils::MapToString(unordered_map<string, string> &map) {
     stringstream ss;
     ss << "<";
@@ -142,6 +160,26 @@ string Utils::MapToString(unordered_map<string, string> &map) {
 
     ss << ">";
     return ss.str();
+}
+
+string Utils::MapToString(unordered_map<string, unsigned> &map) {
+	stringstream ss;
+	ss << "<";
+
+	unordered_map<string, unsigned>::iterator iter(map.begin());
+	while (iter != map.end()) {
+		ss << (*iter).first << ":" << (*iter).second;
+
+		iter++;
+		if (iter == map.end()) {
+			break;
+		}
+
+		ss << CHAR_SYMBOL_COMMA;
+	}
+
+	ss << ">";
+	return ss.str();
 }
 
 string Utils::MapToValueString(unordered_map<string, string> &map) {
