@@ -50,9 +50,6 @@ bool QueryUtils::IsStringLiteral(string str) {
 	if (Utils::StartsWith(str, CHAR_SYMBOL_DOUBLEQUOTES) && Utils::EndsWith(str, CHAR_SYMBOL_DOUBLEQUOTES)) {
 		return true;
 	}
-	else if (str == string(1, CHAR_SYMBOL_UNDERSCORE)) {
-		return true;
-	}
 
 	return false;
 }

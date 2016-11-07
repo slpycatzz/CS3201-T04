@@ -356,25 +356,227 @@ void QueryEvaluator::filterByClause(Clause &clause,
 			}
 		}
     }
-	
-	else {
-        vector<Synonym> args(clause.getArg());
-        Synonym var0(args[0]), var1(args[1]);
-        if (QueryUtils::IsLiteral(var0)) {
-            if (QueryUtils::IsLiteral(var1)) {
-                filterNoVarClause(clauseType, Utils::StringToInt(var0), Utils::StringToInt(var1), combinations);
-            } else {
-                filterSecondVarClause(clauseType, Utils::StringToInt(var0), var1, combinations);
-            }
 
-        } else {
-            if (QueryUtils::IsLiteral(var1)) {
-                filterFirstVarClause(clauseType, var0, Utils::StringToInt(var1), combinations);
-            } else {
-                filterTwoVarsClause(clauseType, var0, var1, combinations);
-            }
-        }
-    }
+	else if (clauseType == SYMBOL_MODIFIES) {
+		vector<Synonym> args(clause.getArg());
+		Synonym var0(args[0]), var1(args[1]);
+		if (QueryUtils::IsStringLiteral(var1)) {
+			Candidate v1 = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(var1));
+			if (v1 == 0) {
+				combinations.filter(false);
+			}
+			else if (QueryUtils::IsStringLiteral(var0)) {
+				clauseType = SYMBOL_MODIFIES_PROCEDURE;
+				Candidate v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) {
+					combinations.filter(false);
+				}
+				else {
+					filterNoVarClause(clauseType, v0, v1, combinations);
+				}
+			}
+			else if (QueryUtils::IsNonNegativeInt(var0)) {
+				Candidate v0 = Utils::StringToInt(var0);
+				filterNoVarClause(clauseType, v0, v1, combinations);
+			}
+			else if (varMap[var0] == PROCEDURE) {
+				clauseType = SYMBOL_MODIFIES_PROCEDURE;
+				filterFirstVarClause(clauseType, var0, v1, combinations);
+			}
+			else {
+				filterFirstVarClause(clauseType, var0, v1, combinations);
+			}
+		}
+		else if (var1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			Candidate v1 = Utils::StringToInt(var1);
+			if (QueryUtils::IsStringLiteral(var0)) {
+				clauseType = SYMBOL_MODIFIES_PROCEDURE;
+				Candidate v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) {
+					combinations.filter(false);
+				}
+				else {
+					filterNoVarClause(clauseType, v0, v1, combinations);
+				}
+			}
+			else if (QueryUtils::IsNonNegativeInt(var0)) {
+				Candidate v0 = Utils::StringToInt(var0);
+				filterNoVarClause(clauseType, v0, v1, combinations);
+			}
+			else if (varMap[var0] == PROCEDURE) {
+				clauseType = SYMBOL_MODIFIES_PROCEDURE;
+				filterFirstVarClause(clauseType, var0, v1, combinations);
+			}
+			else {
+				filterFirstVarClause(clauseType, var0, v1, combinations);
+			}
+		}
+		else {
+			if (QueryUtils::IsStringLiteral(var0)) {
+				clauseType = SYMBOL_MODIFIES_PROCEDURE;
+				Candidate v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) {
+					combinations.filter(false);
+				}
+				else {
+					filterSecondVarClause(clauseType, v0, var1, combinations);
+				}
+			}
+			else if (QueryUtils::IsNonNegativeInt(var0)) {
+				Candidate v0 = Utils::StringToInt(var0);
+				filterSecondVarClause(clauseType, v0, var1, combinations);
+			}
+			else if (varMap[var0] == PROCEDURE) {
+				clauseType = SYMBOL_MODIFIES_PROCEDURE;
+				filterTwoVarsClause(clauseType, var0, var1, combinations);
+			}
+			else {
+				filterTwoVarsClause(clauseType, var0, var1, combinations);
+			}
+		}
+	}
+	
+	else if (clauseType == SYMBOL_USES) {
+		vector<Synonym> args(clause.getArg());
+		Synonym var0(args[0]), var1(args[1]);
+		if (QueryUtils::IsStringLiteral(var1)) {
+			Candidate v1 = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(var1));
+			if (v1 == 0) {
+				combinations.filter(false);
+			}
+			else if (QueryUtils::IsStringLiteral(var0)) {
+				clauseType = SYMBOL_USES_PROCEDURE;
+				Candidate v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) {
+					combinations.filter(false);
+				}
+				else {
+					filterNoVarClause(clauseType, v0, v1, combinations);
+				}
+			}
+			else if (QueryUtils::IsNonNegativeInt(var0)) {
+				Candidate v0 = Utils::StringToInt(var0);
+				filterNoVarClause(clauseType, v0, v1, combinations);
+			}
+			else if (varMap[var0] == PROCEDURE) {
+				clauseType = SYMBOL_USES_PROCEDURE;
+				filterFirstVarClause(clauseType, var0, v1, combinations);
+			}
+			else {
+				filterFirstVarClause(clauseType, var0, v1, combinations);
+			}
+		}
+		else if (var1 == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+			Candidate v1 = Utils::StringToInt(var1);
+			if (QueryUtils::IsStringLiteral(var0)) {
+				clauseType = SYMBOL_USES_PROCEDURE;
+				Candidate v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) {
+					combinations.filter(false);
+				}
+				else {
+					filterNoVarClause(clauseType, v0, v1, combinations);
+				}
+			}
+			else if (QueryUtils::IsNonNegativeInt(var0)) {
+				Candidate v0 = Utils::StringToInt(var0);
+				filterNoVarClause(clauseType, v0, v1, combinations);
+			}
+			else if (varMap[var0] == PROCEDURE) {
+				clauseType = SYMBOL_USES_PROCEDURE;
+				filterFirstVarClause(clauseType, var0, v1, combinations);
+			}
+			else {
+				filterFirstVarClause(clauseType, var0, v1, combinations);
+			}
+		}
+		else {
+			if (QueryUtils::IsStringLiteral(var0)) {
+				clauseType = SYMBOL_USES_PROCEDURE;
+				Candidate v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) {
+					combinations.filter(false);
+				}
+				else {
+					filterSecondVarClause(clauseType, v0, var1, combinations);
+				}
+			}
+			else if (QueryUtils::IsNonNegativeInt(var0)) {
+				Candidate v0 = Utils::StringToInt(var0);
+				filterSecondVarClause(clauseType, v0, var1, combinations);
+			}
+			else if (varMap[var0] == PROCEDURE) {
+				clauseType = SYMBOL_USES_PROCEDURE;
+				filterTwoVarsClause(clauseType, var0, var1, combinations);
+			}
+			else {
+				filterTwoVarsClause(clauseType, var0, var1, combinations);
+			}
+		}
+	}
+
+	else {
+		vector<Synonym> args(clause.getArg());
+		Synonym var0(args[0]), var1(args[1]);
+		if (QueryUtils::IsNonNegativeInt(var1)) {
+			Candidate v1 = Utils::StringToInt(var1);
+			if (QueryUtils::IsNonNegativeInt(var0)) {
+				filterNoVarClause(clauseType, Utils::StringToInt(var0), v1, combinations);
+			}
+			else if (QueryUtils::IsStringLiteral(var0)) {
+				Candidate v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) {
+					combinations.filter(false);
+				}
+				else {
+					filterNoVarClause(clauseType, v0, v1, combinations);
+				}
+			}
+			else {
+				filterFirstVarClause(clauseType, var0, v1, combinations);
+			}
+
+		}
+		else if (QueryUtils::IsStringLiteral(var1)) {
+			Candidate v1 = PKB::GetProcedureIndex(var1);
+			if (v1 == 0) {
+				combinations.filter(false);
+			}
+			else if (QueryUtils::IsNonNegativeInt(var0)) {
+				filterNoVarClause(clauseType, Utils::StringToInt(var0), v1, combinations);
+			}
+			else if (QueryUtils::IsStringLiteral(var0)) {
+				Candidate v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) {
+					combinations.filter(false);
+				}
+				else {
+					filterNoVarClause(clauseType, v0, v1, combinations);
+				}
+			}
+			else {
+				filterFirstVarClause(clauseType, var0, v1, combinations);
+			}
+
+		}
+		else {
+			if (QueryUtils::IsNonNegativeInt(var0)) {
+				filterSecondVarClause(clauseType, Utils::StringToInt(var0), var1, combinations);
+			}
+			else if (QueryUtils::IsStringLiteral(var0)) {
+				Candidate v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) {
+					combinations.filter(false);
+				}
+				else {
+					filterSecondVarClause(clauseType, v0, var1, combinations);
+				}
+			}
+			else {
+				filterTwoVarsClause(clauseType, var0, var1, combinations);
+			}
+		}
+	}
 
 
 	
