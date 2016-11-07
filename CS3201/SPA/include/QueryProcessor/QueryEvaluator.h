@@ -36,6 +36,7 @@ class QueryEvaluator {
     // retrieve all possible candidates for a variable
     std::vector<Candidate> getCandidates(Symbol &synType);
 
+	// get the total candidate list for a list of synonyms
     TotalCombinationList getTotalCandidateList(std::vector<Synonym> &synList);
 
     // use the clause to filter the tuple candidate list to its sublist
@@ -43,10 +44,10 @@ class QueryEvaluator {
 
     /* filter pattern clauses */
 
-    void filterNoVarPattern(Synonym assignStmt, Candidate lhs, Candidate expr,
+    void filterNoVarPattern(Synonym assignStmt, Candidate lhs, std::string expr,
         TotalCombinationList &combinations);
 
-    void filterOneVarPattern(Synonym assignStmt, Synonym lhs, Candidate expr,
+    void filterOneVarPattern(Synonym assignStmt, Synonym lhs, std::string expr,
         TotalCombinationList &combinations);
 
     /* filter such that clauses */
@@ -72,6 +73,8 @@ class QueryEvaluator {
     void filterSecondVarWith(Candidate constant, Synonym &var, TotalCombinationList &combinations);
 
     void filterNoVarWith(Candidate const1, Candidate const2, TotalCombinationList &combinations);
+
+	void filterNoVarWith(std::string str1, std::string str2, TotalCombinationList &combinations);
 
     /* filter with clauses with call */
 

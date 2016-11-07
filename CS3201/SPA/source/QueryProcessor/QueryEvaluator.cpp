@@ -179,7 +179,6 @@ bool QueryEvaluator::getBooleanGroupResult() {
 			}
 		}
 		else if (clauseType == SYMBOL_MODIFIES_PROCEDURE) {
-			if (PKB::)
 		}
     }
 
@@ -225,7 +224,7 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
 
     for (Clause clause : clauseGroup) {
 
-        filterByClause(clause, combinations, varMap);
+        filterByClause(clause, combinations);
 
         if (combinations.isEmpty()) {
             return TotalCombinationList();
@@ -236,24 +235,31 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult
 
     return combinations;
 }
+*/
 
-/*
+
 void QueryEvaluator::filterByClause(Clause &clause,
-    TotalCombinationList &combinations, unordered_map<Synonym, Symbol> &varMap) {
+    TotalCombinationList &combinations) {
     string clauseType(clause.getClauseType());
-
 
 	
 	log.append("\n");
 	log.append("clause type: " + clause.getClauseType() + "\n");
 	log.append("args: " + clause.getArg()[0] + " " + clause.getArg()[1]);
 
-    if (clauseType == SYMBOL_PATTERN) {
+    
+	if (clauseType == SYMBOL_PATTERN) {
         vector<Synonym> args(clause.getArg());
         Synonym lhs(args[1]), rhs(args[2]), assignStmt(args[0]);
 
         if (QueryUtils::IsStringLiteral(lhs)) {
-            filterNoVarPattern(assignStmt, QueryUtils::LiteralToCandidate(lhs), rhs, combinations);
+			Candidate l = PKB::GetVariableIndex(lhs);
+			if (l == 0) {
+				combinations.filter(false);
+			}
+			else {
+				filterNoVarPattern(assignStmt, l, rhs, combinations);
+			}
         } else {
             filterOneVarPattern(assignStmt, lhs, rhs, combinations);
         }
@@ -264,6 +270,9 @@ void QueryEvaluator::filterByClause(Clause &clause,
         vector<Synonym> args(clause.getArg());
         Synonym var0(args[0]), var1(args[1]);
 
+		Symbol type0 = varMap[var0];
+		Symbol type1 = varMap[var1];
+
 		if (args[2] == SYMBOL_VARIABLE) {
 			if (QueryUtils::IsStringLiteral(var0)) {
 				var0 = QueryUtils::LiteralToCandidate(var0);
@@ -271,19 +280,37 @@ void QueryEvaluator::filterByClause(Clause &clause,
 					var1 = QueryUtils::LiteralToCandidate(var1);
 					filterNoVarWith(var0, var1, combinations);
 				}
-				else if (varMap[var1] == CALL) {
-					filterNoVarCallWith(var1, var0, combinations);
+				else if (type1 == CALL) {
+					Candidate proc = PKB::GetProcedureIndex(var0);
+					if (proc == 0) {
+						combinations.filter(false);
+					}
+					else {
+						filterNoVarCallWith(var1, proc, combinations);
+					}
 				}
 				else {
-					filterSecondVarWith(var0, var1, combinations);
+					Candidate v = (type1 == PROCEDURE) ? PKB::GetProcedureIndex(var0) : PKB::GetVariableIndex(var0);
+					if (v == 0) {
+						combinations.filter(false);
+					}
+					else {
+						filterSecondVarWith(v, var1, combinations);
+					}
 				}
 			}
-			else if (varMap[var0] == CALL) {
+			else if (type0 == CALL) {
 				if (QueryUtils::IsStringLiteral(var1)) {
 					var1 = QueryUtils::LiteralToCandidate(var1);
-					filterNoVarCallWith(var0, var1, combinations);
+					Candidate proc = PKB::GetProcedureIndex(var1);
+					if (proc == 0) {
+						combinations.filter(false);
+					}
+					else {
+						filterNoVarCallWith(var0, proc, combinations);
+					}
 				}
-				else if (varMap[var1] == CALL) {
+				else if (type1 == CALL) {
 					filterTwoVarsCallWith(var0, var1, combinations);
 				}
 				else {
@@ -295,7 +322,7 @@ void QueryEvaluator::filterByClause(Clause &clause,
 					var1 = QueryUtils::LiteralToCandidate(var1);
 					filterFirstVarWith(var0, var1, combinations);
 				}
-				else if (varMap[var1] == CALL) {
+				else if (type1 == CALL) {
 					filterOneVarCallWith(var1, var0, combinations);
 				}
 				else {
@@ -435,33 +462,30 @@ void QueryEvaluator::filterSecondVarWith(Candidate constant, Synonym &var, Total
     };
     combinations.filter(var, evaluateClause);
 }
+*/
 
-/*
 void QueryEvaluator::filterNoVarWith(Candidate const1, Candidate const2, TotalCombinationList &combinations) {
     combinations.filter(const1 == const2);
 }
 
-/*
 void QueryEvaluator::filterTwoVarsCallWith(Synonym & call0, Synonym & call1, TotalCombinationList & combinations) {
 	auto comp = [=](CandidateCombination combi) -> bool {
-		return (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call0]), "")
-			== (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call1]), "")));
+		return (PKB::GetCallStmtProcedureIndex(combi[call0])
+			== (PKB::GetCallStmtProcedureIndex(combi[call1])));
 	};
 	combinations.mergeAndFilter(call0, call1, comp);
 }
 
-/*
 void QueryEvaluator::filterOneVarCallWith(Synonym & call, Synonym & var, TotalCombinationList & combinations) {
     auto comp = [=](CandidateCombination combi) -> bool {
-        return (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call]), "") == combi[var]);
+        return (PKB::GetCallStmtProcedureIndex(combi[call]) == combi[var]);
     };
     combinations.mergeAndFilter(call, var, comp);
 }
 
-/*
 void QueryEvaluator::filterNoVarCallWith(Synonym & call, Candidate cand, TotalCombinationList & combinations) {
     auto comp = [=](CandidateCombination combi) -> bool {
-        return (PKB::GetCallStmtProcedureName(Utils::StringToInt(combi[call]), "") == cand);
+        return (PKB::GetCallStmtProcedureIndex(combi[call])) == cand);
     };
     combinations.filter(call, comp);
 }
