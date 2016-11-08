@@ -334,8 +334,11 @@ void QueryEvaluator::filterByClause(Clause &clause, TotalCombinationList &combin
 	if (clauseType == SYMBOL_PATTERN) {
         vector<Synonym> args(clause.getArg());
         Synonym lhs(args[1]), rhs(args[2]), assignStmt(args[0]);
-
-        if (QueryUtils::IsLiteral(lhs)) {
+		
+		if (Utils::IsUnderscore(lhs)) {
+			filterUnderscorePattern(assignStmt, rhs, combinations);
+		}
+        else if (QueryUtils::IsStringLiteral(lhs)) {
 			filterNoVarPattern(assignStmt, lhs, rhs, combinations);
 		}
 		else {
@@ -484,9 +487,18 @@ void QueryEvaluator::filterNoVarPattern(Synonym assignStmt, string lhs,
     string expr, TotalCombinationList &combinations)
 {
     auto matchPattern = [=](CandidateCombination &combi) -> bool {
-        return evaluatePatternClause(combi[assignStmt], lhs, expr);
+        return evaluateNoVarPattern(combi[assignStmt], lhs, expr);
     };
     combinations.filter(assignStmt, matchPattern);
+}
+
+void QueryEvaluator::filterUnderscorePattern(Synonym assignStmt, std::string expr,
+	TotalCombinationList & combinations)
+{
+	auto matchPattern = [=](CandidateCombination &combi) -> bool {
+		return evaluateUnderscorePattern(combi[assignStmt], expr);
+	};
+	combinations.filter(assignStmt, matchPattern);
 }
 
 
@@ -494,7 +506,7 @@ void QueryEvaluator::filterOneVarPattern(Synonym assignStmt, Synonym lhs,
     string expr, TotalCombinationList &combinations)
 {
     auto matchPattern = [=](CandidateCombination combi) -> bool {
-        return evaluatePatternClause(combi[assignStmt], combi[lhs], expr);
+        return evaluateOneVarPattern(combi[assignStmt], combi[lhs], expr);
     };
     combinations.mergeAndFilter(assignStmt, lhs, matchPattern);
 }
@@ -648,7 +660,7 @@ void QueryEvaluator::filterNoVarCallWith(Synonym & call, Candidate cand, TotalCo
 }
 
 
-bool QueryEvaluator::evaluatePatternClause(Candidate stmtNo, string lhsVar, string expr)
+bool QueryEvaluator::evaluateNoVarPattern(Candidate stmtNo, string lhsVar, string expr)
 {
     // Preprocessor will do the following:
     // expression _"x+y"_ should convert to a string of vectors <x, +, y>
@@ -662,51 +674,38 @@ bool QueryEvaluator::evaluatePatternClause(Candidate stmtNo, string lhsVar, stri
 	log.append("\n");
 	log.append("expr: " + expression);
 
-    if (expression == string(1, CHAR_SYMBOL_UNDERSCORE)) {
-        if (Utils::IsUnderscore(lhsVar)) {
-            return true;
+	lhsVar = QueryUtils::LiteralToCandidate(lhsVar);
+	Candidate lhs = PKB::GetVariableIndex(lhsVar);
+	if (lhs == 0) {
+		return false;
+	}
 
-        } else {
-            // stmtNo can be type assign/if/while
-			lhsVar = QueryUtils::LiteralToCandidate(lhsVar);
-			Candidate lhs = PKB::GetVariableIndex(lhsVar);
-			if (lhs == 0) return false;
-            Symbol stmtSymbol = PKB::GetStmtSymbol(stmtNo);
-            if ((stmtSymbol == ASSIGN)) {
-                return PKB::IsModifies(stmtNo, lhs);
-            } else {
-                return PKB::HasControlVariableIndexAtStmtNumber(stmtNo, lhs);
-            }
-        }
+	else if (Utils::IsUnderscore(expression)) {
+		// stmtNo can be type assign/if/while
+		Symbol stmtSymbol = PKB::GetStmtSymbol(stmtNo);
+		if ((stmtSymbol == ASSIGN)) {
+			return PKB::IsModifies(stmtNo, lhs);
+		}
+		else {
+			return PKB::HasControlVariableIndexAtStmtNumber(stmtNo, lhs);
+		}
 
-    } else if (Utils::StartsWith(expression, CHAR_SYMBOL_UNDERSCORE)) {
-		if (Utils::IsUnderscore(lhsVar)) {
-            return PKB::IsSubExpression(stmtNo, QueryUtils::GetSubExpression(expression));
-        } else {
-			lhsVar = QueryUtils::LiteralToCandidate(lhsVar);
-			Candidate lhs = PKB::GetVariableIndex(lhsVar);
-			if (lhs == 0) return false;
-            return PKB::IsSubPattern(stmtNo, lhs, QueryUtils::GetSubExpression(expression));
-        }
+	}
 
-    } else {
-        if (Utils::IsUnderscore(lhsVar)) {
-            return PKB::IsExactExpression(stmtNo, expression);
-        } else {
-			lhsVar = QueryUtils::LiteralToCandidate(lhsVar);
-			Candidate lhs = PKB::GetVariableIndex(lhsVar);
-			if (lhs == 0) return false;
-            return PKB::IsExactPattern(stmtNo, lhs, expression);
-        }
+	else if (Utils::StartsWith(expression, CHAR_SYMBOL_UNDERSCORE)) {
+        return PKB::IsSubPattern(stmtNo, lhs, QueryUtils::GetSubExpression(expression));
+    }
+
+    else {
+        return PKB::IsExactPattern(stmtNo, lhs, expression);
     }
 }
 
-bool QueryEvaluator::evaluatePatternClause(Candidate stmtNo, Candidate lhs, std::string expr)
+bool QueryEvaluator::evaluateOneVarPattern(Candidate stmtNo, Candidate lhs, std::string expr)
 {
 	string expression(QueryUtils::GetExpression(expr));
-	if (expression == string(1, CHAR_SYMBOL_UNDERSCORE)) {
+	if (Utils::IsUnderscore(expression)) {
 		// stmtNo can be type assign/if/while
-		if (lhs == 0) return false;
 		Symbol stmtSymbol = PKB::GetStmtSymbol(stmtNo);
 		if ((stmtSymbol == ASSIGN)) {
 			return PKB::IsModifies(stmtNo, lhs);
@@ -720,6 +719,21 @@ bool QueryEvaluator::evaluatePatternClause(Candidate stmtNo, Candidate lhs, std:
 	}
 	else {
 		return PKB::IsExactPattern(stmtNo, lhs, expression);
+	}
+}
+
+bool QueryEvaluator::evaluateUnderscorePattern(Candidate stmtNo, std::string expr)
+{
+	string expression(QueryUtils::GetExpression(expr));
+	if (Utils::IsUnderscore(expression)) {
+		// stmtNo can be type assign/if/while
+		return true;
+	}
+	else if (Utils::StartsWith(expression, CHAR_SYMBOL_UNDERSCORE)) {
+		return PKB::IsSubExpression(stmtNo, QueryUtils::GetSubExpression(expression));
+	}
+	else {
+		return PKB::IsExactExpression(stmtNo, expression);
 	}
 }
 

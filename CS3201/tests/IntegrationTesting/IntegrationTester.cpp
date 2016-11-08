@@ -535,8 +535,6 @@ public:
 		QueryTree qt(getQueryTree("assign a; Select <a,a> such that Modifies(a, \"ghost\")"));
 		QueryEvaluator qe;
 
-		Assert::IsTrue(qe.evaluateSuchThatClause("Modifies", 7, PKB::GetVariableIndex("ghost")));
-
 		string actual(format(qe.selectQueryResults(qt)));
 		string expected("<<7,7>,<20,20>,<25,25>,<51,51>,<64,64>,<93,93>,<124,124>,<131,131>,<134,134>>");
 

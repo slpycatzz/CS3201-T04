@@ -50,6 +50,8 @@ class QueryEvaluator {
     void filterNoVarPattern(Synonym assignStmt, std::string lhs, std::string expr,
         TotalCombinationList &combinations);
 
+	void filterUnderscorePattern(Synonym assignStmt, std::string expr, TotalCombinationList &combinations);
+
     void filterOneVarPattern(Synonym assignStmt, Synonym lhs, std::string expr,
         TotalCombinationList &combinations);
 
@@ -94,15 +96,18 @@ class QueryEvaluator {
     bool isBoolSelect(std::vector<std::string>& synList);
 
     std::string log;
-    
+ 
+private:
     bool evaluateSuchThatClause(std::string clauseType, std::string var0, std::string var1);
 	bool evaluateSuchThatClause(std::string clauseType, Candidate var0, std::string var1);
 	bool evaluateSuchThatClause(std::string clauseType, std::string var0, Candidate var1);
 	bool evaluateSuchThatClause(std::string clauseType, Candidate var0, Candidate var1);
 	
-	bool evaluatePatternClause(Candidate assignStmt, std::string lhsVar, std::string expr);
-	bool evaluatePatternClause(Candidate assignStmt, Candidate lhsVar, std::string expr);
-private:
+	bool evaluateNoVarPattern(Candidate assignStmt, std::string lhsVar, std::string expr);
+	bool evaluateOneVarPattern(Candidate assignStmt, Candidate lhsVar, std::string expr);
+	bool evaluateUnderscorePattern(Candidate assignStmt, std::string expr);
+
+	/* DEPRECATED */
 	bool evaluateCalls(Candidate var0, Candidate var1);
     bool evaluateCallsStar(Candidate var0, Candidate var1);
     bool evaluateModifies(Candidate var0, Candidate var1);
@@ -117,6 +122,7 @@ private:
     bool evaluateNextStar(Candidate var0, Candidate var1);
     bool evaluateAffects(Candidate var0, Candidate var1);
     bool evaluateAffectsStar(Candidate var0, Candidate var1);
+	/* END DEPRECATED */
 
 	std::vector<Synonym> selectList;
 	std::unordered_map<Synonym, Symbol> varMap;
