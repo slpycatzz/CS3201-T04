@@ -683,7 +683,7 @@ void QueryEvaluator::filterOneVarCallWith(Synonym & call, Synonym & var, TotalCo
 	}
 	else {
 		auto comp = [=](CandidateCombination combi) -> bool {
-			return (PKB::GetCallStmtProcedureName(combi[call], "") == PKB::GetVariableName(combi[var]));
+			return (PKB::GetCallStmtProcedureName(combi[call]) == PKB::GetVariableName(combi[var]));
 		};
 		combinations.mergeAndFilter(call, var, comp);
 	}

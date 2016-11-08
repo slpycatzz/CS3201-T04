@@ -52,6 +52,7 @@ class PKB {
 
     static void InsertCallStmt(StmtNumber stmtNumber, ProcedureIndex procedureIndex);
     static ProcedureIndex GetCallStmtProcedureIndex(StmtNumber stmtNumber);
+    static ProcedureName GetCallStmtProcedureName(StmtNumber stmtNumber);
     static void PrintCallTable();
 
     static void InsertStmt(StmtNumber stmtNumber, Symbol stmtSymbol);
@@ -171,30 +172,6 @@ class PKB {
 
     static void Clear();
     static void ClearComputeOnDemands();
-
-    /* START - Deprecated functions */
-    static bool HasControlVariableNameAtStmtNumber(StmtNumber stmtNumber, VariableName controlVariable);
-
-    static ProcedureName GetCallStmtProcedureName(StmtNumber stmtNumber, std::string deprecatedFiller);
-
-    static bool IsExactPattern(StmtNumber stmtNumber, VariableName variableName, Expression expression);
-    static bool IsSubPattern(StmtNumber stmtNumber, VariableName variableName, SubExpression subExpression);
-
-    static bool IsCalls(ProcedureName calling, ProcedureName called);
-    static bool IsCallsTransitive(ProcedureName calling, ProcedureName called);
-    static std::vector<ProcedureName> GetCalling(ProcedureName called);
-    static std::vector<ProcedureName> GetCalled(ProcedureName calling);
-
-    static bool IsModifies(StmtNumber stmtNumber, VariableName variableName);
-    static bool IsModifiesProcedure(ProcedureName procedureName, VariableName variableName);
-    static std::vector<StmtNumber> GetStmtNumberModifying(VariableName variableName);
-    static std::vector<VariableName> GetProcedureModifiedVariables(ProcedureName procedureName);
-
-    static bool IsUses(StmtNumber stmtNumber, VariableName variableName);
-    static bool IsUsesProcedure(ProcedureName procedureName, VariableName variableName);
-    static std::vector<StmtNumber> GetStmtNumberUsing(VariableName variableName);
-    static std::vector<VariableName> GetProcedureUsedVariables(ProcedureName procedureName);
-    /* END   - Deprecated functions */
 
  private:
     static bool ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, const std::pair<unsigned int, Symbol> &pairTwo);

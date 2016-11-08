@@ -235,6 +235,17 @@ ProcedureIndex PKB::GetCallStmtProcedureIndex(StmtNumber stmtNumber) {
     return 0;
 }
 
+ProcedureName PKB::GetCallStmtProcedureName(StmtNumber stmtNumber) {
+    vector<ProcedureIndex> procedureIndexes = callTable_.getValues(stmtNumber);
+
+    /* It is expected that one call statement calls only one procedure. */
+    for (ProcedureIndex procedureIndex : procedureIndexes) {
+        return PKB::GetProcedureName(procedureIndex);
+    }
+
+    return "";
+}
+
 void PKB::PrintCallTable() {
     callTable_.print();
 }
@@ -781,7 +792,7 @@ bool PKB::IsAffects() {
     if (isAffectsDone) {
         return true;
     }
-    
+
     /* If nothing is affecting yet, try all those not populated ones. */
     for (auto &pair : controlFlowGraphNodes_) {
         if (affectsTable_.getNumberOfRelationship() > 0) {
@@ -1135,7 +1146,7 @@ void PKB::Clear() {
 
 void PKB::ClearComputeOnDemands() {
     isAffectsDone = false;
-    
+
     nextTransitiveMatrix_.clear();
 
     affectsMatrix_.clear();
@@ -1149,134 +1160,3 @@ bool PKB::ComparePairAscending(const std::pair<unsigned int, Symbol> &pairOne, c
 }
 
 /* START - Miscellaneous functions */
-
-/* START - Deprecated functions */
-bool PKB::HasControlVariableNameAtStmtNumber(StmtNumber stmtNumber, VariableName controlVariable) {
-    return controlVariableTable_.hasKeyToValue(stmtNumber, GetVariableIndex(controlVariable));
-}
-
-ProcedureName PKB::GetCallStmtProcedureName(StmtNumber stmtNumber, std::string deprecatedFiller) {
-    if (callTable_.hasKey(stmtNumber)) {
-        vector<ProcedureIndex> procedureIndexes = callTable_.getValues(stmtNumber);
-
-        /* It is expected that one call statement calls only one procedure. */
-        for (ProcedureIndex procedureIndex : procedureIndexes) {
-            return PKB::GetProcedureName(procedureIndex);
-        }
-    }
-
-    return "";
-}
-
-bool PKB::IsExactPattern(StmtNumber stmtNumber, VariableName variableName, Expression expression) {
-    switch (GetStmtSymbol(stmtNumber)) {
-        default:
-            break;
-
-        case WHILE:
-        case IF:
-            return HasControlVariableNameAtStmtNumber(stmtNumber, variableName);
-
-        case ASSIGN:
-            if (HasControlVariableNameAtStmtNumber(stmtNumber, variableName)) {
-                return IsExactExpression(stmtNumber, expression);
-            }
-    }
-
-    return false;
-}
-
-bool PKB::IsSubPattern(StmtNumber stmtNumber, VariableName variableName, SubExpression subExpression) {
-    switch (GetStmtSymbol(stmtNumber)) {
-        default:
-            break;
-
-        case WHILE:
-        case IF:
-            return HasControlVariableNameAtStmtNumber(stmtNumber, variableName);
-
-        case ASSIGN:
-            if (HasControlVariableNameAtStmtNumber(stmtNumber, variableName)) {
-                return IsSubExpression(stmtNumber, subExpression);
-            }
-    }
-
-    return false;
-}
-
-bool PKB::IsCalls(ProcedureName calling, ProcedureName called) {
-    return callsTable_.hasKeyToValue(PKB::GetProcedureIndex(calling), PKB::GetProcedureIndex(called));
-}
-
-bool PKB::IsCallsTransitive(ProcedureName calling, ProcedureName called) {
-    return callsTransitiveTable_.hasKeyToValue(PKB::GetProcedureIndex(calling), PKB::GetProcedureIndex(called));
-}
-
-vector<ProcedureName> PKB::GetCalling(ProcedureName called) {
-    vector<ProcedureName> names;
-    vector<ProcedureIndex> indexes = callsTable_.getKeys(PKB::GetProcedureIndex(called));
-
-    for (ProcedureIndex index : indexes) {
-        names.push_back(PKB::GetProcedureName(index));
-    }
-
-    return names;
-}
-
-vector<ProcedureName> PKB::GetCalled(ProcedureName calling) {
-    vector<ProcedureName> names;
-    vector<ProcedureIndex> indexes = callsTable_.getValues(PKB::GetProcedureIndex(calling));
-
-    for (ProcedureIndex index : indexes) {
-        names.push_back(PKB::GetProcedureName(index));
-    }
-
-    return names;
-}
-
-bool PKB::IsModifies(StmtNumber stmtNumber, VariableName variableName) {
-    return modifiesTable_.hasKeyToValue(stmtNumber, PKB::GetVariableIndex(variableName));
-}
-
-bool PKB::IsModifiesProcedure(ProcedureName procedureName, VariableName variableName) {
-    return modifiesProcedureTable_.hasKeyToValue(PKB::GetProcedureIndex(procedureName), PKB::GetVariableIndex(variableName));
-}
-
-vector<StmtNumber> PKB::GetStmtNumberModifying(VariableName variableName) {
-    return modifiesTable_.getKeys(PKB::GetVariableIndex(variableName));
-}
-
-vector<VariableName> PKB::GetProcedureModifiedVariables(ProcedureName procedureName) {
-    vector<VariableName> names;
-    vector<VariableIndex> indexes = modifiesProcedureTable_.getValues(PKB::GetProcedureIndex(procedureName));
-
-    for (VariableIndex index : indexes) {
-        names.push_back(PKB::GetVariableName(index));
-    }
-
-    return names;
-}
-
-bool PKB::IsUses(StmtNumber stmtNumber, VariableName variableName) {
-    return usesTable_.hasKeyToValue(stmtNumber, PKB::GetVariableIndex(variableName));
-}
-
-bool PKB::IsUsesProcedure(ProcedureName procedureName, VariableName variableName) {
-    return usesProcedureTable_.hasKeyToValue(PKB::GetProcedureIndex(procedureName), PKB::GetVariableIndex(variableName));
-}
-
-vector<StmtNumber> PKB::GetStmtNumberUsing(VariableName variableName) {
-    return usesTable_.getKeys(PKB::GetVariableIndex(variableName));
-}
-
-vector<VariableName> PKB::GetProcedureUsedVariables(ProcedureName procedureName) {
-    vector<VariableName> names;
-    vector<VariableIndex> indexes = usesProcedureTable_.getValues(PKB::GetProcedureIndex(procedureName));
-
-    for (VariableIndex index : indexes) {
-        names.push_back(PKB::GetVariableName(index));
-    }
-
-    return names;
-}
-/* END   - Deprecated functions */
