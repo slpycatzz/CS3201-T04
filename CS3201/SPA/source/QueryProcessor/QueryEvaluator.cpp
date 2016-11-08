@@ -825,64 +825,116 @@ bool QueryEvaluator::evaluateSuchThatClause(std::string clauseType, Candidate v0
 {
 	Candidate v1;
 	if (clauseType == SYMBOL_USES) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(var1));
-		if (v1 == 0) return false;
-		return evaluateUses(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (!PKB::GetUsedVariables(v0).empty());
+		}
+		else {
+			v1 = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(var1));
+			if (v1 == 0) return false;
+			else return PKB::IsUses(v0, v1);
+		}
 	}
 	else if (clauseType == SYMBOL_MODIFIES) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(var1));
-		if (v1 == 0) return false;
-		return evaluateModifies(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (!PKB::GetModifiedVariables(v0).empty());
+		}
+		else {
+			v1 = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(var1));
+			if (v1 == 0) return false;
+			else return PKB::IsModifies(v0, v1);
+		}
 	}
 	else if (clauseType == SYMBOL_PARENT) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : Utils::StringToInt(var1);
-		if (v1 == 0) return false;
-		return evaluateParent(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (!PKB::GetChildren(v0).empty());
+		}
+		else {
+			v1 = Utils::StringToInt(var1);
+			return PKB::IsParent(v0, v1);
+		}
 	}
 	else if (clauseType == SYMBOL_PARENT_TRANSITIVE) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : Utils::StringToInt(var1);
-		if (v1 == 0) return false;
-		return evaluateParentStar(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (!PKB::GetChildren(v0).empty());
+		}
+		else {
+			v1 = Utils::StringToInt(var1);
+			return PKB::IsParentTransitive(v0, v1);
+		}
 	}
 	else if (clauseType == SYMBOL_FOLLOWS) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : Utils::StringToInt(var1);
-		if (v1 == 0) return false;
-		return evaluateFollows(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (PKB::GetFollowing(v0) > 0);
+		}
+		else {
+			v1 = Utils::StringToInt(var1);
+			return PKB::IsFollows(v0, v1);
+		}
 	}
 	else if (clauseType == SYMBOL_FOLLOWS_TRANSITIVE) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : Utils::StringToInt(var1);
-		if (v1 == 0) return false;
-		return evaluateFollowsStar(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (PKB::GetFollowing(v0) > 0);
+		}
+		else {
+			v1 = Utils::StringToInt(var1);
+			return PKB::IsFollowsTransitive(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_NEXT)) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : Utils::StringToInt(var1);
-		if (v1 == 0) return false;
-		return evaluateNext(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (!PKB::GetNext(v0).empty());
+		}
+		else {
+			v1 = Utils::StringToInt(var1);
+			return PKB::IsNext(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_NEXT_TRANSITIVE)) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : Utils::StringToInt(var1);
-		if (v1 == 0) return false;
-		return evaluateNextStar(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (!PKB::GetNext(v0).empty());
+		}
+		else {
+			v1 = Utils::StringToInt(var1);
+			return PKB::IsNextTransitive(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_CALLS)) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var1));
-		if (v1 == 0) return false;
-		return evaluateCalls(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (!PKB::GetCalled(v0).empty());
+		}
+		else {
+			v1 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var1));
+			if (v1 == 0) return false;
+			else return PKB::IsCalls(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_CALLS_TRANSITIVE)) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var1));
-		if (v1 == 0) return false;
-		return evaluateCallsStar(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (!PKB::GetCalled(v0).empty());
+		}
+		else {
+			v1 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var1));
+			if (v1 == 0) return false;
+			else return PKB::IsCallsTransitive(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_AFFECTS)) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : Utils::StringToInt(var1);
-		if (v1 == 0) return false;
-		return evaluateAffects(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (!PKB::GetAffected(v0).empty());
+		}
+		else {
+			v1 = Utils::StringToInt(var1);
+			return PKB::IsAffects(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_AFFECTS_TRANSITIVE)) {
-		v1 = Utils::IsUnderscore(var1) ? INT_UNDERSCORE : Utils::StringToInt(var1);
-		if (v1 == 0) return false;
-		return evaluateAffectsStar(v0, v1);
+		if (Utils::IsUnderscore(var1)) {
+			return (!PKB::GetAffected(v0).empty());
+		}
+		else {
+			v1 = Utils::StringToInt(var1);
+			return PKB::IsAffectsTransitive(v0, v1);
+		}
 	}
 
 	return false;
@@ -893,81 +945,121 @@ bool QueryEvaluator::evaluateSuchThatClause(std::string clauseType, std::string 
 	Candidate v0;
 	if (clauseType == SYMBOL_USES) {
 		if (Utils::IsUnderscore(var0)) {
-			v0 = INT_UNDERSCORE;
+			return (!PKB::GetStmtNumberUsing(v1).empty());
 		}
 		else if (Utils::IsNonNegativeNumeric(var0)) {
 			v0 = Utils::StringToInt(var0);
+			return PKB::IsUses(v0, v1);
 		}
 		else {
 			v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
 			if (v0 == 0) return false;
-			else return evaluateUsesProcedure(v0, v1);
+			else return PKB::IsUsesProcedure(v0, v1);
 		}
-		return evaluateUses(v0, v1);
 	}
 	else if (clauseType == SYMBOL_MODIFIES) {
 		if (Utils::IsUnderscore(var0)) {
-			v0 = INT_UNDERSCORE;
+			return (!PKB::GetStmtNumberModifying(v1).empty());
 		}
 		else if (Utils::IsNonNegativeNumeric(var0)) {
 			v0 = Utils::StringToInt(var0);
+			return PKB::IsModifies(v0, v1);
 		}
 		else {
 			v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
 			if (v0 == 0) return false;
-			else return evaluateModifiesProcedure(v0, v1);
+			else return PKB::IsModifiesProcedure(v0, v1);
 		}
-		return evaluateModifies(v0, v1);
 	}
 	else if (clauseType == SYMBOL_PARENT) {
-		v0 = Utils::IsUnderscore(var0) ? INT_UNDERSCORE : Utils::StringToInt(var0);
-		if (v0 == 0) return false;
-		return evaluateParent(v0, v1);
+		if (Utils::IsUnderscore(var0)) {
+			return (PKB::GetParent(v1) > 0);
+		}
+		else {
+			v0 = Utils::StringToInt(var0);
+			return PKB::IsParent(v0, v1);
+		}
 	}
 	else if (clauseType == SYMBOL_PARENT_TRANSITIVE) {
-		v0 = Utils::IsUnderscore(var0) ? INT_UNDERSCORE : Utils::StringToInt(var0);
-		if (v0 == 0) return false;
-		return evaluateParentStar(v0, v1);
+		if (Utils::IsUnderscore(var0)) {
+			return (PKB::GetParent(v1) > 0);
+		}
+		else {
+			v0 = Utils::StringToInt(var0);
+			return PKB::IsParentTransitive(v0, v1);
+		}
 	}
 	else if (clauseType == SYMBOL_FOLLOWS) {
-		v0 = Utils::IsUnderscore(var0) ? INT_UNDERSCORE : Utils::StringToInt(var0);
-		if (v0 == 0) return false;
-		return evaluateFollows(v0, v1);
+		if (Utils::IsUnderscore(var0)) {
+			return (PKB::GetFollows(v1) > 0);
+		}
+		else {
+			v0 = Utils::StringToInt(var0);
+			return PKB::IsFollows(v0, v1);
+		}
 	}
 	else if (clauseType == SYMBOL_FOLLOWS_TRANSITIVE) {
-		v0 = Utils::IsUnderscore(var0) ? INT_UNDERSCORE : Utils::StringToInt(var0);
-		if (v0 == 0) return false;
-		return evaluateFollowsStar(v0, v1);
+		if (Utils::IsUnderscore(var0)) {
+			return (PKB::GetFollows(v1) > 0);
+		}
+		else {
+			v0 = Utils::StringToInt(var0);
+			return PKB::IsFollowsTransitive(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_NEXT)) {
-		v0 = Utils::IsUnderscore(var0) ? INT_UNDERSCORE : Utils::StringToInt(var0);
-		if (v0 == 0) return false;
-		return evaluateNext(v0, v1);
+		if (Utils::IsUnderscore(var0)) {
+			return (!PKB::GetPrevious(v1).empty());
+		}
+		else {
+			v0 = Utils::StringToInt(var0);
+			return PKB::IsNext(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_NEXT_TRANSITIVE)) {
-		v0 = Utils::IsUnderscore(var0) ? INT_UNDERSCORE : Utils::StringToInt(var0);
-		if (v0 == 0) return false;
-		return evaluateNextStar(v0, v1);
+		if (Utils::IsUnderscore(var0)) {
+			return (!PKB::GetPrevious(v1).empty());
+		}
+		else {
+			v0 = Utils::StringToInt(var0);
+			return PKB::IsNextTransitive(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_CALLS)) {
-		v0 = Utils::IsUnderscore(var0) ? INT_UNDERSCORE : PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
-		if (v0 == 0) return false;
-		return evaluateCalls(v0, v1);
+		if (Utils::IsUnderscore(var0)) {
+			return (!PKB::GetCalling(v1).empty());
+		}
+		else {
+			v0 = Utils::StringToInt(var0);
+			return PKB::IsCalls(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_CALLS_TRANSITIVE)) {
-		v0 = Utils::IsUnderscore(var0) ? INT_UNDERSCORE : PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
-		if (v0 == 0) return false;
-		return evaluateCallsStar(v0, v1);
+		if (Utils::IsUnderscore(var0)) {
+			return (!PKB::GetCalling(v1).empty());
+		}
+		else {
+			v0 = Utils::StringToInt(var0);
+			return PKB::IsCallsTransitive(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_AFFECTS)) {
-		v0 = Utils::IsUnderscore(var0) ? INT_UNDERSCORE : Utils::StringToInt(var0);
-		if (v0 == 0) return false;
-		return evaluateAffects(v0, v1);
+		if (Utils::IsUnderscore(var0)) {
+			return (!PKB::GetAffecting(v1).empty());
+		}
+		else {
+			v0 = Utils::StringToInt(var0);
+			return PKB::IsAffects(v0, v1);
+		}
 	}
 	else if (clauseType == (SYMBOL_AFFECTS_TRANSITIVE)) {
-		v0 = Utils::IsUnderscore(var0) ? INT_UNDERSCORE : Utils::StringToInt(var0);
-		if (v0 == 0) return false;
-		return evaluateAffectsStar(v0, v1);
+		if (Utils::IsUnderscore(var0)) {
+			return (!PKB::GetAffecting(v1).empty());
+		}
+		else {
+			v0 = Utils::StringToInt(var0);
+			return PKB::IsAffectsTransitive(v0, v1);
+		}
 	}
 
 	return false;
@@ -976,40 +1068,40 @@ bool QueryEvaluator::evaluateSuchThatClause(std::string clauseType, std::string 
 bool QueryEvaluator::evaluateSuchThatClause(std::string clauseType, Candidate v0, Candidate v1)
 {
 	if (clauseType == SYMBOL_USES) {
-		return evaluateUses(v0, v1);
+		return PKB::IsUses(v0, v1);
 	}
 	else if (clauseType == SYMBOL_MODIFIES) {
-		return evaluateModifies(v0, v1);
+		return PKB::IsModifies(v0, v1);
 	}
 	else if (clauseType == SYMBOL_PARENT) {
-		return evaluateParent(v0, v1);
+		return PKB::IsParent(v0, v1);
 	}
 	else if (clauseType == SYMBOL_PARENT_TRANSITIVE) {
-		return evaluateParentStar(v0, v1);
+		return PKB::IsParentTransitive(v0, v1);
 	}
 	else if (clauseType == SYMBOL_FOLLOWS) {
-		return evaluateFollows(v0, v1);
+		return PKB::IsFollows(v0, v1);
 	}
 	else if (clauseType == SYMBOL_FOLLOWS_TRANSITIVE) {
-		return evaluateFollowsStar(v0, v1);
+		return PKB::IsFollowsTransitive(v0, v1);
 	}
 	else if (clauseType == (SYMBOL_NEXT)) {
-		return evaluateNext(v0, v1);
+		return PKB::IsNext(v0, v1);
 	}
 	else if (clauseType == (SYMBOL_NEXT_TRANSITIVE)) {
-		return evaluateNextStar(v0, v1);
+		return PKB::IsNextTransitive(v0, v1);
 	}
 	else if (clauseType == (SYMBOL_CALLS)) {
-		return evaluateCalls(v0, v1);
+		return PKB::IsCalls(v0, v1);
 	}
 	else if (clauseType == (SYMBOL_CALLS_TRANSITIVE)) {
-		return evaluateCallsStar(v0, v1);
+		return PKB::IsCallsTransitive(v0, v1);
 	}
 	else if (clauseType == (SYMBOL_AFFECTS)) {
-		return evaluateAffects(v0, v1);
+		return PKB::IsAffects(v0, v1);
 	}
 	else if (clauseType == (SYMBOL_AFFECTS_TRANSITIVE)) {
-		return evaluateAffectsStar(v0, v1);
+		return PKB::IsAffectsTransitive(v0, v1);
 	}
 
 	return false;
