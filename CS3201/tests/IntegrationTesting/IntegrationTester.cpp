@@ -188,6 +188,33 @@ public:
 		string expected("<<6,a>,<6,b>,<6,c>,<6,d>,<6,e>,<6,g>,<6,h>,<33,c>,<33,e>,<33,g>,<33,h>>");
 		Assert::AreEqual(expected, actual);
 	}
+	TEST_METHOD(Integration_QE_ModifiesProcedure_1) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source2.txt");
+		QueryTree qt(getQueryTree("procedure p; variable v; Select v such that Modifies(\"Test2\", v)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<a>,<b>,<c>,<d>,<e>,<f>,<g>,<h>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_ModifiesProcedure_2) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source2.txt");
+		QueryTree qt(getQueryTree("procedure p; variable v; Select p such that Modifies(p, _)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<Test2>>");
+		Assert::AreEqual(expected, actual);
+	}
+	TEST_METHOD(Integration_QE_ModifiesProcedure_3) {
+		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source2.txt");
+		QueryTree qt(getQueryTree("while w; variable v; Select v such that Modifies(\"Test2\",_)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<a>,<b>,<c>,<d>,<e>,<f>,<g>,<h>>");
+		Assert::AreEqual(expected, actual);
+	}
 	TEST_METHOD(Integration_QE_UsesAssign) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select a such that Uses(a, \"a\")"));

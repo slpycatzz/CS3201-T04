@@ -110,13 +110,17 @@ ResultList QueryEvaluator::getResultsFromCombinationList(TotalCombinationList &c
 
 		for (Synonym syn : selectList) {
 			string cand;
-			if (varMap[syn] == VARIABLE) {
+			switch (varMap[syn]) {
+			case VARIABLE:
 				cand = PKB::GetVariableName(combi[syn]);
-			}
-			else if (varMap[syn] == PROCEDURE) {
+				break;
+			case PROCEDURE:
 				cand = PKB::GetProcedureName(combi[syn]);
-			}
-			else {
+				break;
+			case CONSTANT:
+				cand = PKB::GetConstantValue(combi[syn]);
+				break;
+			default:
 				cand = Utils::IntToString(combi[syn]);
 			}
 			candidateTuple.push_back(cand);
@@ -324,7 +328,7 @@ TotalCombinationList QueryEvaluator::getSelectedGroupResult(vector<Synonym> &syn
 void QueryEvaluator::filterByClause(Clause &clause, TotalCombinationList &combinations)
 {
     string clauseType(clause.getClauseType());
-
+	vector<Synonym> args(clause.getArg());
 	
 	log.append("\n");
 	log.append("clause type: " + clause.getClauseType() + "\n");
@@ -332,7 +336,7 @@ void QueryEvaluator::filterByClause(Clause &clause, TotalCombinationList &combin
 
     
 	if (clauseType == SYMBOL_PATTERN) {
-        vector<Synonym> args(clause.getArg());
+
         Synonym lhs(args[1]), rhs(args[2]), assignStmt(args[0]);
 		
 		if (Utils::IsUnderscore(lhs)) {
@@ -348,7 +352,7 @@ void QueryEvaluator::filterByClause(Clause &clause, TotalCombinationList &combin
     }
 	
 	else if (clauseType == SYMBOL_WITH) {
-        vector<Synonym> args(clause.getArg());
+
         Synonym var0(args[0]), var1(args[1]);
 
 		Symbol type0 = varMap[var0];
@@ -440,7 +444,6 @@ void QueryEvaluator::filterByClause(Clause &clause, TotalCombinationList &combin
 	
 	else {
 		
-		vector<Synonym> args(clause.getArg());
 		Synonym var0(args[0]), var1(args[1]);
 
 		if (QueryUtils::IsLiteral(var1)) {
@@ -542,28 +545,48 @@ void QueryEvaluator::filterFirstVarClause(string clauseType,
     Synonym var, string constant, TotalCombinationList &combinations)
 {
 	if (varMap[var] == PROCEDURE) {
+		
 		if (clauseType == SYMBOL_MODIFIES) {
-			Candidate v = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(constant));
-			if (v == 0) {
-				combinations.filter(false);
-			}
-			else {
+			
+			if (Utils::IsUnderscore(constant)) {
 				auto evaluateClause = [=](CandidateCombination combi) -> bool {
-					return PKB::IsModifiesProcedure(combi[var], v);
+					return (!PKB::GetProcedureModifiedVariables(combi[var]).empty());
 				};
 				combinations.filter(var, evaluateClause);
+			}
+			else {
+				Candidate v = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(constant));
+				if (v == 0) {
+					combinations.filter(false);
+				}
+				else {
+					auto evaluateClause = [=](CandidateCombination combi) -> bool {
+						return PKB::IsModifiesProcedure(combi[var], v);
+					};
+					combinations.filter(var, evaluateClause);
+				}
 			}
 		}
-		if (clauseType == SYMBOL_USES) {
-			Candidate v = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(constant));
-			if (v == 0) {
-				combinations.filter(false);
-			}
-			else {
+		
+		else if (clauseType == SYMBOL_USES) {
+			
+			if (Utils::IsUnderscore(constant)) {
 				auto evaluateClause = [=](CandidateCombination combi) -> bool {
-					return PKB::IsUsesProcedure(combi[var], v);
+					return (!PKB::GetProcedureUsedVariables(combi[var]).empty());
 				};
 				combinations.filter(var, evaluateClause);
+			}
+			else {
+				Candidate v = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(constant));
+				if (v == 0) {
+					combinations.filter(false);
+				}
+				else {
+					auto evaluateClause = [=](CandidateCombination combi) -> bool {
+						return PKB::IsUsesProcedure(combi[var], v);
+					};
+					combinations.filter(var, evaluateClause);
+				}
 			}
 		}
 	}
