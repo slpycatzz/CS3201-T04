@@ -39,19 +39,19 @@ namespace UnitTesting {
 
         TotalCombinationList getSampleList_1() {
             TotalCombinationList totalCombi;
-            totalCombi.addSynonym("a", vector<Candidate>{ "1" });
-            totalCombi.addSynonym("b", vector<Candidate>{"2", "3"});
-            totalCombi.addSynonym("c", vector<Candidate>{"4", "5"});
+            totalCombi.addSynonym("a", vector<Candidate>{ 1 });
+            totalCombi.addSynonym("b", vector<Candidate>{2, 3});
+            totalCombi.addSynonym("c", vector<Candidate>{4, 5});
             return totalCombi;
         }
 
         TotalCombinationList getSampleList_2() {
-            CandidateCombination candidateCombi1({ { "a", "1" }, { "b", "2" } });
-            CandidateCombination candidateCombi2({ { "a", "1" }, { "b", "3" } });
+            CandidateCombination candidateCombi1({ { "a", 1 }, { "b", 2 } });
+            CandidateCombination candidateCombi2({ { "a", 1 }, { "b", 3 } });
             PartialCombinationList partialCombi1{ candidateCombi1, candidateCombi2 };
 
-            CandidateCombination candidateCombi3({ { "c", "4" } });
-            CandidateCombination candidateCombi4({ { "c", "5" } });
+            CandidateCombination candidateCombi3({ { "c", 4 } });
+            CandidateCombination candidateCombi4({ { "c", 5 } });
             PartialCombinationList partialCombi2{ candidateCombi3, candidateCombi4 };
 
             TotalCombinationList totalCombi;
@@ -97,7 +97,7 @@ namespace UnitTesting {
 			TotalCombinationList totalCombi(getSampleList_2());
 
 			auto f = [](CandidateCombination combi)->bool {
-				return (combi["a"] == "1" && combi["c"] == "5");
+				return (combi["a"] == 1 && combi["c"] == 5);
 			};
 
 			PartialCombinationList product(totalCombi.cartesianProduct(totalCombi["a"], totalCombi["c"], f));
@@ -111,7 +111,7 @@ namespace UnitTesting {
 			TotalCombinationList totalCombi(getSampleList_2());
 
 			auto f = [](CandidateCombination combi)->bool {
-				return (combi["a"] == "1" && combi["c"] == "5");
+				return (combi["a"] == 1 && combi["c"] == 5);
 			};
 
 			totalCombi.mergeAndFilter(string("a"), string("c"), f);

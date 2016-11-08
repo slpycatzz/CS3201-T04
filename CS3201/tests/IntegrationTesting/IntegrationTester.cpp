@@ -34,16 +34,17 @@ public:
 	};
 
 	struct CombinationCompare {
-		bool operator() (const vector<Candidate> comb1, const vector<Candidate> comb2) {
+		bool operator() (const vector<string> comb1, const vector<string> comb2) {
 			StringCompare comp;
 			for (unsigned i=0; i < comb1.size(); i++) {
 				if (comp(comb1[i], comb2[i])) return true;
+				if (comp(comb2[i], comb1[i])) return false;
 			}
 			return false;
 		}
 	};
 
-	vector<vector<Candidate>>& sortResult(vector<vector<Candidate>> &combList) {
+	vector<vector<string>>& sortResult(vector<vector<string>> &combList) {
 		CombinationCompare comp;
 		std::sort(combList.begin(), combList.end(), comp);
 		return combList;
@@ -76,7 +77,7 @@ public:
 		return qo.optimize(qt);
 	}
 
-	vector<string> resultToString(vector<vector<Candidate>> &list) {
+	vector<string> resultToString(vector<vector<string>> &list) {
 		vector<string> res;
 		for (vector<string> combi : list) {
 			res.push_back(Utils::VectorToString(combi));
@@ -257,6 +258,9 @@ public:
 
 		string actual(format(qe.selectQueryResults(qt)));
 		string expected("<<2>,<16>>");
+
+		Logger::WriteMessage(qe.log.c_str());
+
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_LongPattern_1) {
@@ -319,7 +323,7 @@ public:
 		Logger::WriteMessage(test.c_str());
 
 		string actual(format(qe.selectQueryResults(qt)));
-		string expected("<<7,c>,<30,a>,<35,b>,<12,e>>");
+		string expected("<<7,c>,<12,e>,<30,a>,<35,b>>");
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Intergration_QE_IfPattern_2) {
@@ -364,7 +368,6 @@ public:
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		Logger::WriteMessage(qe.log.c_str());
 		string expected("<<30,35>>");
 		Assert::AreEqual(expected, actual);
 	}
@@ -383,8 +386,11 @@ public:
 		QueryTree qt(getQueryTree("stmt s; while w; Select <s,w> such that Follows(s,w)"));
 		QueryEvaluator qe;
 		
-		string actual(format(qe.selectQueryResults(qt)));
+		ResultList resultList = qe.selectQueryResults(qt);
+		
+		string actual(format(resultList));
 		string expected("<<5,6>,<11,12>,<29,30>,<32,33>,<34,35>,<37,38>>");
+
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(Integration_QE_Follows_2var_2) {
@@ -509,7 +515,6 @@ public:
 		QueryEvaluator qe;
 
 		string actual(format(qe.selectQueryResults(qt)));
-		Logger::WriteMessage(qe.log.c_str());
 
 		string expected("<<"+string(SYMBOL_TRUE)+">>");
 
@@ -530,14 +535,26 @@ public:
 		QueryTree qt(getQueryTree("assign a; Select <a,a> such that Modifies(a, \"ghost\")"));
 		QueryEvaluator qe;
 
+		Assert::IsTrue(qe.evaluateSuchThatClause("Modifies", 7, PKB::GetVariableIndex("ghost")));
+
 		string actual(format(qe.selectQueryResults(qt)));
 		string expected("<<7,7>,<20,20>,<25,25>,<51,51>,<64,64>,<93,93>,<124,124>,<131,131>,<134,134>>");
+
+		Logger::WriteMessage(qe.log.c_str());
+
 		Assert::AreEqual(expected, actual);
 	}
 	TEST_METHOD(SystemTest_11_10) {
 		getSampleProgram("..\\tests\\SystemTesting\\11-Source.txt");
 		QueryTree qt(getQueryTree("variable v1;variable v2;assign a;assign b;stmt s; Select v2 such that Modifies(a,v1) and Uses(b,v2) and Parent*(s,a)"));
 		QueryEvaluator qe;
+
+		std::pair<vector<Synonym>, vector<Clause>> group = qt.getUnselectedGroups()[0];
+		for (Synonym syn : group.first) {
+			Logger::WriteMessage(syn.c_str());
+			Logger::WriteMessage(" ");
+		}
+		Logger::WriteMessage("\n");
 
 		string actual(format(qe.selectQueryResults(qt)));
 		string expected("<<cho>,<doctor>,<ghost>,<good>,<heir>,<man>,<master>,<psy>,<running>,<sun>>");

@@ -63,6 +63,7 @@ class Utils {
     static bool IsValidNamingConvention(std::string str);
     static bool IsAlphanumeric(std::string str);
     static bool IsNonNegativeNumeric(std::string str);
+	static bool IsUnderscore(std::string str);
 
     static bool StartsWith(std::string str, char c);
     static bool StartsWith(std::string str, std::string substr);

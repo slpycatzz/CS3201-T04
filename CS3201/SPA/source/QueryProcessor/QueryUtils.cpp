@@ -34,7 +34,7 @@ string QueryUtils::GetValueFromStringLiteral(string stringLiteral) {
 }
 
 bool QueryUtils::IsLiteral(string str) {
-    return (Utils::IsNonNegativeNumeric(str) || IsStringLiteral(str));
+    return (Utils::IsNonNegativeNumeric(str) || IsStringLiteral(str) || Utils::IsUnderscore(str));
 }
 
 bool QueryUtils::IsSynonym(std::string str) {
@@ -52,19 +52,6 @@ bool QueryUtils::IsStringLiteral(string str) {
 	}
 
 	return false;
-}
-
-bool QueryUtils::IsNonNegativeInt(std::string str)
-{
-	if (str == string(1, CHAR_SYMBOL_UNDERSCORE)) return true;
-	
-	for (unsigned int i = 0; i < str.length(); i++) {
-		if (!isdigit(str[i])) {
-			return false;
-		}
-	}
-
-	return !str.empty();
 }
 
 string QueryUtils::GetExpression(string expression) {

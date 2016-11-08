@@ -16,29 +16,19 @@ using std::vector;
 namespace UnitTesting {
     TEST_CLASS(UtilsUnitTest) {
      public:
-         TEST_METHOD(Utils_FlattenTest) {
-             unordered_map<Synonym, vector<Candidate>> map;
-             map.insert_or_assign("a", vector<Candidate>({ "1", "2" }));
-             map.insert_or_assign("b", vector<Candidate>({ "3", "4", "5" }));
-             vector<vector<string>>
-                 result(Utils::Flatten(map, vector<Synonym>({ "a", "b" }), 0, 1));
-             string actual(Utils::VectorToString(Utils::VectorToStrings(result)));
-             string expected("<<1,3>,<1,4>,<1,5>,<2,3>,<2,4>,<2,5>>");
-             Assert::AreEqual(expected, actual);
-         }
 
         TEST_METHOD(Utils_MergeMapTest) {
-            CandidateCombination comb1({ { "a", "1" } , { "b", "x" }, { "c", "4" } });
-            CandidateCombination comb2({ { "d", "y" } , { "e", "6" } });
+            CandidateCombination comb1({ { "a", 1 } , { "b", 2 }, { "c", 3 } });
+            CandidateCombination comb2({ { "d", 5 } , { "e", 6 } });
             CandidateCombination comb(Utils::MergeMap(comb1, comb2));
             string expected;
             for (auto kv : comb) {
                 expected.append("<");
                 expected.append(kv.first + ",");
-                expected.append(kv.second + ">");
+                expected.append(std::to_string(kv.second) + ">");
                 expected.append(" ");
             }
-            string actual("<a,1> <b,x> <c,4> <d,y> <e,6> ");
+            string actual("<a,1> <b,2> <c,3> <d,5> <e,6> ");
             Assert::AreEqual(expected, actual);
         }
 
@@ -62,7 +52,7 @@ namespace UnitTesting {
         }
 
         TEST_METHOD(QueryUtils_GetSubMapTest) {
-            CandidateCombination combi{ { "a", "1" }, { "b", "2" }, { "c", "3" } };
+            CandidateCombination combi{ { "a", 1 }, { "b", 2 }, { "c", 3 } };
             vector<Synonym> keyList{ "a", "b" };
             CandidateCombination subCombi(Utils::GetSubMap(combi, keyList));
             string actual(Utils::MapToString(subCombi));

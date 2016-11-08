@@ -78,8 +78,9 @@ namespace UnitTesting {
         TEST_METHOD(QueryEvaluator_GetCandidatesTest) {
             QueryTree qt(getQueryTree("assign a; while w; Select a such that Follows(a, w)"));
             QueryEvaluator qe;
+			qe.initialize(qt);
 
-            TotalCombinationList total(qe.getTotalCandidateList(qt.getVarMap(), qt.getResults()));
+            TotalCombinationList total(qe.getTotalCandidateList(qt.getResults()));
             PartialCombinationList partial(total["a"]);
             string actual(PartialToString(partial));
             string expected;
@@ -100,18 +101,20 @@ namespace UnitTesting {
         TEST_METHOD(QueryEvaluator_GetBooleanGroupResultTest) {
             QueryTree qt(getQueryTree("assign a; while w; Select a such that Follows(5, 6)"));
             QueryEvaluator qe;
+			qe.initialize(qt);
 
-            bool res(qe.getBooleanGroupResult(qt.getBooleanClauses()));
+            bool res(qe.getBooleanGroupResult());
             Assert::IsTrue(res);
         }
 
         TEST_METHOD(QueryEvaluator_GetUnselectedGroupResultTest) {
             QueryTree qt(getQueryTree("assign s, a; while w; Select s such that Follows(a, w)"));
             QueryEvaluator qe;
+			qe.initialize(qt);
 
             bool res = true;
             for (auto &pair : qt.getUnselectedGroups()) {
-                if (!qe.getUnselectedGroupResult(pair.first, qt.getVarMap(), pair.second)) {
+                if (!qe.getUnselectedGroupResult(pair.first, pair.second)) {
                     res = false;
                     break;
                 }
@@ -160,6 +163,7 @@ namespace UnitTesting {
             QueryTree qt(getQueryTree("assign a; variable v; while w; Select a such that Modifies(a, \"a\")"));
 
             QueryEvaluator qe;
+			qe.initialize(qt);
 
             vector<std::pair<vector<Synonym>, vector<Clause>>> selectedGroups(qt.getSelectedGroups());
 
@@ -167,13 +171,13 @@ namespace UnitTesting {
             vector<Clause> &clauseGroup(selectedGroups.at(0).second);
             vector<Synonym> &selectList(qt.getResults());
             vector<Synonym> &synList(selectedGroups.at(0).first);
-            TotalCombinationList total(qe.getSelectedGroupResult(synList, varMap, clauseGroup, selectList));
+            TotalCombinationList total(qe.getSelectedGroupResult(synList, clauseGroup));
             // Assert::IsTrue(total.isEmpty());
             PartialCombinationList partial(total.getFactorList()[0]);
             // Assert::IsTrue(partial.empty());
 
             string actual(PartialToString(partial));
-            string expected("<<a:1>,<a:10>,<a:16>,<a:23>,<a:29>,<a:8>,<a:9>>");
+            string expected("<<a:1>,<a:8>,<a:9>,<a:10>,<a:16>,<a:23>,<a:29>>");
 
             Assert::AreEqual(expected, actual);
         }
@@ -182,14 +186,15 @@ namespace UnitTesting {
             QueryTree query(getQueryTree("assign a; variable v; while w; Select a such that Follows(3, 4)"));
 
             QueryEvaluator qe;
+			qe.initialize(query);
 
-            Assert::IsTrue(qe.getBooleanGroupResult(query.getBooleanClauses()));
+            Assert::IsTrue(qe.getBooleanGroupResult());
 
             vector<std::pair<vector<Synonym>, vector<Clause>>> unselectedGroups(query.getUnselectedGroups());
             unordered_map<Synonym, Symbol> varMap(query.getVarMap());
 
             for (auto &pair : unselectedGroups) {
-                Assert::IsTrue(qe.getUnselectedGroupResult(pair.first, varMap, pair.second));
+                Assert::IsTrue(qe.getUnselectedGroupResult(pair.first, pair.second));
             }
 
             TotalCombinationList result;
@@ -197,7 +202,7 @@ namespace UnitTesting {
             vector<std::pair<vector<Synonym>, vector<Clause>>> selectedGroups(query.getSelectedGroups());
 
             for (auto &pair : selectedGroups) {
-                TotalCombinationList &tempCombiList(qe.getSelectedGroupResult(pair.first, varMap, pair.second, selectList));
+                TotalCombinationList &tempCombiList(qe.getSelectedGroupResult(pair.first, pair.second));
                 Assert::IsFalse(tempCombiList.isEmpty());
                 result.combine(tempCombiList);
             }

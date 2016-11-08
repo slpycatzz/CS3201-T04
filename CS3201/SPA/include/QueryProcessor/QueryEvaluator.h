@@ -18,6 +18,9 @@ class QueryEvaluator {
     QueryEvaluator();
     ~QueryEvaluator();
 
+	// Initialize this evaluator with the current query
+	void initialize(QueryTree &query);
+
     // return the result list as a ResultList after evaluating the query
     ResultList selectQueryResults(QueryTree &query);
 
@@ -44,7 +47,7 @@ class QueryEvaluator {
 
     /* filter pattern clauses */
 
-    void filterNoVarPattern(Synonym assignStmt, Candidate lhs, std::string expr,
+    void filterNoVarPattern(Synonym assignStmt, std::string lhs, std::string expr,
         TotalCombinationList &combinations);
 
     void filterOneVarPattern(Synonym assignStmt, Synonym lhs, std::string expr,
@@ -56,13 +59,13 @@ class QueryEvaluator {
         Synonym &var0, Synonym &var1, TotalCombinationList &combinations);
 
     void filterFirstVarClause(std::string clauseType, Synonym var,
-        Candidate constant, TotalCombinationList &combinations);
+        std::string constant, TotalCombinationList &combinations);
 
-    void filterSecondVarClause(std::string clauseType, Candidate constant,
+    void filterSecondVarClause(std::string clauseType, std::string constant,
         Synonym var, TotalCombinationList &combinations);
 
-    void filterNoVarClause(std::string clauseType, Candidate const1,
-        Candidate const2, TotalCombinationList &combinations);
+    void filterNoVarClause(std::string clauseType, std::string const1,
+        std::string const2, TotalCombinationList &combinations);
 
     /* filter with clauses */
 
@@ -91,13 +94,15 @@ class QueryEvaluator {
     bool isBoolSelect(std::vector<std::string>& synList);
 
     std::string log;
-
- private:
     
-	//bool evaluateClause(Clause &clause, CandidateCombination &candMap);
-    bool evaluateSuchThatClause(std::string clauseType, Candidate var0, Candidate var1);
+    bool evaluateSuchThatClause(std::string clauseType, std::string var0, std::string var1);
+	bool evaluateSuchThatClause(std::string clauseType, Candidate var0, std::string var1);
+	bool evaluateSuchThatClause(std::string clauseType, std::string var0, Candidate var1);
+	bool evaluateSuchThatClause(std::string clauseType, Candidate var0, Candidate var1);
+	
+	bool evaluatePatternClause(Candidate assignStmt, std::string lhsVar, std::string expr);
 	bool evaluatePatternClause(Candidate assignStmt, Candidate lhsVar, std::string expr);
-    
+private:
 	bool evaluateCalls(Candidate var0, Candidate var1);
     bool evaluateCallsStar(Candidate var0, Candidate var1);
     bool evaluateModifies(Candidate var0, Candidate var1);

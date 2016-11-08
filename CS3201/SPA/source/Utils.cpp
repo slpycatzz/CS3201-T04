@@ -217,8 +217,7 @@ vector<string> Utils::IntsToStrings(vector<unsigned int> vec) {
 }
 
 unsigned int Utils::StringToInt(string str) {
-	if (str == string(1, CHAR_SYMBOL_UNDERSCORE)) return INT_UNDERSCORE;
-    else return std::stoi(str);
+    return std::stoi(str);
 }
 
 vector<unsigned int> Utils::StringsToInts(vector<string> vec) {
@@ -349,6 +348,11 @@ bool Utils::IsNonNegativeNumeric(string str) {
     }
 
     return !str.empty();
+}
+
+bool Utils::IsUnderscore(std::string str)
+{
+	return (str == string(1, CHAR_SYMBOL_UNDERSCORE));
 }
 
 bool Utils::StartsWith(string str, char c) {

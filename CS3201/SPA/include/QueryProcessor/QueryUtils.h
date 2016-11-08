@@ -11,7 +11,6 @@ class QueryUtils {
     static bool IsStringLiteral(std::string str);
     static bool IsLiteral(std::string str);
     static bool IsSynonym(std::string str);
-	static bool IsNonNegativeInt(std::string str);
 
     static std::string GetExpression(std::string expression);
     static std::string GetSubExpression(std::string expression);
