@@ -194,7 +194,6 @@ void QueryPreprocessor::parseSelect() {
         throw QuerySyntaxErrorException("12");
     }
 
-
     qt.insertDeclaration(varSymbolMap);
     qt.insert(QUERY_RESULT, "placeholder", var);
     qt.insert(QUERY_RESULT, "placeholder", varAttrMap);
@@ -265,6 +264,13 @@ void QueryPreprocessor::parseSuchThat() {
         i++;
     }
     expect(')');
+    vector<Symbol> argTypeList;
+    for (string v : argList) {
+        argTypeList.push_back(getVarType(v));
+    }
+    if (!r.isRelationValid(SUCH_THAT, relation, argTypeList)) {
+        throw QuerySyntaxErrorException("001");
+    }
     qt.insert(SUCH_THAT, relationString, argList);
 }
 
@@ -818,6 +824,9 @@ int QueryPreprocessor::accept(Symbol token) {
         return 0;
     case VARIABLE:
         /* validate for variable a1,"a1" */
+        if (var == "_") {
+            return 0;
+        }
         if (isVarExist(var)) {
             return 1;
         } else {

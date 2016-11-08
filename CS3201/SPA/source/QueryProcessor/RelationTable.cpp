@@ -51,7 +51,19 @@ bool RelationTable::isRelationValid(Symbol relation, Symbol clause) {
 
     return false;
 }
-
+bool RelationTable::isRelationValid(Symbol relation, Symbol clause, std::vector<Symbol> argTypeList) {
+    // handles exceptions static semantic errors
+    if (clause == SUCH_THAT) {
+        switch (relation) {
+        case USES:
+        case MODIFIES:
+            if (argTypeList[0] == VARIABLE) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
 // relation(Symbol) arg(string): might have include method to seperate varStr and expressionStr
 bool RelationTable::isArgValid(Symbol relation, std::string arg, int i) {
     // relation = ASSIGN/IF/WHILE [for-pattern]
