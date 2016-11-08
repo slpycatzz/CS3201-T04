@@ -28,6 +28,12 @@ bool RelationTable::isRelationValid(Symbol relation, Symbol clause) {
         case NEXT_TRANSITIVE:
         case AFFECTS:
         case AFFECTS_TRANSITIVE:
+        // Bonus feature
+        /* 
+        case CONTAINS:
+        case CONTAINS_TRANSITIVE:
+        case SIBLINGS:
+        */
             return true;
         default:
             return false;
@@ -62,7 +68,7 @@ bool RelationTable::isArgValid(Symbol relation, std::string arg, int i) {
     case 1:
         argList = clauseMap2[relation]; return isArgFound(argList, argSymbol);
     case 2:
-        return (argSymbol == UNDERSCORE);
+        return (argSymbol == UNDERSCORE)|| (argSymbol == STMTLIST);
     default:
         return false;
     }
@@ -88,7 +94,7 @@ void RelationTable::initTable() {
 
     // stmt || assign while if call prog_line constant
     // procedure includes variable("procedureName")
-    arg1 = { PROCEDURE, CALL, IF, STMT, ASSIGN, WHILE, VARIABLE, CONSTANT, PROGRAM_LINE};
+    arg1 = { PROCEDURE, CALL, IF, STMT, ASSIGN, WHILE, CONSTANT, PROGRAM_LINE};
     arg2 = { VARIABLE, UNDERSCORE };
     clauseMap1[USES] = arg1;
     clauseMap2[USES] = arg2;
@@ -161,7 +167,7 @@ void RelationTable::initTable() {
 
     // variable refers to "variableName" only, exclude _"expression"_
     arg1 = { VARIABLE, UNDERSCORE };
-    arg2 = { UNDERSCORE };
+    arg2 = { UNDERSCORE, STMTLIST };
     clauseMap1[WHILE] = arg1;
     clauseMap2[WHILE] = arg2;
     arg1.clear();
@@ -169,9 +175,23 @@ void RelationTable::initTable() {
 
     // variable refers to "variableName" only, exclude _"expression"_
     arg1 = { VARIABLE, UNDERSCORE };
-    arg2 = { UNDERSCORE };
+    arg2 = { UNDERSCORE, STMTLIST };
     clauseMap1[IF] = arg1;
     clauseMap2[IF] = arg2;
     arg1.clear();
     arg2.clear();
+
+    /*
+    // Bonus feature
+    arg1 = { PROCEDURE, STMTLIST, STMT, PROG_LINE, ASSIGN, CALL, WHILE, IF, PLUS, MINUS, TIMES, VARIABLE, CONSTANT };
+    arg2 = { PROCEDURE, STMTLIST, STMT, PROG_LINE, ASSIGN, CALL, WHILE, IF, PLUS, MINUS, TIMES, VARIABLE, CONSTANT };
+    clauseMap1[CONTAINS] = arg1;
+    clauseMap2[CONTAINS] = arg2;
+    clauseMap1[SIBLING] = arg1;
+    clauseMap2[SIBLING] = arg2;
+    clauseMap1[CONTAINS_TRANSITIVE] = arg1;
+    clauseMap2[CONTAINS_TRANSITIVE] = arg2;
+    arg1.clear();
+    arg2.clear();
+    */
 }

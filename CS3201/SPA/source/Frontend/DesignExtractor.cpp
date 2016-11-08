@@ -275,7 +275,7 @@ void DesignExtractor::precomputeModifies() {
     /* Populate modifies that are from other procedures. */
     vector<ProcedureIndex> procedureIndexes = PKB::GetAllProcedureIndexes();
     for (const auto &procedureIndex : procedureIndexes) {
-        vector<ProcedureIndex> procedures = PKB::GetCalled(procedureIndex);
+        vector<ProcedureIndex> procedures = PKB::GetCalledTransitive(procedureIndex);
 
         /* Procedure does not have any call. */
         if (procedures.empty()) {
@@ -357,7 +357,7 @@ void DesignExtractor::precomputeUses() {
     /* Populate uses that are from other procedures. */
     vector<ProcedureIndex> procedureIndexes = PKB::GetAllProcedureIndexes();
     for (const auto &procedureIndex : procedureIndexes) {
-        vector<ProcedureIndex> procedures = PKB::GetCalled(procedureIndex);
+        vector<ProcedureIndex> procedures = PKB::GetCalledTransitive(procedureIndex);
 
         /* Procedure does not have any call. */
         if (procedures.empty()) {
