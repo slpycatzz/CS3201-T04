@@ -106,12 +106,12 @@ false
 22 - 
 constant c; 
 Select BOOLEAN such that Affects(c,_)
-true
+false
 5000
 23 - 
 constant c; 
 Select BOOLEAN such that Affects(_,c)
-true
+false
 5000
 24 - 
  

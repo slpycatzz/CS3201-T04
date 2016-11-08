@@ -106,12 +106,12 @@ Select c such that Affects*(c,c)
 22 - 
 constant c;   
 Select c such that Affects*(c,_)
-1,2,4,5,6
+
 5000
 23 - 
 constant c;   
 Select c such that Affects*(_,c)
-2,3,4,6
+
 5000
 24 - 
    
