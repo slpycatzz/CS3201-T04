@@ -108,6 +108,13 @@ public:
         Assert::AreEqual(7, int(PKB::GetNumberOfWhile()));
     }
 
+	TEST_METHOD(Integration_PKB_ModifiesProcedure_1) {
+		getSampleProgram("..\\tests\\SystemTesting\\7-Source.txt");
+		unsigned mama = PKB::GetProcedureIndex("Mama");
+		unsigned t = PKB::GetVariableIndex("t");
+		Assert::IsTrue(PKB::IsModifiesProcedure(mama, t));
+	}
+
 	TEST_METHOD(Integration_QE_GetCandidates_Generic) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("variable v; Select v;"));
@@ -215,6 +222,17 @@ public:
 		string expected("<<a>,<b>,<c>,<d>,<e>,<f>,<g>,<h>>");
 		Assert::AreEqual(expected, actual);
 	}
+
+	TEST_METHOD(Integration_PKB_ModifiesProcedure_4) {
+		getSampleProgram("..\\tests\\SystemTesting\\7-Source.txt");
+		QueryTree qt(getQueryTree("procedure p; Select p such that Calls* (\"Papa\", p)"));
+		QueryEvaluator qe;
+
+		string actual(format(qe.selectQueryResults(qt)));
+		string expected("<<Korkor>,<Mama>,<Zehzeh>>");
+		Assert::AreEqual(expected, actual);
+	}
+
 	TEST_METHOD(Integration_QE_UsesAssign) {
 		getSampleProgram("..\\tests\\IntegrationTesting\\Integration-Test-Source1.txt");
 		QueryTree qt(getQueryTree("assign a; variable v; Select a such that Uses(a, \"a\")"));

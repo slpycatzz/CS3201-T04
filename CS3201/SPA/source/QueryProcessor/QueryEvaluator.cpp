@@ -38,7 +38,7 @@ vector<Candidate> QueryEvaluator::getCandidates(Symbol &synType)
         case BOOLEAN:
             return vector<Candidate>{ 1 };
         case CONSTANT:
-            return PKB::GetAllConstantIndexes();
+            return Utils::StringsToInts(PKB::GetAllConstantValues());
 		case PROGRAM_LINE:
 			return PKB::GetSymbolStmtNumbers(STMT);
 		case STMTLIST:
@@ -116,9 +116,6 @@ ResultList QueryEvaluator::getResultsFromCombinationList(TotalCombinationList &c
 				break;
 			case PROCEDURE:
 				cand = PKB::GetProcedureName(combi[syn]);
-				break;
-			case CONSTANT:
-				cand = PKB::GetConstantValue(combi[syn]);
 				break;
 			default:
 				cand = Utils::IntToString(combi[syn]);
@@ -405,7 +402,7 @@ void QueryEvaluator::filterByClause(Clause &clause, TotalCombinationList &combin
 			else {
 				if (QueryUtils::IsStringLiteral(var1)) {
 					var1 = QueryUtils::LiteralToCandidate(var1);
-					Candidate v = (type1 == PROCEDURE) ? PKB::GetProcedureIndex(var1) : PKB::GetVariableIndex(var1);
+					Candidate v = (type0 == PROCEDURE) ? PKB::GetProcedureIndex(var1) : PKB::GetVariableIndex(var1);
 					if (v == 0) {
 						combinations.filter(false);
 					}
@@ -615,10 +612,24 @@ void QueryEvaluator::filterNoVarClause(string clauseType,
 
 void QueryEvaluator::filterTwoVarsWith(Synonym &var0, Synonym &var1, TotalCombinationList &combinations)
 {
-    auto evaluateClause = [=](CandidateCombination combi) -> bool {
-        return (combi[var0] == combi[var1]);
-    };
-    combinations.mergeAndFilter(var0, var1, evaluateClause);
+	if (varMap[var0] == PROCEDURE && varMap[var1] == VARIABLE) {
+		auto evaluateClause = [=](CandidateCombination combi) -> bool {
+			return (PKB::GetProcedureName(combi[var0]) == PKB::GetVariableName(combi[var1]));
+		};
+		combinations.mergeAndFilter(var0, var1, evaluateClause);
+	}
+	else if (varMap[var1] == PROCEDURE && varMap[var0] == VARIABLE) {
+		auto evaluateClause = [=](CandidateCombination combi) -> bool {
+			return (PKB::GetProcedureName(combi[var1]) == PKB::GetVariableName(combi[var0]));
+		};
+		combinations.mergeAndFilter(var0, var1, evaluateClause);
+	}
+	else {
+		auto evaluateClause = [=](CandidateCombination combi) -> bool {
+			return (combi[var0] == combi[var1]);
+		};
+		combinations.mergeAndFilter(var0, var1, evaluateClause);
+	}
 }
 
 
@@ -664,10 +675,18 @@ void QueryEvaluator::filterTwoVarsCallWith(Synonym & call0, Synonym & call1, Tot
 
 void QueryEvaluator::filterOneVarCallWith(Synonym & call, Synonym & var, TotalCombinationList & combinations)
 {
-    auto comp = [=](CandidateCombination combi) -> bool {
-        return (PKB::GetCallStmtProcedureIndex(combi[call]) == combi[var]);
-    };
-    combinations.mergeAndFilter(call, var, comp);
+	if (varMap[var] == PROCEDURE) {
+		auto comp = [=](CandidateCombination combi) -> bool {
+			return (PKB::GetCallStmtProcedureIndex(combi[call]) == combi[var]);
+		};
+		combinations.mergeAndFilter(call, var, comp);
+	}
+	else {
+		auto comp = [=](CandidateCombination combi) -> bool {
+			return (PKB::GetCallStmtProcedureName(combi[call], "") == PKB::GetVariableName(combi[var]));
+		};
+		combinations.mergeAndFilter(call, var, comp);
+	}
 }
 
 
@@ -969,7 +988,8 @@ bool QueryEvaluator::evaluateSuchThatClause(string clauseType, string var0, stri
 				return (!PKB::GetCalling(v1).empty());
 			}
 			else {
-				v0 = Utils::StringToInt(var0);
+				v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) return false;
 				return PKB::IsCalls(v0, v1);
 			}
 		}
@@ -992,7 +1012,8 @@ bool QueryEvaluator::evaluateSuchThatClause(string clauseType, string var0, stri
 				return (!PKB::GetCalling(v1).empty());
 			}
 			else {
-				v0 = Utils::StringToInt(var0);
+				v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+				if (v0 == 0) return false;
 				return PKB::IsCallsTransitive(v0, v1);
 			}
 		}
@@ -1254,7 +1275,8 @@ bool QueryEvaluator::evaluateSuchThatClause(std::string clauseType, std::string 
 			return (!PKB::GetCalling(v1).empty());
 		}
 		else {
-			v0 = Utils::StringToInt(var0);
+			v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+			if (v0 == 0) return false;
 			return PKB::IsCalls(v0, v1);
 		}
 	}
@@ -1263,7 +1285,8 @@ bool QueryEvaluator::evaluateSuchThatClause(std::string clauseType, std::string 
 			return (!PKB::GetCalling(v1).empty());
 		}
 		else {
-			v0 = Utils::StringToInt(var0);
+			v0 = PKB::GetProcedureIndex(QueryUtils::LiteralToCandidate(var0));
+			if (v0 == 0) return false;
 			return PKB::IsCallsTransitive(v0, v1);
 		}
 	}
