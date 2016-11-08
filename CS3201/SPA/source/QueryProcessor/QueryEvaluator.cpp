@@ -516,21 +516,19 @@ void QueryEvaluator::filterOneVarPattern(Synonym assignStmt, Synonym lhs,
 
 
 void QueryEvaluator::filterTwoVarsClause(string clauseType,
-    Synonym &var0, Synonym &var1, TotalCombinationList &combinations)
+	Synonym &var0, Synonym &var1, TotalCombinationList &combinations)
 {
-	if (varMap[var0] == PROCEDURE) {
-		if (clauseType == SYMBOL_MODIFIES) {
-			auto evaluateClause = [=](CandidateCombination combi) -> bool {
-				return PKB::IsModifiesProcedure(combi[var0], combi[var1]);
-			};
-			combinations.mergeAndFilter(var0, var1, evaluateClause);
-		}
-		if (clauseType == SYMBOL_USES) {
-			auto evaluateClause = [=](CandidateCombination combi) -> bool {
-				return PKB::IsUsesProcedure(combi[var0], combi[var1]);
-			};
-			combinations.mergeAndFilter(var0, var1, evaluateClause);
-		}
+	if (varMap[var0] == PROCEDURE && clauseType == SYMBOL_MODIFIES) {
+		auto evaluateClause = [=](CandidateCombination combi) -> bool {
+			return PKB::IsModifiesProcedure(combi[var0], combi[var1]);
+		};
+		combinations.mergeAndFilter(var0, var1, evaluateClause);
+	}
+	else if (varMap[var0] == PROCEDURE && clauseType == SYMBOL_USES) {
+		auto evaluateClause = [=](CandidateCombination combi) -> bool {
+			return PKB::IsUsesProcedure(combi[var0], combi[var1]);
+		};
+		combinations.mergeAndFilter(var0, var1, evaluateClause);
 	}
 	else {
 		auto evaluateClause = [=](CandidateCombination combi) -> bool {
@@ -542,54 +540,53 @@ void QueryEvaluator::filterTwoVarsClause(string clauseType,
 
 
 void QueryEvaluator::filterFirstVarClause(string clauseType,
-    Synonym var, string constant, TotalCombinationList &combinations)
+	Synonym var, string constant, TotalCombinationList &combinations)
 {
-	if (varMap[var] == PROCEDURE) {
-		
-		if (clauseType == SYMBOL_MODIFIES) {
-			
-			if (Utils::IsUnderscore(constant)) {
-				auto evaluateClause = [=](CandidateCombination combi) -> bool {
-					return (!PKB::GetProcedureModifiedVariables(combi[var]).empty());
-				};
-				combinations.filter(var, evaluateClause);
-			}
-			else {
-				Candidate v = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(constant));
-				if (v == 0) {
-					combinations.filter(false);
-				}
-				else {
-					auto evaluateClause = [=](CandidateCombination combi) -> bool {
-						return PKB::IsModifiesProcedure(combi[var], v);
-					};
-					combinations.filter(var, evaluateClause);
-				}
-			}
+
+	if (varMap[var] == PROCEDURE && clauseType == SYMBOL_MODIFIES) {
+
+		if (Utils::IsUnderscore(constant)) {
+			auto evaluateClause = [=](CandidateCombination combi) -> bool {
+				return (!PKB::GetProcedureModifiedVariables(combi[var]).empty());
+			};
+			combinations.filter(var, evaluateClause);
 		}
-		
-		else if (clauseType == SYMBOL_USES) {
-			
-			if (Utils::IsUnderscore(constant)) {
-				auto evaluateClause = [=](CandidateCombination combi) -> bool {
-					return (!PKB::GetProcedureUsedVariables(combi[var]).empty());
-				};
-				combinations.filter(var, evaluateClause);
+		else {
+			Candidate v = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(constant));
+			if (v == 0) {
+				combinations.filter(false);
 			}
 			else {
-				Candidate v = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(constant));
-				if (v == 0) {
-					combinations.filter(false);
-				}
-				else {
-					auto evaluateClause = [=](CandidateCombination combi) -> bool {
-						return PKB::IsUsesProcedure(combi[var], v);
-					};
-					combinations.filter(var, evaluateClause);
-				}
+				auto evaluateClause = [=](CandidateCombination combi) -> bool {
+					return PKB::IsModifiesProcedure(combi[var], v);
+				};
+				combinations.filter(var, evaluateClause);
 			}
 		}
 	}
+
+	else if (varMap[var] == PROCEDURE && clauseType == SYMBOL_USES) {
+
+		if (Utils::IsUnderscore(constant)) {
+			auto evaluateClause = [=](CandidateCombination combi) -> bool {
+				return (!PKB::GetProcedureUsedVariables(combi[var]).empty());
+			};
+			combinations.filter(var, evaluateClause);
+		}
+		else {
+			Candidate v = PKB::GetVariableIndex(QueryUtils::LiteralToCandidate(constant));
+			if (v == 0) {
+				combinations.filter(false);
+			}
+			else {
+				auto evaluateClause = [=](CandidateCombination combi) -> bool {
+					return PKB::IsUsesProcedure(combi[var], v);
+				};
+				combinations.filter(var, evaluateClause);
+			}
+		}
+	}
+
 	else {
 		auto evaluateClause = [=](CandidateCombination combi) -> bool {
 			return evaluateSuchThatClause(clauseType, combi[var], constant);
