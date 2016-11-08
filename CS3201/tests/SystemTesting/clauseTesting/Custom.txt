@@ -31,7 +31,7 @@ Select a such that Uses("SourceOne", v)
 7 - Uses(variable, variable) INVALID
 variable v;
 Select v such that Uses(v,v)
-B,C
+
 5000
 8 - Uses(stmtLst, _) INVALID
 stmtLst sl;
