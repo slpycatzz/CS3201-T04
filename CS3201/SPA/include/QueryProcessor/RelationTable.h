@@ -16,6 +16,8 @@ class RelationTable {
     /* checks if e.g. [pattern a1() ] a1(ASSIGN) is valid for pattern */
     bool isRelationValid(Symbol relation, Symbol clause);
 
+    bool isRelationValid(Symbol relation, Symbol Clause, std::vector<Symbol> argList);
+
  private:
     bool isArgFound(std::vector<Symbol>, Symbol);
     void initTable();

@@ -112,6 +112,65 @@ namespace UnitTesting {
                 i++;
             }
         }
+        TEST_METHOD(QueryPreprocessor_aaaSelectTokenName) {
+            string expected, actual;
+            QueryPreprocessor qpStub;
+            vector<string> queryList;
+            vector<string> expectedList;
+            string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
+
+            string dirPath = "..\\tests\\SystemTesting\\";
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\";
+
+            queryList.push_back("assign assign; if if; while while; Select if such that Uses(if,\"x\")");
+            queryList.push_back("if Uses,Modifies; while pattern;Select Uses such that Uses(pattern,\"x\")");
+            
+
+            expectedList.push_back("if Uses if \"x\" ");
+            expectedList.push_back("Uses Uses pattern \"x\" ");
+            
+            Assert::AreEqual("total test case" + expectedList.size(), "total test case" + queryList.size());
+
+            if (queryList.size() == 0) {
+                actual = "no file found";
+            }
+            int i = 0;
+            for (string query : queryList) {
+                QueryPreprocessor qp;
+                QueryTree qt;
+                actual = "";
+                try {
+                    qp.preprocessQuery(query);
+                }
+                catch (std::exception& ex) {
+                    actual = ex.what();
+                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual.substr(0, querySyntaxErrorMsg.size()) + " at:" + Utils::IntToString(i));
+                    i++;
+                    continue;
+                }
+                qt = qp.getQueryTree();
+                vector<string> varList;
+
+                varList = qt.getResults();
+                for (unsigned int ii = 0; ii < varList.size(); ii++) {
+                    actual += varList[ii] + " ";
+                }
+                vector<Clause> clauseList = qt.getClauses();
+
+                for (Clause c : clauseList) {
+                    actual += c.getClauseType() + " ";
+                    int num = c.getArgCount();
+                    if (c.getClauseType() == "with") {
+                        num--;
+                    }
+                    for (int n = 0; n < num; n++) {
+                        actual += c.getArg()[n] + " ";
+                    }
+                }
+                Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                i++;
+            }
+        }
         TEST_METHOD(QueryPreprocessor_bSuchThat) {
             string expected, actual;
             QueryPreprocessor qp;
@@ -137,6 +196,78 @@ namespace UnitTesting {
                 }
             }
             Assert::AreEqual(expected, actual);
+        }
+        TEST_METHOD(QueryPreprocessor_bbSuchThatInvalid) {
+            string expected, actual;
+            QueryPreprocessor qpStub;
+            vector<string> queryList;
+            vector<string> expectedList;
+            string querySyntaxErrorMsg = "Query parser encountered a syntax error in the query : ";
+
+            string dirPath = "..\\tests\\SystemTesting\\";
+            string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\";
+
+            // invalid queries
+            queryList.push_back("assign a; variable x;Select BOOLEAN,BOOLEAN such that Uses(x,x)");
+            queryList.push_back("assign a; variable x;Select <BOOLEAN,x1> such that Modifies(a,x)");
+            queryList.push_back("assign a; variable x;Select <BOOLEAN> such that Uses(a,x)");
+            queryList.push_back("assign a; variable x;Select <BOOLEAN> such that Modifies(a,x)");
+            queryList.push_back("assign a; variable x;Select <Boolean,Boolean> such that Uses(a,x)");
+            queryList.push_back("assign a; variable x;Select <x,a,BOOLEAN> such that Uses(a,x)");
+            // valid queries
+            queryList.push_back("assign a; variable x;Select BOOLEAN such that Uses(a,x)");
+
+
+            expectedList.push_back(querySyntaxErrorMsg + "");
+            expectedList.push_back(querySyntaxErrorMsg + "");
+            expectedList.push_back(querySyntaxErrorMsg + "");
+            expectedList.push_back(querySyntaxErrorMsg + "");
+            expectedList.push_back(querySyntaxErrorMsg + "");
+            expectedList.push_back(querySyntaxErrorMsg + "");
+
+            expectedList.push_back("BOOLEAN Uses a x ");
+
+            Assert::AreEqual("total test case" + expectedList.size(), "total test case" + queryList.size());
+
+            if (queryList.size() == 0) {
+                actual = "no file found";
+            }
+            int i = 0;
+            for (string query : queryList) {
+                QueryPreprocessor qp;
+                QueryTree qt;
+                actual = "";
+                try {
+                    qp.preprocessQuery(query);
+                }
+                catch (std::exception& ex) {
+                    actual = ex.what();
+                    Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual.substr(0, querySyntaxErrorMsg.size()) + " at:" + Utils::IntToString(i));
+                    i++;
+                    continue;
+                }
+                qt = qp.getQueryTree();
+                vector<string> varList;
+
+                varList = qt.getResults();
+                for (unsigned int ii = 0; ii < varList.size(); ii++) {
+                    actual += varList[ii] + " ";
+                }
+                vector<Clause> clauseList = qt.getClauses();
+
+                for (Clause c : clauseList) {
+                    actual += c.getClauseType() + " ";
+                    int num = c.getArgCount();
+                    if (c.getClauseType() == "with") {
+                        num--;
+                    }
+                    for (int n = 0; n < num; n++) {
+                        actual += c.getArg()[n] + " ";
+                    }
+                }
+                Assert::AreEqual(expectedList[i] + " at:" + Utils::IntToString(i), actual + " at:" + Utils::IntToString(i));
+                i++;
+            }
         }
         TEST_METHOD(QueryPreprocessor_cSuchThatWithStringConstant) {
             string expected, actual;
