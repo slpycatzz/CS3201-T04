@@ -728,6 +728,12 @@ bool QueryPreprocessor::isValidVarType(string varName) {
     case PROCEDURE:
     case CALL:
     case IF:
+    /*
+    // Bonus feature
+    case PLUS:
+    case MINUS:
+    case TIMES:
+    */
         return true;
     default:
         return false;

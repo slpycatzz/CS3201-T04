@@ -28,6 +28,12 @@ bool RelationTable::isRelationValid(Symbol relation, Symbol clause) {
         case NEXT_TRANSITIVE:
         case AFFECTS:
         case AFFECTS_TRANSITIVE:
+        // Bonus feature
+        /* 
+        case CONTAINS:
+        case CONTAINS_TRANSITIVE:
+        case SIBLINGS:
+        */
             return true;
         default:
             return false;
@@ -175,4 +181,17 @@ void RelationTable::initTable() {
     arg1.clear();
     arg2.clear();
 
+    /*
+    // Bonus feature
+    arg1 = { PROCEDURE, STMTLIST, STMT, PROG_LINE, ASSIGN, CALL, WHILE, IF, PLUS, MINUS, TIMES, VARIABLE, CONSTANT };
+    arg2 = { PROCEDURE, STMTLIST, STMT, PROG_LINE, ASSIGN, CALL, WHILE, IF, PLUS, MINUS, TIMES, VARIABLE, CONSTANT };
+    clauseMap1[CONTAINS] = arg1;
+    clauseMap2[CONTAINS] = arg2;
+    clauseMap1[SIBLING] = arg1;
+    clauseMap2[SIBLING] = arg2;
+    clauseMap1[CONTAINS_TRANSITIVE] = arg1;
+    clauseMap2[CONTAINS_TRANSITIVE] = arg2;
+    arg1.clear();
+    arg2.clear();
+    */
 }
