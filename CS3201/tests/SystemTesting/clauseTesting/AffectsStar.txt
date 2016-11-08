@@ -1,155 +1,155 @@
 1 - 
-assign a1,a2; 
+assign a1,a2;  
 Select a1 such that Affects*(a1,a2)
-1,10,13,15,17,18,2,21,22,26,32,39,4,41,43,44,45,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,71,75,8
+
 5000
 2 - 
-assign a; 
+assign a;  
 Select a such that Affects*(a,a)
-15,17,18,22,41,43,44,56,58,59,61,62,63,66,67
+
 5000
 3 - 
-assign a; 
+assign a;  
 Select a such that Affects*(a,_)
-1,10,13,15,17,18,2,21,22,26,32,39,4,41,43,44,45,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,71,75,8
+
 5000
 4 - 
-assign a; 
+assign a;  
 Select a such that Affects*(_,a)
-10,11,15,17,18,2,22,23,28,3,30,33,37,4,41,43,44,45,46,52,54,56,58,59,6,61,62,63,66,67,68,69,7,70,72,79,8,9
+
 5000
 5 - 
- 
+  
 Select BOOLEAN such that Affects*(_,_)
-true
+
 5000
 6 - 
-while w; 
+while w;  
 Select BOOLEAN such that Affects*(w,w)
 
 5000
 7 - 
-while w; 
+while w;  
 Select BOOLEAN such that Affects*(w,_)
 
 5000
 8 - 
-while w; 
+while w;  
 Select BOOLEAN such that Affects*(_,w)
 
 5000
 9 - 
-if ifstmt ; 
+if ifstmt ;  
 Select BOOLEAN such that Affects*(ifstmt,ifstmt)
 
 5000
 10 - 
-if ifstmt; 
+if ifstmt;  
 Select BOOLEAN such that Affects*(ifstmt,_)
 
 5000
 11 - 
-if ifstmt; 
+if ifstmt;  
 Select BOOLEAN such that Affects*(_,ifstmt)
 
 5000
 12 - 
-stmt s; 
+stmt s;  
 Select s such that Affects*(s,s)
-15,17,18,22,41,43,44,56,58,59,61,62,63,66,67
+
 5000
 13 - 
-stmt s; 
+stmt s;  
 Select s such that Affects*(s,_)
-1,10,13,15,17,18,2,21,22,26,32,39,4,41,43,44,45,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,71,75,8
+
 5000
 14 - 
-stmt s; 
+stmt s;  
 Select s such that Affects*(_,s)
-10,11,15,17,18,2,22,23,28,3,30,33,37,4,41,43,44,45,46,52,54,56,58,59,6,61,62,63,66,67,68,69,7,70,72,79,8,9
+
 5000
 15 - 
-prog_line l; 
+prog_line l;  
 Select l such that Affects*(l,l)
-15,17,18,22,41,43,44,56,58,59,61,62,63,66,67
+
 5000
 16 - 
-prog_line l; 
+prog_line l;  
 Select l such that Affects*(l,_)
-1,10,13,15,17,18,2,21,22,26,32,39,4,41,43,44,45,5,50,52,54,56,58,59,6,61,62,63,66,67,68,69,7,71,75,8
+
 5000
 17 - 
-prog_line l; 
+prog_line l;  
 Select l such that Affects*(_,l)
-10,11,15,17,18,2,22,23,28,3,30,33,37,4,41,43,44,45,46,52,54,56,58,59,6,61,62,63,66,67,68,69,7,70,72,79,8,9
+
 5000
 18 - 
-variable v; 
+variable v;  
 Select BOOLEAN such that Affects*(v,v)
 
 5000
 19 - 
-variable v; 
+variable v;  
 Select BOOLEAN such that Affects*(v,_)
 
 5000
 20 - 
-variable v; 
+variable v;  
 Select BOOLEAN such that Affects*(_,v)
 
 5000
 21 - 
-constant c; 
+constant c;  
 Select c such that Affects*(c,c)
 
 5000
 22 - 
-constant c; 
+constant c;  
 Select c such that Affects*(c,_)
-1,10,2
+4,5,6
 5000
 23 - 
-constant c; 
+constant c;  
 Select c such that Affects*(_,c)
-10,2
+3,4,6
 5000
 24 - 
- 
+  
 Select BOOLEAN such that Affects*(1,3)
-true
+
 5000
 25 - 
- 
+  
 Select BOOLEAN such that Affects*(1,11)
-true
+
 5000
 26 - 
- 
+  
 Select BOOLEAN such that Affects*(1,17)
-true
+
 5000
 27 - 
- 
+  
 Select BOOLEAN such that Affects*(13,22)
-true
+
 5000
 28 - 
- 
+  
 Select BOOLEAN such that Affects*(26,30)
-true
+
 5000
 29 - 
- 
+  
 Select BOOLEAN such that Affects*(22,23)
-true
+
 5000
 30 - 
- 
+  
 Select BOOLEAN such that Affects*(1,48)
-false
+
 5000
 31 - 
- 
+  
 Select BOOLEAN such that Affects*(1,50)
-false
+
 5000
