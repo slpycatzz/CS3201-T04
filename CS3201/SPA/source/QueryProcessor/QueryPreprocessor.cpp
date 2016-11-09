@@ -225,7 +225,11 @@ void QueryPreprocessor::parseSuchThat() {
             varType = getVarType(getVar());
             if (varType == INVALID) {
                 // case: var = "x" is not mapped to a varType
-                varType = VARIABLE;
+                if (Utils::IsNonNegativeNumeric(getVar())) {
+                    varType = CONSTANT;
+                } else {
+                    varType = VARIABLE;
+                }
             }
             bool isRelValid;
             isRelValid = r.isArgValid(relation, Constants::SymbolToString(varType), i);
