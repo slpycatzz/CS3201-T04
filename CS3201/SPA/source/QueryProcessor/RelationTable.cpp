@@ -106,7 +106,7 @@ void RelationTable::initTable() {
 
     // stmt || assign while if call prog_line constant
     // procedure includes variable("procedureName")
-    arg1 = { PROCEDURE, CALL, IF, STMT, ASSIGN, WHILE, VARIABLE, CONSTANT, PROGRAM_LINE};
+    arg1 = { PROCEDURE, CALL, IF, STMT, ASSIGN, WHILE, VARIABLE, VALUE, CONSTANT, PROGRAM_LINE};
     arg2 = { VARIABLE, UNDERSCORE };
     clauseMap1[USES] = arg1;
     clauseMap2[USES] = arg2;
@@ -117,8 +117,8 @@ void RelationTable::initTable() {
     arg2.clear();
 
     // stmt refers to all stmt types: stmt || assign while if call prog_line constant
-    arg1 = { STMT,  WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
-    arg2 = { CALL, STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg1 = { STMT,  WHILE, IF, VALUE, PROGRAM_LINE, UNDERSCORE };
+    arg2 = { CALL, STMT, ASSIGN, WHILE, IF, VALUE, PROGRAM_LINE, UNDERSCORE };
     clauseMap1[PARENT] = arg1;
     clauseMap2[PARENT] = arg2;
 
@@ -127,8 +127,8 @@ void RelationTable::initTable() {
     arg1.clear();
     arg2.clear();
 
-    arg1 = { CALL, STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
-    arg2 = { CALL, STMT, ASSIGN, WHILE, IF, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg1 = { CALL, STMT, ASSIGN, WHILE, IF, VALUE, PROGRAM_LINE, UNDERSCORE };
+    arg2 = { CALL, STMT, ASSIGN, WHILE, IF, VALUE, PROGRAM_LINE, UNDERSCORE };
 
     clauseMap1[FOLLOWS] = arg1;
     clauseMap2[FOLLOWS] = arg2;
@@ -157,8 +157,8 @@ void RelationTable::initTable() {
     arg2.clear();
 
 
-    arg1 = { STMT, ASSIGN, CONSTANT, PROGRAM_LINE, UNDERSCORE };
-    arg2 = { STMT, ASSIGN, CONSTANT, PROGRAM_LINE, UNDERSCORE };
+    arg1 = { STMT, ASSIGN, VALUE, PROGRAM_LINE, UNDERSCORE };
+    arg2 = { STMT, ASSIGN, VALUE, PROGRAM_LINE, UNDERSCORE };
     clauseMap1[AFFECTS] = arg1;
     clauseMap2[AFFECTS] = arg2;
 

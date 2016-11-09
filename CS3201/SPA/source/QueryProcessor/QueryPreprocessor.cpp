@@ -226,7 +226,7 @@ void QueryPreprocessor::parseSuchThat() {
             if (varType == INVALID) {
                 // case: var = "x" is not mapped to a varType
                 if (Utils::IsNonNegativeNumeric(getVar())) {
-                    varType = CONSTANT;
+                    varType = VALUE;
                 } else {
                     varType = VARIABLE;
                 }
@@ -245,8 +245,8 @@ void QueryPreprocessor::parseSuchThat() {
                 throw QuerySyntaxErrorException("15");
             }
             queryList[cur] = peek().substr(getVar().size());
-        } else if (accept(CONSTANT)) {
-            if (r.isArgValid(relation, Constants::SymbolToString(CONSTANT), i)) {
+        } else if (accept(VALUE)) {
+            if (r.isArgValid(relation, Constants::SymbolToString(VALUE), i)) {
                 argList.push_back(getVar());  // wm todo getVariable after validation for saving
             } else {
                 throw QuerySyntaxErrorException("16");
@@ -272,6 +272,7 @@ void QueryPreprocessor::parseSuchThat() {
     for (string v : argList) {
         argTypeList.push_back(getVarType(v));
     }
+    // handle special cases(patch bugs in static semantic)
     if (!r.isRelationValid(SUCH_THAT, relation, argTypeList)) {
         throw QuerySyntaxErrorException("001");
     }
@@ -317,8 +318,8 @@ void QueryPreprocessor::parsePattern() {
                 throw QuerySyntaxErrorException("21");
             }
             queryList[cur] = peek().substr(getVar().size());
-        } else if (accept(CONSTANT)) {
-            if (r.isArgValid(varSymbolMap[relation], Constants::SymbolToString(CONSTANT), i)) {
+        } else if (accept(VALUE)) {
+            if (r.isArgValid(varSymbolMap[relation], Constants::SymbolToString(VALUE), i)) {
                 argList.push_back(getVar());
             } else {
                 throw QuerySyntaxErrorException("22");
@@ -418,7 +419,6 @@ void QueryPreprocessor::parseWith() {
     if (isAttributeValid(var, varAttribute, var2, varAttribute2)) {
         vector<string> varList = { var, var2 };
         Symbol varAttrType = getAttributeType(var, varAttribute);
-
         qt.insert(WITH, Constants::SymbolToString(varAttrType), varList);
     } else {
         throw QuerySyntaxErrorException("22");
@@ -441,7 +441,7 @@ Symbol QueryPreprocessor::getAttributeType(string var, string varAttr) {
             if (!Utils::IsNonNegativeNumeric(var)) {
                 throw QuerySyntaxErrorException("92");
             }
-            return CONSTANT;
+            return VALUE;
         }
     }
     switch (varType) {
@@ -454,11 +454,11 @@ Symbol QueryPreprocessor::getAttributeType(string var, string varAttr) {
     case ASSIGN:
     case WHILE:
     case IF:
-        return CONSTANT;
+        return VALUE;
         // special case for call
     case CALL:
         if (varAttr == "" || varAttr == "stmt#") {
-            return CONSTANT;
+            return VALUE;
         }
         return VARIABLE;
     default:
@@ -612,7 +612,7 @@ void QueryPreprocessor::callFactorRecognizer(string &var) {
     } else if (accept(var, VARIABLE)) {
         patternList.push_back(name);
         /* Constant. */
-    } else if (accept(var, CONSTANT)) {
+    } else if (accept(var, VALUE)) {
         patternList.push_back(name);
     } else if (var[0] == '\"') {
     } else if (var[0] == ')') {
@@ -670,7 +670,7 @@ bool QueryPreprocessor::accept(string &var, Symbol token) {
             return true;
         }
         return false;
-    case CONSTANT:
+    case VALUE:
         if (Utils::IsNonNegativeNumeric(var1)) {
             var = var.substr(var1.size());
             return true;
@@ -840,7 +840,7 @@ int QueryPreprocessor::accept(Symbol token) {
             }
         }
         break;
-    case CONSTANT:
+    case VALUE:
         /* validate for constant number 1,2,123 */
         if (Utils::IsNonNegativeNumeric(var)) {
             return 1;

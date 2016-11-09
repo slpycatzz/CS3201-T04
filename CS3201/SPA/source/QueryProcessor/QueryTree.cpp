@@ -64,6 +64,9 @@ bool QueryTree::insert(Symbol type, string argType, vector<string> argList) {
         return true;
     case WITH:
         clause.setClauseType("with");
+        if (argType == "value") {
+            argType = "constant";
+        }
         argList.push_back(argType);
         clause.setArg(argList);
 
