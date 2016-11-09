@@ -651,10 +651,12 @@ bool DesignExtractor::computeAffecting(CFGNode* assignNode, VariableIndex use,
                             affectsTable.insert(parentStmtNumber, stmtNumber);
 
                             isAffecting = true;
+
+                            queue = {};
+                            break;
                         }
 
-                        queue = {};
-                        break;
+                        continue;
                     }
                 }
 
