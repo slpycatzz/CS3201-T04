@@ -51,7 +51,7 @@ namespace UnitTesting {
             string dirPath1 = "..\\tests\\UnitTesting\\testcases\\QueryPreprocessor\\";
 
             // invalid queries
-            queryList.push_back("assign a; variable x;Select BOOLEAN,BOOLEAN such that Uses(a,x)");
+            queryList.push_back("assign a; variable x;Select BOOLEAN such that Uses(x,x)");
             queryList.push_back("assign a; variable x;Select <BOOLEAN,x1> such that Modifies(a,x)");
             queryList.push_back("assign a; variable x;Select <BOOLEAN> such that Uses(a,x)");
             queryList.push_back("assign a; variable x;Select <BOOLEAN> such that Modifies(a,x)");

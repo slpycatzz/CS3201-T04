@@ -51,7 +51,7 @@ bool RelationTable::isRelationValid(Symbol relation, Symbol clause) {
 
     return false;
 }
-bool RelationTable::isRelationValid(Symbol relation, Symbol clause, std::vector<Symbol> argTypeList) {
+bool RelationTable::isRelationValid(Symbol clause, Symbol relation, std::vector<Symbol> argTypeList) {
     // handles exceptions static semantic errors
     if (clause == SUCH_THAT) {
         switch (relation) {

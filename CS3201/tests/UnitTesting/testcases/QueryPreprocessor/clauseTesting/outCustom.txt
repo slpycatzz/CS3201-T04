@@ -11,7 +11,7 @@ Query parser encountered a syntax error in the query : 12
 6
 a Uses "SourceOne" v 
 7
-v Uses v v 
+Query parser encountered a syntax error in the query : 12
 8
 Query parser encountered a syntax error in the query : 10
 9
