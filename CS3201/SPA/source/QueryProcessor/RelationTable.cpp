@@ -106,7 +106,7 @@ void RelationTable::initTable() {
 
     // stmt || assign while if call prog_line constant
     // procedure includes variable("procedureName")
-    arg1 = { PROCEDURE, CALL, IF, STMT, ASSIGN, WHILE, VARIABLE, VALUE, CONSTANT, PROGRAM_LINE};
+    arg1 = { PROCEDURE, CALL, IF, STMT, ASSIGN, WHILE, VARIABLE, VALUE, PROGRAM_LINE};
     arg2 = { VARIABLE, UNDERSCORE };
     clauseMap1[USES] = arg1;
     clauseMap2[USES] = arg2;
