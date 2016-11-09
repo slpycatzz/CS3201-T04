@@ -887,11 +887,10 @@ bool PKB::IsAffectsTransitive(StmtNumber affecting, StmtNumber affected) {
             affectsTransitiveMatrix_.setPopulated(affecting);
 
             vector<StmtNumber> rowValues = affectsTable_.getValues(affecting);
+            vector<CFGNode*> visitedNodes;
 
             for (StmtNumber rowValue : rowValues) {
                 affectsTransitiveMatrix_.toggleRowColumn(affecting, rowValue);
-
-                vector<CFGNode*> visitedNodes;
 
                 queue<StmtNumber> queue_;
                 queue_.push(rowValue);
@@ -918,10 +917,10 @@ bool PKB::IsAffectsTransitive(StmtNumber affecting, StmtNumber affected) {
                         }
                     }
                 }
+            }
 
-                for (CFGNode* node : visitedNodes) {
-                    node->setVisited(false);
-                }
+            for (CFGNode* node : visitedNodes) {
+                node->setVisited(false);
             }
 
             return affectsTransitiveMatrix_.isRowColumnToggled(affecting, affected);
